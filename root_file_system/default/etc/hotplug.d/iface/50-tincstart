@@ -1,0 +1,3 @@
+[ ifup = "$ACTION" -a "$DEVICE" = eth0 ] && {
+	sh /etc/tincstart.sh
+}

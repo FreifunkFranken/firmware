@@ -1,0 +1,2 @@
+config timeserver
+	option hostname	 time.fu-berlin.de

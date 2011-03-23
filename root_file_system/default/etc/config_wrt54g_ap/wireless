@@ -1,0 +1,10 @@
+config wifi-device  wl0
+        option type     broadcom
+        option channel  6
+        option disabled 0
+
+config wifi-iface
+        option device   wl0
+        option mode     ap
+        option ssid     oldenburg.freifunk.net
+        option encryption none
