@@ -1,0 +1,68 @@
+Index: package/mac80211/patches/015-remove-rt2x00-options.patch
+===================================================================
+--- package/mac80211/patches/015-remove-rt2x00-options.patch	(Revision 25878)
++++ package/mac80211/patches/015-remove-rt2x00-options.patch	(Arbeitskopie)
+@@ -1,20 +0,0 @@
+---- a/config.mk
+-+++ b/config.mk
+-@@ -304,7 +304,7 @@ CONFIG_RTL8180=m
+- 
+- CONFIG_ADM8211=m
+- 
+--CONFIG_RT2X00_LIB_PCI=m
+-+# CONFIG_RT2X00_LIB_PCI=m
+- CONFIG_RT2400PCI=m
+- CONFIG_RT2500PCI=m
+- ifdef CONFIG_CRC_CCITT
+-@@ -444,7 +444,7 @@ CONFIG_RT2800USB=m
+- # CONFIG_RT2800USB_RT35XX=y
+- CONFIG_RT2800USB_UNKNOWN=y
+- endif #CONFIG_CRC_CCITT
+--CONFIG_RT2X00_LIB_USB=m
+-+# CONFIG_RT2X00_LIB_USB=m
+- NEED_RT2X00=y
+- # RT73USB requires firmware
+- ifdef CONFIG_CRC_ITU_T
+Index: package/mac80211/patches/002-disable_rfkill.patch
+===================================================================
+--- package/mac80211/patches/002-disable_rfkill.patch	(Revision 25878)
++++ package/mac80211/patches/002-disable_rfkill.patch	(Arbeitskopie)
+@@ -1,38 +0,0 @@
+---- a/config.mk
+-+++ b/config.mk
+-@@ -74,7 +74,7 @@ endif # build check
+- endif # kernel Makefile check
+- 
+- # These both are needed by compat-wireless || compat-bluetooth so enable them
+-- CONFIG_COMPAT_RFKILL=y
+-+# CONFIG_COMPAT_RFKILL=y
+- 
+- ifeq ($(CONFIG_MAC80211),y)
+- $(error "ERROR: you have MAC80211 compiled into the kernel, CONFIG_MAC80211=y, as such you cannot replace its mac80211 driver. You need this set to CONFIG_MAC80211=m. If you are using Fedora upgrade your kernel as later version should this set as modular. For further information on Fedora see https://bugzilla.redhat.com/show_bug.cgi?id=470143. If you are using your own kernel recompile it and make mac80211 modular")
+-@@ -623,10 +623,10 @@ endif #CONFIG_COMPAT_KERNEL_27
+- # We need the backported rfkill module on kernel < 2.6.31.
+- # In more recent kernel versions use the in kernel rfkill module.
+- ifdef CONFIG_COMPAT_KERNEL_31
+--CONFIG_RFKILL_BACKPORT=m
+-+# CONFIG_RFKILL_BACKPORT=m
+- ifdef CONFIG_LEDS_TRIGGERS
+--CONFIG_RFKILL_BACKPORT_LEDS=y
+-+# CONFIG_RFKILL_BACKPORT_LEDS=y
+- endif #CONFIG_LEDS_TRIGGERS
+--CONFIG_RFKILL_BACKPORT_INPUT=y
+-+# CONFIG_RFKILL_BACKPORT_INPUT=y
+- endif #CONFIG_COMPAT_KERNEL_31
+- 
+---- a/include/linux/rfkill.h
+-+++ b/include/linux/rfkill.h
+-@@ -3,6 +3,10 @@
+- 
+- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31))
+- 
+-+#undef CONFIG_RFKILL
+-+#undef CONFIG_RFKILL_LEDS
+-+#undef CONFIG_RFKILL_MODULE
+-+
+- #include_next <linux/rfkill.h>
+- 
+- #else
