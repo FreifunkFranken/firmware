@@ -1,0 +1,20 @@
+config 'script'
+        option 'version' '15'
+	option 'error_level' '0'
+	option 'logfile' '/var/log/nodewatcher.log'
+
+config 'api'
+        option 'ipv4_address' '1'
+	option 'ipv6_interface' 'br-mesh'
+	option 'ipv6_address' 'fe80::201:2ff:fe03:405'
+
+config 'update'
+        option 'autoupdate' '1'
+
+config 'crawl'
+        option 'method' 'hash'
+        option 'nickname' '1'
+        option 'password' '1'
+        option 'router_id' '1'
+        option 'update_hash' '1'
+        option 'login_string' '1'
