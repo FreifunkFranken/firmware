@@ -1,0 +1,18 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+ifconfig br-mesh down
+ifconfig br-mesh up
+
+ifdown lan
+ifup lan
+
+rdate -s time.fu-berlin.de
+
+chown root.root /etc/crontabs/root
+/etc/init.d/cron stop
+/etc/init.d/cron start
+
+sh /etc/firewall.user
+
+exit 0
