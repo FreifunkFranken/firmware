@@ -2,7 +2,6 @@ config 'wifi-device' 'wifi0'
 	option 'type' 'atheros'
 	option 'disabled' '0'
 	option 'channel' '6'
-	option 'txpower' '15'
 	option 'bgscan' '0'
 	option 'diversity' '1'
 
