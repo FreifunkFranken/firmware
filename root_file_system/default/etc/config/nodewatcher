@@ -1,5 +1,5 @@
 config 'script'
-        option 'version' '15'
+        option 'version' '16'
 	option 'error_level' '0'
 	option 'logfile' '/var/log/nodewatcher.log'
 
@@ -7,6 +7,8 @@ config 'api'
         option 'ipv4_address' '1'
 	option 'ipv6_interface' 'br-mesh'
 	option 'ipv6_address' 'fe80::201:2ff:fe03:405'
+        option 'timeout' '3'
+        option 'retry' '3'
 
 config 'update'
         option 'autoupdate' '1'

@@ -6,6 +6,8 @@ if [ -f /etc/config/nodewatcher ];then
 	API_IPV4_ADRESS=`uci get nodewatcher.@api[0].ipv4_address`
 	API_IPV6_ADRESS=`uci get nodewatcher.@api[0].ipv6_address`
 	API_IPV6_INTERFACE=`uci get nodewatcher.@api[0].ipv6_interface`
+	API_TIMEOUT=`uci get nodewatcher.@api[0].timeout`
+	API_RETRY=`uci get nodewatcher.@api[0].retry`
 	SCRIPT_VERSION=`uci get nodewatcher.@script[0].version`
 	SCRIPT_ERROR_LEVEL=`uci get nodewatcher.@script[0].error_level`
 	SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
@@ -18,6 +20,16 @@ if [ -f /etc/config/nodewatcher ];then
 else
 	. /etc/nodewatcher_config
 fi
+
+#Set default values if nothing is set
+if [ -n $API_TIMEOUT ]; then
+	API_TIMEOUT="3"
+fi
+if [ -n $API_RETRY ]; then
+	API_RETRY="3"
+fi
+
+API_RETRY=$(($API_RETRY - 1))
 
 delete_log() {
 	if [ -f $logfile ]; then
@@ -84,11 +96,11 @@ update() {
 	fi
 	netmon_api=`get_url`
 	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=version"
-	ergebnis=`$command`
+	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	return=`echo $ergebnis| cut '-d;' -f1`
 	version=`echo $ergebnis| cut '-d;' -f2`
 
-	if [[ $return = "success" ]]; then
+	if [[ "$return" = "success" ]]; then
 		if [[ $version -gt $SCRIPT_VERSION ]]; then
 			if [ $error_level -gt "1" ]; then
 				echo "`date`: Eine neue Version ist Verfügbar, script wird geupdated" >> $logfile
@@ -115,7 +127,7 @@ assign() {
 	#Choose right login String
 	login_strings="$(ifconfig br-mesh | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g');$(ifconfig eth0 | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g');$(ifconfig ath0 | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g')"
 	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=test_login_strings&login_strings=$login_strings"
-	ergebnis=`$command`
+	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
 		router_auto_assign_login_string=`echo $ergebnis| cut '-d;' -f2`
 		if [ $error_level -gt "1" ]; then
@@ -131,7 +143,7 @@ assign() {
 
 	#Try to assign Router with choosen login string
 	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=router_auto_assign&router_auto_assign_login_string=$router_auto_assign_login_string&hostname=$hostname"
-	ergebnis=`$command`
+	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	if [ `echo $ergebnis| cut '-d;' -f1` != "success" ]; then
 		if [ `echo $ergebnis| cut '-d;' -f2` = "already_assigned" ]; then
 			if [ $error_level -gt "0" ]; then
@@ -175,7 +187,7 @@ configure() {
 	router_auto_update_hash=$CRAWL_UPDATE_HASH
 	
 	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=get_standart_data&authentificationmethod=$authentificationmethod&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id"
-	ergebnis=`$command`
+	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 
 	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
 		#uci set freifunk.contact.location=`echo $ergebnis| cut '-d;' -f3`
@@ -289,11 +301,11 @@ crawl() {
 		echo $command
 	else
 		i=0
-		while [ $i -le 5 ]
+		while [ $i -le $API_RETRY ]
 		do
-			return_interface=`$command`
+			return_interface=`$command&sleep $API_TIMEOUT; kill $!`
 
-			if [ `echo $return_interface | cut '-d;' -f1` = "success" ]; then
+			if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
 				if [ $error_level -gt "1" ]; then
 					echo "`date`: Das Senden der System und Batman Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 				fi
@@ -356,14 +368,15 @@ crawl() {
 				#Send interface status data 
 				command="http://$netmon_api/api_nodewatcher.php?section=insert_crawl_interfaces_data&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&$int"
 				command="wget -q -O - "$command
+
 				if [ "$1" = "debug" ]; then
 					echo $command
 				else
 					i=0
-					while [ $i -le 5 ]
+					while [ $i -le $API_RETRY ]
 					do
-						return_interface=`$command`
-						if [ `echo $return_interface | cut '-d;' -f1`="success" ]; then
+						return_interface=`$command&sleep $API_TIMEOUT; kill $!`
+						if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
 							if [ $error_level -gt "1" ]; then
 								echo "`date`: Das Senden der Interface Statusdaten ($name) war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 							fi
@@ -371,7 +384,6 @@ crawl() {
 						else
 							if [ $error_level -gt "0" ]; then
 								echo "`date`: Error! Das Senden der Interface Statusdaten ($name) war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
-								echo "`date`: $command" >> $logfile
 							fi
 						fi
 						i=`expr $i + 1`  #Zähler um eins erhöhen
@@ -402,11 +414,11 @@ crawl() {
 					echo $command
 				else
 					i=0
-					while [ $i -le 5 ]
+					while [ $i -le $API_RETRY ]
 					do
-						return_interface="`$command`"
+						return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
 						
-						if [ `echo $return_interface | cut '-d;' -f1` = "success" ]; then
+						if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
 							if [ $error_level -gt "1" ]; then
 								echo "`date`: Das Senden des Batman Advanced Interfaces ($device_name) war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 							fi
@@ -446,11 +458,11 @@ crawl() {
 						echo $command
 					else
 						i=0
-						while [ $i -le 5 ]
+						while [ $i -le $API_RETRY ]
 						do
-							return_interface="`$command`"
+							return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
 				
-							if [ `echo $return_interface | cut '-d;' -f1` = "success" ]; then
+							if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
 								if [ $error_level -gt "1" ]; then
 									echo "`date`: Das Senden der Batman Advaned Originator Daten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 								fi
@@ -487,10 +499,10 @@ crawl() {
 		echo $command
 		else
 		i=0
-		while [ $i -le 5 ]
+		while [ $i -le $API_RETRY ]
 		do
-			return_interface="`$command`"
-			if [ `echo $return_interface | cut '-d;' -f1`="success" ]; then
+			return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
+			if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
 				if [ $error_level -gt "1" ]; then
 					echo "`date`: Das Senden der Client Daten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 				fi
