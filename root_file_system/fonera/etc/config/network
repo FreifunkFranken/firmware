@@ -16,3 +16,7 @@ config 'interface' 'mesh'
         option 'type' 'bridge'
         option 'ifname' 'ath0 bat0 tap0'
 	option 'stp'	'1'
+
+# To get Freifunk on the ethernet port (for a desktop pc for example), comment out
+# the lan interface section and add eth0 to the ifnames of the mesh interface.
+# Then restart the router and plug in your ethernet cable

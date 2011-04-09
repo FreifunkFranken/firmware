@@ -22,5 +22,5 @@ config 'crawl'
         option 'login_string' '1'
 
 config 'network'
-	option 'mesh-interface' 'br-mesh'
-	option 'client-interfaces' 'ath0'
+	option 'mesh_interface' 'br-mesh'
+	option 'client_interfaces' 'ath0'
