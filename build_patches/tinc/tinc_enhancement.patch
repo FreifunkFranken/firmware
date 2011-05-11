@@ -1,0 +1,172 @@
+Index: feeds/packages/net/tinc/files/tinc.init
+===================================================================
+--- feeds/packages/net/tinc/files/tinc.init	(revision 0)
++++ feeds/packages/net/tinc/files/tinc.init	(revision 0)
+@@ -0,0 +1,100 @@
++#!/bin/sh /etc/rc.common
++
++START=95
++EXTRA_COMMANDS="connect"
++EXTRA_HELP="        connect Try to connect to all uplinks"
++
++append_bool() {
++	local section="$1"
++	local option="$2"
++	local value="$3"
++	local _val
++	config_get_bool _val "$section" "$option" '0'
++	[ "$_val" -gt 0 ] && append args "$3"
++}
++
++append_string() {
++	local section="$1"
++	local option="$2"
++	local value="$3"
++	local _val
++	config_get _val "$section" "$option"
++	[ -n "$_val" ] && append args "$3$_val"
++}
++
++start_service() {
++	local section="$1"
++	args=""
++
++	config_get_bool enabled "$section" enabled 0
++	[ "$enabled" -eq 0 ] && return 0
++
++	config_get config "$section" config
++	[ -n "$config" ] && append args "-c $config" || append args "-n $section"
++
++	config_get pidfile "$section" pidfile
++	[ -n "$pidfile" ] || pidfile="/var/run/tinc.$section.pid"
++	append args "--pidfile=$pidfile"
++
++	append_string "$section" debug "-d"
++	append_string "$section" logfile "--logfile="
++	append_string "$section" user "-U"
++	append_bool "$section" chroot "-R"
++	append_bool "$section" mlock "-L"
++
++	echo -n "starting $section... "
++	/usr/sbin/tincd $args
++	[ "$?" -eq 0 ] && echo "ok"
++}
++
++signal_service() {
++	local section="$1"
++	local signal="$2"
++        args="-k$signal"
++
++	config_get_bool enabled "$section" enabled 0
++	[ "$enabled" -eq 0 ] && return 0
++
++	config_get config "$section" config
++	[ -n "$config" ] && append args "-c $config" || append args "-n $section"
++
++	config_get pidfile "$section" pidfile
++	[ -n "$pidfile" ] || pidfile="/var/run/tinc.$section.pid"
++	append args "--pidfile=$pidfile"
++
++	echo -n "sending $signal to $section... "
++	/usr/sbin/tincd $args
++	[ "$?" -eq 0 ] && echo "ok"
++
++	# tinc might not have the permission to remove the pid file
++	[ "$signal" == "TERM" ] && rm -f "$pidfile"
++}
++
++hup_service() { signal_service "$1" HUP;  }
++stop_service() { signal_service "$1" TERM; }
++alarm_service() { signal_service "$1" ALRM; }
++
++start() {
++	config_load tinc
++	config_foreach start_service tinc
++	return 0
++}
++
++stop() {
++	config_load tinc
++	config_foreach stop_service tinc
++	return 0
++}
++
++reload() {
++	config_load tinc
++	config_foreach hup_service tinc
++	return 0
++}
++
++connect() {
++	config_load tinc
++	config_foreach alarm_service tinc
++	return 0
++}
++
+Index: feeds/packages/net/tinc/files/tinc.config
+===================================================================
+--- feeds/packages/net/tinc/files/tinc.config	(revision 0)
++++ feeds/packages/net/tinc/files/tinc.config	(revision 0)
+@@ -0,0 +1,14 @@
++
++config tinc example
++	option enabled 0
++
++config tinc full_example
++	option enabled 0
++	option mlock 1
++	option chroot 1
++	option user nobody
++	option debug 2
++	option logfile /tmp/tinc-example.log
++	option config /etc/tinc/full-example
++	option pidfile /var/run/tinc-example.pid
++
+Index: feeds/packages/net/tinc/files/tinc.upgrade
+===================================================================
+--- feeds/packages/net/tinc/files/tinc.upgrade	(revision 0)
++++ feeds/packages/net/tinc/files/tinc.upgrade	(revision 0)
+@@ -0,0 +1 @@
++/etc/tinc
+Index: feeds/packages/net/tinc/files/tinc.hotplug
+===================================================================
+--- feeds/packages/net/tinc/files/tinc.hotplug	(revision 0)
++++ feeds/packages/net/tinc/files/tinc.hotplug	(revision 0)
+@@ -0,0 +1,6 @@
++#!/bin/sh
++
++[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
++	/etc/init.d/tinc connect
++}
++
+Index: feeds/packages/net/tinc/Makefile
+===================================================================
+--- feeds/packages/net/tinc/Makefile	(revision 26858)
++++ feeds/packages/net/tinc/Makefile	(working copy)
+@@ -35,6 +35,10 @@
+   encryption to create a secure private network between hosts on the Internet.
+ endef
+ 
++define Package/tinc/conffiles
++/etc/config/tinc
++endef
++
+ TARGET_CFLAGS += -std=gnu99
+ 
+ CONFIGURE_ARGS += \
+@@ -50,6 +54,15 @@
+ define Package/tinc/install
+ 	$(INSTALL_DIR) $(1)/usr/sbin
+ 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/tincd $(1)/usr/sbin/
++	$(INSTALL_DIR) $(1)/etc/init.d/
++	$(INSTALL_BIN) files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
++	$(INSTALL_DIR) $(1)/etc/config
++	$(INSTALL_CONF) files/$(PKG_NAME).config $(1)/etc/config/$(PKG_NAME)
++	$(INSTALL_DIR) $(1)/etc/tinc
++	$(INSTALL_DIR) $(1)/lib/upgrade/keep.d
++	$(INSTALL_DATA) files/tinc.upgrade $(1)/lib/upgrade/keep.d/tinc
++	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
++	$(INSTALL_BIN) files/tinc.hotplug $(1)/etc/hotplug.d/iface/60-tinc
+ endef
+ 
+ $(eval $(call BuildPackage,tinc))
