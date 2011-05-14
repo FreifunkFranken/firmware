@@ -174,6 +174,12 @@ assign() {
 		fi
 		uci commit
 
+		CRAWL_METHOD=`uci get nodewatcher.@crawl[0].method`
+		CRAWL_ROUTER_ID=`uci get nodewatcher.@crawl[0].router_id`
+		CRAWL_UPDATE_HASH=`uci get nodewatcher.@crawl[0].update_hash`
+		CRAWL_NICKNAME=`uci get nodewatcher.@crawl[0].nickname`
+		CRAWL_PASSWORD=`uci get nodewatcher.@crawl[0].password`
+
 		configure
 
 		can_crawl=1
