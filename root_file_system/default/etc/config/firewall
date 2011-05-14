@@ -37,6 +37,13 @@ config rule
 	option icmp_type echo-request
 	option target ACCEPT
 
+#Allow SSH on WAN
+config rule               
+        option src              wan
+        option dest_port        22
+        option target           ACCEPT    
+        option proto            tcp  
+
 # include a file with users custom iptables rules
 config include
 	option path /etc/firewall.user
