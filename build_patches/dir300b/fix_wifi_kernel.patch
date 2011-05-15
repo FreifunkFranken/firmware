@@ -1,7 +1,7 @@
-Index: target/linux/ramips/rt305x/config-2.6.36
+Index: target/linux/ramips/rt305x/config-2.6.37
 ===================================================================
---- target/linux/ramips/rt305x/config-2.6.36	(Revision 25878)
-+++ target/linux/ramips/rt305x/config-2.6.36	(Arbeitskopie)
+--- target/linux/ramips/rt305x/config-2.6.37	(Revision 25878)
++++ target/linux/ramips/rt305x/config-2.6.37	(Arbeitskopie)
 @@ -101,3 +101,4 @@
  # CONFIG_USB_ARCH_HAS_OHCI is not set
  CONFIG_USB_SUPPORT=y
