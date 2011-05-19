@@ -8,7 +8,7 @@ config 'interface' 'lan'
         option 'proto' 'dhcp'
         option 'ifname' 'eth0'
 
-config 'interface' 'wlanmesch'
+config 'interface' 'wlanmesh'
         option 'ifname' 'ath1'
         option 'mtu' '1527'
 
