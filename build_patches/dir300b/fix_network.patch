@@ -9,3 +9,4 @@ Index: target/linux/ramips/base-files/etc/uci-defaults/network
  [ -z "${RT305X}" ] || {
  	uci batch <<EOF
  set network.lan.ifname=eth0.1
+
