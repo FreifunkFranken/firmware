@@ -1,7 +1,7 @@
-Index: network
+Index: target/linux/ramips/base-files/etc/uci-defaults/network
 ===================================================================
---- network	(Revision 26472)
-+++ network	(Arbeitskopie)
+--- target/linux/ramips/base-files/etc/uci-defaults/network	(Revision 26472)
++++ target/linux/ramips/base-files/etc/uci-defaults/network	(Arbeitskopie)
 @@ -1,5 +1,5 @@
  #!/bin/sh
 -RT305X=`cat /proc/cpuinfo | grep RT305`
