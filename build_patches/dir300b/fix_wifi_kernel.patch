@@ -2,9 +2,9 @@ Index: target/linux/ramips/rt305x/config-2.6.37
 ===================================================================
 --- target/linux/ramips/rt305x/config-2.6.37	(Revision 26472)
 +++ target/linux/ramips/rt305x/config-2.6.37	(Arbeitskopie)
-@@ -117,3 +117,4 @@
+@@ -119,3 +119,4 @@
  # CONFIG_USB_ARCH_HAS_OHCI is not set
  CONFIG_USB_SUPPORT=y
  CONFIG_ZONE_DMA_FLAG=0
 +CONFIG_RFKILL=y
-\ No newline at end of file
+
