@@ -15,4 +15,7 @@ chown root.root /etc/crontabs/root
 
 sh /etc/firewall.user
 
+/etc/init.d/qos disable
+/etc/init.d/qos stop
+
 exit 0
