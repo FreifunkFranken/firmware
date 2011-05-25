@@ -2,6 +2,8 @@
 # Netmon Nodewatcher (C) 2010-2011 Freifunk Oldenburg
 # Lizenz: GPL
 
+SCRIPT_DIR=`dirname $0`
+
 if [ -f /etc/config/nodewatcher ];then
 	API_IPV4_ADRESS=`uci get nodewatcher.@api[0].ipv4_address`
 	API_IPV6_ADRESS=`uci get nodewatcher.@api[0].ipv6_address`
@@ -18,7 +20,7 @@ if [ -f /etc/config/nodewatcher ];then
 	CRAWL_PASSWORD=`uci get nodewatcher.@crawl[0].password`
 	UPDATE_AUTOUPDATE=`uci get nodewatcher.@update[0].autoupdate`
 else
-	. /etc/nodewatcher_config
+	. $SCRIPT_DIR/nodewatcher_config
 fi
 
 #Set default values if nothing is set
@@ -58,11 +60,6 @@ urlencode() {
 	done
 }
 
-convert_space() {
-	arg="$1"
-	echo $1 | sed "s/ /%20/g"
-}
-
 get_url() {
 	if [[ $API_IPV4_ADRESS != "1" ]]; then
 		url=$API_IPV4_ADRESS
@@ -70,6 +67,16 @@ get_url() {
 		url="[$API_IPV6_ADRESS"%"$API_IPV6_INTERFACE]"
 	fi
 	echo $url
+}
+
+get_curl() {
+	if [[ $API_IPV4_ADRESS != "1" ]]; then
+		curl="http://$API_IPV4_ADRESS"
+	else
+		numeric_scope_id=`ip addr | grep $API_IPV6_INTERFACE | awk '{ print $1 }' | sed 's/://'`
+		curl="-g http://$API_IPV6_ADRESS%$numeric_scope_id"
+	fi
+	echo $curl
 }
 
 do_ping() {
@@ -300,38 +307,12 @@ crawl() {
 		firmware_version=$FIRMWARE_VERSION
 	fi
 
-	#Send system data
-	command="http://$netmon_api/api_nodewatcher.php?section=insert_crawl_system_data&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&status=online&hostname=$hostname&description=$description&location=$location&latitude=$latitude&longitude=$longitude&luciname=$luciname&luciversion=$luciversion&distname=$distname&distversion=$distversion&chipset=$chipset&cpu=$cpu&memory_total=$memory_total&memory_caching=$memory_caching&memory_buffering=$memory_buffering&memory_free=$memory_free&loadavg=$loadavg&processes=$processes&uptime=$uptime&idletime=$idletime&local_time=$local_time&community_essid=$community_essid&community_nickname=$community_nickname&community_email=$community_email&community_prefix=$community_prefix&batman_advanced_version=$batman_adv_version&kernel_version=$kernel_version&nodewatcher_version=$nodewatcher_version&firmware_version=$firmware_version"
-	command="wget -q -O - "$command
-	if [ "$1" = "debug" ]; then
-		echo $command
-	else
-		i=0
-		while [ $i -le $API_RETRY ]
-		do
-			return_interface=`$command&sleep $API_TIMEOUT; kill $!`
-
-			if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
-				if [ $error_level -gt "1" ]; then
-					echo "`date`: Das Senden der System und Batman Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
-				fi
-				break;
-			else
-				if [ $error_level -gt "0" ]; then
-					echo "`date`: Error! Das Senden der System und Batman Statusdaten war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
-				fi
-			fi
-
-			i=`expr $i + 1`  #Zähler um eins erhöhen
-		done
-	fi
-
 	#Get interfaces
 	IFACES=`cat /proc/net/dev | awk -F: '!/\|/ { gsub(/[[:space:]]*/, "", $1); split($2, a, " "); printf("%s=%s=%s ", $1, a[1], a[9]) }'`
-	
+
+	int=""	
 	#Loop interfaces
 	for entry in $IFACES; do
-		int=""
 		iface=`echo $entry | cut -d '=' -f 1`
 		rcv=`echo $entry | cut -d '=' -f 2`
 		xmt=`echo $entry | cut -d '=' -f 3`
@@ -370,31 +351,6 @@ crawl() {
 					wlan_tx_power="`iwconfig ${iface} 2>/dev/null | grep 'Tx-Power' | awk '{ print $4 }' | cut -d '=' -f 2`"
 					int=$int"int[$name][wlan_mode]=$wlan_mode&int[$name][wlan_frequency]=$wlan_frequency&int[$name][wlan_essid]=$wlan_essid&int[$name][wlan_bssid]=$wlan_bssid&int[$name][wlan_tx_power]=$wlan_tx_power&"
 				fi
-
-				#Send interface status data 
-				command="http://$netmon_api/api_nodewatcher.php?section=insert_crawl_interfaces_data&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&$int"
-				command="wget -q -O - "$command
-
-				if [ "$1" = "debug" ]; then
-					echo $command
-				else
-					i=0
-					while [ $i -le $API_RETRY ]
-					do
-						return_interface=`$command&sleep $API_TIMEOUT; kill $!`
-						if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
-							if [ $error_level -gt "1" ]; then
-								echo "`date`: Das Senden der Interface Statusdaten ($name) war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
-							fi
-							break;
-						else
-							if [ $error_level -gt "0" ]; then
-								echo "`date`: Error! Das Senden der Interface Statusdaten ($name) war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
-							fi
-						fi
-						i=`expr $i + 1`  #Zähler um eins erhöhen
-					done
-				fi
 			fi
 		fi
 	done
@@ -414,30 +370,7 @@ crawl() {
 					status='inactive'
 				fi
 
-				command="http://$netmon_api/api_nodewatcher.php?section=insert_batman_adv_interfaces&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&bat_adv_int[$device_name][name]=$device_name&bat_adv_int[$device_name][status]=$status"
-				command="wget -q -O - "$command
-				if [ "$1" = "debug" ]; then
-					echo $command
-				else
-					i=0
-					while [ $i -le $API_RETRY ]
-					do
-						return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
-						
-						if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
-							if [ $error_level -gt "1" ]; then
-								echo "`date`: Das Senden des Batman Advanced Interfaces ($device_name) war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
-							fi
-							break;
-						else
-							if [ $error_level -gt "0" ]; then
-								echo "`date`: Error! Das Senden des Batman Advanced Interfaces ($device_name) war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
-							fi
-						fi
-						
-						i=`expr $i + 1`  #Zähler um eins erhöhen
-					done
-				fi
+				BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"bat_adv_int[$device_name][name]=$device_name&bat_adv_int[$device_name][status]=$status&"
 			done
 			
 			if [ $has_active_interface = "1" ]; then
@@ -458,30 +391,6 @@ crawl() {
 						batman_adv_originators=$batman_adv_originators"bat_adv_orig[$originator][originator]=$originator&bat_adv_orig[$originator][link_quality]=$link_quality&bat_adv_orig[$originator][last_seen]=$last_seen&"
 					done
 					IFS=$OLDIFS
-
-					command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=insert_batman_adv_originators&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&$batman_adv_originators"
-					if [ "$1" = "debug" ]; then
-						echo $command
-					else
-						i=0
-						while [ $i -le $API_RETRY ]
-						do
-							return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
-				
-							if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
-								if [ $error_level -gt "1" ]; then
-									echo "`date`: Das Senden der Batman Advaned Originator Daten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
-								fi
-								break;
-							else
-								if [ $error_level -gt "0" ]; then
-									echo "`date`: Error! Das Senden der Batman Advaned Originator Daten war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
-								fi
-							fi
-				
-							i=`expr $i + 1`  #Zähler um eins erhöhen
-						done
-					fi
 				fi
 			fi
 		fi
@@ -500,24 +409,36 @@ crawl() {
 	done
 	client_count=$i
 
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=insert_clients&authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id&client_count=$client_count"
+	AUTHENTIFICATION_DATA="authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id"
+	SYSTEM_DATA="status=online&hostname=$hostname&description=$description&location=$location&latitude=$latitude&longitude=$longitude&luciname=$luciname&luciversion=$luciversion&distname=$distname&distversion=$distversion&chipset=$chipset&cpu=$cpu&memory_total=$memory_total&memory_caching=$memory_caching&memory_buffering=$memory_buffering&memory_free=$memory_free&loadavg=$loadavg&processes=$processes&uptime=$uptime&idletime=$idletime&local_time=$local_time&community_essid=$community_essid&community_nickname=$community_nickname&community_email=$community_email&community_prefix=$community_prefix&batman_advanced_version=$batman_adv_version&kernel_version=$kernel_version&nodewatcher_version=$nodewatcher_version&firmware_version=$firmware_version"
+	INTERFACE_DATA="$int"
+	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
+	CLIENT_DATA="$client_count"
+
+	DATA="$AUTHENTIFICATION_DATA&$SYSTEM_DATA&$INTERFACE_DATA&$BATMAN_ADV_INTERFACES&$BATMAN_ADV_ORIGINATORS&$CLIENT_DATA"
+
+	#Send system data
+	netmon_api_curl=`get_curl`
+	command="curl -d "$DATA" $netmon_api_curl/api_nodewatcher.php?section=insert_crawl_data"
 	if [ "$1" = "debug" ]; then
 		echo $command
-		else
+	else
 		i=0
 		while [ $i -le $API_RETRY ]
 		do
-			return_interface="`$command&sleep $API_TIMEOUT; kill $!`"
-			if [ "`echo $return_interface | cut '-d;' -f1`" = "success" ]; then
+			api_return=`$command&sleep $API_TIMEOUT; kill $!`
+
+			if [ "`echo $api_return | cut '-d;' -f1`" = "success" ]; then
 				if [ $error_level -gt "1" ]; then
-					echo "`date`: Das Senden der Client Daten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
+					echo "`date`: Das Senden der Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 				fi
 				break;
 			else
 				if [ $error_level -gt "0" ]; then
-					echo "`date`: Error! Das Senden der Client Daten war nach dem `expr $i + 1`. Mal nicht erfolgreich: $return_interface" >> $logfile
+					echo "`date`: Error! Das Senden der System Statusdaten war nach dem `expr $i + 1`. Mal nicht erfolgreich: $api_return" >> $logfile
 				fi
 			fi
+
 			i=`expr $i + 1`  #Zähler um eins erhöhen
 		done
 	fi
