@@ -1,3 +1,6 @@
-[ ifup = "$ACTION" -a "$DEVICE" = eth0 ] && {
-	sh /etc/tincstart.sh
+#!/bin/sh 
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
+        sh /etc/tincstart.sh
+        sleep 30
+        sh /etc/tincstart.sh
 }

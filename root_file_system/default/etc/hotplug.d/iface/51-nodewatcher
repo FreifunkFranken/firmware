@@ -1,3 +1,4 @@
-[ ifup = "$ACTION" -a "$DEVICE" = eth0 ] && {
+#!/bin/sh
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
         sh /etc/nodewatcher.sh
 }
