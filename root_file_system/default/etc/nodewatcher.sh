@@ -19,6 +19,8 @@ if [ -f /etc/config/nodewatcher ];then
 	CRAWL_NICKNAME=`uci get nodewatcher.@crawl[0].nickname`
 	CRAWL_PASSWORD=`uci get nodewatcher.@crawl[0].password`
 	UPDATE_AUTOUPDATE=`uci get nodewatcher.@update[0].autoupdate`
+	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
+	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
 else
 	. $SCRIPT_DIR/nodewatcher_config
 fi
@@ -29,6 +31,12 @@ if [ -n $API_TIMEOUT ]; then
 fi
 if [ -n $API_RETRY ]; then
 	API_RETRY="3"
+fi
+if [ -n $MESH_INTERFACE ]; then
+	MESH_INTERFACE="br-mesh"
+fi
+if [ -n $CLIENT_INTERFACES ]; then
+	CLIENT_INTERFACES="ath0"
 fi
 
 API_RETRY=$(($API_RETRY - 1))
@@ -102,7 +110,7 @@ update() {
 		echo "`date`: Suche neue Version" >> $logfile
 	fi
 	netmon_api=`get_url`
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=version"
+	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=version&nodewatcher_version=$SCRIPT_VERSION"
 	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	return=`echo $ergebnis| cut '-d;' -f1`
 	version=`echo $ergebnis| cut '-d;' -f2`
@@ -112,7 +120,7 @@ update() {
 			if [ $error_level -gt "1" ]; then
 				echo "`date`: Eine neue Version ist Verfügbar, script wird geupdated" >> $logfile
 			fi
-			wget -q -O $SCRIPT_DIR/nodewatcher.sh http://$netmon_api/api_nodewatcher.php?section=update
+			wget -q -O $SCRIPT_DIR/nodewatcher.sh http://$netmon_api/api_nodewatcher.php?section=update&nodewatcher_version=$SCRIPT_VERSION
 			uci set nodewatcher.@script[0].version=$version
 			uci commit
 		else
@@ -398,13 +406,14 @@ crawl() {
 	mv /etc/bat-hosts.tmp /etc/bat-hosts
 
 	#CLIENTS
-	MESHDEVICE='br-mesh'
-	CLIENTDEVICE='ath0'
-	SEDDEV=`brctl showstp $MESHDEVICE | egrep '\([0-9]\)' | sed -e "s/(//;s/)//" | awk '{ print "s/^  "$2"/"$1"/;" }'`
-	CLIENT_MACS=`brctl showmacs $MESHDEVICE | sed -e "$SEDDEV" | awk '{if ($3 != "yes" && $1 == "ath0") print $2}'`
+	SEDDEV=`brctl showstp $MESH_INTERFACE | egrep '\([0-9]\)' | sed -e "s/(//;s/)//" | awk '{ print "s/^  "$2"/"$1"/;" }'`
+
+	for entry in $CLIENT_INTERFACES; do
+	CLIENT_MACS=$CLIENT_MACS`brctl showmacs $MESH_INTERFACE | sed -e "$SEDDEV" | awk '{if ($3 != "yes" && $1 == "'"$entry"'") print $2}'`" "
+	done
+
 	i=0
 	for client in $CLIENT_MACS; do
-#		clients=$clients"clients[$i][mac_addr]=$client&"
 		i=`expr $i + 1`  #Zähler um eins erhöhen
 	done
 	client_count=$i
@@ -413,7 +422,7 @@ crawl() {
 	SYSTEM_DATA="status=online&hostname=$hostname&description=$description&location=$location&latitude=$latitude&longitude=$longitude&luciname=$luciname&luciversion=$luciversion&distname=$distname&distversion=$distversion&chipset=$chipset&cpu=$cpu&memory_total=$memory_total&memory_caching=$memory_caching&memory_buffering=$memory_buffering&memory_free=$memory_free&loadavg=$loadavg&processes=$processes&uptime=$uptime&idletime=$idletime&local_time=$local_time&community_essid=$community_essid&community_nickname=$community_nickname&community_email=$community_email&community_prefix=$community_prefix&batman_advanced_version=$batman_adv_version&kernel_version=$kernel_version&nodewatcher_version=$nodewatcher_version&firmware_version=$firmware_version"
 	INTERFACE_DATA="$int"
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
-	CLIENT_DATA="$client_count"
+	CLIENT_DATA="client_count=$client_count"
 
 	DATA="$AUTHENTIFICATION_DATA&$SYSTEM_DATA&$INTERFACE_DATA&$BATMAN_ADV_INTERFACES&$BATMAN_ADV_ORIGINATORS&$CLIENT_DATA"
 

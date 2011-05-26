@@ -23,4 +23,4 @@ config 'crawl'
 
 config 'network'
 	option 'mesh_interface' 'br-mesh'
-	option 'client_interfaces' 'ath0'
+	option 'client_interfaces' 'ath0 eth0.1'
