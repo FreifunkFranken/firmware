@@ -16,5 +16,7 @@
 #0 */4 * * *	/usr/sbin/ff_rdate
 #17 * * * *	/usr/sbin/ff_mapupdate
 
-#Fix only for WR1043ND becuase wlan0 is not added after bootup
+#Fix only for WR1043ND because wlan0 is not added after bootup
 */5 * * * *	brctl addif br-mesh wlan0
+#Fix only for WR1043ND because mtu of wlan1 is not set bootup
+*/5 * * * *	ifconfig wlan1 mtu 1527
