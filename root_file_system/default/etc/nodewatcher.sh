@@ -120,7 +120,7 @@ update() {
 			if [ $error_level -gt "1" ]; then
 				echo "`date`: Eine neue Version ist Verfügbar, script wird geupdated" >> $logfile
 			fi
-			wget -q -O $SCRIPT_DIR/nodewatcher.sh http://$netmon_api/api_nodewatcher.php?section=update&nodewatcher_version=$SCRIPT_VERSION
+			wget -q -O $SCRIPT_DIR/nodewatcher.sh "http://$netmon_api/api_nodewatcher.php?section=update&nodewatcher_version=$SCRIPT_VERSION"
 			uci set nodewatcher.@script[0].version=$version
 			uci commit
 		else
