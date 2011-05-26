@@ -1,5 +1,5 @@
 config 'script'
-        option 'version' '19'
+        option 'version' '20'
 	option 'error_level' '0'
 	option 'logfile' '/var/log/nodewatcher.log'
 
