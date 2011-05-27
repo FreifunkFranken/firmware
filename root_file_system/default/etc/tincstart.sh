@@ -61,7 +61,7 @@ Mode = Switch
 #PingTimeout = 30
 Hostnames = yes
 #GraphDumpFile = /tmp/vpn-graph.dot
-TCPOnly = yes
+#TCPOnly = yes
 EOF
 
 # we need this only for first startup
