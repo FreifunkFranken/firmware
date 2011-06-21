@@ -27,10 +27,10 @@ fi
 
 #Set default values if nothing is set
 if [ -n $API_TIMEOUT ]; then
-	API_TIMEOUT="3"
+	API_TIMEOUT="5"
 fi
 if [ -n $API_RETRY ]; then
-	API_RETRY="3"
+	API_RETRY="5"
 fi
 if [ -n $MESH_INTERFACE ]; then
 	MESH_INTERFACE="br-mesh"
