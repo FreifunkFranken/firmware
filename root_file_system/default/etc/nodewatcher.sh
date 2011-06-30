@@ -441,6 +441,17 @@ crawl() {
 				if [ $error_level -gt "1" ]; then
 					echo "`date`: Das Senden der Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 				fi
+
+				netmon_hostname="`echo $api_return | cut '-d;' -f2`"
+				if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
+					if [ $error_level -gt "1" ]; then
+						echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
+					fi
+					uci set system.@system[0].hostname=$netmon_hostname
+					uci commit
+					echo $netmon_hostname > /proc/sys/kernel/hostname
+				fi
+
 				break;
 			else
 				if [ $error_level -gt "0" ]; then
