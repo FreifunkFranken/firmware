@@ -18,6 +18,10 @@ if [ "$SERVER" == "no" ]
 then
 	hostname=$(cat /proc/sys/kernel/hostname)
 
+	if [ "$hostname" == "OpenWrt" ]
+		hostname=""
+	fi
+
 	if [ "$hostname" == "" ]
 	  hostname=$(ifconfig br-mesh | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g')
 	fi
