@@ -16,7 +16,11 @@ then
 
 if [ "$SERVER" == "no" ]
 then
-	hostname=$(ifconfig br-mesh | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g')
+	hostname=$(cat /proc/sys/kernel/hostname)
+
+	if [ "$hostname" == "" ]
+	  hostname=$(ifconfig br-mesh | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g')
+	fi
 
 	if [ "$hostname" == "" ]
 	then
