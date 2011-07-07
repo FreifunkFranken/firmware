@@ -2,6 +2,7 @@ config 'script'
         option 'version' '23'
 	option 'error_level' '0'
 	option 'logfile' '/var/log/nodewatcher.log'
+	option 'sync_hostname' '1'
 
 config 'api'
         option 'ipv4_address' '1'

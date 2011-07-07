@@ -13,6 +13,7 @@ if [ -f /etc/config/nodewatcher ];then
 	SCRIPT_VERSION=`uci get nodewatcher.@script[0].version`
 	SCRIPT_ERROR_LEVEL=`uci get nodewatcher.@script[0].error_level`
 	SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
+	SCRIPT_SYNC_HOSTNAME=`uci get nodewatcher.@script[0].sync_hostname`
 	CRAWL_METHOD=`uci get nodewatcher.@crawl[0].method`
 	CRAWL_ROUTER_ID=`uci get nodewatcher.@crawl[0].router_id`
 	CRAWL_UPDATE_HASH=`uci get nodewatcher.@crawl[0].update_hash`
@@ -37,6 +38,9 @@ if [ -n $MESH_INTERFACE ]; then
 fi
 if [ -n $CLIENT_INTERFACES ]; then
 	CLIENT_INTERFACES="ath0"
+fi
+if [ -n $SCRIPT_SYNC_HOSTNAME ]; then
+	SCRIPT_SYNC_HOSTNAME="1"
 fi
 
 API_RETRY=$(($API_RETRY - 1))
@@ -212,19 +216,24 @@ configure() {
 
 	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
 		#uci set freifunk.contact.location=`echo $ergebnis| cut '-d;' -f3`
-		
-		uci set system.@system[0].hostname=`echo $ergebnis| cut '-d;' -f4`
-		echo `echo $ergebnis| cut '-d;' -f4` > /proc/sys/kernel/hostname
 
-#		uci get system.@system[0].latitude=
-#		uci get system.@system[0].longitude=
-#		uci get freifunk.community.ssid=
-#		uci get freifunk.contact.nickname=
-#		uci get freifunk.contact.mail=
-#		uci get freifunk.community.prefix=
-#		uci get freifunk.contact.note=
+		if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then		
+			if [ $error_level -gt "1" ]; then
+				echo "`date`: Setze Hostname" >> $logfile
+			fi
+			uci set system.@system[0].hostname=`echo $ergebnis| cut '-d;' -f4`
+			echo `echo $ergebnis| cut '-d;' -f4` > /proc/sys/kernel/hostname
 
-		uci commit
+#			uci get system.@system[0].latitude=
+#			uci get system.@system[0].longitude=
+#			uci get freifunk.community.ssid=
+#			uci get freifunk.contact.nickname=
+#			uci get freifunk.contact.mail=
+#			uci get freifunk.community.prefix=
+#			uci get freifunk.contact.note=
+			
+			uci commit
+		fi
 		if [ $error_level -gt "1" ]; then
 			echo "`date`: Der Router wurde konfiguriert" >> $logfile
 		fi
@@ -442,14 +451,16 @@ crawl() {
 					echo "`date`: Das Senden der Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
 				fi
 
-				netmon_hostname="`echo $api_return | cut '-d;' -f2`"
-				if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-					if [ $error_level -gt "1" ]; then
-						echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
+				if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
+					netmon_hostname="`echo $api_return | cut '-d;' -f2`"
+					if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
+						if [ $error_level -gt "1" ]; then
+							echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
+						fi
+						uci set system.@system[0].hostname=$netmon_hostname
+						uci commit
+						echo $netmon_hostname > /proc/sys/kernel/hostname
 					fi
-					uci set system.@system[0].hostname=$netmon_hostname
-					uci commit
-					echo $netmon_hostname > /proc/sys/kernel/hostname
 				fi
 
 				break;
