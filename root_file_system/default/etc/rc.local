@@ -18,4 +18,6 @@ sh /etc/firewall.user
 /etc/init.d/qos disable
 /etc/init.d/qos stop
 
+#busybox-httpd for crawldata
+httpd -h /tmp/
 exit 0

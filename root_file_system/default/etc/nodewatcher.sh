@@ -352,7 +352,7 @@ crawl() {
 				traffic_rx="$rcv"
 				traffic_tx="$xmt"
 				
-				int=$int"int[$name][name]=$name&int[$name][mac_addr]=$mac_addr&int[$name][ipv4_addr]=$ipv4_addr&int[$name][ipv6_addr]=$ipv6_addr&int[$name][ipv6_link_local_addr]=$ipv6_link_local_addr&int[$name][traffic_rx]=$traffic_rx&int[$name][traffic_tx]=$traffic_tx&int[$name][mtu]=$mtu&"
+				int=$int"<$name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu></$name>"
 				
 				if [ "`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`" != "" ]; then
 					wlan_mode="`iwconfig ${iface} 2>/dev/null | grep 'Mode' | awk '{ print $1 }' | cut -d ':' -f 2`"
@@ -366,7 +366,7 @@ crawl() {
 					wlan_essid="`iwconfig ${iface} 2>/dev/null | grep ESSID | awk '{ split($4, a, \"\\"\"); printf(\"%s\", a[2]); }'`"
 					wlan_frequency="`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`"
 					wlan_tx_power="`iwconfig ${iface} 2>/dev/null | grep 'Tx-Power' | awk '{ print $4 }' | cut -d '=' -f 2`"
-					int=$int"int[$name][wlan_mode]=$wlan_mode&int[$name][wlan_frequency]=$wlan_frequency&int[$name][wlan_essid]=$wlan_essid&int[$name][wlan_bssid]=$wlan_bssid&int[$name][wlan_tx_power]=$wlan_tx_power&"
+					int=$int"<$name><wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power></$name>"
 				fi
 			fi
 		fi
@@ -387,7 +387,7 @@ crawl() {
 					status='inactive'
 				fi
 
-				BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"bat_adv_int[$device_name][name]=$device_name&bat_adv_int[$device_name][status]=$status&"
+				BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"<$device_name><status>$status</status></$device_name>"
 			done
 			
 			if [ $has_active_interface = "1" ]; then
@@ -405,7 +405,7 @@ crawl() {
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
 						
-						batman_adv_originators=$batman_adv_originators"bat_adv_orig[$originator][originator]=$originator&bat_adv_orig[$originator][link_quality]=$link_quality&bat_adv_orig[$originator][last_seen]=$last_seen&"
+						batman_adv_originators=$batman_adv_originators"<$originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></$originator>"
 					done
 					IFS=$OLDIFS
 				fi
@@ -427,51 +427,26 @@ crawl() {
 	done
 	client_count=$i
 
-	AUTHENTIFICATION_DATA="authentificationmethod=$authentificationmethod&nickname=$nickname&password=$password&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id"
-	SYSTEM_DATA="status=online&hostname=$hostname&description=$description&location=$location&latitude=$latitude&longitude=$longitude&luciname=$luciname&luciversion=$luciversion&distname=$distname&distversion=$distversion&chipset=$chipset&cpu=$cpu&memory_total=$memory_total&memory_caching=$memory_caching&memory_buffering=$memory_buffering&memory_free=$memory_free&loadavg=$loadavg&processes=$processes&uptime=$uptime&idletime=$idletime&local_time=$local_time&community_essid=$community_essid&community_nickname=$community_nickname&community_email=$community_email&community_prefix=$community_prefix&batman_advanced_version=$batman_adv_version&kernel_version=$kernel_version&nodewatcher_version=$nodewatcher_version&firmware_version=$firmware_version"
+	AUTHENTIFICATION_DATA="<authentificationmethod>$authentificationmethod</authentificationmethod><nickname>$nickname</nickname><password>$password</password><router_auto_update_hash>$router_auto_update_hash</router_auto_update_hash><router_id>$router_id</router_id>"
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><description>$description</description><location>$location</location><latitude>$latitude</latitude><longitude>$longitude</longitude><luciname>$luciname</luciname><luciversion>$luciversion</luciversion><distname>$distname</distname><distversion>$distversion</distversion><chipset>$chipset</chipset><cpu>$cpu</cpu><memory_total>$memory_total</memory_total><memory_caching>$memory_caching</memory_caching><memory_buffering>$memory_buffering</memory_buffering><memory_free>$memory_free</memory_free><loadavg>$loadavg</loadavg><processes>$processes</processes><uptime>$uptime</uptime><idletime>$idletime</idletime><local_time>$local_time</local_time><community_essid>$community_essid</community_essid><community_nickname>$community_nickname</community_nickname><community_email>$community_email</community_email><community_prefix>$community_prefix</community_prefix><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$firmware_version</firmware_version>"
 	INTERFACE_DATA="$int"
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
-	CLIENT_DATA="client_count=$client_count"
+	CLIENT_DATA="$client_count"
 
-	DATA="&$AUTHENTIFICATION_DATA&$SYSTEM_DATA&$INTERFACE_DATA&$BATMAN_ADV_INTERFACES&$BATMAN_ADV_ORIGINATORS&$CLIENT_DATA"
+	DATA="<authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_data>$CLIENT_DATA</client_data>"
 
 	#Send system data
-	netmon_api_curl=`get_curl`
-	command="curl -d "$DATA" $netmon_api_curl/api_nodewatcher.php?section=insert_crawl_data"
-	if [ "$1" = "debug" ]; then
-		echo $command
-	else
-		i=0
-		while [ $i -le $API_RETRY ]
-		do
-			api_return=`$command&sleep $API_TIMEOUT; kill $!`
-
-			if [ "`echo $api_return | cut '-d;' -f1`" = "success" ]; then
+	echo $DATA > /tmp/node.data
+	if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
+		netmon_hostname="`echo $api_return | cut '-d;' -f2`"
+		if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
 				if [ $error_level -gt "1" ]; then
-					echo "`date`: Das Senden der Statusdaten war nach dem `expr $i + 1`. Mal erfolgreich" >> $logfile
+					echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
 				fi
-
-				if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
-					netmon_hostname="`echo $api_return | cut '-d;' -f2`"
-					if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-						if [ $error_level -gt "1" ]; then
-							echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
-						fi
-						uci set system.@system[0].hostname=$netmon_hostname
-						uci commit
-						echo $netmon_hostname > /proc/sys/kernel/hostname
-					fi
-				fi
-
-				break;
-			else
-				if [ $error_level -gt "0" ]; then
-					echo "`date`: Error! Das Senden der System Statusdaten war nach dem `expr $i + 1`. Mal nicht erfolgreich: $api_return" >> $logfile
-				fi
-			fi
-
-			i=`expr $i + 1`  #Zähler um eins erhöhen
-		done
+				uci set system.@system[0].hostname=$netmon_hostname
+				uci commit
+				echo $netmon_hostname > /proc/sys/kernel/hostname
+		fi
 	fi
 }
 
@@ -542,5 +517,4 @@ if [ $can_crawl == 1 ]; then
 	fi
 	crawl
 fi
-
 exit 0
