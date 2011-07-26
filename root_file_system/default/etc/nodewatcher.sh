@@ -405,7 +405,7 @@ crawl() {
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
 						
-						batman_adv_originators=$batman_adv_originators"<$originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></$originator>"
+						batman_adv_originators=$batman_adv_originators"<prefix_$originator><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></prefix_$originator>"
 					done
 					IFS=$OLDIFS
 				fi
@@ -433,7 +433,7 @@ crawl() {
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
 	CLIENT_DATA="$client_count"
 
-	DATA="<authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_data>$CLIENT_DATA</client_data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_data>$CLIENT_DATA</client_data></data>"
 
 	#Send system data
 	echo $DATA > /tmp/node.data
