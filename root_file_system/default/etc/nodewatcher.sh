@@ -56,22 +56,6 @@ delete_log() {
 	fi
 }
 
-urlencode() {
-	arg="$1"
-	i=0
-	while [ $i -lt ${#arg} ]; do
-		c=${arg:$i:1}
-
-		if echo "$c" | grep -q '[a-zA-Z/:_\.\-]'; then
-			echo -n "$c"
-		else
-			echo -n "%"
-			printf "%X" "'$c'"
-		fi
-		i=$((i+1))
-	done
-}
-
 get_url() {
 	if [[ $API_IPV4_ADRESS != "1" ]]; then
 		url=$API_IPV4_ADRESS
@@ -259,7 +243,6 @@ crawl() {
 			echo "`date`: UCI is installed, trying to collect extra data UCI" >> $logfile
 		fi
 		location="`uci get freifunk.contact.location`"
-		location=`urlencode "$location"`
 		latitude="`uci get system.@system[0].latitude`"
 		longitude="`uci get system.@system[0].longitude`"
 		
@@ -268,7 +251,6 @@ crawl() {
 		community_email="`uci get freifunk.contact.mail`"
 		community_prefix="`uci get freifunk.community.prefix`"
 		description="`uci get freifunk.contact.note`"
-		description=`urlencode "$description"`
 	fi
 
 	#Get system data from LUA	
@@ -277,9 +259,7 @@ crawl() {
 			echo "`date`: LUA is installed, trying to collect extra data LUA" >> $logfile
 		fi
 		luciname=`lua -l luci.version -e 'print(luci.version.luciname)'`
-		luciname=`urlencode "$luciname"`
 		lucversion=`lua -l luci.version -e 'print(luci.version.luciversion)'`
-		lucversion=`urlencode "$lucversion"`
 	fi
 	
 	#Get system data from other locations
@@ -295,10 +275,8 @@ crawl() {
 	if [ -n $cpu ]; then
 		cpu=`grep -m 1 "model name" /proc/cpuinfo | cut -d ":" -f 2`
 	fi
-	cpu=`urlencode "$cpu"`
 
 	chipset=`grep -m 1 "system type" /proc/cpuinfo | cut -d ":" -f 2`
-	chipset=`urlencode "$chipset"`
 	local_time="`date +%s`"
 	processes=`cat /proc/loadavg | awk '{ print $4 }'`
 	loadavg=`cat /proc/loadavg | awk '{ print $1 }'`
@@ -352,7 +330,7 @@ crawl() {
 				traffic_rx="$rcv"
 				traffic_tx="$xmt"
 				
-				int=$int"<$name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu></$name>"
+				int=$int"<$name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
 				
 				if [ "`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`" != "" ]; then
 					wlan_mode="`iwconfig ${iface} 2>/dev/null | grep 'Mode' | awk '{ print $1 }' | cut -d ':' -f 2`"
@@ -366,8 +344,9 @@ crawl() {
 					wlan_essid="`iwconfig ${iface} 2>/dev/null | grep ESSID | awk '{ split($4, a, \"\\"\"); printf(\"%s\", a[2]); }'`"
 					wlan_frequency="`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`"
 					wlan_tx_power="`iwconfig ${iface} 2>/dev/null | grep 'Tx-Power' | awk '{ print $4 }' | cut -d '=' -f 2`"
-					int=$int"<$name><wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power></$name>"
+					int=$int"<wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power>"
 				fi
+				int=$int"</$name>"
 			fi
 		fi
 	done
@@ -405,7 +384,7 @@ crawl() {
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
 						
-						batman_adv_originators=$batman_adv_originators"<prefix_$originator><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></prefix_$originator>"
+						batman_adv_originators=$batman_adv_originators"<originator_data><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></originator_data>"
 					done
 					IFS=$OLDIFS
 				fi
