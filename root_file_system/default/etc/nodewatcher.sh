@@ -330,7 +330,7 @@ crawl() {
 				traffic_rx="$rcv"
 				traffic_tx="$xmt"
 				
-				int=$int"<$name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
+				int=$int"<$name><name>$name</name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
 				
 				if [ "`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`" != "" ]; then
 					wlan_mode="`iwconfig ${iface} 2>/dev/null | grep 'Mode' | awk '{ print $1 }' | cut -d ':' -f 2`"
@@ -366,7 +366,7 @@ crawl() {
 					status='inactive'
 				fi
 
-				BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"<$device_name><status>$status</status></$device_name>"
+				BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"<$device_name><name>$device_name</name><status>$status</status></$device_name>"
 			done
 			
 			if [ $has_active_interface = "1" ]; then
@@ -384,7 +384,7 @@ crawl() {
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
 						
-						batman_adv_originators=$batman_adv_originators"<originator_data><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></originator_data>"
+						batman_adv_originators=$batman_adv_originators"<batman_adv_originators><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></batman_adv_originators>"
 					done
 					IFS=$OLDIFS
 				fi
@@ -412,7 +412,7 @@ crawl() {
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
 	CLIENT_DATA="$client_count"
 
-	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_data>$CLIENT_DATA</client_data></data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces>$BATMAN_ADV_ORIGINATORS<client_count>$CLIENT_DATA</client_count></data>"
 
 	#Send system data
 	echo $DATA > /tmp/node.data
