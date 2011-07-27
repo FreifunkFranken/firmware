@@ -418,18 +418,18 @@ crawl() {
 	echo $DATA > /tmp/node.data
 	if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
 		netmon_hostname="`echo $api_return | cut '-d;' -f2`"
-		if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-				if [ $error_level -gt "1" ]; then
-					echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
-				fi
-				uci set system.@system[0].hostname=$netmon_hostname
-				uci commit
-				echo $netmon_hostname > /proc/sys/kernel/hostname
+		if [ "$netmon_hostname" != "" ]; then
+			if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
+					if [ $error_level -gt "1" ]; then
+						echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
+					fi
+					uci set system.@system[0].hostname=$netmon_hostname
+					uci commit
+					echo $netmon_hostname > /proc/sys/kernel/hostname
+			fi
 		fi
 	fi
 }
-
-
 
 LANG=C
 

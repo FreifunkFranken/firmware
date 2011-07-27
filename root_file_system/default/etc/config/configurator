@@ -1,0 +1,29 @@
+
+config 'script'
+	option 'error_level' '2'
+	option 'logfile' '/var/log/configurator.log'
+	option 'version' '1'
+	option 'sync_hostname' '1'
+
+config 'api'
+	option 'ipv4_address' '1'
+	option 'ipv6_interface' 'br-mesh'
+	option 'ipv6_address' 'fe80::201:2ff:fe03:405'
+	option 'timeout' '3'
+	option 'retry' '3'
+
+config 'update'
+	option 'autoupdate' '1'
+
+config 'crawl'
+	option 'method' 'hash'
+	option 'nickname' '1'
+	option 'password' '1'
+	option 'login_string' '1'
+	option 'router_id' '1'
+	option 'update_hash' '1'
+
+config 'network'
+	option 'mesh_interface' 'br-mesh'
+	option 'client_interfaces' 'ath0'
+
