@@ -20,4 +20,7 @@ sh /etc/firewall.user
 
 #busybox-httpd for crawldata
 httpd -h /tmp/
+
+sh /etc/configurator.sh
+
 exit 0
