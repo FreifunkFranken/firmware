@@ -22,6 +22,7 @@ if [ -f /etc/config/configurator ];then
 	UPDATE_AUTOUPDATE=`uci get configurator.@update[0].autoupdate`
 	MESH_INTERFACE=`uci get configurator.@network[0].mesh_interface`
 	CLIENT_INTERFACES=`uci get configurator.@network[0].client_interfaces`
+	AUTOADD_IPV6_ADDRESS=`uci get configurator.@netmon[0].autoadd_ipv6_address`
 else
 	. $SCRIPT_DIR/configurator_config
 fi
@@ -88,19 +89,23 @@ assign_router() {
 	if [ `echo $ergebnis| cut '-d;' -f1` != "success" ]; then
 		if [ `echo $ergebnis| cut '-d;' -f2` = "already_assigned" ]; then
 			if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
-				echo "`date`: Der Login String `echo $ergebnis| cut '-d;' -f3` ist bereits mit einem Router verknüpft" >> $SCRIPT_LOGFILE
+				echo "`date`: Der Login String `echo $ergebnis| cut '-d;' -f3` ist bereits mit einem Router verknüpft, beende" >> $SCRIPT_LOGFILE
+				exit 0
 			fi
 		elif [ `echo $ergebnis| cut '-d;' -f2` = "autoassign_not_allowed" ]; then
 			if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
-				echo "`date`: Der dem Login String `echo $ergebnis| cut '-d;' -f3` zugewiesene Router erlaubt autoassign nicht" >> $SCRIPT_LOGFILE
+				echo "`date`: Der dem Login String `echo $ergebnis| cut '-d;' -f3` zugewiesene Router erlaubt autoassign nicht, beende" >> $SCRIPT_LOGFILE
+				exit 0
 			fi
 		elif [ `echo $ergebnis| cut '-d;' -f2` = "new_not_assigned" ]; then
 			if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
-				echo "`date`: Router wurde der Liste der nicht zugewiesenen Router hinzugefügt" >> $SCRIPT_LOGFILE
+				echo "`date`: Router wurde der Liste der nicht zugewiesenen Router hinzugefügt, beende" >> $SCRIPT_LOGFILE
+				exit 0
 			fi
 		elif [ `echo $ergebnis| cut '-d;' -f2` = "updated_not_assigned" ]; then
 			if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
-				echo "`date`: Router auf der Liste der nicht zugewiesenen Router wurde geupdated" >> $SCRIPT_LOGFILE
+				echo "`date`: Router auf der Liste der nicht zugewiesenen Router wurde geupdated, beende" >> $SCRIPT_LOGFILE
+				exit 0
 			fi
 		fi
 		if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
@@ -124,10 +129,15 @@ assign_router() {
 }
 
 autoadd_ipv6_address() {
+	echo "`date`: Führe IPv6 Address autoadd durch" >> $SCRIPT_LOGFILE
 	ipv6_link_local_addr="`ifconfig br-mesh | grep 'inet6 addr:' | grep 'Scope:Link' | awk '{ print $3}'`"
 	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
 	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
-	if [ `echo $ergebnis| cut '-d;' -f1` != "success" ]; then
+	if [ `echo $ergebnis| cut '-d,' -f1` = "success" ]; then
+		echo "`date`: Die IPv6-Adresse wurde Netmon hinzugefügt" >> $SCRIPT_LOGFILE
+	else
+		echo "`date`: Die IPv6-Adresse existiert bereits in Netmon (auf Router-ID `echo $ergebnis| cut '-d,' -f3`)" >> $SCRIPT_LOGFILE
+	fi
 }
 
 if [ $CRAWL_METHOD == "login" ]; then

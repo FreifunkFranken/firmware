@@ -27,3 +27,5 @@ config 'network'
 	option 'mesh_interface' 'br-mesh'
 	option 'client_interfaces' 'ath0'
 
+config 'netmon'
+	option 'autoadd_ipv6_address' '1'
