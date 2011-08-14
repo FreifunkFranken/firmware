@@ -1,0 +1,36 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+#Set Mac-Addr of wr1043nd wifi interface if not right
+HARDWARE_MACADDR=`ifconfig -a wlan0 | grep 'HWaddr' | awk '{ print $5}'`
+SOFTWARE_MACADDR=`uci get wireless.@wifi-device[0].macaddr`
+
+if [[ "$HARDWARE_MACADDR" != "$SOFTWARE_MACADDR" ]]; then
+        uci set wireless.@wifi-device[0].macaddr=$HARDWARE_MACADDR
+        uci commit
+        reboot
+fi
+
+ifconfig br-mesh down
+ifconfig br-mesh up
+
+ifdown lan
+ifup lan
+
+rdate -s time.fu-berlin.de
+
+chown root.root /etc/crontabs/root
+/etc/init.d/cron stop
+/etc/init.d/cron start
+
+sh /etc/firewall.user
+
+/etc/init.d/qos disable
+/etc/init.d/qos stop
+
+#busybox-httpd for crawldata
+httpd -h /tmp/
+
+sh /etc/configurator.sh
+
+exit 0
