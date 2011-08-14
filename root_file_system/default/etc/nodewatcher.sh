@@ -271,6 +271,7 @@ crawl() {
 					IFS="
 "
 					BAT_ADV_ORIGINATORS=`batctl o | awk '/O/ {next} /B/ {next} {print}'`
+					count=0;
 					for row in $BAT_ADV_ORIGINATORS; do
 						originator=`echo $row | awk '{print $1}'`
 						last_seen=`echo $row | awk '{print $2}'`
@@ -279,7 +280,8 @@ crawl() {
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
 						
-						batman_adv_originators=$batman_adv_originators"<batman_adv_originators><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></batman_adv_originators>"
+						batman_adv_originators=$batman_adv_originators"<batman_adv_originators><originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></originator_$count></batman_adv_originators>"
+						count=$[$count+1]
 					done
 					IFS=$OLDIFS
 				fi
