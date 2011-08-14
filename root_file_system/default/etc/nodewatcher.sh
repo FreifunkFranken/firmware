@@ -123,111 +123,6 @@ update() {
 	fi
 }
 
-assign() {
-	netmon_api=`get_url`
-	hostname=`cat /proc/sys/kernel/hostname`
-	
-	#Choose right login String
-	login_strings="$(ifconfig br-mesh | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g');$(ifconfig eth0 | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g');$(ifconfig ath0 | grep HWaddr | awk '{ print $5 }'|sed -e 's/://g')"
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=test_login_strings&login_strings=$login_strings"
-	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
-	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
-		router_auto_assign_login_string=`echo $ergebnis| cut '-d;' -f2`
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Es existiert ein Router mit dem Login String $router_auto_assign_login_string" >> $logfile
-		fi
-	elif [ `echo $ergebnis| cut '-d;' -f1` = "error" ]; then
-		router_auto_assign_login_string=`echo $login_strings| cut '-d;' -f1`
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Es existiert kein Router mit einem der Login Strings: $login_strings" >> $logfile
-			echo "`date`: Nutze $router_auto_assign_login_string als login string" >> $logfile
-		fi
-	fi
-
-	#Try to assign Router with choosen login string
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=router_auto_assign&router_auto_assign_login_string=$router_auto_assign_login_string&hostname=$hostname"
-	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
-	if [ `echo $ergebnis| cut '-d;' -f1` != "success" ]; then
-		if [ `echo $ergebnis| cut '-d;' -f2` = "already_assigned" ]; then
-			if [ $error_level -gt "0" ]; then
-				echo "`date`: Der Login String `echo $ergebnis| cut '-d;' -f3` ist bereits mit einem Router verknüpft" >> $logfile
-			fi
-		elif [ `echo $ergebnis| cut '-d;' -f2` = "autoassign_not_allowed" ]; then
-			if [ $error_level -gt "0" ]; then
-				echo "`date`: Der dem Login String `echo $ergebnis| cut '-d;' -f3` zugewiesene Router erlaubt autoassign nicht" >> $logfile
-			fi
-		elif [ `echo $ergebnis| cut '-d;' -f2` = "new_not_assigned" ]; then
-			if [ $error_level -gt "0" ]; then
-				echo "`date`: Router wurde der Liste der nicht zugewiesenen Router hinzugefügt" >> $logfile
-			fi
-		elif [ `echo $ergebnis| cut '-d;' -f2` = "updated_not_assigned" ]; then
-			if [ $error_level -gt "0" ]; then
-				echo "`date`: Router auf der Liste der nicht zugewiesenen Router wurde geupdated" >> $logfile
-			fi
-		fi
-		if [ $error_level -gt "0" ]; then
-			echo "`date`: Der Router wurde nicht mit Netmon verknüpft" >> $logfile
-		fi
-	elif [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
-		#write new config
-		uci set nodewatcher.@crawl[0].router_id=`echo $ergebnis| cut '-d;' -f2`
-		uci set nodewatcher.@crawl[0].update_hash=`echo $ergebnis| cut '-d;' -f3`
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Der Router wurde mit Netmon verknüpft" >> $logfile
-		fi
-		uci commit
-
-		CRAWL_METHOD=`uci get nodewatcher.@crawl[0].method`
-		CRAWL_ROUTER_ID=`uci get nodewatcher.@crawl[0].router_id`
-		CRAWL_UPDATE_HASH=`uci get nodewatcher.@crawl[0].update_hash`
-		CRAWL_NICKNAME=`uci get nodewatcher.@crawl[0].nickname`
-		CRAWL_PASSWORD=`uci get nodewatcher.@crawl[0].password`
-
-		configure
-
-		can_crawl=1
-	fi
-}
-
-configure() {
-	netmon_api=`get_url`
-	authentificationmethod=$CRAWL_METHOD
-	router_id=$CRAWL_ROUTER_ID
-	router_auto_update_hash=$CRAWL_UPDATE_HASH
-	
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=get_standart_data&authentificationmethod=$authentificationmethod&router_auto_update_hash=$router_auto_update_hash&router_id=$router_id"
-	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
-
-	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
-		#uci set freifunk.contact.location=`echo $ergebnis| cut '-d;' -f3`
-
-		if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then		
-			if [ $error_level -gt "1" ]; then
-				echo "`date`: Setze Hostname" >> $logfile
-			fi
-			uci set system.@system[0].hostname=`echo $ergebnis| cut '-d;' -f4`
-			echo `echo $ergebnis| cut '-d;' -f4` > /proc/sys/kernel/hostname
-
-#			uci get system.@system[0].latitude=
-#			uci get system.@system[0].longitude=
-#			uci get freifunk.community.ssid=
-#			uci get freifunk.contact.nickname=
-#			uci get freifunk.contact.mail=
-#			uci get freifunk.community.prefix=
-#			uci get freifunk.contact.note=
-			
-			uci commit
-		fi
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Der Router wurde konfiguriert" >> $logfile
-		fi
-	else
-		if [ $error_level -gt "0" ]; then
-			echo "`date`: Fehler bei der Konfiguration: $ergebnis" >> $logfile
-		fi
-	fi
-}
-
 crawl() {
 	#Get API and authentication configuration
 	netmon_api=`get_url`
@@ -456,34 +351,7 @@ if [[ "$1" == "update" ]]; then
 	exit 1
 fi
 
-
-if [ $error_level -gt "1" ]; then
-	echo "`date`: Prüfe Authentifizierungsmethode" >> $logfile
-fi
-
 can_crawl=1
-if [ $CRAWL_METHOD == "login" ]; then
-	if [ $error_level -gt "1" ]; then  
-		echo "`date`: Authentifizierungsmethode ist: Username und Passwort" >> $logfile
-	fi
-elif [ $CRAWL_METHOD == "hash" ]; then
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Authentifizierungsmethode ist: Autoassign und Hash" >> $logfile
-		echo "`date`: Prüfe ob Roter schon mit Netmon verknüpft ist" >> $logfile
-	fi
-	if [ $CRAWL_UPDATE_HASH == "1" ]; then
-		can_crawl=0
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Der Router ist noch NICHT mit Netmon verknüpft" >> $logfile
-			echo "`date`: Versuche verknüpfung herzustellen" >> $logfile
-		fi
-		assign
-	else
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: Der Router ist bereits mit Netmon verknüpft" >> $logfile
-		fi
-	fi
-fi
 
 if [ $can_crawl == 1 ]; then
  	if [ $error_level -gt "1" ]; then

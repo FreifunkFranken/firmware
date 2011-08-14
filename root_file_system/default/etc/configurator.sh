@@ -123,6 +123,13 @@ assign_router() {
 	fi
 }
 
+autoadd_ipv6_address() {
+	ipv6_link_local_addr="`ifconfig br-mesh | grep 'inet6 addr:' | grep 'Scope:Link' | awk '{ print $3}'`"
+	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
+	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
+	if [ `echo $ergebnis| cut '-d;' -f1` != "success" ]; then
+}
+
 if [ $CRAWL_METHOD == "login" ]; then
 	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then  
 		echo "`date`: Authentifizierungsmethode ist: Username und Passwort" >> $SCRIPT_LOGFILE
@@ -149,4 +156,7 @@ fi
 #Sync Hostname
 if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
 	sync_hostname
+fi
+if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
+	autoadd_ipv6_address
 fi
