@@ -16,3 +16,6 @@
 #*/5 * * * *	/usr/sbin/ff_olsr_watchdog
 #0 */4 * * *	/usr/sbin/ff_rdate
 #17 * * * *	/usr/sbin/ff_mapupdate
+
+#Reboot fonera every 2 days at 04:05
+5 4 */2 * *     reboot
