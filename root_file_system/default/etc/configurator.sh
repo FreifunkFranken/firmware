@@ -2,6 +2,8 @@
 # Netmon Configurator (C) 2010-2011 Freifunk Oldenburg
 # Lizenz: GPL
 
+Put 
+
 SCRIPT_DIR=`dirname $0`
 
 if [ -f /etc/config/configurator ];then
@@ -134,7 +136,10 @@ autoadd_ipv6_address() {
 	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
 	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	if [ `echo $ergebnis| cut '-d,' -f1` = "success" ]; then
+		uci set configurator.@netmon[0].autoadd_ipv6_address='0'
+		uci commit
 		echo "`date`: Die IPv6-Adresse wurde Netmon hinzugefügt" >> $SCRIPT_LOGFILE
+		echo "`date`: IPv6 Autoadd wurde abgestellt um zu starke Belastung der Netmon API zu vermeiden" >> $SCRIPT_LOGFILE
 	else
 		echo "`date`: Die IPv6-Adresse existiert bereits in Netmon (auf Router-ID `echo $ergebnis| cut '-d,' -f3`)" >> $SCRIPT_LOGFILE
 	fi
@@ -156,6 +161,7 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 			echo "`date`: Versuche verknüpfung herzustellen" >> $SCRIPT_LOGFILE
 		fi
 		assign_router
+		sync_hostname
 	else
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
 			echo "`date`: Der Router ist bereits mit Netmon verknüpft" >> $SCRIPT_LOGFILE
@@ -163,10 +169,14 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 	fi
 fi
 
-#Sync Hostname
-if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
-	sync_hostname
-fi
 if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
 	autoadd_ipv6_address
+fi
+
+tmp=${1-text}
+if [[ $tmp = "sync_hostname" ]]; then
+	#Sync Hostname
+	if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
+		sync_hostname
+	fi
 fi

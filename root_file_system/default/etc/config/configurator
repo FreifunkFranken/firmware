@@ -1,6 +1,6 @@
 
 config 'script'
-	option 'error_level' '2'
+	option 'error_level' '0'
 	option 'logfile' '/var/log/configurator.log'
 	option 'version' '1'
 	option 'sync_hostname' '1'
