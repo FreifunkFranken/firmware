@@ -2,8 +2,6 @@
 # Netmon Configurator (C) 2010-2011 Freifunk Oldenburg
 # Lizenz: GPL
 
-
-
 SCRIPT_DIR=`dirname $0`
 
 if [ -f /etc/config/configurator ];then
@@ -133,7 +131,7 @@ assign_router() {
 autoadd_ipv6_address() {
 	echo "`date`: Führe IPv6 Address autoadd durch" >> $SCRIPT_LOGFILE
 	ipv6_link_local_addr="`ifconfig br-mesh | grep 'inet6 addr:' | grep 'Scope:Link' | awk '{ print $3}'`"
-	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
+	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
 	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
 	if [ `echo $ergebnis| cut '-d,' -f1` = "success" ]; then
 		uci set configurator.@netmon[0].autoadd_ipv6_address='0'
