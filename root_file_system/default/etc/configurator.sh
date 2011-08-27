@@ -129,6 +129,7 @@ assign_router() {
 }
 
 autoadd_ipv6_address() {
+	netmon_api=`get_url`
 	echo "`date`: Führe IPv6 Address autoadd durch" >> $SCRIPT_LOGFILE
 	ipv6_link_local_addr="`ifconfig br-mesh | grep 'inet6 addr:' | grep 'Scope:Link' | awk '{ print $3}'`"
 	command="wget -q -O - http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr"
