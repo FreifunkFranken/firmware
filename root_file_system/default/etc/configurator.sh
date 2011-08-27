@@ -2,7 +2,7 @@
 # Netmon Configurator (C) 2010-2011 Freifunk Oldenburg
 # Lizenz: GPL
 
-Put 
+
 
 SCRIPT_DIR=`dirname $0`
 
