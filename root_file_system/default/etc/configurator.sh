@@ -27,6 +27,7 @@ else
 	. $SCRIPT_DIR/configurator_config
 fi
 
+
 API_RETRY=$(($API_RETRY - 1))
 
 get_url() {
@@ -115,8 +116,12 @@ assign_router() {
 		#write new config
 		uci set configurator.@crawl[0].router_id=`echo $ergebnis| cut '-d;' -f2`
 		uci set configurator.@crawl[0].update_hash=`echo $ergebnis| cut '-d;' -f3`
+
+		#set also new router id for nodewatcher
+		uci set nodewatcher.@crawl[0].router_id=`echo $ergebnis| cut '-d;' -f2`
+
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
-			echo "`date`: Der Router wurde mit Netmon verkn체pft" >> $SCRIPT_LOGFILE
+			echo "`date`: Der Router `echo $ergebnis| cut '-d;' -f2` wurde mit Netmon verkn체pft" >> $SCRIPT_LOGFILE
 		fi
 		uci commit
 
@@ -137,7 +142,7 @@ autoadd_ipv6_address() {
 	if [ `echo $ergebnis| cut '-d,' -f1` = "success" ]; then
 		uci set configurator.@netmon[0].autoadd_ipv6_address='0'
 		uci commit
-		echo "`date`: Die IPv6-Adresse wurde Netmon hinzugef체gt" >> $SCRIPT_LOGFILE
+		echo "`date`: Die IPv6-Adresse f홸 Router $CRAWL_ROUTER_ID wurde Netmon hinzugef체gt" >> $SCRIPT_LOGFILE
 		echo "`date`: IPv6 Autoadd wurde abgestellt um zu starke Belastung der Netmon API zu vermeiden" >> $SCRIPT_LOGFILE
 	else
 		echo "`date`: Die IPv6-Adresse existiert bereits in Netmon (auf Router-ID `echo $ergebnis| cut '-d,' -f3`)" >> $SCRIPT_LOGFILE
@@ -161,6 +166,11 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 		fi
 		assign_router
 		sync_hostname
+		if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
+        	autoadd_ipv6_address
+		fi
+
+
 	else
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
 			echo "`date`: Der Router ist bereits mit Netmon verkn체pft" >> $SCRIPT_LOGFILE
@@ -168,9 +178,6 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 	fi
 fi
 
-if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
-	autoadd_ipv6_address
-fi
 
 tmp=${1-text}
 if [[ $tmp = "sync_hostname" ]]; then
