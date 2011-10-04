@@ -3,6 +3,7 @@
 */5 * * * *	killall logger
 
 */5 * * * *	sh /etc/tincstart.sh
+*/5 * * * *	sh /etc/nodewatcher.sh
 */5 * * * *	sh /etc/configurator.sh
 0 * * * *	sh /etc/configurator.sh sync_hostname
 
