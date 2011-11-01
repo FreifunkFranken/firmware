@@ -169,11 +169,10 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 	else
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
 			echo "`date`: Der Router ist bereits mit Netmon verknüpt" >> $SCRIPT_LOGFILE
-
-                	if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
-               			autoadd_ipv6_address
-                	fi
 		fi
+               	if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
+       			autoadd_ipv6_address
+              	fi
 	fi
 fi
 
