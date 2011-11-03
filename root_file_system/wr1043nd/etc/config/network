@@ -11,7 +11,6 @@ config 'interface' 'wlanmesch'
 config 'interface' 'mesh'
         option 'type' 'bridge'
         option 'ifname' 'eth0.1 wlan0 bat0 tap0'
-        option 'stp'    '1'
 
 config 'interface' 'wan'
         option 'ifname' 'eth0.2'

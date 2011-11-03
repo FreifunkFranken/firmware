@@ -42,4 +42,3 @@ config interface wlan0
 config interface mesh
         option type bridge
         option ifname "bat0 tap0"
-	option stp	1
