@@ -1,0 +1,31 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+#set fixed mac address on br-mesh so that the ipv6 addres does not change after every reboot
+HARDWARE_MACADDR=`ifconfig -a br-mesh | grep 'HWaddr' | awk '{ print $5}'`
+uci set network.mesh.macaddr=$HARDWARE_MACADDR
+uci commit
+
+ifconfig br-mesh down
+ifconfig br-mesh up
+
+ifdown lan
+ifup lan
+
+rdate -s time.fu-berlin.de
+
+chown root.root /etc/crontabs/root
+/etc/init.d/cron stop
+/etc/init.d/cron start
+
+sh /etc/firewall.user
+
+/etc/init.d/qos disable
+/etc/init.d/qos stop
+
+#busybox-httpd for crawldata
+httpd -h /tmp/
+
+sh /etc/configurator.sh
+
+exit 0
