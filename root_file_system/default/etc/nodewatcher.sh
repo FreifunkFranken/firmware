@@ -177,7 +177,8 @@ crawl() {
 	loadavg=`cat /proc/loadavg | awk '{ print $1 }'`
 
 	if which batctl >/dev/null; then
-		batman_adv_version=`batctl -v | awk '{ print $2 }'`
+		batctl_adv_version=`batctl -v | awk '{ print $2 }'`
+		batman_adv_version=`batctl o|head -n1|awk '{ print $3 }'|sed 's/,//'`
 	fi
 	kernel_version=`uname -r`
 	nodewatcher_version=$SCRIPT_VERSION
