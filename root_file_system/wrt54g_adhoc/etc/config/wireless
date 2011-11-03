@@ -1,6 +1,6 @@
 config wifi-device  radio0
 	option type     mac80211
-	option channel  5
+	option channel  6
 	option macaddr	00:12:17:cc:ef:0d
 	option hwmode	11g
 
