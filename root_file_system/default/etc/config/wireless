@@ -4,6 +4,8 @@ config 'wifi-device' 'wifi0'
 	option 'channel' '6'
 	option 'bgscan' '0'
 	option 'diversity' '1'
+	#enable correct wifi led https://forum.openwrt.org/viewtopic.php?id=29714
+        option 'softled' '0'
 
 config 'wifi-iface'
 	option 'device' 'wifi0'
