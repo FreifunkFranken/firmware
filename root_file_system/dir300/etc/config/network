@@ -10,7 +10,7 @@ config 'interface' 'loopback'
 
 config 'interface' 'wlanmesh'
         option 'ifname' 'ath1'
-        option 'mtu' '1527'
+        option 'mtu' '1528'
 
 config 'interface' 'mesh'
         option 'type' 'bridge'
