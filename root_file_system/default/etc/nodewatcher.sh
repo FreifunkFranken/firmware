@@ -280,8 +280,7 @@ crawl() {
 						link_quality=`echo $row | awk '{print $3}'`
 						link_quality="${link_quality//(/}"
 						link_quality="${link_quality//)/}"
-						
-						batman_adv_originators=$batman_adv_originators"<batman_adv_originators><originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></originator_$count></batman_adv_originators>"
+						batman_adv_originators=$batman_adv_originators"<originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen></originator_$count>"
 						count=`expr $count + 1`
 					done
 					IFS=$OLDIFS
@@ -310,7 +309,7 @@ crawl() {
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
 	CLIENT_DATA="$client_count"
 
-	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces>$BATMAN_ADV_ORIGINATORS<client_count>$CLIENT_DATA</client_count></data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_count>$CLIENT_DATA</client_count></data>"
 
 	#Send system data
 	echo $DATA > /tmp/node.data
