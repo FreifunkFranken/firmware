@@ -9,7 +9,7 @@ config 'interface' 'lan'
         option 'ifname' 'eth0'
 
 config 'interface' 'wlanmesh'
-        option 'ifname' 'ath1'
+        option 'ifname' 'ath0'
         option 'mtu' '1528'
 
 config 'interface' 'mesh'

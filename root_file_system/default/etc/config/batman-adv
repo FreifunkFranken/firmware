@@ -1,5 +1,5 @@
 config 'mesh' 'bat0'
-        option 'interfaces' 'ath1'
+        option 'interfaces' 'ath0'
         option 'orig_interval'
         option 'log_level'
         option 'aggregated_ogms'
