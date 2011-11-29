@@ -9,12 +9,12 @@ config 'interface' 'loopback'
 #        option 'ifname' 'eth0.1'
 
 config 'interface' 'wlanmesh'
-        option 'ifname' 'ath0'
+        option 'ifname' 'ath1'
         option 'mtu' '1528'
 
 config 'interface' 'mesh'
         option 'type' 'bridge'
-        option 'ifname' 'eth0.1 ath0-1 bat0 tap0'
+        option 'ifname' 'eth0.1 ath0 bat0 tap0'
 	option 'stp'	'1'
 
 config 'switch' 'eth0'
