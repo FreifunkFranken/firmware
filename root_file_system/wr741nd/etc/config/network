@@ -6,27 +6,20 @@ config 'interface' 'loopback'
 
 config 'interface' 'wlanmesch'
         option 'ifname' 'wlan1'
-        option 'mtu' '1527'
+        option 'mtu' '1528'
 
 config 'interface' 'mesh'
         option 'type' 'bridge'
-        option 'ifname' 'eth0.1 wlan0 bat0 tap0'
+        option 'ifname' 'eth0 wlan0 bat0 tap0'
 
 config 'interface' 'wan'
-        option 'ifname' 'eth0.2'
+        option 'ifname' 'eth1'
         option 'proto' 'dhcp'
 
-config 'switch'
-        option 'name' 'rtl8366rb'
-        option 'reset' '1'
-        option 'enable_vlan' '1'
+config switch eth0
+        option enable_vlan      1
 
-config 'switch_vlan'
-        option 'device' 'rtl8366rb'
-        option 'vlan' '1'
-        option 'ports' '1 2 3 4 5t'
-
-config 'switch_vlan'
-        option 'device' 'rtl8366rb'
-        option 'vlan' '2'
-        option 'ports' '0 5t'
+config switch_vlan
+        option device   eth0
+        option vlan     1
+        option ports    "0 1 2 3 4"

@@ -6,7 +6,7 @@ config 'interface' 'loopback'
 
 config 'interface' 'wlanmesch'
         option 'ifname' 'wlan1'
-        option 'mtu' '1527'
+        option 'mtu' '1528'
 
 config 'interface' 'mesh'
         option 'type' 'bridge'

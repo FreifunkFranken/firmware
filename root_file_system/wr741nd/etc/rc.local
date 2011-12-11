@@ -5,11 +5,11 @@
 HARDWARE_MACADDR=`ifconfig -a wlan0 | grep 'HWaddr' | awk '{ print $5}'`
 SOFTWARE_MACADDR=`uci get wireless.@wifi-device[0].macaddr`
 
-if [[ "$HARDWARE_MACADDR" != "$SOFTWARE_MACADDR" ]]; then
-        uci set wireless.@wifi-device[0].macaddr=$HARDWARE_MACADDR
-        uci commit
-        reboot
-fi
+#if [[ "$HARDWARE_MACADDR" != "$SOFTWARE_MACADDR" ]]; then
+#        uci set wireless.@wifi-device[0].macaddr=$HARDWARE_MACADDR
+#        uci commit
+#        reboot
+#fi
 
 ifconfig br-mesh down
 ifconfig br-mesh up
