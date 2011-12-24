@@ -13,12 +13,6 @@ if [ -f /etc/config/nodewatcher ];then
 	SCRIPT_VERSION=`uci get nodewatcher.@script[0].version`
 	SCRIPT_ERROR_LEVEL=`uci get nodewatcher.@script[0].error_level`
 	SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
-	SCRIPT_SYNC_HOSTNAME=`uci get nodewatcher.@script[0].sync_hostname`
-	CRAWL_METHOD=`uci get nodewatcher.@crawl[0].method`
-	CRAWL_ROUTER_ID=`uci get nodewatcher.@crawl[0].router_id`
-	CRAWL_UPDATE_HASH=`uci get nodewatcher.@crawl[0].update_hash`
-	CRAWL_NICKNAME=`uci get nodewatcher.@crawl[0].nickname`
-	CRAWL_PASSWORD=`uci get nodewatcher.@crawl[0].password`
 	UPDATE_AUTOUPDATE=`uci get nodewatcher.@update[0].autoupdate`
 	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
 	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
@@ -37,7 +31,7 @@ if [ -n $MESH_INTERFACE ]; then
 	MESH_INTERFACE="br-mesh"
 fi
 if [ -n $CLIENT_INTERFACES ]; then
-	CLIENT_INTERFACES="ath0"
+	CLIENT_INTERFACES="ath0 wlan0"
 fi
 if [ -n $SCRIPT_SYNC_HOSTNAME ]; then
 	SCRIPT_SYNC_HOSTNAME="1"
@@ -124,14 +118,6 @@ update() {
 }
 
 crawl() {
-	#Get API and authentication configuration
-	netmon_api=`get_url`
-	authentificationmethod=$CRAWL_METHOD
-	nickname=$CRAWL_NICKNAME
-	password=$CRAWL_PASSWORD
-	router_id=$CRAWL_ROUTER_ID
-	router_auto_update_hash=$CRAWL_UPDATE_HASH
-
 	#Get system data from UCI
 	if which uci >/dev/null; then
 		if [ $error_level -gt "1" ]; then
@@ -306,13 +292,12 @@ crawl() {
 	done
 	client_count=$i
 
-	AUTHENTIFICATION_DATA="<authentificationmethod>$authentificationmethod</authentificationmethod><nickname>$nickname</nickname><password>$password</password><router_auto_update_hash>$router_auto_update_hash</router_auto_update_hash><router_id>$router_id</router_id>"
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><description>$description</description><location>$location</location><latitude>$latitude</latitude><longitude>$longitude</longitude><luciname>$luciname</luciname><luciversion>$luciversion</luciversion><distname>$distname</distname><distversion>$distversion</distversion><chipset>$chipset</chipset><cpu>$cpu</cpu><memory_total>$memory_total</memory_total><memory_caching>$memory_caching</memory_caching><memory_buffering>$memory_buffering</memory_buffering><memory_free>$memory_free</memory_free><loadavg>$loadavg</loadavg><processes>$processes</processes><uptime>$uptime</uptime><idletime>$idletime</idletime><local_time>$local_time</local_time><community_essid>$community_essid</community_essid><community_nickname>$community_nickname</community_nickname><community_email>$community_email</community_email><community_prefix>$community_prefix</community_prefix><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$firmware_version</firmware_version>"
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><description>$description</description><location>$location</location><latitude>$latitude</latitude><longitude>$longitude</longitude><luciname>$luciname</luciname><luciversion>$luciversion</luciversion><distname>$distname</distname><distversion>$distversion</distversion><chipset>$chipset</chipset><cpu>$cpu</cpu><memory_total>$memory_total</memory_total><memory_caching>$memory_caching</memory_caching><memory_buffering>$memory_buffering</memory_buffering><memory_free>$memory_free</memory_free><loadavg>$loadavg</loadavg><processes>$processes</processes><uptime>$uptime</uptime><idletime>$idletime</idletime><local_time>$local_time</local_time><community_essid>$community_essid</community_essid><community_nickname>$community_nickname</community_nickname><community_email>$community_email</community_email><community_prefix>$community_prefix</community_prefix><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$firmware_version</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 	INTERFACE_DATA="$int"
 	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
 	CLIENT_DATA="$client_count"
 
-	DATA="<?xml version='1.0' standalone='yes'?><data><authentification_data>$AUTHENTIFICATION_DATA</authentification_data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_count>$CLIENT_DATA</client_count></data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_count>$CLIENT_DATA</client_count></data>"
 
 	#Send system data
 	echo $DATA > /tmp/node.data
