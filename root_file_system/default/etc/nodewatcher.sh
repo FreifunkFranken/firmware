@@ -20,23 +20,6 @@ else
 	. $SCRIPT_DIR/nodewatcher_config
 fi
 
-#Set default values if nothing is set
-if [ -n $API_TIMEOUT ]; then
-	API_TIMEOUT="5"
-fi
-if [ -n $API_RETRY ]; then
-	API_RETRY="5"
-fi
-if [ -n $MESH_INTERFACE ]; then
-	MESH_INTERFACE="br-mesh"
-fi
-if [ -n $CLIENT_INTERFACES ]; then
-	CLIENT_INTERFACES="ath0 wlan0"
-fi
-if [ -n $SCRIPT_SYNC_HOSTNAME ]; then
-	SCRIPT_SYNC_HOSTNAME="1"
-fi
-
 API_RETRY=$(($API_RETRY - 1))
 
 delete_log() {
@@ -299,21 +282,8 @@ crawl() {
 
 	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_count>$CLIENT_DATA</client_count></data>"
 
-	#Send system data
+	#write data to hxml file that provides the data on httpd
 	echo $DATA > /tmp/node.data
-	if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
-		netmon_hostname="`echo $api_return | cut '-d;' -f2`"
-		if [ "$netmon_hostname" != "" ]; then
-			if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-					if [ $error_level -gt "1" ]; then
-						echo "`date`: Setze neuen Hostname (Hostname synchronisation)" >> $logfile
-					fi
-					uci set system.@system[0].hostname=$netmon_hostname
-					uci commit
-					echo $netmon_hostname > /proc/sys/kernel/hostname
-			fi
-		fi
-	fi
 }
 
 LANG=C

@@ -4,7 +4,7 @@ config 'interface' 'loopback'
        option 'ipaddr'   '127.0.0.1'
        option 'netmask'  '255.0.0.0'
 
-config 'interface' 'wlanmesch'
+config 'interface' 'wlanmesh'
         option 'ifname' 'wlan1'
         option 'mtu' '1528'
 

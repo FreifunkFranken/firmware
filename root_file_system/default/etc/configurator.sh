@@ -20,13 +20,10 @@ if [ -f /etc/config/configurator ];then
 	CRAWL_NICKNAME=`uci get configurator.@crawl[0].nickname`
 	CRAWL_PASSWORD=`uci get configurator.@crawl[0].password`
 	UPDATE_AUTOUPDATE=`uci get configurator.@update[0].autoupdate`
-	MESH_INTERFACE=`uci get configurator.@network[0].mesh_interface`
-	CLIENT_INTERFACES=`uci get configurator.@network[0].client_interfaces`
 	AUTOADD_IPV6_ADDRESS=`uci get configurator.@netmon[0].autoadd_ipv6_address`
 else
 	. $SCRIPT_DIR/configurator_config
 fi
-
 
 API_RETRY=$(($API_RETRY - 1))
 

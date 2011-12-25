@@ -8,6 +8,8 @@ SOFTWARE_MACADDR=`uci get wireless.@wifi-device[0].macaddr`
 if [[ "$HARDWARE_MACADDR" != "$SOFTWARE_MACADDR" ]]; then
         uci set wireless.@wifi-device[0].macaddr=$HARDWARE_MACADDR
         uci commit
+	#wait before reboot to generate tinc certificates and to be able
+	#to login over ssh bevore reboot in case of errors
 	sleep 30
         reboot
 fi
