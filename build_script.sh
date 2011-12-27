@@ -81,6 +81,10 @@ build() {
 	# rm -rf ./build_dir/files/
 	cd ../
 
+	if [ ! -d bin ]; then
+		mkdir bin
+	fi
+	
 	case "$1" in
 		"dir300")
 			cp ./build_dir/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$2-root.squashfs
