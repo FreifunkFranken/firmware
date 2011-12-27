@@ -1,0 +1,622 @@
+#!/bin/sh
+
+# If you got false positives, try a higher value
+BOGOTHRESH=200
+
+# Note: for mail alarm, you need "ssmtp" installed and configured.
+# Example /etc/ssmtp/ssmtp.conf (debian/ubuntu) for GMX needs:
+# mailhub=mail.gmx.net:25 FromLineOverride=YES
+# AuthUser=$MAILFROM AuthPass=x UseSTARTTLS=YES
+MAILFROM=sender-address@domain.de
+MAILADDR=receiver-address@domain.de
+
+# Insert IPs you trust
+#TRUSTEDIP="$TRUSTEDIP 1.2.3.4"
+#TRUSTEDIP="$TRUSTEDIP 2.3.4.5"
+
+# 0: Do not save, 1: save conntrack if zapp
+DEBUGSAVE=0
+# Empty: No log in /var/log/zapp/, otherwise string to prepend to saved bogothresh files
+DEBUGLOGS= #$(date "+%b%d %H:%M")
+
+# 0: Manual clear, or minutes until auto-clear blockade (5-1439)
+CLEARTIME=360
+
+WEBSERVER=/www
+
+# --- END OF CONFIGURATION SETTINGS ---
+
+# This script uses case-esac for speed with busybox-ash. Current version under:
+# http://ff-firmware.cvs.sourceforge.net/viewvc/*checkout*/ff-firmware/ff-devel/freifunk-zapp/etc/init.d/S92zapp
+
+# When running via cron, the PATH is unset
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# We start a netcat-based webserver on this port if someone is blocked
+BLOCKPORT=8090
+
+CRONUSR=root
+CRONDIR=/var/spool/cron/crontabs
+
+# First argument may be an input file
+CONN=${1:-/proc/net/ip_conntrack}
+
+# This script calls itself with the IP to analyze why its blocking
+DEBIP=$2
+case $1 in '')DEBUG=false;;*)DEBUG=true;;esac
+
+case $DEBUGLOGS in "");;*)test -d /var/log/zapp || mkdir -p /var/log/zapp;;esac
+
+# Find out our IP that is used to connect to the Internet
+DEV=$(ip route get 1.1.1.1/1|sed -n '1{s/.* dev \([^ ]\+\).*/\1/;p}')
+ADR=$(ip -f inet addr list dev $DEV scope global|sed -n '2s/^.*inet \([0-9\.]\+\).*/\1/p')
+PAT=$(sed 's/\./_/g'<<Q
+$ADR
+Q
+)
+UNK=0
+
+which () {
+	# Note: do not unset IFS (busybox ash and bash are different here) 
+	for p in $(sed 's/:/ /g'<<Q
+$PATH
+Q
+);do
+		test -x $p/$1 && return 0
+	done
+	return 1
+}
+
+# Freifunk Firmware Configs
+which nvram && {
+	ff_zapp_thresh=$(nvram get ff_zapp_thresh)
+	BOGOTHRESH=${ff_zapp_thresh:-$BOGOTHRESH}
+}
+
+case $BOGOTHRESH in ""|0)exit 0;;esac
+
+NC_CMD=
+which nc && NC_CMD=nc
+which nc-hobbit && NC_CMD=nc-hobbit
+which netcat && NC_CMD=netcat
+which nc6 && NC_CMD=nc6
+# Note: busybox nc unusable, "-q" only Debian, GNU netcat "-c" unusable
+$NC_CMD -h 2>&1 | egrep -q '\-l\b' || NC_CMD=
+
+# 1=-I/-D 2=proto 3=srcip, 4=dport, 5=to
+portfw () {
+	local to
+	case $1 in "-D")
+		to=$(iptables -t nat -nL PREROUTING|sed -n "s/^DNAT[[:space:]]\\+$2[[:space:]]\\+[^[:space:]]\\+[[:space:]]\\+$3[[:space:]]\\+![[:digit:]]\\+\\.[[:digit:]]\\+\\.[[:digit:]]\\+\\.[[:digit:]]\\+[[:space:]]\\+$2[[:space:]]\\+dpt:$4[[:space:]]\\+to://;tp;b;:p p;q")
+	;;esac
+	to=${to:-$5}
+	iptables -t nat $1 PREROUTING --proto $2 -s $3 ! -d ${to%:*} --dport $4 -j DNAT --to $to
+}
+
+netcatruns () {
+	for pid in $(pidof $NC_CMD);do
+		ppid=$(sed -n 's/^PPid:	//p' /proc/$pid/status)
+		case $(sed -n 's/^Name:	//p' /proc/$ppid/status) in ${0##*/})
+			# Check netstat: release the IP currently grabbing our blocking page
+			case "$1" in "GET /let-me-browse-again"*)
+				le=$(printf "%02X%02X%02X%02X" $(echo ${ifip:-$ADR}|sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)/\4 \3 \2 \1/'))
+				be=$(printf "%02X%02X%02X%02X" $(echo ${ifip:-$ADR}|sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)/\1 \2 \3 \4/'))
+				eval $(sed -n '/^ *[0-9]\+: \+'$le':'$(printf '%04X' $BLOCKPORT)' \+[^ ]\+ \+01 \+/{s/^[^:]\+: \+[^ ]\+ \+\([^:][^:]\)\([^:][^:]\)\([^:][^:]\)\([^:][^:]\).*/ip=$(( 0x\4 )).$(( 0x\3 )).$(( 0x\2 )).$(( 0x\1 ))/;p;q};/^ *[0-9]\+: \+'$be':'$(printf '%04X' $BLOCKPORT)' \+[^ ]\+ \+01 \+/{s/^[^:]\+: \+[^ ]\+ \+\([^:][^:]\)\([^:][^:]\)\([^:][^:]\)\([^:][^:]\).*/ip=$(( 0x\1 )).$(( 0x\2 )).$(( 0x\3 )).$(( 0x\4 ))/;p;q}' /proc/net/tcp)
+				portfw -D tcp $ip 80 ${ifip:-$ADR}:$BLOCKPORT 2>&-
+			;;esac
+			return 0
+		;;esac
+	done
+	return 1
+}
+
+# Add (-I) or remove (-D) iptables rules
+block () {
+	# Freifunk Firmware Configs
+	which nvram && {
+		ff_adm_mail=$(nvram get ff_adm_mail)
+		ff_zapp_time=$(nvram get ff_zapp_time)
+		ff_zapp_debug=$(nvram get ff_zapp_debug)
+		ff_zapp_server=$(nvram get ff_zapp_server)
+		ff_zapp_strict=$(nvram get ff_zapp_strict)
+		MAILFROM=${ff_adm_mail:-$MAILFROM}
+		MAILADDR=${ff_adm_mail:-$MAILADDR}
+		CLEARTIME=${ff_zapp_time:-$CLEARTIME}
+		DEBUGSAVE=${ff_zapp_debug:-$DEBUGSAVE}
+		WEBSERVER=${ff_zapp_server:-$WEBSERVER}
+		IFS=\;
+		for i in $(nvram get ff_zapp_trusted); do
+			TRUSTEDIP="$TRUSTEDIP $i"
+		done
+		unset IFS
+	}
+
+	for i in $TRUSTEDIP;do
+		case $2 in $i)
+			# Prevents re-blocking next run
+			iptables $1 FORWARD -s $2
+			iptables $1 FORWARD -d $2
+			return
+		;;esac
+	done
+
+	# Note: FreifunkFW does not have REJECT out-of-the-box
+	jump=DROP
+	iptables -I OUTPUT -d 127.0.0.1 -j REJECT 2>&- && iptables -D OUTPUT -d 127.0.0.1 -j REJECT 2>&- && jump=REJECT
+
+	iptables $1 FORWARD -s $2 -j $jump
+	iptables $1 FORWARD -d $2 -j $jump
+
+	# Allowing ping is always a good idea
+	iptables $1 FORWARD -s $2 --proto icmp -j ACCEPT
+	iptables $1 FORWARD -d $2 --proto icmp -j ACCEPT
+
+	# Allow TCP up to port 1023
+	iptables $1 FORWARD -s $2 --proto tcp --dport :1023 -j ACCEPT
+	iptables $1 FORWARD -d $2 --proto tcp --sport :1023 -j ACCEPT
+
+	# Note: Freifunk FW does not have REDIRECT, use DNAT instead,
+	# which needs the correct outgoing interface IP for redirection.
+	ifip=$(ip route get $2|sed -n 's/^.* src \([^ ]\+\).*/\1/p')
+
+	# Allow DNS, redirect to our local dnsmasq if applicable
+	if pidof dnsmasq >&-; then
+		portfw $1 udp $2 53 ${ifip:-$ADR}:53
+		portfw $1 tcp $2 53 ${ifip:-$ADR}:53
+	else
+		iptables $1 FORWARD -s $2 --proto udp --dport 53 -j ACCEPT
+		iptables $1 FORWARD -d $2 --proto udp --sport 53 -j ACCEPT
+	fi
+
+	# It's polite to tell a blocked user what's going on
+	case $NC_CMD in "");;*)
+		portfw $1 tcp $2 80 ${ifip:-$ADR}:$BLOCKPORT 2>&-
+		case $1 in "-D")
+			case $CLEARTIME in ""|0);;*)test -f $CRONDIR/$CRONUSR && {
+				sed -i -e "/\/${0##*/} unblock $2\$/d" $CRONDIR/$CRONUSR
+				echo $CRONUSR > $CRONDIR/cron.update
+			};;esac
+			if ! iptables -t nat -nL PREROUTING|egrep -q "\\bto:[^:]+:$BLOCKPORT\\b"; then
+				netcatruns && (echo "Stopping netcat server" >&2;kill $ppid $pid)
+			fi
+		;;*)
+			case $CLEARTIME in ""|0);;*)test -f $CRONDIR/$CRONUSR && {
+				min=$(date +%M)
+				min=$(( $(date +%k ) * 60 + ${min#0} + $CLEARTIME ))
+				me=$(echo $0|sed "s,^\\.\\.,$PWD/&,;s,^\\.,$PWD,")
+				sed -i -e "\$a$(( $min % 60 )) $(( $min / 60 % 24 )) * * * $me unblock $2" $CRONDIR/$CRONUSR
+				echo $CRONUSR > $CRONDIR/cron.update
+			};;esac
+			if ! netcatruns; then
+				echo "Starting netcat server for $2" >&2
+				while true;do ($NC_CMD -l -p $BLOCKPORT <<EOF
+HTTP/1.0 200 OK
+Expires: -1
+Pragma: no-cache
+Cache-Control: no-cache
+Content-Type: text/html; charset=utf-8
+
+<HTML>
+  <HEAD><TITLE>Sorry...</TITLE>
+  <META HTTP-EQUIV="Expires" CONTENT="-1">
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=utf-8">
+  <STYLE TYPE="text/css"></STYLE>
+  </HEAD>
+  <BODY ONLOAD="if ('/let-me-browse-again' == window.location.pathname)location.href=document.referrer">
+<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript"><!--
+function addrule(selector, rule)
+{
+  if (null!=document.styleSheets && 0<document.styleSheets.length)
+  {
+    if (null!=document.styleSheets[0].cssRules)
+    {
+      document.styleSheets[0].insertRule(selector+"{"+rule+"}", 0);
+    }
+    else if (null!=document.styleSheets[0].rules)
+    {
+      document.styleSheets[0].addRule(selector, rule);
+    }
+  }
+}
+if (null != navigator.language && "de" == navigator.language ||
+    null != navigator.browserLanguage && "de" == navigator.browserLanguage)
+{
+  addrule(".de", "display:block");
+  addrule(".fr", "display:none");
+  addrule(".en", "display:none");
+}
+else if (null != navigator.language && "fr" == navigator.language ||
+         null != navigator.browserLanguage && "fr" == navigator.browserLanguage)
+{
+  addrule(".de", "display:none");
+  addrule(".fr", "display:block");
+  addrule(".en", "display:none");
+}
+else
+{
+  addrule(".de", "display:none");
+  addrule(".fr", "display:none");
+  addrule(".en", "display:block");
+}
+//--></SCRIPT>
+    <H1>Zapped on $(uname -n) (${ifip:-$ADR})</H1>
+
+    <DIV CLASS="en">
+    <P><SMALL CLASS="de">Deutsch: siehe unten</SMALL><SMALL CLASS="fr">français&nbsp;: voir ci-dessous</SMALL></P>
+    <HR>
+    <P>Hello! You are a victim of a filesharing blockade. Your PC opens too
+      much connections to different Internet hosts. This may be caused by the
+      VoIP program Skype, by a filesharing program or by another program with
+      this unusual communication pattern. $(test -f $WEBSERVER/cgi-bin-skype.html && 
+      echo "For operating the Skype VoIP program please read this
+      <A HREF='http://$ifip/cgi-bin-skype.html'>Information Page</A>.")
+    </P>
+    <P>TCP based services still work (ports up to 1023), but UDP based services are blocked now.</P>
+    <FORM ACTION='/let-me-browse-again' METHOD='GET'><INPUT
+    VALUE='I have read this page and stopped the respective program. Please restore access to the Web.'
+    TYPE='submit'></FORM>
+    <P>The blockade $(case $CLEARTIME in ""|0) echo "needs to be removed manually.";;*)echo "will be 
+      removed after $CLEARTIME minutes. Alternatively, the blockade can be removed manually.";;esac)
+      For this, send an email to <A HREF="mailto:$MAILADDR">$MAILADDR</A>.
+    </P>
+    </DIV>
+
+    <DIV CLASS="de">
+    <HR>
+    <P>Hallo! Du bist das Opfer einer Filesharing-Sperre geworden. Dein Rechner
+      &ouml;ffnet zuviele Verbindungen zu verschiedenen Internet-Rechnern. Dies
+      kann ausgel&ouml;st werden durch das VoIP-Programm Skype, durch ein
+      Filesharing-Programm oder durch ein anderes Programm welches dieses ungew&ouml;hnliche
+      Kommunikationsmuster aufweist. $(test -f $WEBSERVER/cgi-bin-skype.html && 
+      echo "Zum Betrieb des VoIP-Programms Skype lies bitte diese 
+      <A HREF='http://$ifip/cgi-bin-skype.html'>Informationsseite</A>.")
+    </P>
+    <P><B>Hinweis:</B> TCP-basierte Dienste (Ports bis 1023) funktionieren, aber UDP-basierte Dienste sind nun gesperrt.</P>
+    <FORM ACTION='/let-me-browse-again' METHOD='GET'><INPUT
+    VALUE='Ich habe verstanden und das entsprechende Programm beendet. Bitte Web-Zugang freigeben.'
+    TYPE='submit'></FORM>
+    <P>Die Sperre $(case $CLEARTIME in ""|0)echo "muss manuell entfernt werden.";;*)
+      echo "wird nach $CLEARTIME Minuten entfernt. Wahlweise kann die Sperre
+      auch manuell entfernt werden.";;esac) Sende dazu eine Mail an
+      <A HREF="mailto:$MAILADDR">$MAILADDR</A>.
+    </P>
+    </DIV>
+
+    <DIV CLASS="fr">
+    <HR>
+    <P>Bonjour! Vous &ecirc;tes victime du m&eacute;canisme de blocage de partage de fichiers. Votre
+      ordinateur ouvre trop de connexions simultan&eacute;es vers trop d'h&ocirc;tes Internet diff&eacute;rents.
+      Ceci peut venir du logiciel de communications Skype, d'un logiciel de partage de fichiers,
+      ou d'un autre programme qui aurait ce m&ecirc;me comportement inhabituel, comme certains virus.
+      $(test -f $WEBSERVER/cgi-bin-skype.html && 
+      echo "Pour l'utilisation de Skype en voix sur IP (VoIP) merci de lire cette 
+      <A HREF='http://$ifip/cgi-bin-skype.html'>page d'informations</A>.")
+    </P>
+    <P><B>Pr&eacute;cisions:</B> Les services TCP restent fonctionnels (Ports jusqu'au n&deg; 1023) mais les
+     services UDP sont bloqu&eacute;s.
+    <FORM ACTION='/let-me-browse-again' METHOD='GET'><INPUT
+    VALUE='J&lsquo;ai lu cette page et j&lsquo;ai arr&ecirc;t&eacute; les programmes suspect&eacute;s. Lever le blocage!'
+    TYPE='submit'></FORM>
+    <P>Le blocage $(case $CLEARTIME in ""|0)echo "doit &ecirc;tre d&eacute;sactiv&eacute; manuellement.";;*)
+      echo "sera lev&eacute; automatiquement dans $CLEARTIME minutes. Il est aussi possible de 
+      le faire manuellement.";;esac) en envoyant un mail &agrave;  
+      <A HREF="mailto:$MAILADDR">$MAILADDR</A>.
+    </P>    
+    </DIV>
+  </BODY>
+  <HEAD>
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <META HTTP-EQUIV="Expires" CONTENT="-1">
+  </HEAD>
+</HTML>
+EOF
+				)|(read -r GET && netcatruns "$GET" && kill $pid)
+				done >&- 2>&- &
+			fi
+		;;esac
+	;;esac
+}
+
+zapp () {
+	# Block an IP and send a mail to the admin
+	ip=$(echo $1|sed -e 's/^[A-Z]\+_//;s/=.*//;s/_/./g')
+	if $DEBUG; then
+		# Prevent script recursion
+		case $DEBIP in "")
+			echo "Zapping $(ip route get $ip|sed -n 's/ dev .*//p') with $2 bogopoints at $(date)"
+			echo
+			$0 "$CONN" ${1%=*}
+		;;esac
+	elif ! iptables -nL FORWARD | egrep -q "\\b$(echo $ip|sed 's/\./\\&/g')\\b";then
+		echo "Zapping $(ip route get $ip|sed -n 's/ dev .*//p') with $2 bogopoints at $(date)" >> /var/log/zappfile.txt
+		mac=$(sed -n 's/^'$(echo $ip|sed 's/\./\\./g')' \+\([^ ]\+ \+\)\{2\}\([^ ]\+\).*/\2/p' /proc/net/arp)
+
+		# Disabled, because we cannot unblock this currently
+		case 0 in 1)case $mac in '');;*)
+			echo "Also zapping $mac at $(date)" >> /var/log/zappfile.txt
+			iptables -I FORWARD -m mac --mac-source $mac -j $jump
+		;;esac;;esac
+
+		block -I $ip
+
+		case $DEBUGSAVE in 1)
+			# Save current conntrack for later analysis
+			cat "$CONN"|gzip -c>/var/log/zappfile-$ip-$(date).txt.gz
+		;;esac
+
+		which ssmtp && cat|ssmtp $MAILADDR<<EOF
+To: $MAILADDR
+From: $MAILFROM
+Subject: Zappfile extended on $(uname -n)
+
+The following IP exeeded the conntrack limit and was added to the zappfile:
+
+IP: $ip
+MAC: $mac
+Date: $(date)
+Bogopoints: $2
+Threshold: $BOGOTHRESH
+
+The forwarding firewall now has the following rules:
+
+$(iptables -nL FORWARD)
+EOF
+	fi
+}
+
+# TCP rules:
+# * Bittorrent opens and uses lots of TCP connections
+# * BT also uses a higher bandwidth, especially on port 688x
+# * General: lots of TCP traffic from/to different peers (!port 80)
+tcp () {
+	# We only count traffic generated by others
+	case $3 in $PAT);;*)
+		case "${10}" in
+			# We count unreplied connection attempts because
+			# lots of P2P peers may not have correct portfw
+			# as well as currently active transfers
+			SYN_SENT|SYN_RECV|ESTABLISHED)
+				case $4 in
+					# HTTP, HTTPS: browsers tend to open multiple connections
+					80|443)
+						case $9 in
+							?????)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 1 ));;esac"
+							;;
+							*)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 2 ));;esac"
+							;;
+						esac
+						case ${DEBIP#IP_} in $1)echo "tcp ham $1:$2 $3:$4";;esac
+					;;
+					# Punish traffic on ports 6880-6889
+					688*)
+						case $9 in
+							?????)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 10 ));;esac"
+							;;
+							*)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 20 ));;esac"
+							;;
+						esac
+						case ${DEBIP#IP_} in $1)echo "tcp p2p $1:$2 $3:$4";;esac
+					;;
+					# Everything else is normal tcp
+					*)
+						case $9 in
+							?????)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 3 ));;esac"
+							;;
+							*)
+								eval "case \$TCP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 4 ));;esac"
+							;;
+						esac
+						case ${DEBIP#IP_} in $1)echo "tcp std $1:$2 $3:$4";;esac
+					;;
+				esac
+				eval "TCP_$1_$3=\$(( \$TCP_$1_$3 + 1 ))"
+			;;
+		esac
+	;;esac
+
+	return 0
+}
+
+# UDP rules:
+# * Bittorrent DHT feature got us unreplied incoming UDP from diverse IPs (sport likely 688x)
+# * P2P-user with DHT: incoming UDP dport(unreplied) is port the P2P-user configured for DHT
+# * P2P-user none DHT: Peers seeking DHT, we have a P2P-user currently, lower tolerance
+# * General: lots of UDP traffic from/to different peers(!port 53)
+
+udp () {
+	case ${10} in "[UNREPLIED]") case $3 in $PAT)
+		# We are contacted by incoming UDP (without reason). If that is the case
+		# it is likely that we have at least one P2P user now. Especially if that
+		# peer sends us from his port 688x which is the default for Bittorrent.
+		case $2 in
+			668*)
+				eval "case \$UNK_$1 in \"\")UNK=\$(( \$UNK + 5 ));;esac"
+				case $DEBIP in '');;*)echo "nak p2p $1:$2 -> $3:$4 (UNK=$UNK)";;esac
+			;;
+			*)
+				case $4 in
+					688*)
+						eval "case \$UNK_$1 in \"\")UNK=\$(( \$UNK + 5 ));;esac"
+						case $DEBIP in '');;*)echo "nak p2p $1:$2 -> $3:$4 (UNK=$UNK)";;esac
+					;;
+					*)
+						eval "case \$UNK_$1 in \"\")UNK=\$(( \$UNK + 1 ));;esac"
+						case $DEBIP in '');;*)echo "nak udp $1:$2 -> $3:$4 (UNK=$UNK)";;esac
+					;;
+				esac
+			;;
+		esac
+		eval "UNK_$1=\$(( \$UNK_$1 + 1 ))"
+	;;esac;;esac
+	# We only count traffic generated by others
+	case $3 in $PAT);;*)
+		case $4 in
+			# DNS: resolvers tend to open multiple connections
+			53)
+				case ${10} in
+					"[UNREPLIED]")
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 1 ));;esac";;
+					*)
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 2 ));;esac";;
+				esac
+				case ${DEBIP#IP_} in $1)echo "udp ham $1:$2 $3:$4";;esac
+			;;
+			# Punish traffic on ports 6880-6889
+			688*)
+				case ${10} in
+					"[UNREPLIED]")
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 10 ));;esac";;
+					*)
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 20 ));;esac";;
+				esac
+				case ${DEBIP#IP_} in $1)echo "udp p2p $1:$2 $3:$4";;esac
+			;;
+			# Everything else is normal udp
+			*)
+				case ${10} in
+					"[UNREPLIED]")
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 3 ));;esac";;
+					*)
+						eval "case \$UDP_$1_$3 in \"\")IP_$1=\$(( \$IP_$1 + 4 ));;esac";;
+				esac
+				case ${DEBIP#IP_} in $1)echo "udp std $1:$2 $3:$4";;esac
+			;;
+		esac
+		eval "UDP_$1_$3=\$(( \$UDP_$1_$3 + 1 ))"
+	;;esac
+	return 0
+}
+
+case $1 in
+	block)
+		case $2 in "")echo "Add IP as second arg" 2>&-;exit 1;;esac
+		block "-I" $2
+		exit 0
+	;;
+	unblock|clear)
+		case $2 in "")echo "Add IP as second arg" 2>&-;exit 1;;esac
+		block "-D" $2
+		exit 0
+	;;
+	start|stop)
+		test ! -f $CRONDIR/$CRONUSR && (echo "No $CRONDIR/$CRONUSR" 2>&-;exit 1)
+		if egrep -q "/${0##*/}" $CRONDIR/$CRONUSR; then
+			case $1 in stop)
+				echo "Removing ${0##*/} from cron"
+				sed -i -e "/\/${0##*/}/d" $CRONDIR/$CRONUSR
+			;;esac
+		else
+			case $1 in start)
+				case $BOGOTHRESH in 0);;*)
+					echo "Adding ${0##*/} to cron"
+					me=$(echo $0|sed "s,^\\.\\.,$PWD/&,;s,^\\.,$PWD,")
+					sed -i -e "\$a*/1 * * * * $me" $CRONDIR/$CRONUSR
+				;;esac
+			;;esac
+		fi
+		echo $CRONUSR > $CRONDIR/cron.update
+		exit 0
+	;;
+	status)
+		echo "Firewall status:"
+		iptables -nL FORWARD|egrep '^(DROP|REJECT)? +all +-- +[1-9][0-9\.]+ +0.0.0.0/0\b' || echo "  No IPs blocked"
+		egrep -q "/${0##*/}" $CRONDIR/$CRONUSR && echo "Running via cron" || echo "Not running via cron"
+		exit 0
+	;;
+	-h|--help|help)
+		cat<<EOF
+This script examines the kernel conntrack table and blocks a source IP if
+it detects a filesharing application. Read the script file for details.
+
+Usage: $0 {start|stop|block [IP]|unblock [IP]|help|[file]}
+
+start	add this scipt as cron job
+stop	remove this script from cron
+status	show a list of blocked IPs
+block	manually block an IP
+unblock	manually unblock an IP
+[file]	parse [file] instead /proc/net/ip_conntrack (for testing)
+No args	normal function, e.g. called by cron without arguments
+
+Note1: if netcat is installed, this script tries to inform a blocked user
+by starting a simple web server. If also ssmtp is installed, this script
+informs you by e-mail about the filesharing and blocking incidents. If
+someone is blocked, this is recorded in /var/log/zapp* files for later
+analysis. To analyze, unpack the gzipped conntrack file of the incident
+and start this script by supplying the filename.
+
+Note2: to install on Freifunk-FW copy this script to /etc/init.d/S92zapp
+and restart the router. On other systems it shoud be sufficient to start
+this script with "$0 start".
+EOF
+		exit 0
+	;;
+esac
+
+if ! $DEBUG; then
+	if [ -f /proc/sys/net/netfilter/nf_conntrack_acct ] &&
+	   [ 0 = $(cat /proc/sys/net/netfilter/nf_conntrack_acct) ]
+	then
+		# Kernel-2.6 needs accounting=on for correct ip_conntrack format
+		echo "Kernel accounting not enabled, which is required." >&2
+		echo "Use 'sysctl -w net.netfilter.nf_conntrack_acct=1'" >&2
+		exit 1
+	fi
+fi
+
+# Different kernels have differnt formats, script lines doubled to prevent too much compare operations
+REL=$(uname -r)
+case ${REL#2.4} in $REL)
+	# Kernel 2.6 output has [STATUS] in different positions, shift to end
+	sed 's/\./_/g;s/\( \[[^]]\+\]\)\(.*\)/\2\1/;$aeof' "$CONN"|while read l;do
+		set $l
+		case $1 in
+			tcp)
+				tcp ${5#src=} ${7#sport=} ${6#dst=} ${8#dport=} ${11#src=} ${13#sport=} ${12#dst=} ${14#dport=} $(( ${10#bytes=} + ${16#bytes=} )) $4
+			;;
+			udp)
+				udp ${4#src=} ${6#sport=} ${5#dst=} ${7#dport=} ${10#src=} ${12#sport=} ${11#dst=} ${13#dport=} $(( ${9#bytes=}+${15#bytes=} )) ${19}
+			;;
+			eof)
+				# If probably no P2P client active double threshold
+				test $UNK -lt 10 && BOGOTHRESH=$(( $BOGOTHRESH + $BOGOTHRESH ))
+				set|sed -n "s/^\\(IP_[^=]\\+=\\)'*\\([^']\\+\\).*/\\1\\2/p"|while read i;do
+					case $DEBIP in ${i%=*})echo "$i -gt $BOGOTHRESH";;esac
+					case $DEBUGLOGS in "");;*)echo $DEBUGLOGS ${i#*=} >> /var/log/zapp/${i%=*};;esac
+					test ${i#*=} -gt $BOGOTHRESH && zapp $i ${i#*=}
+				done
+			;;
+		esac
+	done
+;;*)
+	# Kernel 2.4 output has [STATUS] in different positions, shift to end
+	sed 's/\./_/g;s/\( \[[^]]\+\]\)\(.*\)/\2\1/;$aeof' "$CONN"|while read l;do
+		set $l
+		case $1 in
+			tcp)
+				tcp ${5#src=} ${7#sport=} ${6#dst=} ${8#dport=} ${9#src=} ${11#sport=} ${10#dst=} ${12#dport=} ${15#bytes=} $4
+			;;
+			udp)
+				udp ${4#src=} ${6#sport=} ${5#dst=} ${7#dport=} ${8#src=} ${10#sport=} ${9#dst=} ${11#dport=} ${14#bytes=} ${15}
+			;;
+			eof)
+				# If probably no P2P client active double threshold
+				test $UNK -lt 10 && BOGOTHRESH=$(( $BOGOTHRESH + $BOGOTHRESH ))
+				set|sed -n "s/^\\(IP_[^=]\\+=\\)'*\\([^']\\+\\).*/\\1\\2/p"|while read i;do
+					case $DEBIP in ${i%=*})echo "$i -gt $BOGOTHRESH";;esac
+					case $DEBUGLOGS in "");;*)echo $DEBUGLOGS ${i#*=} >> /var/log/zapp/${i%=*};;esac
+					test ${i#*=} -gt $BOGOTHRESH && zapp $i ${i#*=}
+				done
+			;;
+		esac
+	done
+;;esac
+
+exit 0

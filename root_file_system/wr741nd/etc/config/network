@@ -1,0 +1,26 @@
+config 'interface' 'loopback'
+       option 'ifname'   'lo'
+       option 'proto'    'static'
+       option 'ipaddr'   '127.0.0.1'
+       option 'netmask'  '255.0.0.0'
+
+config 'interface' 'wlanmesh'
+        option 'ifname' 'wlan1'
+        option 'mtu' '1528'
+
+config 'interface' 'mesh'
+        option 'type' 'bridge'
+        option 'ifname' 'eth0 wlan0 bat0 tap0'
+	option 'auto' '1'
+
+config 'interface' 'wan'
+        option 'ifname' 'eth1'
+        option 'proto' 'dhcp'
+
+config switch eth0
+        option enable_vlan      1
+
+config switch_vlan
+        option device   eth0
+        option vlan     1
+        option ports    "0 1 2 3 4"

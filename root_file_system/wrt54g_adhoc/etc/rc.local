@@ -1,0 +1,36 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+#set fixed mac address that is 1 lower than eth0 mac on br-mesh so that the ipv6 addres does not change after every reboot
+#This idea is stolen from freifunk lübeck set_hostname.sh
+MAC="`ip link show eth0 | grep "link/ether" | \
+      sed "s/^[ ]*//" | cut -d' ' -f2 | sed "s/://g" | \
+      tr 'a-z' 'A-Z'`"
+MAC="`printf "%012X\n" $((0x$MAC - 0x01))`"
+
+uci set network.mesh.macaddr=$MAC                             
+uci commit
+
+ifconfig br-mesh down
+ifconfig br-mesh up
+
+ifdown lan
+ifup lan
+
+rdate -s time.fu-berlin.de
+
+chown root.root /etc/crontabs/root
+/etc/init.d/cron stop
+/etc/init.d/cron start
+
+sh /etc/firewall.user
+
+/etc/init.d/qos disable
+/etc/init.d/qos stop
+
+#busybox-httpd for crawldata
+httpd -h /tmp/
+
+sh /etc/configurator.sh
+
+exit 0

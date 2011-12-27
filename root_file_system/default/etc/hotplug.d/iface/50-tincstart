@@ -1,0 +1,6 @@
+#!/bin/sh 
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
+        sh /etc/tincstart.sh
+        sleep 30
+        sh /etc/tincstart.sh
+}
