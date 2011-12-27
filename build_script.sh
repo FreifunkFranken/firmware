@@ -153,6 +153,7 @@ flash() {
 				/usr/sbin/dir300-flash $2 ./bin/openwrt-$1-vmlinux.lzma ./bin/openwrt-$1-root.squashfs
 			else
 				./flash_tools/dir300-flash/dir300-flash.sh $2 ./bin/openwrt-$1-vmlinux.lzma ./bin/openwrt-$1-root.squashfs
+			fi
 			;;
 		"fonera")
 			echo "In some cases you have to set a symlink to libpcap to make flashing work (Tim told me that it is evil if I do that for you):"
