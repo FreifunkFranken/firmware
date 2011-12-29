@@ -10,9 +10,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=batman-adv
 
-PKG_VERSION:=2011.4.0
+PKG_VERSION:=blaII
 BATCTL_VERSION:=2011.4.0
-PKG_MD5SUM:=20a786b8ec517b457f2e8ff4d5c99c4f
+PKG_MD5SUM:=ef4c9becfbd71c57818471fdc998bb81
 BATCTL_MD5SUM:=325b25dbb8261f7fa19c6e1d9bfba6e1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -25,11 +25,11 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 define KernelPackage/batman-adv
-  URL:=http://www.open-mesh.org/
-  MAINTAINER:=Marek Lindner <lindner_marek@yahoo.de>
+  URL:=http://www.freifunk-ol.de
+  MAINTAINER:=Bjoern Franke <bjoern@freifunk-ol.de>
   SUBMENU:=Network Support
   DEPENDS:=+kmod-lib-crc16
-  TITLE:=B.A.T.M.A.N. Adv
+  TITLE:=B.A.T.M.A.N. Adv blaII-rebased from Simon Wunderlich's git-repo
   FILES:=$(PKG_BUILD_DIR)/batman-adv.$(LINUX_KMOD_SUFFIX)
   AUTOLOAD:=$(call AutoLoad,50,batman-adv)
 endef
