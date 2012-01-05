@@ -145,8 +145,8 @@ flash() {
 		/etc/init.d/networkmanager stop&&/etc/init.d/network start
 		/etc/init.d/tftpd start
 	elif [ -f /usr/sbin/invoke-rc.d ];then
-		invoke-rc.d network-manager stop
 		invoke-rc.d tftpd-hpa start
+		invoke-rc.d network-manager stop
 	fi
 
 	echo "Clearing Firewall!"
@@ -254,7 +254,7 @@ case "$1" in
 	"clean")
 		if [ "$2" = "help" ] || [ "$2" = "" ]; then
 			echo "This option cleans all build files."
-			echo "$0 $1"
+			echo "$0 $1 all"
 		else
 			clean
 		fi
