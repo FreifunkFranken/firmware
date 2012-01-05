@@ -9,6 +9,10 @@ prepare() {
 	./build_dir/scripts/feeds update
 	
 	./build_dir/scripts/feeds install -a
+
+
+	# Patch Batman
+	svn export ./build_patches/blaII/Makefile build_dir/feeds/packages/net/batman-adv/Makefile
 }
 
 configure_build() {
@@ -87,14 +91,14 @@ build() {
 	
 	case "$1" in
 		"dir300")
-			cp ./build_dir/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$2-root.squashfs
-			cp ./build_dir/bin/atheros/openwrt-atheros-vmlinux.lzma ./bin/openwrt-$2-vmlinux.lzma
-			cp ./build_dir/bin/atheros/openwrt-atheros-combined.squashfs.img ./bin/openwrt-$2-combined.squashfs.img
+			cp ./build_dir/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$1-root.squashfs
+			cp ./build_dir/bin/atheros/openwrt-atheros-vmlinux.lzma ./bin/openwrt-$1-vmlinux.lzma
+			cp ./build_dir/bin/atheros/openwrt-atheros-combined.squashfs.img ./bin/openwrt-$1-combined.squashfs.img
 			;;
 		"fonera")
-			cp ./build_dir/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$2-root.squashfs
-			cp ./build_dir/bin/atheros/openwrt-atheros-vmlinux.lzma ./bin/openwrt-$2-vmlinux.lzma
-			cp ./build_dir/bin/atheros/openwrt-atheros-combined.squashfs.img ./bin/openwrt-$2-combined.squashfs.img
+			cp ./build_dir/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$1-root.squashfs
+			cp ./build_dir/bin/atheros/openwrt-atheros-vmlinux.lzma ./bin/openwrt-$1-vmlinux.lzma
+			cp ./build_dir/bin/atheros/openwrt-atheros-combined.squashfs.img ./bin/openwrt-$1-combined.squashfs.img
 			;;
 		"dir300b_adhoc" | "dir300b_ap")
 			
