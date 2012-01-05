@@ -6,6 +6,8 @@ prepare() {
 	#apply own feeds.conf
 	svn export ./build_patches/feeds.conf ./build_dir/feeds.conf
 
+	test -d ./build_dir/feeds && /bin/rm -rf ./build_dir/feeds
+
 	./build_dir/scripts/feeds update
 	
 	./build_dir/scripts/feeds install -a
@@ -17,7 +19,7 @@ prepare() {
 
 configure_build() {
 	#create filesdir for our config
-	mkdir ./build_dir/files
+	test -d ./build_dir/files || mkdir ./build_dir/files
 
 	case "$1" in
 		"dir300")
