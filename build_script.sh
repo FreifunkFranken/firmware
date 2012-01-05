@@ -13,8 +13,6 @@ prepare() {
 	./build_dir/scripts/feeds install -a
 
 
-	# Patch Batman
-	svn export ./build_patches/blaII/Makefile build_dir/feeds/packages/net/batman-adv/Makefile
 }
 
 configure_build() {
