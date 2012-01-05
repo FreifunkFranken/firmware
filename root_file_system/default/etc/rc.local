@@ -1,11 +1,28 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
+toLower() {
+        echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
+}
+
+BRMAC=`ifconfig -a br-mesh | grep 'HWaddr' | awk '{ print $5}'`
+BRMAC=`toLower $BRMAC`
+WLMAC=`ip link | grep wifi0 -A1 | grep link | awk '{ print $2 }'`
+WLMAC=`toLower $WLMAC`
+
+if [[ "$BRMAC" != "$WLMAC" ]]; then
+        logger -s "Fixing wrong MAC on br-mesh"
+        uci set network.mesh.macaddr=$WLMAC
+        uci commit
+        #wait before reboot to generate tinc certificates and to be able
+        #to login over ssh bevore reboot in case of errors
+        sleep 30
+        reboot
+fi
+
+
 ifconfig br-mesh down
 ifconfig br-mesh up
-
-ifdown lan
-ifup lan
 
 rdate -s time.fu-berlin.de
 
