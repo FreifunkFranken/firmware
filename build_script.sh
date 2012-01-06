@@ -12,7 +12,9 @@ prepare() {
 	
 	./build_dir/scripts/feeds install -a
 
+	#set git-rev to actual blaII-rebase
 
+      patch -p0 ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/
 }
 
 configure_build() {
