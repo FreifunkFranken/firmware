@@ -14,7 +14,8 @@ prepare() {
 
 	#set git-rev to actual blaII-rebase
 
-      patch -p0 ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/
+	patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
+
 }
 
 configure_build() {
