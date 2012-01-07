@@ -1,6 +1,11 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
+echo enable > /sys/devices/virtual/net/bat0/mesh/bridge_loop_avoidance
+
+echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
+echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
+
 toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
 }
