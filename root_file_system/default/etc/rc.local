@@ -17,22 +17,15 @@ if [[ "$BRMAC" != "$WLMAC" ]]; then
         logger -s "Fixing wrong MAC on br-mesh"
         uci set network.mesh.macaddr=$WLMAC
         uci commit
+        ifconfig br-mesh hw ether $WLMAC
+        ifconfig br-mesh down
+        ifconfig br-mesh up
         #wait before reboot to generate tinc certificates and to be able
         #to login over ssh bevore reboot in case of errors
-        sleep 30
-        reboot
 fi
 fi
-
-
-ifconfig br-mesh down
-ifconfig br-mesh up
 
 rdate -s time.fu-berlin.de
-
-chown root.root /etc/crontabs/root
-/etc/init.d/cron stop
-/etc/init.d/cron start
 
 sh /etc/firewall.user
 

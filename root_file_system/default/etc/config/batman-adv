@@ -1,5 +1,5 @@
 config 'mesh' 'bat0'
-        option 'interfaces' 'wlanmesh'
+        option 'interfaces' 'wlanmesh ethmesh1, ethmesh2'
         option 'orig_interval'
         option 'log_level'
         option 'aggregated_ogms'

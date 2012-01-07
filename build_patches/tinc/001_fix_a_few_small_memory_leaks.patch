@@ -1,0 +1,70 @@
+From 5672863e59e6a114ac6b66de98254b14266c0e61 Mon Sep 17 00:00:00 2001
+From: Guus Sliepen <guus@tinc-vpn.org>
+Date: Sat, 3 Dec 2011 21:59:47 +0100
+Subject: [PATCH 1/1] Fix a few small memory leaks.
+
+---
+ src/protocol_key.c |    2 --
+ src/subnet.c       |    2 ++
+ src/tincd.c        |    5 ++++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/protocol_key.c b/src/protocol_key.c
+index f34ebaa..a7d4447 100644
+--- a/src/protocol_key.c
++++ b/src/protocol_key.c
+@@ -242,8 +242,6 @@ bool ans_key_h(connection_t *c) {
+ 
+ 	/* Update our copy of the origin's packet key */
+ 	from->outkey = xrealloc(from->outkey, strlen(key) / 2);
+-
+-	from->outkey = xstrdup(key);
+ 	from->outkeylength = strlen(key) / 2;
+ 	hex2bin(key, from->outkey, from->outkeylength);
+ 
+diff --git a/src/subnet.c b/src/subnet.c
+index 47f1436..7fffe63 100644
+--- a/src/subnet.c
++++ b/src/subnet.c
+@@ -468,6 +468,8 @@ void subnet_update(node_t *owner, subnet_t *subnet, bool up) {
+ 		// 4 and 5 are reserved for SUBNET and WEIGHT
+ 		xasprintf(&envp[6], "REMOTEADDRESS=%s", address);
+ 		xasprintf(&envp[7], "REMOTEPORT=%s", port);
++		free(port);
++		free(address);
+ 	}
+ 
+ 	name = up ? "subnet-up" : "subnet-down";
+diff --git a/src/tincd.c b/src/tincd.c
+index b3d911b..f075168 100644
+--- a/src/tincd.c
++++ b/src/tincd.c
+@@ -612,7 +612,7 @@ int main2(int argc, char **argv) {
+ 
+ 	/* Change process priority */
+ 
+-        char *priority = 0;
++        char *priority = NULL;
+ 
+         if(get_config_string(lookup_config(config_tree, "ProcessPriority"), &priority)) {
+                 if(!strcasecmp(priority, "Normal")) {
+@@ -661,6 +661,8 @@ end:
+ 	remove_pid(pidfilename);
+ #endif
+ 
++	free(priority);
++
+ 	EVP_cleanup();
+ 	ENGINE_cleanup();
+ 	CRYPTO_cleanup_all_ex_data();
+@@ -668,6 +670,7 @@ end:
+ 	ERR_free_strings();
+ 
+ 	exit_configuration(&config_tree);
++	list_free(cmdline_conf);
+ 	free_names();
+ 
+ 	return status;
+-- 
+1.7.2.5
+

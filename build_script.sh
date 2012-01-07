@@ -16,6 +16,9 @@ prepare() {
 
 	patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
 
+	# fix some tinc mem leaks
+	mkdir ./build_dir/feeds/packages/net/tinc/patches
+	cp ./build_patches/tinc/001_fix_a_few_small_memory_leaks.patch ./build_dir/feeds/packages/net/tinc/patches/001_fix_a_few_small_memory_leaks.patch
 
 	case "$1" in
 		"dir300")

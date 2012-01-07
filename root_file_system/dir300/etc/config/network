@@ -24,12 +24,28 @@ config 'switch' 'eth0'
 config 'switch_vlan' 'eth0_1'
         option 'device' 'eth0'
         option 'vlan' '1'
-        option 'ports' '0 1 2 3 5t'
+        option 'ports' '0 1 5t'
 
 config 'switch_vlan' 'eth0_2'
         option 'device' 'eth0'
         option 'vlan' '2'
         option 'ports' '4 5t'
+
+config 'switch_vlan' 'eth0_3'
+        option 'device' 'eth0'
+        option 'vlan' '3'
+        option 'ports' '2 5t'
+
+config 'switch_vlan' 'eth0_4'
+        option 'device' 'eth0'
+        option 'vlan' '4'
+        option 'ports' '3 5t'
+
+config 'interface' 'ethmesh1'
+        option 'ifname' 'eth0.3'
+
+config 'interface' 'ethmesh2'
+        option 'ifname' 'eth0.4'
 
 config 'interface' 'wan'
         option 'ifname' 'eth0.2'
