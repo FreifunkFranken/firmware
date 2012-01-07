@@ -5,11 +5,14 @@ toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
 }
 
-BRMAC=`ifconfig -a br-mesh | grep 'HWaddr' | awk '{ print $5}'`
+BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
 BRMAC=`toLower $BRMAC`
-WLMAC=`ip link | grep wifi0 -A1 | grep link | awk '{ print $2 }'`
+WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
 WLMAC=`toLower $WLMAC`
+ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
+ETMAC=`toLower $ETMAC`
 
+if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" = "$ETMAC" ]; then
 if [[ "$BRMAC" != "$WLMAC" ]]; then
         logger -s "Fixing wrong MAC on br-mesh"
         uci set network.mesh.macaddr=$WLMAC
@@ -18,6 +21,7 @@ if [[ "$BRMAC" != "$WLMAC" ]]; then
         #to login over ssh bevore reboot in case of errors
         sleep 30
         reboot
+fi
 fi
 
 

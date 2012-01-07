@@ -16,6 +16,12 @@ prepare() {
 
 	patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
 
+
+	case "$1" in
+		"dir300")
+			svn export ./build_patches/dir300/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
+			;;
+	esac
 }
 
 configure_build() {
