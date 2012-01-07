@@ -70,7 +70,7 @@ then
 fi	
 
 pubkey=$(for line in $(cat /etc/tinc/$project/rsa_key.pub | sed -e 's/$/%0a/g' | sed -e 's/+/%2b/g' | sed -e 's/ /%20/g'); do echo -n $line; done)
-port=667
+port=666
 
 cat <<EOF > /etc/tinc/$project/tinc.conf
 Name = $hostname
@@ -100,7 +100,7 @@ then
 fi
 
 # register
-wget -T15 "http://mastersword.de/~reddog/tinc_bla2/?name=$hostname&port=$port&key=$pubkey" -O /tmp/tinc_${project}_output
+wget -T15 "http://mastersword.de/~reddog/tinc/?name=$hostname&port=$port&key=$pubkey" -O /tmp/tinc_${project}_output
 
 filenames=$(cat /tmp/tinc_${project}_output| grep ^#### | sed -e 's/^####//' | sed -e 's/.conf//g')
 for file in $filenames
