@@ -1,6 +1,6 @@
-*/5 * * * *	killall klogd
-*/5 * * * *	killall syslogd
-*/5 * * * *	killall logger
+#*/5 * * * *	killall klogd
+#*/5 * * * *	killall syslogd
+#*/5 * * * *	killall logger
 
 */5 * * * *	sh /etc/tincstart.sh
 */5 * * * *	sh /etc/nodewatcher.sh

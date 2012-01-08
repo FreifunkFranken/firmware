@@ -43,9 +43,11 @@ config 'switch_vlan' 'eth0_4'
 
 config 'interface' 'ethmesh1'
         option 'ifname' 'eth0.3'
+        option 'mtu' '1528'
 
 config 'interface' 'ethmesh2'
         option 'ifname' 'eth0.4'
+        option 'mtu' '1528'
 
 config 'interface' 'wan'
         option 'ifname' 'eth0.2'
