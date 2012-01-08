@@ -87,6 +87,9 @@ configure_build() {
 build() {
 	cd ./build_dir
 	case "$2" in
+		"debug")
+			make V=99
+			;;
 		"fast")
 			make -j8
 			;;
@@ -236,7 +239,7 @@ case "$1" in
 			echo "This option compiles the firmware"
 			echo "Normaly the build uses lower IO and System priorities, "
 			echo "you can append \"fast\" option, to use normal user priorities"
-			echo "Usage: $0 $1 router-type [fast]"
+			echo "Usage: $0 $1 router-type [fast|debug]"
 			routers
 			echo "Parallel build may fail with revisions before 24969 see https://dev.openwrt.org/ticket/8596"
 		else
