@@ -37,42 +37,42 @@ configure_build() {
 
 	case "$1" in
 		"dir300")
-			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
+			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/dir300 ./build_dir/files/ --force
 			;;
 		"fonera")
-			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
+			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/fonera ./build_dir/files/ --force
 			;;
 		"wrt54g_ap")
-			svn export ./build_configuration/Broadcom_BCM947xx_953xx_ap/.config ./build_dir/.config
+			svn export ./build_configuration/Broadcom_BCM947xx_953xx_ap/.config ./build_dir/.config --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/wrt54g_ap ./build_dir/files/ --force
 			;;
 		"wrt54g_adhoc")
-			svn export ./build_configuration/Broadcom_BCM947xx_953xx_adhoc/.config ./build_dir/.config
+			svn export ./build_configuration/Broadcom_BCM947xx_953xx_adhoc/.config ./build_dir/.config  --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/wrt54g_adhoc ./build_dir/files/ --force
 			;;
 		"dir300b_ap")
-			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config
+			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config  --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/dir300b_ap ./build_dir/files/ --force
 			;;
 		"dir300b_adhoc")
-			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config
+			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config  --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/dir300b_adhoc ./build_dir/files/ --force
 			;;
 		"wr1043nd")
-			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr1043nd ./build_dir/.config
+			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr1043nd ./build_dir/.config  --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/wr1043nd ./build_dir/files/ --force
 			;;
 		"wr741nd")
-			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config
+			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config  --force
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/wr741nd ./build_dir/files/ --force
 			;;
