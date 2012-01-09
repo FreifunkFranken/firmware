@@ -4,19 +4,19 @@ config 'interface' 'loopback'
         option 'ipaddr' '127.0.0.1'
         option 'netmask' '255.0.0.0'
 
-config 'interface' 'lan'
-        option 'proto' 'dhcp'
-        option 'ifname' 'eth0'
+#config 'interface' 'lan'
+#        option 'proto' 'dhcp'
+#        option 'ifname' 'eth0.1'
 
 config 'interface' 'wlanmesh'
-        option 'ifname' 'ath1'
         option 'mtu' '1528'
 
 config 'interface' 'mesh'
         option 'type' 'bridge'
-        option 'ifname' 'ath0 bat0 tap0'
+        option 'ifname' 'bat0 tap0'
 	option 'auto' '1'
 
-# To get Freifunk on the ethernet port (for a desktop pc for example), comment out
-# the lan interface section and add eth0 to the ifnames of the mesh interface.
-# Then restart the router and plug in your ethernet cable
+config 'interface' 'wan'
+        option 'ifname' 'eth0'
+        option 'proto' 'dhcp'
+
