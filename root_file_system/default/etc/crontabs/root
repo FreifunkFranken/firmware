@@ -5,7 +5,7 @@
 */5 * * * *	sh /etc/tincstart.sh
 */5 * * * *	sh /etc/nodewatcher.sh
 */5 * * * *	sh /etc/configurator.sh
-0 * * * *	sh /etc/configurator.sh sync_hostname
+0 * * * * sh /etc/configurator.sh sync_hostname
 
 15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
 
@@ -17,3 +17,4 @@
 #*/5 * * * *	/usr/sbin/ff_olsr_watchdog
 #0 */4 * * *	/usr/sbin/ff_rdate
 #17 * * * *	/usr/sbin/ff_mapupdate
+

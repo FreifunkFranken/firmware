@@ -15,4 +15,4 @@ config 'update'
 
 config 'network'
 	option 'mesh_interface' 'br-mesh'
-	option 'client_interfaces' 'ath0 wlan0'
+	option 'client_interfaces' 'ath0 wlan0 eth0.1'
