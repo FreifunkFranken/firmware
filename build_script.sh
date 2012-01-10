@@ -22,12 +22,12 @@ prepare() {
 
 	case "$1" in
 		"dir300")
-			svn export ./build_patches/ar23xx/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
+			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			svn export ./build_patches/dir300/990_fix_wifi_led.patch ./build_dir/package/mac80211/patches/990_fix_wifi_led.patch
 
 			;;
 		"fonera")
-			svn export ./build_patches/ar23xx/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
+			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			;;
 	esac
      #fix bad switch behaveior:
