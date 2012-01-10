@@ -21,14 +21,18 @@ prepare() {
 	cp ./build_patches/tinc/001_fix_a_few_small_memory_leaks.patch ./build_dir/feeds/packages/net/tinc/patches/001_fix_a_few_small_memory_leaks.patch
 
 	case "$1" in
-		"dir300" | "fonera")
+		"dir300")
 			svn export ./build_patches/ar23xx/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			svn export ./build_patches/dir300/990_fix_wifi_led.patch ./build_dir/package/mac80211/patches/990_fix_wifi_led.patch
 
-			#fix bad switch behaveior:
-			/bin/rm ./build_dir/target/linux/atheros/base-files/etc/uci-defaults/network
+			;;
+		"fonera")
+			svn export ./build_patches/ar23xx/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			;;
 	esac
+     #fix bad switch behaveior:
+                        /bin/rm ./build_dir/target/linux/atheros/base-files/etc/uci-defaults/network
+
 }
 
 configure_build() {
