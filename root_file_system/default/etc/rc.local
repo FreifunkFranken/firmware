@@ -1,9 +1,12 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
-echo enable > /sys/devices/virtual/net/bat0/mesh/bridge_loop_avoidance
+# batman seems to be to stupid to regocnice the devices
+# todo: uci.get ..
 batctl if add eth0.3                                                            
 batctl if add eth0.4  
+batctl if add wlan0-1
+
 ifconfig eth0 mtu 1528
 ifconfig eth0.3 mtu 1528                                                     
 ifconfig eth0.4 mtu 1528    
@@ -15,6 +18,7 @@ toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
 }
 
+# todo: all devices or only dir300 ?
 BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
 BRMAC=`toLower $BRMAC`
 WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
@@ -35,6 +39,7 @@ if [[ "$BRMAC" != "$WLMAC" ]]; then
 fi
 fi
 
+# todo: find time-server in Freifunk-Network
 rdate -s time.fu-berlin.de
 
 sh /etc/firewall.user

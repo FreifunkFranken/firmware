@@ -14,7 +14,7 @@ prepare() {
 
 	#set git-rev to actual blaII-rebase
 
-	patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
+	#patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
 
 	# fix some tinc mem leaks
 	mkdir ./build_dir/feeds/packages/net/tinc/patches
