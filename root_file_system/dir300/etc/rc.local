@@ -3,10 +3,16 @@
 
 # batman seems to be to stupid to regocnice the devices
 # todo: uci.get ..
+batctl if add eth0.3                                                            
+batctl if add eth0.4  
 batctl if add wlan0-1
 
 ifconfig eth0 mtu 1528
+ifconfig eth0.3 mtu 1528                                                     
+ifconfig eth0.4 mtu 1528    
 
+echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
+echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
 
 toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
