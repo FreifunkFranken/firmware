@@ -11,9 +11,6 @@ config 'api'
 	option 'timeout' '5'
 	option 'retry' '5'
 
-config 'update'
-	option 'autoupdate' '1'
-
 config 'crawl'
 	option 'method' 'hash'
 	option 'nickname' '1'

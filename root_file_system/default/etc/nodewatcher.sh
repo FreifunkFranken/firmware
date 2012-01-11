@@ -1,110 +1,39 @@
 #!/bin/sh
-# Netmon Nodewatcher (C) 2010-2011 Freifunk Oldenburg
-# Lizenz: GPL
+# Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
+# License; GPL v3
 
-SCRIPT_DIR=`dirname $0`
-
+#Get the configuration from the uci configuration file
+#If it does not exists, then get it from a normal bash file with variables.
 if [ -f /etc/config/nodewatcher ];then
-	API_IPV4_ADRESS=`uci get nodewatcher.@api[0].ipv4_address`
-	API_IPV6_ADRESS=`uci get nodewatcher.@api[0].ipv6_address`
-	API_IPV6_INTERFACE=`uci get nodewatcher.@api[0].ipv6_interface`
-	API_TIMEOUT=`uci get nodewatcher.@api[0].timeout`
-	API_RETRY=`uci get nodewatcher.@api[0].retry`
 	SCRIPT_VERSION=`uci get nodewatcher.@script[0].version`
 	SCRIPT_ERROR_LEVEL=`uci get nodewatcher.@script[0].error_level`
 	SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
-	UPDATE_AUTOUPDATE=`uci get nodewatcher.@update[0].autoupdate`
+	SCRIPT_DATA_FILE=`uci get nodewatcher.@script[0].data_file`
 	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
 	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
 else
-	. $SCRIPT_DIR/nodewatcher_config
+	. `dirname $0`/nodewatcher_config
 fi
 
-API_RETRY=$(($API_RETRY - 1))
-
+#this method checks id the logfile has bekome too big and deletes the first X lines
 delete_log() {
-	if [ -f $logfile ]; then
-		if [ `ls -la $logfile | awk '{ print $5 }'` -gt "6000" ]; then
-			sed -i '1,60d' $logfile
-			if [ $error_level -gt "1" ]; then
-				echo "`date`: Logfile wurde verkleinert" >> $logfile
+	if [ -f $SCRIPT_LOGFILE ]; then
+		if [ `ls -la $SCRIPT_LOGFILE | awk '{ print $5 }'` -gt "6000" ]; then
+			sed -i '1,60d' $SCRIPT_LOGFILE
+			if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+				echo "`date`: Logfile has been made smaller" >> $SCRIPT_LOGFILE
 			fi
 		fi
 	fi
 }
 
-get_url() {
-	if [[ $API_IPV4_ADRESS != "1" ]]; then
-		url=$API_IPV4_ADRESS
-	else
-		url="[$API_IPV6_ADRESS"%"$API_IPV6_INTERFACE]"
-	fi
-	echo $url
-}
-
-get_curl() {
-	if [[ $API_IPV4_ADRESS != "1" ]]; then
-		curl="http://$API_IPV4_ADRESS"
-	else
-		numeric_scope_id=`ip addr | grep $API_IPV6_INTERFACE | awk '{ print $1 }' | sed 's/://'`
-		curl="-g http://$API_IPV6_ADRESS%$numeric_scope_id"
-	fi
-	echo $curl
-}
-
-do_ping() {
-	if [[ $API_IPV4_ADRESS != "1" ]]; then
-		command="ping -c 2 "$API_IPV4_ADRESS
-	else
-		command="ping -c 2 -I "$API_IPV6_INTERFACE" "$API_IPV6_ADRESS
-	fi
-
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Pinging..." >> $logfile
-	fi
-	
-	ping_return=`$command`
-
-	if [ $error_level -gt "2" ]; then
-		echo $ping_return
-	fi
-}
-
-update() {
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Suche neue Version" >> $logfile
-	fi
-	netmon_api=`get_url`
-	command="wget -q -O - http://$netmon_api/api_nodewatcher.php?section=version&nodewatcher_version=$SCRIPT_VERSION"
-	ergebnis=`$command&sleep $API_TIMEOUT; kill $!`
-	return=`echo $ergebnis| cut '-d;' -f1`
-	version=`echo $ergebnis| cut '-d;' -f2`
-
-	if [[ "$return" = "success" ]]; then
-		if [[ $version -gt $SCRIPT_VERSION ]]; then
-			if [ $error_level -gt "1" ]; then
-				echo "`date`: Eine neue Version ist Verfügbar, script wird geupdated" >> $logfile
-			fi
-			wget -q -O $SCRIPT_DIR/nodewatcher.sh "http://$netmon_api/api_nodewatcher.php?section=update&nodewatcher_version=$SCRIPT_VERSION"
-			uci set nodewatcher.@script[0].version=$version
-			uci commit
-		else
-			if [ $error_level -gt "1" ]; then
-				echo "`date`: Das Script ist aktuell" >> $logfile
-			fi
-		fi
-	else
-		if [ $error_level -gt "0" ]; then
-			echo "`date`: Beim Update ist ein Fehler aufgetreten: $ergebnis" >> $logfile
-		fi
-	fi
-}
-
+#this method generates the crawl data xml file that is beeing fetched by netmon
+#and provided by a small local httpd
 crawl() {
 	#Get system data from UCI
 	if which uci >/dev/null; then
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: UCI is installed, trying to collect extra data UCI" >> $logfile
+		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+			echo "`date`: UCI is installed, trying to collect extra data from UCI" >> $SCRIPT_LOGFILE
 		fi
 		location="`uci get freifunk.contact.location`"
 		latitude="`uci get system.@system[0].latitude`"
@@ -119,14 +48,17 @@ crawl() {
 
 	#Get system data from LUA	
 	if which lua >/dev/null; then
-		if [ $error_level -gt "1" ]; then
-			echo "`date`: LUA is installed, trying to collect extra data LUA" >> $logfile
+		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+			echo "`date`: LUA is installed, trying to collect extra data from LUA" >> $SCRIPT_LOGFILE
 		fi
 		luciname=`lua -l luci.version -e 'print(luci.version.luciname)'`
 		lucversion=`lua -l luci.version -e 'print(luci.version.luciversion)'`
 	fi
 	
 	#Get system data from other locations
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Collecting basic system status data" >> $SCRIPT_LOGFILE
+	fi
 	hostname="`cat /proc/sys/kernel/hostname`"
 	uptime=`cat /proc/uptime | awk '{ print $1 }'`
 	idletime=`cat /proc/uptime | awk '{ print $2 }'`
@@ -145,6 +77,9 @@ crawl() {
 	processes=`cat /proc/loadavg | awk '{ print $4 }'`
 	loadavg=`cat /proc/loadavg | awk '{ print $1 }'`
 
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Collecting version information" >> $SCRIPT_LOGFILE
+	fi
 	if which batctl >/dev/null; then
 		batctl_adv_version=`batctl -v | awk '{ print $2 }'`
 		batman_adv_version=`batctl o|head -n1|awk '{ print $3 }'|sed 's/,//'`
@@ -163,14 +98,15 @@ crawl() {
 	firmware_version_file="/etc/firmware_release"
 	if [ -f $firmware_version_file ]; then
 		. $firmware_version_file
-
-		firmware_version=$FIRMWARE_VERSION
 	fi
 
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Collecting information from network interfaces" >> $SCRIPT_LOGFILE
+	fi
 	#Get interfaces
 	IFACES=`cat /proc/net/dev | awk -F: '!/\|/ { gsub(/[[:space:]]*/, "", $1); split($2, a, " "); printf("%s=%s=%s ", $1, a[1], a[9]) }'`
 
-	int=""	
+	interface_data=""	
 	#Loop interfaces
 	for entry in $IFACES; do
 		iface=`echo $entry | cut -d '=' -f 1`
@@ -195,7 +131,7 @@ crawl() {
 				traffic_rx="$rcv"
 				traffic_tx="$xmt"
 				
-				int=$int"<$name><name>$name</name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
+				interface_data=$interface_data"<$name><name>$name</name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
 				
 				if [ "`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`" != "" ]; then
 					wlan_mode="`iwconfig ${iface} 2>/dev/null | grep 'Mode' | awk '{ print $1 }' | cut -d ':' -f 2`"
@@ -209,13 +145,16 @@ crawl() {
 					wlan_essid="`iwconfig ${iface} 2>/dev/null | grep ESSID | awk '{ split($4, a, \"\\"\"); printf(\"%s\", a[2]); }'`"
 					wlan_frequency="`iwconfig ${iface} 2>/dev/null | grep Frequency | awk '{ print $2 }' | cut -d ':' -f 2`"
 					wlan_tx_power="`iwconfig ${iface} 2>/dev/null | grep 'Tx-Power' | awk '{ print $4 }' | cut -d ':' -f 2`"
-					int=$int"<wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>$wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power>"
+					interface_data=$interface_data"<wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>$wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power>"
 				fi
-				int=$int"</$name>"
+				interface_data=$interface_data"</$name>"
 			fi
 		fi
 	done
 
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Collecting information from batman advanced and it´s interfaces" >> $SCRIPT_LOGFILE
+	fi
 	#B.A.T.M.A.N. advanced
 	mv /etc/bat-hosts /etc/bat-hosts.tmp
 	if which batctl >/dev/null; then
@@ -262,6 +201,9 @@ crawl() {
 	fi
 	mv /etc/bat-hosts.tmp /etc/bat-hosts
 
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Collecting information about conected clients" >> $SCRIPT_LOGFILE
+	fi
 	#CLIENTS
 	SEDDEV=`brctl showstp $MESH_INTERFACE | egrep '\([0-9]\)' | sed -e "s/(//;s/)//" | awk '{ print "s/^  "$2"/"$1"/;" }'`
 
@@ -275,53 +217,29 @@ crawl() {
 	done
 	client_count=$i
 
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><description>$description</description><location>$location</location><latitude>$latitude</latitude><longitude>$longitude</longitude><luciname>$luciname</luciname><luciversion>$luciversion</luciversion><distname>$distname</distname><distversion>$distversion</distversion><chipset>$chipset</chipset><cpu>$cpu</cpu><memory_total>$memory_total</memory_total><memory_caching>$memory_caching</memory_caching><memory_buffering>$memory_buffering</memory_buffering><memory_free>$memory_free</memory_free><loadavg>$loadavg</loadavg><processes>$processes</processes><uptime>$uptime</uptime><idletime>$idletime</idletime><local_time>$local_time</local_time><community_essid>$community_essid</community_essid><community_nickname>$community_nickname</community_nickname><community_email>$community_email</community_email><community_prefix>$community_prefix</community_prefix><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$firmware_version</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
-	INTERFACE_DATA="$int"
-	BATMAN_ADV_ORIGINATORS="$batman_adv_originators"
-	CLIENT_DATA="$client_count"
+	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+		echo "`date`: Putting all information into a XML-File and save it at "$SCRIPT_DATA_FILE >> $SCRIPT_LOGFILE
+	fi
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><description>$description</description><location>$location</location><latitude>$latitude</latitude><longitude>$longitude</longitude><luciname>$luciname</luciname><luciversion>$luciversion</luciversion><distname>$distname</distname><distversion>$distversion</distversion><chipset>$chipset</chipset><cpu>$cpu</cpu><memory_total>$memory_total</memory_total><memory_caching>$memory_caching</memory_caching><memory_buffering>$memory_buffering</memory_buffering><memory_free>$memory_free</memory_free><loadavg>$loadavg</loadavg><processes>$processes</processes><uptime>$uptime</uptime><idletime>$idletime</idletime><local_time>$local_time</local_time><community_essid>$community_essid</community_essid><community_nickname>$community_nickname</community_nickname><community_email>$community_email</community_email><community_prefix>$community_prefix</community_prefix><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
-	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$INTERFACE_DATA</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$BATMAN_ADV_ORIGINATORS</batman_adv_originators><client_count>$CLIENT_DATA</client_count></data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><client_count>$client_count</client_count></data>"
 
 	#write data to hxml file that provides the data on httpd
-	echo $DATA > /tmp/node.data
+	echo $DATA > $SCRIPT_DATA_FILE
 }
 
 LANG=C
 
-SCRIPT_DIR=`dirname $0`
-error_level=$SCRIPT_ERROR_LEVEL
-logfile=$SCRIPT_LOGFILE
-
-if [[ $UPDATE_AUTOUPDATE == '1' ]]; then
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Autoupdate ist an" >> $logfile
-	fi
-	update
-else
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Autoupdate ist aus" >> $logfile
-	fi
+#Prüft ob das logfile zu groß geworden ist
+if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+	echo "`date`: Check logfile" >> $SCRIPT_LOGFILE
 fi
+delete_log
 
-if [[ "$1" == "update" ]]; then
-	if [ $error_level -gt "1" ]; then
-		echo "`date`: Führe manuelles update aus" >> $logfile
-	fi
-	update
-	exit 1
+#Erzeugt die statusdaten
+if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+	echo "`date`: Generate actual status data" >> $SCRIPT_LOGFILE
 fi
+crawl
 
-can_crawl=1
-
-if [ $can_crawl == 1 ]; then
- 	if [ $error_level -gt "1" ]; then
-		echo "`date`: Prüfe Logfile" >> $logfile
-	fi
-	delete_log
-
- 	if [ $error_level -gt "1" ]; then
-		echo "`date`: Sende aktuelle Statusdaten" >> $logfile
-	fi
-	crawl
-fi
 exit 0
