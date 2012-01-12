@@ -141,7 +141,14 @@ autoadd_ipv6_address() {
 		echo "`date`: The IPv6 address of the router $CRAWL_ROUTER_ID has been added to the router in Netmon" >> $SCRIPT_LOGFILE
 		echo "`date`: IPv6 Autoadd has been disabled cause it is no longer necesarry" >> $SCRIPT_LOGFILE
 	else
-		echo "`date`: The IPv6 address already exists in Netmon on router `echo $ergebnis| cut '-d,' -f3`)" >> $SCRIPT_LOGFILE
+		if [ `echo $ergebnis| cut '-d,' -f3` == "$CRAWL_ROUTER_ID" ]; then
+			echo "`date`: The IPv6 address already exists in Netmon on this router. Maybe because of a previos assignment" >> $SCRIPT_LOGFILE
+			uci set configurator.@netmon[0].autoadd_ipv6_address='0'
+			uci commit
+			echo "`date`: IPv6 Autoadd has been disabled cause it is no longer necesarry" >> $SCRIPT_LOGFILE
+		else 
+			echo "`date`: The IPv6 address already exists in Netmon on another router `echo $ergebnis| cut '-d,' -f3`" >> $SCRIPT_LOGFILE
+		fi
 	fi
 }
 
