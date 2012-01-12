@@ -156,7 +156,7 @@ crawl() {
 		echo "`date`: Collecting information from batman advanced and it´s interfaces" >> $SCRIPT_LOGFILE
 	fi
 	#B.A.T.M.A.N. advanced
-	mv /etc/bat-hosts /etc/bat-hosts.tmp
+	mv /tmp/bat-hosts /tmp/bat-hosts.tmp
 	if which batctl >/dev/null; then
         	batman_check_running=`batctl if | grep 'Error'`
 		if [ "$batman_check_running" == "" ]; then
@@ -199,7 +199,7 @@ crawl() {
 			fi
 		fi
 	fi
-	mv /etc/bat-hosts.tmp /etc/bat-hosts
+	mv /tmp/bat-hosts.tmp /tmp/bat-hosts
 
 	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
 		echo "`date`: Collecting information about conected clients" >> $SCRIPT_LOGFILE
