@@ -29,7 +29,8 @@ sh /etc/firewall.user
 /etc/init.d/qos stop
 
 #busybox-httpd for crawldata
-httpd -h /tmp/
+mkdir /tmp/crawldata
+httpd -h /tmp/crawldata
 
 sh /etc/configurator.sh
 
