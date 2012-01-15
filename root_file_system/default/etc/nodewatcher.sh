@@ -82,7 +82,7 @@ crawl() {
 	fi
 	if which batctl >/dev/null; then
 		batctl_adv_version=`batctl -v | awk '{ print $2 }'`
-		batman_adv_version=`batctl o|head -n1|awk '{ print $3 }'|sed 's/,//'`
+		batman_adv_version=`batctl o -n|head -n1|awk '{ print $3 }'|sed 's/,//'`
 	fi
 	kernel_version=`uname -r`
 	nodewatcher_version=$SCRIPT_VERSION
@@ -156,7 +156,6 @@ crawl() {
 		echo "`date`: Collecting information from batman advanced and it´s interfaces" >> $SCRIPT_LOGFILE
 	fi
 	#B.A.T.M.A.N. advanced
-	mv /tmp/bat-hosts /tmp/bat-hosts.tmp
 	if which batctl >/dev/null; then
         	batman_check_running=`batctl if | grep 'Error'`
 		if [ "$batman_check_running" == "" ]; then
@@ -174,12 +173,12 @@ crawl() {
 			done
 			
 			if [ $has_active_interface = "1" ]; then
-				BAT_ADV_ORIGINATORS=`batctl o | grep 'No batman nodes in range'`
+				BAT_ADV_ORIGINATORS=`batctl o -n | grep 'No batman nodes in range'`
 				if [ "$BAT_ADV_ORIGINATORS" == "" ]; then
 					OLDIFS=$IFS
 					IFS="
 "
-					BAT_ADV_ORIGINATORS=`batctl o | awk '/O/ {next} /B/ {next} {print}'`
+					BAT_ADV_ORIGINATORS=`batctl o -n | awk '/O/ {next} /B/ {next} {print}'`
 					count=0;
 					for row in $BAT_ADV_ORIGINATORS; do
 						originator=`echo $row | awk '{print $1}'`
@@ -199,7 +198,6 @@ crawl() {
 			fi
 		fi
 	fi
-	mv /tmp/bat-hosts.tmp /tmp/bat-hosts
 
 	if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
 		echo "`date`: Collecting information about conected clients" >> $SCRIPT_LOGFILE

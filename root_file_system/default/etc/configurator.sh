@@ -70,7 +70,7 @@ assign_router() {
 	if [ `echo $ergebnis| cut '-d;' -f1` = "success" ]; then
 		router_auto_assign_login_string=`echo $ergebnis| cut '-d;' -f2`
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
-			echo "`date`: There alredy exists a router with this login string: $router_auto_assign_login_string" >> $SCRIPT_LOGFILE
+			echo "`date`: A router with the login string $router_auto_assign_login_string does exists. Trying to assign..." >> $SCRIPT_LOGFILE
 		fi
 	elif [ `echo $ergebnis| cut '-d;' -f1` = "error" ]; then
 		router_auto_assign_login_string=`echo $login_strings| cut '-d;' -f1`
@@ -171,7 +171,7 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 		sync_hostname
 	else
 		if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
-			echo "`date`: The router is alredy assigned to a router in Netmon" >> $SCRIPT_LOGFILE
+			echo "`date`: The router is already assigned to a router in Netmon" >> $SCRIPT_LOGFILE
 		fi
                	if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
        			autoadd_ipv6_address
