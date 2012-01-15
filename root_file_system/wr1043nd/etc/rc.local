@@ -20,7 +20,8 @@ ifconfig br-mesh up
 ifdown lan
 ifup lan
 
-rdate -s time.fu-berlin.de
+# Starting NTP-Client Daemon
+ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
 
 chown root.root /etc/crontabs/root
 /etc/init.d/cron stop

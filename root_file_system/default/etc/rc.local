@@ -33,8 +33,8 @@ if [[ "$BRMAC" != "$WLMAC" ]]; then
 fi
 fi
 
-# todo: find time-server in Freifunk-Network
-rdate -s time.fu-berlin.de
+# Starting NTP-Client Daemon
+ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
 
 sh /etc/firewall.user
 
