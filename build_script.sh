@@ -2,7 +2,7 @@
 
 prepare() {
 	#Get the OpenWrt Core Source for Firmware
-	svn checkout svn://svn.openwrt.org/openwrt/tags/backfire_10.03.1/ ./build_dir
+	svn checkout svn://openwrt.freifunk-ol.de/tags/backfire_10.03.1/ ./build_dir
 	#apply own feeds.conf
 	svn export ./build_patches/feeds.conf ./build_dir/feeds.conf
 
