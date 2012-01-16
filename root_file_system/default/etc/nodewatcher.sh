@@ -189,8 +189,9 @@ crawl() {
 						link_quality="${link_quality//)/}"
                                                 outgoing_interface=`echo $row | awk '{print $6}'`
                                                 outgoing_interface="${outgoing_interface//]:/}"
+						nexthop=`echo $row | awk '{print $4}'`
 
-						batman_adv_originators=$batman_adv_originators"<originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><last_seen>$last_seen</last_seen><outgoing_interface>$outgoing_interface</outgoing_interface></originator_$count>"
+						batman_adv_originators=$batman_adv_originators"<originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><nexthop>$nexthop</nexthop><last_seen>$last_seen</last_seen><outgoing_interface>$outgoing_interface</outgoing_interface></originator_$count>"
 						count=`expr $count + 1`
 					done
 					IFS=$OLDIFS
