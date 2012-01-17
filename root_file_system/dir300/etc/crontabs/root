@@ -7,7 +7,7 @@
 */5 * * * *	sleep 60 && sh /etc/configurator.sh
 0 * * * *	sleep 80 && sh /etc/configurator.sh sync_hostname
 
-15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
+#15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
 
 */5 * * * *	sleep 10 && killall -HUP dnsmasq
 
