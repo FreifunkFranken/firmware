@@ -87,7 +87,7 @@ configure_build() {
 	esac
 
 	#insert actual firware version informations into release file
-	echo "FIRMWARE_VERSION=\"0.3beta4\"" > ./build_dir/files/etc/firmware_release
+	echo "FIRMWARE_VERSION=\"0.3beta5\"" > ./build_dir/files/etc/firmware_release
 	echo "RELEASE_DATE=\"\"" >> ./build_dir/files/etc/firmware_release
 	echo "FIRMWARE_REVISION=\""`svn info ./ |grep Revision: |cut -c11-`"\"" >> ./build_dir/files/etc/firmware_release
 	echo "OPENWRT_CORE_REVISION=\""`svn info ./build_dir |grep Revision: |cut -c11-`"\"" >> ./build_dir/files/etc/firmware_release
