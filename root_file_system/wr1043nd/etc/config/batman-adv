@@ -1,5 +1,5 @@
 config 'mesh' 'bat0'
-        option 'interfaces' 'wlan0-1'
+        option 'interfaces' 'wlan0-1 eth0.3 eth0.4'
         option 'aggregated_ogms'
         option 'bonding'
         option 'fragmentation'

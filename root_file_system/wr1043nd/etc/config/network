@@ -17,17 +17,40 @@ config 'interface' 'wan'
         option 'ifname' 'eth0.2'
         option 'proto' 'dhcp'
 
+config 'interface' 'ethmesh1'
+        option 'ifname' 'eth0.3'
+        option 'mtu' '1528'
+	
+config 'interface' 'ethmesh2'
+        option 'ifname' 'eth0.4'
+        option 'mtu' '1528'
+
 config 'switch'
         option 'name' 'rtl8366rb'
         option 'reset' '1'
         option 'enable_vlan' '1'
 
+#3. und 4. LAN Port
 config 'switch_vlan'
         option 'device' 'rtl8366rb'
         option 'vlan' '1'
-        option 'ports' '1 2 3 4 5t'
+        option 'ports' '3 4 5t'
 
+#WAN
 config 'switch_vlan'
         option 'device' 'rtl8366rb'
         option 'vlan' '2'
         option 'ports' '0 5t'
+
+
+#1. LAN Port
+config 'switch_vlan'
+        option 'device' 'rtl8366rb'
+        option 'vlan' '3'
+        option 'ports' '1 5t'
+
+#2. LAN Port
+config 'switch_vlan'
+        option 'device' 'rtl8366rb'
+        option 'vlan' '4'
+        option 'ports' '2 5t'
