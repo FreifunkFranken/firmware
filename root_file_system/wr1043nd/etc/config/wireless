@@ -17,9 +17,12 @@ config wifi-iface
         option ssid     'batman.oldenburg.freifunk.net'
         option mcast_rate 6000
 #       option bintval  1000
+        option 'encryption' 'none'
+        option 'hidden' '1'
 
 config wifi-iface
         option device   radio0
         option network  mesh
         option mode     ap
         option ssid     'oldenburg.freifunk.net'
+        option 'encryption' 'none'
