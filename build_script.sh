@@ -81,6 +81,12 @@ configure_build() {
 			svn export ./root_file_system/default ./build_dir/files/ --force
 			svn export ./root_file_system/wr741nd ./build_dir/files/ --force
 			;;
+		"wr841nd")
+#			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config  --force
+#			svn export ./root_file_system/default ./build_dir/files/ --force
+#			svn export ./root_file_system/wr741nd ./build_dir/files/ --force
+			echo "Nothing implemented for wr841nd";
+			;;
 		*)
 			echo "ERROR";
 			;;
