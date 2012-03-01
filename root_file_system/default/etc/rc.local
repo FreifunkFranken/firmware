@@ -47,4 +47,7 @@ httpd -h /tmp/crawldata
 
 sh /etc/configurator.sh
 
+#do something if a client associates
+#iw event -f | /etc/clients_event.sh &
+
 exit 0
