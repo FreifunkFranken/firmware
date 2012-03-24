@@ -104,6 +104,11 @@ assign_router() {
 				echo "`date`: The list of not assigned routers has been updated. Exiting" >> $SCRIPT_LOGFILE
 				exit 0
 			fi
+		else
+			if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
+				echo "`date`: An unknown error occured" >> $SCRIPT_LOGFILE
+				exit 0
+			fi
 		fi
 		if [ $SCRIPT_ERROR_LEVEL -gt "0" ]; then
 			echo "`date`: The router has not been assigned to a router in Netmon" >> $SCRIPT_LOGFILE
