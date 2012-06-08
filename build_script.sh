@@ -277,10 +277,14 @@ case "$1" in
 		if [ "$2" = "help" ] || [ "$2" = "" ]; then
 			echo "This option downloads the ready configured images from an external location if needet."
 			echo "Usage: $0 $1 http://downloadfolder router-type"
+			echo "Common downloadfolder for firmware version 0.3 is http://dev.freifunk-ol.de/firmware/0.3/"
 			routers
 		else
-			wget "$2/openwrt-$3-root.squashfs"
-			wget "$2/openwrt-$3-vmlinux.lzma"
+			mkdir ./bin
+			cd ./bin
+			wget "$2/$3/openwrt-$3-root.squashfs"
+			wget "$2/$3/openwrt-$3-vmlinux.lzma"
+			cd ..
 		fi
 		;;
 	"flash")
