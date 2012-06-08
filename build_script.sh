@@ -160,7 +160,7 @@ build() {
 
 flash() {
 	#Get flash tools
-	svn export http://svn.freifunk-ol.de/build_environment/flash_tools
+	svn export http://svn.freifunk-ol.de/firmware/Trunk/flash_tools
 
 	if [ ! "`whoami`" = "root" ]
 	then
@@ -171,15 +171,17 @@ flash() {
 	echo "Do not plugin your router now, you will be asked to do this later!"
 	echo "Stopping Network manager and starting normal network and tftp server..."
 	if [ -f /etc/rc.d/networkmanager ];then
-		/etc/rc.d/networkmanager stop&&/etc/rc.d/network start
+		/etc/rc.d/networkmanager stop
 		/etc/rc.d/tftpd start
 	elif [ -f /etc/init.d/networkmanager ];then
-		/etc/init.d/networkmanager stop&&/etc/init.d/network start
+		/etc/init.d/networkmanager stop
 		/etc/init.d/tftpd start
 	elif [ -f /usr/sbin/invoke-rc.d ];then
 		invoke-rc.d tftpd-hpa start
 		invoke-rc.d network-manager stop
 	fi
+
+	ifconfig $2 up
 
 	echo "Clearing Firewall!"
 	iptables -F
@@ -198,8 +200,9 @@ flash() {
 		"fonera")
 			echo "In some cases you have to set a symlink to libpcap to make flashing work (Tim told me that it is evil if I do that for you):"
 			echo "ln -s /usr/lib/libpcap.so.1.1.1 /usr/lib/libpcap.so.0.8"
-			
-			./flash_tools/fonera-flash/ap51-flash-1.0-42 $2 ./bin/openwrt-$1-root.squashfs ./bin/openwrt-$1-vmlinux.lzma freifunc
+
+			arch=`uname -m`
+			./flash_tools/fonera-flash/ap51-flash-$arch $2 ./bin/openwrt-$1-root.squashfs ./bin/openwrt-$1-vmlinux.lzma freifunc
 			;;
 		"dir300b_adhoc" | "dir300b_ap")
 			echo "* Press RESET on your router and power it on."
@@ -214,6 +217,7 @@ flash() {
 	esac
 
 	echo "Starting Networkmanager again"
+	sleep 5;
 	if [ -f /etc/rc.d/networkmanager ];then
 		/etc/rc.d/networkmanager start
 	elif [ -f /etc/init.d/networkmanager ];then
