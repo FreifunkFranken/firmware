@@ -9,4 +9,5 @@ sed -i -e "s/@MAJOR@/`awk -F '.' '{ print $1 }' VERSION`/"          -e "s/@MINOR
 make
 mkdir pkg
 make DESTDIR=./pkg install 
+cp ./pkg/usr/local/lib/libpcap.so.0.8 ./
 cd ..

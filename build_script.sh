@@ -201,6 +201,13 @@ flash() {
 			echo "In some cases you have to set a symlink to libpcap to make flashing work (Tim told me that it is evil if I do that for you):"
 			echo "ln -s /usr/lib/libpcap.so.1.1.1 /usr/lib/libpcap.so.0.8"
 
+			cd ./flash_tools/fonera-flash/
+			./build_libpcap.sh
+			cd ../../
+
+			LD_LIBRARY_PATH=`pwd`flash_tools/fonera-flash/libpcap-0.8.1/
+			export LD_LIBRARY_PATH
+
 			arch=`uname -m`
 			./flash_tools/fonera-flash/ap51-flash-$arch $2 ./bin/openwrt-$1-root.squashfs ./bin/openwrt-$1-vmlinux.lzma freifunc
 			;;
