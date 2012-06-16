@@ -12,9 +12,8 @@ prepare() {
 	
 	./build_dir/scripts/feeds install -a
 
-	#set git-rev to actual blaII-rebase
-
-	#patch -p0  < ./build_patches/blaII/Makefile.patch ./build_dir/feeds/batman/batman-adv-devel/Makefile
+	#Upgrade batman advanced to version 2012.2.0
+	svn update --revision=32386 ./build_dir/feeds/packages/net/batman-adv/
 
 	# fix some tinc mem leaks
 	mkdir ./build_dir/feeds/packages/net/tinc/patches
