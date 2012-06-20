@@ -7,6 +7,7 @@ batctl if add wlan0-1
 
 ifconfig eth0 mtu 1528
 
+echo enable > /sys/devices/virtual/net/bat0/mesh/bridge_loop_avoidance
 
 toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
