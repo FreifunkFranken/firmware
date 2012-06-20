@@ -15,6 +15,9 @@ prepare() {
 	#Upgrade batman advanced to version 2012.2.0
 	svn update --revision=32386 ./build_dir/feeds/packages/net/batman-adv/
 
+	#fix mktools build error on arch linux
+	cp ./build_patches/011-missing_unistd.patch ./build_dir/tools/mklibs/patches/
+
 	# fix some tinc mem leaks
 	mkdir ./build_dir/feeds/packages/net/tinc/patches
 	cp ./build_patches/tinc/001_fix_a_few_small_memory_leaks.patch ./build_dir/feeds/packages/net/tinc/patches/001_fix_a_few_small_memory_leaks.patch
