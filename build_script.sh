@@ -26,7 +26,6 @@ prepare() {
 		"dir300")
 			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			svn export ./build_patches/dir300/990_fix_wifi_led.patch ./build_dir/package/mac80211/patches/990_fix_wifi_led.patch
-
 			;;
 		"fonera")
 			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
@@ -36,6 +35,15 @@ prepare() {
 	#fix bad switch behaveior:
 	/bin/rm ./build_dir/target/linux/atheros/base-files/etc/uci-defaults/network
 
+	#Apply https://dev.openwrt.org/changeset/32128/branches/backfire
+#	/bin/rm ./build_dir/tools/mklibs/patches/001-missing_stdio.patch
+#	wget -O ./build_dir/tools/mklibs/patches/001-missing_includes.patch https://dev.openwrt.org/export/32128/branches/backfire/tools/mklibs/patches/001-missing_includes.patch
+
+	mkdir ./build_dir/tools/m4/patches
+	wget -O .//build_dir/tools/m4/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32648/trunk/tools/m4/patches/100-fix-gets-removal.patch
+
+	mkdir ./build_dir/tools/bison/patches
+	wget -O ./build_dir/tools/bison/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32649/trunk/tools/bison/patches/100-fix-gets-removal.patch
 }
 
 configure_build() {
