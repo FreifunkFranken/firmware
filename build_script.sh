@@ -13,7 +13,7 @@ prepare() {
 	./build_dir/scripts/feeds install -a
 
 	#Upgrade batman advanced to version 2012.2.0
-	svn update --revision=32386 ./build_dir/feeds/packages/net/batman-adv/
+	svn update --revision=32789 ./build_dir/feeds/packages/net/batman-adv/
 
 	#fix mktools build error on arch linux
 	cp ./build_patches/011-missing_unistd.patch ./build_dir/tools/mklibs/patches/
@@ -40,7 +40,7 @@ prepare() {
 #	wget -O ./build_dir/tools/mklibs/patches/001-missing_includes.patch https://dev.openwrt.org/export/32128/branches/backfire/tools/mklibs/patches/001-missing_includes.patch
 
 	mkdir ./build_dir/tools/m4/patches
-	wget -O .//build_dir/tools/m4/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32648/trunk/tools/m4/patches/100-fix-gets-removal.patch
+	wget -O ./build_dir/tools/m4/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32648/trunk/tools/m4/patches/100-fix-gets-removal.patch
 
 	mkdir ./build_dir/tools/bison/patches
 	wget -O ./build_dir/tools/bison/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32649/trunk/tools/bison/patches/100-fix-gets-removal.patch
@@ -257,6 +257,7 @@ routers() {
 	echo "	fonera"
 	echo "	wrt54g_ap"
 	echo "	wrt54g_adhoc"
+	echo "	wr741nd"
 	echo "	wr1043nd"
 }
 
