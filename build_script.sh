@@ -2,9 +2,9 @@
 
 prepare() {
 	#Get the OpenWrt Core Source for Firmware
-	svn checkout svn://svn.openwrt.org/openwrt/tags/backfire_10.03.1/ ./build_dir
+	svn checkout -r 33502 svn://svn.openwrt.org/openwrt/trunk/ ./build_dir
 	#apply own feeds.conf
-	svn export ./build_patches/feeds.conf ./build_dir/feeds.conf
+	cp ./build_patches/feeds.conf ./build_dir/feeds.conf
 
 	test -d ./build_dir/feeds && /bin/rm -rf ./build_dir/feeds
 
@@ -13,37 +13,45 @@ prepare() {
 	./build_dir/scripts/feeds install -a
 
 	#Upgrade batman advanced to version 2012.2.0
-	svn update --revision=32789 ./build_dir/feeds/packages/net/batman-adv/
+	# not needed atm, because in recent openwrt it's uptodate
+	#svn update --revision=32789 ./build_dir/feeds/packages/net/batman-adv/
 
 	#fix mktools build error on arch linux
-	cp ./build_patches/011-missing_unistd.patch ./build_dir/tools/mklibs/patches/
+	# hope it's fixed upstream
+	#cp ./build_patches/011-missing_unistd.patch ./build_dir/tools/mklibs/patches/
 
 	# fix some tinc mem leaks
-	mkdir ./build_dir/feeds/packages/net/tinc/patches
-	cp ./build_patches/tinc/001_fix_a_few_small_memory_leaks.patch ./build_dir/feeds/packages/net/tinc/patches/001_fix_a_few_small_memory_leaks.patch
+	# this patch was a backport and isn't needed anymore
+	#mkdir ./build_dir/feeds/packages/net/tinc/patches
+	#cp ./build_patches/tinc/001_fix_a_few_small_memory_leaks.patch ./build_dir/feeds/packages/net/tinc/patches/001_fix_a_few_small_memory_leaks.patch
 
+
+	# don't know what's the state of this. we have to take a look again later...
 	case "$1" in
 		"dir300")
-			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
-			svn export ./build_patches/dir300/990_fix_wifi_led.patch ./build_dir/package/mac80211/patches/990_fix_wifi_led.patch
+			#svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
+			#svn export ./build_patches/dir300/990_fix_wifi_led.patch ./build_dir/package/mac80211/patches/990_fix_wifi_led.patch
 			;;
 		"fonera")
-			svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
+			#svn export ./build_patches/ar231x/260_fixdmaoffset.patch ./build_dir/target/linux/atheros/patches-2.6.30/260_fixdmaoffset.patch
 			;;
 	esac
 
 	#fix bad switch behaveior:
-	/bin/rm ./build_dir/target/linux/atheros/base-files/etc/uci-defaults/network
+	# also .. later ..
+	#/bin/rm ./build_dir/target/linux/atheros/base-files/etc/uci-defaults/network
 
 	#Apply https://dev.openwrt.org/changeset/32128/branches/backfire
 #	/bin/rm ./build_dir/tools/mklibs/patches/001-missing_stdio.patch
 #	wget -O ./build_dir/tools/mklibs/patches/001-missing_includes.patch https://dev.openwrt.org/export/32128/branches/backfire/tools/mklibs/patches/001-missing_includes.patch
 
-	mkdir ./build_dir/tools/m4/patches
-	wget -O ./build_dir/tools/m4/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32648/trunk/tools/m4/patches/100-fix-gets-removal.patch
+	# also .. later ..
+	#mkdir ./build_dir/tools/m4/patches
+	#wget -O ./build_dir/tools/m4/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32648/trunk/tools/m4/patches/100-fix-gets-removal.patch
 
-	mkdir ./build_dir/tools/bison/patches
-	wget -O ./build_dir/tools/bison/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32649/trunk/tools/bison/patches/100-fix-gets-removal.patch
+	# also .. later ..
+	#mkdir ./build_dir/tools/bison/patches
+	#wget -O ./build_dir/tools/bison/patches/100-fix-gets-removal.patch https://dev.openwrt.org/export/32649/trunk/tools/bison/patches/100-fix-gets-removal.patch
 }
 
 configure_build() {
@@ -52,49 +60,46 @@ configure_build() {
 
 	case "$1" in
 		"dir300")
-			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/dir300 ./build_dir/files/ --force
+			cp ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/dir300/* ./build_dir/files/
 			;;
 		"fonera")
-			svn export ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/fonera ./build_dir/files/ --force
+			cp ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/fonera/* ./build_dir/files/
 			;;
 		"wrt54g_ap")
-			svn export ./build_configuration/Broadcom_BCM947xx_953xx_ap/.config ./build_dir/.config --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/wrt54g_ap ./build_dir/files/ --force
+			cp ./build_configuration/Broadcom_BCM947xx_953xx_ap/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/wrt54g_ap/* ./build_dir/files/
 			;;
 		"wrt54g_adhoc")
-			svn export ./build_configuration/Broadcom_BCM947xx_953xx_adhoc/.config ./build_dir/.config  --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/wrt54g_adhoc ./build_dir/files/ --force
+			cp ./build_configuration/Broadcom_BCM947xx_953xx_adhoc/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/wrt54g_adhoc/* ./build_dir/files/
 			;;
 		"dir300b_ap")
-			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config  --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/dir300b_ap ./build_dir/files/ --force
+			cp ./build_configuration/ramips_rt3050/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/dir300b_ap/* ./build_dir/files/
 			;;
 		"dir300b_adhoc")
-			svn export ./build_configuration/ramips_rt3050/.config ./build_dir/.config  --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/dir300b_adhoc ./build_dir/files/ --force
+			cp ./build_configuration/ramips_rt3050/.config ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/dir300b_adhoc/* ./build_dir/files/
 			;;
 		"wr1043nd")
-			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr1043nd ./build_dir/.config  --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/wr1043nd ./build_dir/files/ --force
+			cp ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr1043nd ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/wr1043nd/* ./build_dir/files/
 			;;
 		"wr741nd")
-			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config  --force
-			svn export ./root_file_system/default ./build_dir/files/ --force
-			svn export ./root_file_system/wr741nd ./build_dir/files/ --force
+			cp ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config
+			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp -r ./root_file_system/wr741nd/* ./build_dir/files/
 			;;
 		"wr841nd")
-#			svn export ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config  --force
-#			svn export ./root_file_system/default ./build_dir/files/ --force
-#			svn export ./root_file_system/wr741nd ./build_dir/files/ --force
 			echo "Nothing implemented for wr841nd";
 			;;
 		*)
@@ -105,7 +110,7 @@ configure_build() {
 	#insert actual firware version informations into release file
 	echo "FIRMWARE_VERSION=\"trunk\"" > ./build_dir/files/etc/firmware_release
 	echo "RELEASE_DATE=\"\"" >> ./build_dir/files/etc/firmware_release
-	echo "FIRMWARE_REVISION=\""`svn info ./ |grep Revision: |cut -c11-`"\"" >> ./build_dir/files/etc/firmware_release
+	echo "FIRMWARE_REVISION=\"build date: "`date`"\"" >> ./build_dir/files/etc/firmware_release
 	echo "OPENWRT_CORE_REVISION=\""`svn info ./build_dir |grep Revision: |cut -c11-`"\"" >> ./build_dir/files/etc/firmware_release
 	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""`svn info ./build_dir/feeds/packages |grep Revision: |cut -c11-`"\"" >> ./build_dir/files/etc/firmware_release
 }
@@ -170,7 +175,8 @@ build() {
 
 flash() {
 	#Get flash tools
-	svn export http://svn.freifunk-ol.de/firmware/Trunk/flash_tools
+	# i thought they are already there..
+	#svn export http://svn.freifunk-ol.de/firmware/Trunk/flash_tools
 
 	if [ ! "`whoami`" = "root" ]
 	then
