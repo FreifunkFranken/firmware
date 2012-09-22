@@ -1,7 +1,3 @@
-*/5 * * * *	killall klogd
-*/5 * * * *	sleep 5 && killall syslogd
-*/5 * * * *	sleep 15 && killall logger
-
 */5 * * * *	sleep 20 && sh /etc/tincstart.sh
 */5 * * * *	sleep 40 && sh /etc/nodewatcher.sh
 */5 * * * *	sleep 60 && sh /etc/configurator.sh
@@ -12,12 +8,6 @@
 #Enable zapp script if you are running a gateway
 #*/1 * * * * /etc/init.d/zapp
 
-*/5 * * * *	sleep 10 && killall -HUP dnsmasq
-#* * * * *	/usr/sbin/ff_olsr_test_gw
-#*/5 * * * *	/usr/sbin/ff_olsr_watchdog
-#0 */4 * * *	/usr/sbin/ff_rdate
-#17 * * * *	/usr/sbin/ff_mapupdate
-
 #Reboot dir300 every 3 days at 04:05
-5 4 */3 * *     reboot
+#5 4 */3 * *     reboot
 
