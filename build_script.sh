@@ -58,45 +58,39 @@ configure_build() {
 	#create filesdir for our config
 	test -d ./build_dir/files || mkdir ./build_dir/files
 
+	cp -r ./root_file_system/default/* ./build_dir/files/
 	case "$1" in
 		"dir300")
 			cp ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
+			cp build_configuration/Atheros_AR231x_AR5312/kernel_config-3.3 build_dir/target/linux/atheros/config-3.3
 			cp -r ./root_file_system/dir300/* ./build_dir/files/
 			;;
 		"fonera")
 			cp ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/fonera/* ./build_dir/files/
 			;;
 		"wrt54g_ap")
 			cp ./build_configuration/Broadcom_BCM947xx_953xx_ap/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/wrt54g_ap/* ./build_dir/files/
 			;;
 		"wrt54g_adhoc")
 			cp ./build_configuration/Broadcom_BCM947xx_953xx_adhoc/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/wrt54g_adhoc/* ./build_dir/files/
 			;;
 		"dir300b_ap")
 			cp ./build_configuration/ramips_rt3050/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/dir300b_ap/* ./build_dir/files/
 			;;
 		"dir300b_adhoc")
 			cp ./build_configuration/ramips_rt3050/.config ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/dir300b_adhoc/* ./build_dir/files/
 			;;
 		"wr1043nd")
 			cp ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr1043nd ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/wr1043nd/* ./build_dir/files/
 			;;
 		"wr741nd")
 			cp ./build_configuration/Atheros_AR71xx_AR7240_AR913x/.config_wr741nd ./build_dir/.config
-			cp -r ./root_file_system/default/* ./build_dir/files/
 			cp -r ./root_file_system/wr741nd/* ./build_dir/files/
 			;;
 		"wr841nd")
@@ -193,7 +187,7 @@ flash() {
 		/etc/init.d/networkmanager stop
 		/etc/init.d/tftpd start
 	elif [ -f /usr/sbin/invoke-rc.d ];then
-		invoke-rc.d tftpd-hpa start
+		invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || echo "FAILED TO START TFTD"
 		invoke-rc.d network-manager stop
 	fi
 

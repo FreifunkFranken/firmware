@@ -40,7 +40,8 @@ fi
 fi
 
 # Starting NTP-Client Daemon
-ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
+# uses to much ram
+#ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
 
 sh /etc/firewall.user
 

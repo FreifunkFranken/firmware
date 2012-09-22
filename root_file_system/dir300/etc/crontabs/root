@@ -1,9 +1,6 @@
-*/5 * * * *	sleep 20 && sh /etc/tincstart.sh
-*/5 * * * *	sleep 40 && sh /etc/nodewatcher.sh
-*/5 * * * *	sleep 60 && sh /etc/configurator.sh
-0 * * * *	sleep 80 && sh /etc/configurator.sh sync_hostname
+*/5 * * * *	sh /etc/tincstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh
 
-15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
+#15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
 
 #Enable zapp script if you are running a gateway
 #*/1 * * * * /etc/init.d/zapp
