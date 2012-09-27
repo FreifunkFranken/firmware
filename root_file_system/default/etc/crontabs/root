@@ -1,4 +1,4 @@
-*/5 * * * *	sh /etc/tincstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh
+*/5 * * * *	sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh
 
 #15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
 
