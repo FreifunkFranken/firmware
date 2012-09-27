@@ -62,7 +62,7 @@ configure_build() {
 	case "$1" in
 		"dir300")
 			cp ./build_configuration/Atheros_AR231x_AR5312/.config ./build_dir/.config
-			cp build_configuration/Atheros_AR231x_AR5312/kernel_config-3.3 build_dir/target/linux/atheros/config-3.3
+			#cp build_configuration/Atheros_AR231x_AR5312/kernel_config-3.3 build_dir/target/linux/atheros/config-3.3
 			cp -r ./root_file_system/dir300/* ./build_dir/files/
 			;;
 		"fonera")
