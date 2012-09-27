@@ -116,7 +116,7 @@ build() {
 			make V=99
 			;;
 		"fast")
-			make -j18
+			ionice -c 2 -- nice -n 1 -- make -j12
 			;;
 		*)
 			ionice -c 3 -- nice -n 10 -- make -j8
