@@ -94,7 +94,7 @@ fi
 # fire up
 if [ "$(ps aux | grep tincd | grep -v grep)" == "" ]
 then
-	tincd -c /etc/tinc/$project --pidfile=/var/run/tinc_$project.pid --logfile=/var/log/tinc_$project.log $DEBUG
+	tincd -c /etc/tinc/$project --pidfile=/var/run/tinc_$project.pid --logfile=/dev/null $DEBUG
 #	sleep 1
 #	brctl addif br-mesh tap0
 fi
