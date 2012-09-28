@@ -7,10 +7,6 @@ batctl if add eth0.3
 batctl if add eth0.4  
 batctl if add wlan0-1
 
-ifconfig eth0 mtu 1528
-ifconfig eth0.3 mtu 1528                                                     
-ifconfig eth0.4 mtu 1528    
-
 #echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
 #echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
 
