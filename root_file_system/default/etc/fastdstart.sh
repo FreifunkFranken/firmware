@@ -58,13 +58,14 @@ then
 		echo 'batctl if add $1' >> /etc/fastd/$project/up.sh
 		
 		secret=$(fastd --generate-key 2>&1 | grep -i secret | awk '{ print $2 }')
+		echo "" >> /etc/config/fastd
 		echo "	config fastd $project" >> /etc/config/fastd
 		echo "		option enabled 1" >> /etc/config/fastd
 		echo "		list config_peer_dir '/etc/fastd/$project/peers'" >> /etc/config/fastd
 		echo "		option syslog_level 'verbose'" >> /etc/config/fastd
 		echo "		option method null" >> /etc/config/fastd
 		echo "		option mode 'tap'" >> /etc/config/fastd
-		echo "		option bind '0.0.0.0'" >> /etc/config/fastd
+		echo "		option bind '0.0.0.0:10000'" >> /etc/config/fastd
 		echo "		option interface '${project}VPN'" >> /etc/config/fastd
 		echo "		option mtu 1426" >> /etc/config/fastd
 		echo "		option secret '$secret'" >> /etc/config/fastd
