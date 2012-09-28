@@ -67,7 +67,7 @@ then
 		echo "		option mode 'tap'" >> /etc/config/fastd
 		echo "		option bind '0.0.0.0:10000'" >> /etc/config/fastd
 		echo "		option interface '${project}VPN'" >> /etc/config/fastd
-		echo "		option mtu 1426" >> /etc/config/fastd
+		echo "		option mtu 1448" >> /etc/config/fastd
 		echo "		option secret '$secret'" >> /etc/config/fastd
 		echo "		option up '/etc/fastd/ffol/up.sh \$1'" >> /etc/config/fastd
 	fi
