@@ -48,6 +48,4 @@ fi
 mkdir /tmp/crawldata
 httpd -h /tmp/crawldata
 
-sh /etc/configurator.sh
-
 exit 0
