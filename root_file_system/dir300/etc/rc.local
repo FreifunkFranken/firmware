@@ -15,24 +15,29 @@ toLower() {
 }
 
 # todo: all devices or only dir300 ?
-BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
-BRMAC=`toLower $BRMAC`
-WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
-WLMAC=`toLower $WLMAC`
-ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
-ETMAC=`toLower $ETMAC`
+if uci get network.mesh.macaddr
+then
+  echo "MAC is set already"
+else
+  BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
+  BRMAC=`toLower $BRMAC`
+  WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
+  WLMAC=`toLower $WLMAC`
+  ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
+  ETMAC=`toLower $ETMAC`
 
-if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" = "$ETMAC" ]; then
-if [[ "$BRMAC" != "$WLMAC" ]]; then
-        logger -s "Fixing wrong MAC on br-mesh"
-        uci set network.mesh.macaddr=$WLMAC
-        uci commit
-        ifconfig br-mesh hw ether $WLMAC
-        ifconfig br-mesh down
-        ifconfig br-mesh up
-        #wait before reboot to generate tinc certificates and to be able
-        #to login over ssh bevore reboot in case of errors
-fi
+  if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" = "$ETMAC" ]; then
+    if [[ "$BRMAC" != "$WLMAC" ]]; then
+      echo "Fixing wrong MAC on br-mesh"
+      uci set network.mesh.macaddr=$WLMAC
+      uci commit
+      ifconfig br-mesh hw ether $WLMAC
+      ifconfig br-mesh down
+      ifconfig br-mesh up
+      #wait before reboot to generate tinc certificates and to be able
+      #to login over ssh bevore reboot in case of errors
+    fi
+  fi
 fi
 
 # Starting NTP-Client Daemon
