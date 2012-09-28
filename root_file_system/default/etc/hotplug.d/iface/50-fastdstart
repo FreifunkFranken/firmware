@@ -1,6 +1,5 @@
 #!/bin/sh 
 [ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
-        sh /etc/fastdstart.sh
-        sleep 30
+        sleep 3
         sh /etc/fastdstart.sh
 }
