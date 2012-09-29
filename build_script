@@ -1,0 +1,181 @@
+#!/bin/bash
+
+builddir=./build
+
+prepare() {
+	test -d $builddir || mkdir $builddir
+	
+	#Get the OpenWrt Core Source for Firmware
+	svn checkout -r 33502 svn://svn.openwrt.org/openwrt/trunk/ $target
+	#apply own feeds.conf
+	cp ./build_patches/feeds.conf $target/feeds.conf
+
+	test -d $target/feeds && /bin/rm -rf $target/feeds
+
+	$target/scripts/feeds update
+	
+	$target/scripts/feeds install -a
+
+	board_prepare
+}
+
+prebuild() {
+	#create filesdir for our config
+	/bin/rm -rf $target/files
+	mkdir $target/files
+
+	cp -r ./bsp/default/root_file_system/* $target/files/
+
+	board_prebuild
+
+	#insert actual firware version informations into release file
+	echo "FIRMWARE_VERSION=\"trunk\"" > $target/files/etc/firmware_release
+	echo "RELEASE_DATE=\"\"" >> $target/files/etc/firmware_release
+	echo "FIRMWARE_REVISION=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_CORE_REVISION=\""`svn info $target |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""`svn info $target/feeds/packages |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
+}
+
+build() {
+	prebuild
+
+	cd $target
+
+	case "$1" in
+		"debug")
+			make V=99
+			;;
+		"fast")
+			ionice -c 2 -- nice -n 1 -- make -j12
+			;;
+		*)
+			ionice -c 3 -- nice -n 10 -- make -j8
+			;;
+	esac
+	# actually this does northing!
+	# rm -rf ./build_dir/files/
+	cd ../
+
+	if [ ! -d bin ]; then
+		mkdir bin
+	fi
+	
+	postbuild
+}
+
+postbuild() {
+	board_postbuild
+}
+
+flash() {
+	# some flash tools need an arguement..
+	board_flash $1
+}
+
+clean() {
+	board_clean
+	/bin/rm -rf bin $builddir
+}
+
+routers() {
+	echo "router-types: "
+	echo "	dir300"
+	echo "	dir300b_adhoc"
+	echo "	dir300b_ap"
+	echo "	fonera"
+	echo "	wrt54g_ap"
+	echo "	wrt54g_adhoc"
+	echo "	wr741nd"
+	echo "	wr1043nd"
+}
+
+if [ ! -h selected_bsp ] && [ "$1" != "select" ]; then
+	echo "Please select a Board-Support-Package using:"
+	echo "$0 select"
+	exit
+else
+	echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
+	. selected_bsp
+	echo
+fi
+
+case "$1" in
+	"select")
+		if [ "$2" = "help" ] || [ "$2" = "" ]; then
+			echo "Select a Board-Support-Package:"
+			echo
+			echo "Usage: $0 $1 bsp"
+			echo "bsp: "
+			cd bsp; /bin/ls *.bsp; cd ..
+		else
+			/bin/rm -rf selected_bsp
+			/bin/ln -s bsp/$2 selected_bsp
+		fi
+		;;
+	"prepare")
+		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+			echo "This option fetches the sources for the images and configurates the build so that it can be compiled"
+			echo "Usage: $0 $1"
+		else
+			prepare
+		fi
+		;;
+	"build")
+		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+			echo "This option compiles the firmware"
+			echo "Normaly the build uses lower IO and System priorities, "
+			echo "you can append \"fast\" option, to use normal user priorities"
+			echo "Usage: $0 $1 [fast|debug]"
+		else
+			build "$2"
+		fi
+		;;
+	"download")
+		if [ "$2" = "help" ] || [ "$2" = "" ]; then
+			echo "This option downloads the ready configured images from an external location if needet."
+			echo "Usage: $0 $1 http://downloadfolder router-type"
+			echo "Common downloadfolder for firmware version 0.3 is http://dev.freifunk-ol.de/firmware/0.3/"
+			routers
+			echo
+			echo
+			echo "This function is broken!"
+		else
+			exit
+			mkdir ./bin
+			cd ./bin
+			wget "$2/$3/openwrt-$3-root.squashfs"
+			wget "$2/$3/openwrt-$3-vmlinux.lzma"
+			cd ..
+		fi
+		;;
+	"flash")
+		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+			echo "This option flashes the router."
+			echo "$0 $1 net-dev"
+			routers
+			echo "net-dev:"
+			echo "	ethX"
+		else
+			flash "$2"
+		fi
+		;;
+	"clean")
+		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+			echo "This option cleans all build files."
+			echo "$0 $1 all"
+		else
+			clean
+		fi
+		;;
+	*)
+		echo "This is the Build Environment Script of the Freifunk Community Oldenburg."
+		echo "Usage: $0 command"
+		echo "command:"
+		echo "	prepare"
+		echo "	build"
+		echo "	flash"
+		echo "	download"
+		echo ""
+		echo "If you need help to one of these options just type $0 command help"
+	;;
+esac

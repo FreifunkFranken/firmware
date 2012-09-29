@@ -1,0 +1,81 @@
+
+machine=fonera
+target=$builddir/$machine
+
+board_prepare() {
+	echo "nothing todo" > /dev/null
+}
+
+board_prebuild() {
+	cp ./bsp/$machine/.config $target/.config
+	cp -r ./bsp/$machine/root_file_system/* $target/files/
+}
+
+board_postbuild() {
+	cp $target/bin/atheros/openwrt-atheros-root.squashfs ./bin/openwrt-$machine-root.squashfs
+	cp $target/bin/atheros/openwrt-atheros-vmlinux.lzma ./bin/openwrt-$machine-vmlinux.lzma
+	cp $target/bin/atheros/openwrt-atheros-combined.squashfs.img ./bin/openwrt-$machine-combined.squashfs.img
+}
+
+board_flash() {
+	#Get flash tools
+	# i thought they are already there..
+	#svn export http://svn.freifunk-ol.de/firmware/Trunk/flash_tools
+
+	if [ ! "`whoami`" = "root" ]
+	then
+		echo "You need to be root to flash!"
+		exit 1
+	fi
+
+	echo "Do not plugin your router now, you will be asked to do this later!"
+	echo "Stopping Network manager and starting normal network and tftp server..."
+	if [ -f /etc/rc.d/networkmanager ];then
+		/etc/rc.d/networkmanager stop
+		/etc/rc.d/tftpd start
+	elif [ -f /etc/init.d/networkmanager ];then
+		/etc/init.d/networkmanager stop
+		/etc/init.d/tftpd start
+	elif [ -f /usr/sbin/invoke-rc.d ];then
+		invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || echo "FAILED TO START TFTD"
+		invoke-rc.d network-manager stop
+	fi
+
+	ifconfig $1 up
+
+	echo "Clearing Firewall!"
+	iptables -F
+	iptables -P INPUT ACCEPT
+	iptables -P OUTPUT ACCEPT
+
+	echo "Flashing now! Please plugin your router into the powerline now"
+	
+	echo "In some cases you have to set a symlink to libpcap to make flashing work (Tim told me that it is evil if I do that for you):"
+	echo "ln -s /usr/lib/libpcap.so.1.1.1 /usr/lib/libpcap.so.0.8"
+
+	cd ./flash_tools/fonera-flash/
+	./build_libpcap.sh
+	cd ../../
+
+	LD_LIBRARY_PATH=`pwd`flash_tools/fonera-flash/libpcap-0.8.1/
+	export LD_LIBRARY_PATH
+
+	arch=`uname -m`
+	./flash_tools/fonera-flash/ap51-flash-$arch $1 ./bin/openwrt-$machine-root.squashfs ./bin/openwrt-$machine-vmlinux.lzma freifunc
+
+	echo "Starting Networkmanager again"
+	sleep 5;
+	if [ -f /etc/rc.d/networkmanager ];then
+		/etc/rc.d/networkmanager start
+	elif [ -f /etc/init.d/networkmanager ];then
+		/etc/init.d/networkmanager start
+	elif [ -f /usr/sbin/invoke-rc.d ];then
+		invoke-rc.d tftpd-hpa stop
+		invoke-rc.d network-manager start
+	fi
+}
+
+board_clean() {
+	/bin/rm -rf $target bin/*$machine*
+}
+

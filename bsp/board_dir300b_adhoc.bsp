@@ -1,0 +1,36 @@
+
+machine=dir300b_adhoc
+target=$builddir/$machine
+
+board_prepare() {
+	echo "nothing todo" > /dev/null
+}
+
+board_prebuild() {
+	cp ./bsp/$machine/.config $target/.config
+	cp -r ./bsp/$machine/root_file_system/* $target/files/
+}
+
+board_postbuild() {
+	#build webflash image
+
+	rm -rf ./bin/openwrt-$machine-squashfs-webflash.bin
+
+	./flash_tools/dir300b-flash/v2image -v \
+		-i $target/bin/ramips/openwrt-ramips-rt305x-dir-300-b1-squashfs-sysupgrade.bin \
+		-o bin/openwrt-$machine-squashfs-webflash.bin \
+		-d /dev/mtdblock/2 -s wrgn23_dlwbr_dir300b
+}
+
+board_flash() {
+	echo "* Press RESET on your router and power it on."
+	echo "* Now connect it to your Computer using the WAN interface"
+	echo "* Configure your Computer to use 192.168.0.2 as IP-Adress"
+	echo "* Go to http://192.168.0.1 and flash your router."
+	echo "* Happy Freifunk'ing! :-)"
+}
+
+board_clean() {
+	/bin/rm -rf $target bin/*$machine*
+}
+

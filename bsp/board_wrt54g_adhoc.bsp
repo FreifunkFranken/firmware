@@ -1,0 +1,25 @@
+
+machine=wrt54g_adhoc
+target=$builddir/$machine
+
+board_prepare() {
+	echo "nothing todo" > /dev/null
+}
+
+board_prebuild() {
+	cp ./bsp/$machine/.config $target/.config
+	cp -r ./bsp/$machine/root_file_system/* $target/files/
+}
+
+board_postbuild() {
+	cp $target/bin/brcm47xx/openwrt-wrt54g-squashfs.bin ./bin/openwrt-$machine-squashfs.bin
+}
+
+board_flash() {
+	echo "nothing implemented"
+}
+
+board_clean() {
+	/bin/rm -rf $target bin/*$machine*
+}
+
