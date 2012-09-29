@@ -39,6 +39,7 @@ prebuild() {
 build() {
 	prebuild
 
+	opath=$(pwd)
 	cd $target
 
 	case "$1" in
@@ -54,7 +55,7 @@ build() {
 	esac
 	# actually this does northing!
 	# rm -rf ./build_dir/files/
-	cd ../
+	cd $opath
 
 	if [ ! -d bin ]; then
 		mkdir bin
