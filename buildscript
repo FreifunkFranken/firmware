@@ -90,14 +90,16 @@ routers() {
 	echo "	wr1043nd"
 }
 
-if [ ! -h selected_bsp ] && [ "$1" != "select" ]; then
-	echo "Please select a Board-Support-Package using:"
-	echo "$0 select"
-	exit
-else
-	echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
-	. selected_bsp
-	echo
+if [ "$1" != "select" ]; then
+	if [ ! -h selected_bsp ]; then
+		echo "Please select a Board-Support-Package using:"
+		echo "$0 select"
+		exit
+	else
+		echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
+		. selected_bsp
+		echo
+	fi
 fi
 
 case "$1" in
