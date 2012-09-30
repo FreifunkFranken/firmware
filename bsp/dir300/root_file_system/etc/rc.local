@@ -3,8 +3,8 @@
 
 # batman seems to be to stupid to regocnice the devices
 # todo: uci.get ..
-batctl if add eth0.3                                                            
-batctl if add eth0.4  
+#batctl if add eth0.3                                                            
+#batctl if add eth0.4  
 batctl if add wlan0-1
 
 #echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
