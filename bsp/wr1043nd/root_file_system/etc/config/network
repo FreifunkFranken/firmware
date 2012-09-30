@@ -18,10 +18,12 @@ config 'interface' 'wan'
         option 'proto' 'dhcp'
 
 config 'interface' 'ethmesh1'
+	option 'type' 'bridge'
         option 'ifname' 'eth0.3'
         option 'mtu' '1528'
 	
 config 'interface' 'ethmesh2'
+	option 'type' 'bridge'
         option 'ifname' 'eth0.4'
         option 'mtu' '1528'
 
