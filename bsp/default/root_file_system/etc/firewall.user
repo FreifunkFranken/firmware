@@ -43,3 +43,8 @@
 
 #solves MTU problem with bad ISP´s
 iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+# Wenn ein router direkt am Netz hängt, ist er auch ssh Angriffen ausgesetzt.
+# Das wirkt bei kleinen Geräten wir ein DOS
+iptables -I INPUT -i eth0.2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -I INPUT -i eth0.2 -j DROP
