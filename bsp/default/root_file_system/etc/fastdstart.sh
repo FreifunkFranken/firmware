@@ -69,7 +69,7 @@ then
 		echo "		option interface '${project}VPN'" >> /etc/config/fastd
 		echo "		option mtu 1432" >> /etc/config/fastd
 		echo "		option secret '$secret'" >> /etc/config/fastd
-		echo "		option up '/etc/fastd/ffol/up.sh \$1'" >> /etc/config/fastd
+		echo "		option up '/etc/fastd/${project}/up.sh \$1'" >> /etc/config/fastd
 	fi
 	chmod +x /etc/fastd/$project/up.sh
 fi
@@ -91,7 +91,6 @@ fi
 
 # register
 wget -T15 "http://mastersword.de/~reddog/fastd/?name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
-echo "http://mastersword.de/~reddog/fastd/?name=$hostname&port=$port&key=$pubkey"
 
 filenames=$(cat /tmp/fastd_${project}_output| grep ^#### | sed -e 's/^####//' | sed -e 's/.conf//g')
 for file in $filenames
