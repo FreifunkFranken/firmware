@@ -3,7 +3,7 @@
 SERVER="no"
 #SERVERNAME="--servername--"
 
-project="ffol"
+project="fff"
 
 test_internet_host1="mastersword.de"
 test_internet_host2="109.163.229.254"
@@ -72,7 +72,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
     fi
 
     # register
-    wget -T15 "http://mastersword.de/~reddog/fastd/?name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
+    wget -T15 "http://mastersword.de/~reddog/fff/?name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
 
     filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
     for file in $filenames; do
