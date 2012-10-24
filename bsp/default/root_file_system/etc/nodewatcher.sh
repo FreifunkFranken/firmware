@@ -181,12 +181,11 @@ crawl() {
 					BAT_ADV_ORIGINATORS=`batctl o -n | awk '/O/ {next} /B/ {next} {print}'`
 					count=0;
 					for row in $BAT_ADV_ORIGINATORS; do
+						row="${row//[\(\)]/}"
 						originator=`echo $row | awk '{print $1}'`
 						last_seen=`echo $row | awk '{print $2}'`
 						last_seen="${last_seen//s/}"
 						link_quality=`echo $row | awk '{print $3}'`
-						link_quality="${link_quality//(/}"
-						link_quality="${link_quality//)/}"
                                                 outgoing_interface=`echo $row | awk '{print $6}'`
                                                 outgoing_interface="${outgoing_interface//]:/}"
 						nexthop=`echo $row | awk '{print $4}'`
