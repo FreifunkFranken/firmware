@@ -1,5 +1,5 @@
 
-machine=wr741nd
+machine=wr741nd2
 target=$builddir/$machine
 
 board_prepare() {
@@ -15,7 +15,7 @@ board_prebuild() {
 }
 
 board_postbuild() {
-	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v4-squashfs-*.bin ./bin/
+	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v2-squashfs-*.bin ./bin/
 }
 
 board_flash() {
