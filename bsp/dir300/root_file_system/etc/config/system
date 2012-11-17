@@ -1,0 +1,17 @@
+
+config system
+	option timezone 'CET-1CEST,M3.5.0,M10.5.0/3'
+	option hostname 'OpenWrt'
+
+config led 'led_wlan'
+	option name 'wlan'
+	option sysfs 'gpio2'
+	option trigger 'netdev'
+	option dev 'wlan0'
+	option mode 'link tx rx'
+
+config led 'led_status'
+	option name 'status'
+	option sysfs 'wlan'
+	option trigger 'none'
+
