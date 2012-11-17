@@ -32,8 +32,10 @@ prebuild() {
 	board_prebuild
 
 	#insert actual firware version informations into release file
-	echo "FIRMWARE_VERSION=\"0.3.99\"" > $target/files/etc/firmware_release
-	echo "RELEASE_DATE=\"24.10.2012\"" >> $target/files/etc/firmware_release
+    dirty=$(test "$(git status  --porcelain -uno)" = "" || echo "-dirty")
+    commit=$(git log -n1 | grep commit | awk '{ print $2 }')
+	echo "FIRMWARE_VERSION=\"$commit$dirty\"" > $target/files/etc/firmware_release
+	echo "RELEASE_DATE=\"unreleased\"" >> $target/files/etc/firmware_release
 	echo "FIRMWARE_REVISION=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
 	echo "OPENWRT_CORE_REVISION=\""`svn info $target |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
 	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""`svn info $target/feeds/packages |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
