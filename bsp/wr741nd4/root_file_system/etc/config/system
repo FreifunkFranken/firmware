@@ -1,26 +1,13 @@
-config 'system'
-        option 'hostname' 'OpenWrt'
-        option 'timezone' 'CET-1CEST,M3.5.0,M10.5.0/3'
 
-config 'rdate'
-        option 'interface' 'wan'
+config system
+	option hostname 'OpenWrt'
+	option timezone 'CET-1CEST,M3.5.0,M10.5.0/3'
 
-config 'led' 'wlan_led'
-        option 'name' 'WLAN'
-        option 'sysfs' 'tp-link:green:wlan'
-        option 'trigger' 'netdev'
-        option dev 'wlan0'
-        option mode 'link tx rx'
+config rdate
+	option interface 'wan'
 
-config 'led' 'lan_led'
-        option 'name' 'WAN'
-        option 'sysfs' 'tp-link:green:wan'
-        option 'trigger' 'netdev'
-        option dev 'eth1'
-        option mode 'link tx rx'
-
-config 'led' 'status_led'
-        option 'name' 'status'
-        option 'sysfs' 'tp-link:green:system'
-        option 'trigger' 'heartbeat'
+config led 'status_led'
+	option name 'status'
+	option sysfs 'tp-link:green:system'
+	option trigger 'heartbeat'
 

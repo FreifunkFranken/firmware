@@ -5,13 +5,6 @@ config 'system'
 config 'rdate'
         option 'interface' 'wan'
 
-config 'led' 'wlan_led'
-        option 'name' 'WLAN'
-        option 'sysfs' 'tl-link:green:wlan'
-        option 'trigger' 'netdev'
-        option 'dev' 'wlan0'
-        option 'mode' 'link tx rx'
-
 config 'led' 'status_led'
         option 'name' 'status'
         option 'sysfs' 'tp-link:green:system'
