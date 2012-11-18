@@ -1,0 +1,51 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+
+batctl if add wlan0-1
+
+toLower() {
+        echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
+}
+
+. /etc/firewall.user
+
+/etc/init.d/qos disable
+/etc/init.d/qos stop
+
+#busybox-httpd for crawldata
+mkdir /tmp/crawldata
+httpd -h /tmp/crawldata
+
+# todo: all devices or only dir300 ?
+
+# fonera to slow?
+sleep 10
+
+if uci get network.mesh.macaddr
+then
+  echo "MAC is set already"
+else
+  BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
+  BRMAC=`toLower $BRMAC`
+  WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
+  WLMAC=`toLower $WLMAC`
+  ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
+  ETMAC=`toLower $ETMAC`
+
+  if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" != "$ETMAC" ]; then
+      echo "Fixing wrong MAC on br-mesh"
+      uci set network.mesh.macaddr=$ETMAC
+      uci commit
+      ifconfig br-mesh hw ether $ETMAC
+      ifconfig br-mesh down
+      ifconfig br-mesh up
+      #wait before reboot to generate tinc certificates and to be able
+      #to login over ssh bevore reboot in case of errors
+  fi
+fi
+
+# Starting NTP-Client Daemon
+# uses to much ram
+#ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
+
+exit 0

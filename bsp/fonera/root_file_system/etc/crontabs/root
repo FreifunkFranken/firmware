@@ -1,22 +1,10 @@
-*/5 * * * *	killall klogd
-*/5 * * * *	killall syslogd
-*/5 * * * *	killall logger
+*/5 * * * *	sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh
 
-*/5 * * * *	sh /etc/tincstart.sh
-*/5 * * * *	sh /etc/nodewatcher.sh
-*/5 * * * *	sh /etc/configurator.sh
-0 * * * *	sh /etc/configurator.sh sync_hostname
-
-15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
+#15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
 
 #Enable zapp script if you are running a gateway
 #*/1 * * * * /etc/init.d/zapp
 
-*/5 * * * *	killall -HUP dnsmasq
-#* * * * *	/usr/sbin/ff_olsr_test_gw
-#*/5 * * * *	/usr/sbin/ff_olsr_watchdog
-#0 */4 * * *	/usr/sbin/ff_rdate
-#17 * * * *	/usr/sbin/ff_mapupdate
+#Reboot dir300 every 3 days at 04:05
+#5 4 */3 * *     reboot
 
-#Reboot fonera every 2 days at 04:05
-5 4 */2 * *     reboot
