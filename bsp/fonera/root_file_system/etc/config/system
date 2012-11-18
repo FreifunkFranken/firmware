@@ -5,13 +5,14 @@ config system
 
 config led 'led_wlan'
 	option name 'wlan'
-	option sysfs 'gpio2'
+	option sysfs 'wlan'
 	option trigger 'netdev'
 	option dev 'wlan0'
 	option mode 'link tx rx'
 
+# works only on 2200 :(
 config led 'led_status'
 	option name 'status'
-	option sysfs 'wlan'
+	option sysfs 'gpio7'
 	option trigger 'heartbeat'
 

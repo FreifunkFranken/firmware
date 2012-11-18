@@ -7,5 +7,20 @@ config 'rdate'
 
 config 'led' 'wlan_led'
         option 'name' 'WLAN'
-        option 'sysfs' 'tl-wr1043nd:green:wlan'
-        option 'trigger' 'phy0rx'
+        option 'sysfs' 'tp-link:green:wlan'
+        option 'trigger' 'netdev'
+        option dev 'wlan0'
+        option mode 'link tx rx'
+
+config 'led' 'lan_led'
+        option 'name' 'WAN'
+        option 'sysfs' 'tp-link:green:wan'
+        option 'trigger' 'netdev'
+        option dev 'eth1'
+        option mode 'link tx rx'
+
+config 'led' 'status_led'
+        option 'name' 'status'
+        option 'sysfs' 'tp-link:green:system'
+        option 'trigger' 'heartbeat'
+
