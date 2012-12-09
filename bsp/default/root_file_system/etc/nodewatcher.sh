@@ -186,8 +186,8 @@ crawl() {
 						last_seen=`echo $row | awk '{print $2}'`
 						last_seen="${last_seen//s/}"
 						link_quality=`echo $row | awk '{print $3}'`
-                                                outgoing_interface=`echo $row | awk '{print $6}'`
-                                                outgoing_interface="${outgoing_interface//]:/}"
+                                                outgoing_interface=`echo $row | cut -d] -f1 | cut -d[ -f2`
+                                                outgoing_interface="${outgoing_interface// /}"
 						nexthop=`echo $row | awk '{print $4}'`
 
 						batman_adv_originators=$batman_adv_originators"<originator_$count><originator>$originator</originator><link_quality>$link_quality</link_quality><nexthop>$nexthop</nexthop><last_seen>$last_seen</last_seen><outgoing_interface>$outgoing_interface</outgoing_interface></originator_$count>"
