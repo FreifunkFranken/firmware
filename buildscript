@@ -4,9 +4,9 @@ builddir=./build
 
 prepare() {
 	test -d $builddir || mkdir $builddir
-	
+
 	#Get the OpenWrt Core Source for Firmware
-	svn checkout -r 33502 svn://svn.openwrt.org/openwrt/trunk/ $target
+	svn checkout -r 35298 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/ $target
 	#apply own feeds.conf
 	cp ./build_patches/feeds.conf $target/feeds.conf
 
