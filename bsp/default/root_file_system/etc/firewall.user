@@ -7,7 +7,5 @@ iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-
 # Das wirkt bei kleinen Geräten wir ein DOS
 WAN=$(uci get network.wan.ifname)
 iptables -A INPUT -i $WAN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-#ssh open for debugging purposes, should be removed in stable release
-iptables -A INPUT -i $WAN -p tcp --dport 22 -j ACCEPT
 iptables -A INPUT -i $WAN -j REJECT
 
