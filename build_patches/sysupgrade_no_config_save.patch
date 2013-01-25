@@ -1,8 +1,8 @@
 Index: package/base-files/files/sbin/sysupgrade
 ===================================================================
---- package/base-files/files/sbin/sysupgrade	(Revision 33502)
+--- package/base-files/files/sbin/sysupgrade	(Revision 35186)
 +++ package/base-files/files/sbin/sysupgrade	(Arbeitskopie)
-@@ -72,6 +72,15 @@
+@@ -76,6 +76,15 @@
  	exit 1
  }
  
@@ -15,6 +15,6 @@ Index: package/base-files/files/sbin/sysupgrade
 +    exit 1
 +fi
 +
- [ -n "$ARGV" -a -n "$CONF_BACKUP" ] && {
+ [ -n "$ARGV" -a -n "$NEED_IMAGE" ] && {
  	cat <<-EOF
- 		-b/--create-backup does not perform a firmware upgrade. Do not
+ 		-b|--create-backup and -r|--restore-backup do not perform a firmware upgrade.
