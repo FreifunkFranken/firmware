@@ -8,7 +8,6 @@ board_prepare() {
 
 board_prebuild() {
 	cp ./bsp/$machine/.config $target/.config
-	cp ./bsp/$machine/kernel_config-3.3 $target/target/linux/atheros/config-3.3
 	cp -r ./bsp/$machine/root_file_system/* $target/files/
 }
 
