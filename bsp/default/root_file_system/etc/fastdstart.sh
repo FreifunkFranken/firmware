@@ -95,7 +95,7 @@ wget -T15 "http://mastersword.de/~reddog/fastd/?name=$hostname&port=$port&key=$p
 filenames=$(cat /tmp/fastd_${project}_output| grep ^#### | sed -e 's/^####//' | sed -e 's/.conf//g')
 for file in $filenames
 do
-grep -A100 $file /tmp/fastd_${project}_output | grep -v $file | grep -m1 ^### -B100 | grep -v ^### > /etc/fastd/$project/peers/$file
+grep -A100 ^####$file.conf$ /tmp/fastd_${project}_output | grep -v ^####$file.conf$ | grep -m1 ^### -B100 | grep -v ^### > /etc/fastd/$project/peers/$file
 done
 
 #reload
