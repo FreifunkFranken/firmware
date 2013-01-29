@@ -3,12 +3,20 @@ machine=dir300
 target=$builddir/$machine
 
 board_prepare() {
-	echo "nothing todo" > /dev/null
+    cat ./bsp/$machine/000-squashfs-image-params.patch | patch -p0 -d $target
 }
 
 board_prebuild() {
 	cp ./bsp/$machine/.config $target/.config
+    cp ./bsp/$machine/kernel_config-3.3 $target/target/linux/atheros/config-3.3
 	cp -r ./bsp/$machine/root_file_system/* $target/files/
+
+    # Remove fastd and configurator start on WAN event
+    /bin/rm $target/files/etc/hotplug.d/iface/50-fastdstart
+    /bin/rm $target/files/etc/hotplug.d/iface/51-configurator
+
+    # Remove fastd
+    /bin/rm $target/files/etc/fastdstart.sh
 }
 
 board_postbuild() {

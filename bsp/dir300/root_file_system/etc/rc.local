@@ -44,10 +44,7 @@ fi
 # uses to much ram
 #ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
 
-. /etc/firewall.user
-
-/etc/init.d/qos disable
-/etc/init.d/qos stop
+#. /etc/firewall.user
 
 #busybox-httpd for crawldata
 mkdir /tmp/crawldata
