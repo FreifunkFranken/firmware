@@ -1,26 +1,20 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
+# batman seems to be to stupid to regocnice the devices
+# todo: uci.get ..
+#batctl if add eth0.3                                                            
+#batctl if add eth0.4  
 batctl if add wlan0-1
+
+#echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
+#echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
 
 toLower() {
         echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
 }
 
-. /etc/firewall.user
-
-/etc/init.d/qos disable
-/etc/init.d/qos stop
-
-#busybox-httpd for crawldata
-mkdir /tmp/crawldata
-httpd -h /tmp/crawldata
-
 # todo: all devices or only dir300 ?
-
-# fonera to slow?
-sleep 10
-
 if uci get network.mesh.macaddr
 then
   echo "MAC is set already"
@@ -32,20 +26,28 @@ else
   ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
   ETMAC=`toLower $ETMAC`
 
-  if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" != "$ETMAC" ]; then
+  if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" = "$ETMAC" ]; then
+    if [[ "$BRMAC" != "$WLMAC" ]]; then
       echo "Fixing wrong MAC on br-mesh"
-      uci set network.mesh.macaddr=$ETMAC
+      uci set network.mesh.macaddr=$WLMAC
       uci commit
-      ifconfig br-mesh hw ether $ETMAC
+      ifconfig br-mesh hw ether $WLMAC
       ifconfig br-mesh down
       ifconfig br-mesh up
       #wait before reboot to generate tinc certificates and to be able
       #to login over ssh bevore reboot in case of errors
+    fi
   fi
 fi
 
 # Starting NTP-Client Daemon
 # uses to much ram
 #ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
+
+#. /etc/firewall.user
+
+#busybox-httpd for crawldata
+mkdir /tmp/crawldata
+httpd -h /tmp/crawldata
 
 exit 0
