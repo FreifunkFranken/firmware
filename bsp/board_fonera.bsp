@@ -3,7 +3,7 @@ machine=fonera
 target=$builddir/$machine
 
 board_prepare() {
-	echo "nothing todo" > /dev/null
+    cat ./bsp/$machine/000-squashfs-image-params.patch | patch -p0 -d $target
 }
 
 board_prebuild() {
