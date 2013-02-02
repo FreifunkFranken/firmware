@@ -32,13 +32,7 @@ prebuild() {
 	board_prebuild
 
 	#insert actual firware version informations into release file
-    dirty=$(test "$(git status  --porcelain -uno)" = "" || echo "-dirty")
-    commit=$(git log -n1 | grep commit | awk '{ print $2 }')
-    version=$(git tag --contains $commit~~ | tail -n1)
-    if [ "$version" = "" ]
-    then
-        version=$commit$dirty
-    fi
+    version=$(git describe --tags --dirty)
 
 	echo "FIRMWARE_VERSION=\"$version\"" > $target/files/etc/firmware_release
 	echo "RELEASE_DATE=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
