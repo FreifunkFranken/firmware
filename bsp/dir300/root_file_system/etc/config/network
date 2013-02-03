@@ -53,4 +53,3 @@ config 'interface' 'ethmesh2'
 
 config 'interface' 'wan'
         option 'ifname' 'eth0.2'
-        option 'proto' 'dhcp'
