@@ -33,7 +33,6 @@ config 'interface' 'wlanmesh'
 # this is for the WAN/VPN on the Ethernet Port
 config 'interface' 'wan'
         option 'ifname' 'eth0'
-        option 'proto' 'dhcp'
 config 'interface' 'mesh'
         option 'type' 'bridge'
         option 'ifname' 'bat0 tap0'
