@@ -2,8 +2,8 @@
 # the system init finished. By default this file does nothing.
 
 #Set Mac-Addr of wr1043nd wifi interface if not right
-WLAN0_MACADDR=`ifconfig -a wlan0 | grep 'HWaddr' | awk '{ print $5}'`
-BRMESH_MACADDR=`ifconfig -a br-mesh | grep 'HWaddr' | awk '{ print $5}'`
+WLAN0_MACADDR=$(cat /sys/class/net/wlan0/address)
+BRMESH_MACADDR=$(cat /sys/class/net/br-mesh/address)
 
 if [[ "$WLAN0_MACADDR=" != "$BRMESH_MACADDR=" ]]; then
 	echo "Fixing wrong MAC on br-mesh"

@@ -10,21 +10,14 @@ batctl if add wlan0-1
 #echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
 #echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
 
-toLower() {
-        echo $1 | sed -e "s/A/a/g" -e "s/B/b/g" -e "s/C/c/g" -e "s/D/d/g" -e "s/E/e/g" -e "s/F/f/g"
-}
-
 # todo: all devices or only dir300 ?
 if uci get network.mesh.macaddr
 then
   echo "MAC is set already"
 else
-  BRMAC=`ip link | grep br-mesh -A1 | grep link | awk '{ print $2 }'`
-  BRMAC=`toLower $BRMAC`
-  WLMAC=`ip link | grep wlan0 -A1 | grep link | awk '{ print $2 }'`
-  WLMAC=`toLower $WLMAC`
-  ETMAC=`ip link | grep eth0 -A1 | grep link | awk '{ print $2 }'`
-  ETMAC=`toLower $ETMAC`
+  BRMAC=$(awk '{ tolower($0); print }' /sys/class/net/br-mesh/address)
+  WLMAC=$(awk '{ tolower($0); print }' /sys/class/net/wlan0/address)
+  ETMAC=$(awk '{ tolower($0); print }' /sys/class/net/eth0/address)
 
   if [ "$WLMAC" != "" ] && [ "$BRMAC" != "" ] && [ "$BRMAC" = "$ETMAC" ]; then
     if [[ "$BRMAC" != "$WLMAC" ]]; then
