@@ -1,0 +1,15 @@
+Index: package/netifd/files/etc/init.d/network
+===================================================================
+--- package/netifd/files/etc/init.d/network	(Revision 35298)
++++ package/netifd/files/etc/init.d/network	(Arbeitskopie)
+@@ -12,6 +12,10 @@
+ 		ulimit -c unlimited
+ 		echo '/tmp/%e.%p.%s.%t.core' > /proc/sys/kernel/core_pattern
+ 	}
++
++    # some RAs come to early otherwise:
++    [ -f /etc/sysctl.conf ] && sysctl -p -e >&-
++
+ 	service_start /sbin/netifd
+ 
+ 	setup_switch() { return 0; }

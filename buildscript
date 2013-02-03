@@ -19,6 +19,9 @@ prepare() {
     # This changes the default behavior of sysupgrade to not save the config 
     cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
 
+    # This adds the sysctl load just before the network comes up
+    cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
+
 	board_prepare
 }
 
