@@ -74,7 +74,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null || ping -w5 -c3 "$test_intern
 
     filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
     for file in $filenames; do
-        awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_fff_output > /etc/fastd/$project/peers/$file
+        awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_${project}_output > /etc/fastd/$project/peers/$file
     done
 
     #reload
