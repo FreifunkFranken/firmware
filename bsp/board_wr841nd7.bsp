@@ -3,10 +3,7 @@ machine=wr841nd7
 target=$builddir/$machine
 
 board_prepare() {
-	# Das ist für die mangelnde entropie Werte für den Zufallsgenerator
-        # Siehe http://ticket.freifunk-ol.de/issues/406
-        # https://dev.openwrt.org/changeset/33559
-        cat build_patches/backport_the_upstream_entropy_changes.patch | patch -p2 -d $target
+    echo "nothing todo" > /dev/null
 }
 
 board_prebuild() {
