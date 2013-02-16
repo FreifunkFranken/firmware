@@ -1,7 +1,7 @@
 config 'wifi-device' 'wifi0'
 	option 'type' 'atheros'
 	option 'disabled' '0'
-	option 'channel' '6'
+	option 'channel' '1'
 	option 'bgscan' '0'
 	option 'diversity' '1'
     option 'hwmode' '11g'

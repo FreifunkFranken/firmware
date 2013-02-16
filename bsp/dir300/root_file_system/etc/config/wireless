@@ -2,7 +2,7 @@ config 'wifi-device' 'wifi0'
 	option 'type' 'mac80211'
 	option 'phy' 'phy0'
 	option 'disabled' '0'
-	option 'channel' '6'
+	option 'channel' '1'
     option 'hwmode' '11g'
 
 config 'wifi-iface'
