@@ -14,22 +14,12 @@
 #        reboot
 #fi
 
-#batctl if add eth0.3
-#batctl if add eth0.4
 batctl if add wlan0-1
-
-#ifconfig br-mesh down
-#ifconfig br-mesh up
-
-#ifdown lan
-#ifup lan
+batctl if add br-ethmesh1
+batctl if add br-ethmesh2
 
 # Starting NTP-Client Daemon
 ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
-
-#chown root.root /etc/crontabs/root
-#/etc/init.d/cron stop
-#/etc/init.d/cron start
 
 . /etc/firewall.user
 

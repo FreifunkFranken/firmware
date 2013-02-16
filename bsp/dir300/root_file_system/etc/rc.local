@@ -1,15 +1,6 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
-# batman seems to be to stupid to regocnice the devices
-# todo: uci.get ..
-#batctl if add eth0.3                                                            
-#batctl if add eth0.4  
-batctl if add wlan0-1
-
-#echo none > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:rx/trigger
-#echo phy0tx > /sys/devices/platform/ar231x-wmac.0/leds/ath5k-phy0\:\:tx/trigger
-
 # todo: all devices or only dir300 ?
 if uci get network.mesh.macaddr
 then
@@ -33,9 +24,12 @@ else
   fi
 fi
 
+batctl if add wlan0-1
+batctl if add br-ethmesh1
+batctl if add br-ethmesh2
+
 # Starting NTP-Client Daemon
-# uses to much ram
-#ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
+ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
 
 #. /etc/firewall.user
 
