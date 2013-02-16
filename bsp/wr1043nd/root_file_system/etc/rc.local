@@ -32,7 +32,7 @@ batctl if add wlan0-1
 batctl if add eth0.3
 
 # Starting NTP-Client Daemon
-ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
+ntpd -p "fe80::ff:feee:1%br-mesh"
 
 . /etc/firewall.user
 
