@@ -28,6 +28,12 @@ prepare() {
 	#backport ath9k-fixes from openwrt r35786
 	cp build_patches/mac80211/* $target/package/mac80211/patches
 
+	#batman-adv: distributed arp table fixes
+	cat build_patches/changeset_35324.diff | patch -p1 -d $target/feeds
+
+	#batman-adv: fix dat NULL pointer dereference
+	cat build_patches/changeset_35609.diff | patch -p1 -d $target/feeds
+
 	board_prepare
 }
 
