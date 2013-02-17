@@ -1,0 +1,14 @@
+#!/bin/sh
+
+logread -f | while read line
+do
+	case "$line" in
+	*"Could not stop RX"*) 
+
+			#Bye 
+			/sbin/reboot
+		;;
+	*)
+		;;
+	esac
+done
