@@ -1,0 +1,16 @@
+#!/bin/sh
+
+logread -f | while read line
+do
+	case "$line" in
+	*"Failed to stop TX"*) 
+
+			#reset wifi 
+			wifi reset
+			#add batman-adv-if
+			batctl if add wlan0-1
+		;;
+	*)
+		;;
+	esac
+done
