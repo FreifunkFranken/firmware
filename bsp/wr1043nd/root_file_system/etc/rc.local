@@ -1,8 +1,6 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
-#start ath9k-watchdog
-/etc/ath9k-watchdog &
 
 #Set Mac-Addr of wr1043nd wifi interface if not right
 #HARDWARE_MACADDR=`ifconfig -a wlan0 | grep 'HWaddr' | awk '{ print $5}'`
