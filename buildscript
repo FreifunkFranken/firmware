@@ -16,6 +16,9 @@ prepare() {
 	
 	$target/scripts/feeds install -a
 
+	#fix for building toolchain on texinfo>=5 
+	cp -a build_patches/toolchain $target
+
     # This changes the default behavior of sysupgrade to not save the config 
     cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
 
