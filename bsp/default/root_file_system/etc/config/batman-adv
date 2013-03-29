@@ -1,5 +1,5 @@
 config 'mesh' 'bat0'
-        option 'interfaces' 'wlanmesh ethmesh1 ethmesh2'
+        option 'interfaces' 'wlanmesh ethmesh'
         option 'aggregated_ogms'  
         option 'ap_isolation'     
         option 'bonding'          

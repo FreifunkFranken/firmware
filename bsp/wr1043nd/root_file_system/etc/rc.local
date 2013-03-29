@@ -15,9 +15,21 @@
 #        reboot
 #fi
 
+if uci get network.ethmesh.macaddr
+then
+  echo "MAC for ETH-BATMAN is set already"
+else
+  echo "Fixing MAC on eth0.3 (ethmesh)"
+  NEW=$(awk -F: '{ printf("%02x:%02x:%02x:%02x:%02x:%02x\n", ("0x"$1)+2, "0x"$2, "0x"$3, "0x"$4, "0x"$5, "0x"$6 ) }' /sys/class/net/eth0/address)
+  uci set network.ethmesh.macaddr=$NEW
+  uci commit
+  ifconfig eth0.3 hw ether $NEW
+  ifconfig eth0.3 down
+  ifconfig eth0.3 up
+fi
+
 batctl if add wlan0-1
-batctl if add br-ethmesh1
-batctl if add br-ethmesh2
+batctl if add eth0.3
 
 # Starting NTP-Client Daemon
 ntpd -p "fe80::201:2ff:fe03:405%br-mesh"

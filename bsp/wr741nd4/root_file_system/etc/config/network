@@ -18,16 +18,10 @@ config 'interface' 'wan'
         option 'ifname' 'eth1'
         option 'proto' 'dhcp'
 
-config 'interface' 'ethmesh1'
-	option 'type' 'bridge'
+config 'interface' 'ethmesh'
         option 'ifname' 'eth0.3'
         option 'mtu' '1528'
 	
-config 'interface' 'ethmesh2'
-	option 'type' 'bridge'
-        option 'ifname' 'eth0.4'
-        option 'mtu' '1528'
-
 config 'switch'
         option 'name' 'eth0'
         option 'reset' '1'
@@ -39,14 +33,8 @@ config 'switch_vlan'
         option 'vlan' '1'
         option 'ports' '1 4 0t'
 
-#1. LAN Port
+#1. und 2. LAN Port
 config 'switch_vlan'
         option 'device' 'eth0'
         option 'vlan' '3'
-        option 'ports' '2 0t'
-
-#2. LAN Port
-config 'switch_vlan'
-        option 'device' 'eth0'
-        option 'vlan' '4'
-        option 'ports' '3 0t'
+        option 'ports' '2 3 0t'
