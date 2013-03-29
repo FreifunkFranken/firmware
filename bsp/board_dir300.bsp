@@ -53,11 +53,7 @@ board_flash() {
 	iptables -P OUTPUT ACCEPT
 
 	echo "Flashing now! Please plugin your router into the powerline now"
-	if [ -f /usr/sbin/dir300-flash ]; then
-		/usr/sbin/dir300-flash $1 ./bin/openwrt-$machine-vmlinux.lzma ./bin/openwrt-$machine-root.squashfs
-	else
-		./flash_tools/dir300-flash/dir300-flash.sh $1 ./bin/openwrt-$machine-vmlinux.lzma ./bin/openwrt-$machine-root.squashfs
-	fi
+    ./flash_tools/dir300-flash/dir300-flash.sh $1 ./bin/openwrt-$machine-vmlinux.lzma ./bin/openwrt-$machine-root.squashfs
 
 	echo "Starting Networkmanager again"
 	sleep 5;
