@@ -34,6 +34,9 @@ prepare() {
 	#batman-adv: fix dat NULL pointer dereference
 	cat build_patches/changeset_35609.diff | patch -p1 -d $target/feeds
 
+    #saves ~200MB for each build
+    ln -s ../../dl $target/dl
+
 	board_prepare
 }
 
