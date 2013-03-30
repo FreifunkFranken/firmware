@@ -9,7 +9,9 @@ test_internet_host1="mastersword.de"
 test_internet_host2="109.163.229.254"
 
 #Only do something with fastd when the router has internet connection
-if ping -w5 -c3 "$test_internet_host1" &>/dev/null || ping -w5 -c3 "$test_internet_host2" &>/dev/null; then
+if ping -w5 -c3 "$test_internet_host1" &>/dev/null || 
+   ping -w5 -c3 "$test_internet_host2" &>/dev/null ||
+   ping6 -w5 -c3 heise.de &>/dev/null; then
     if [ "$SERVER" == "no" ]; then
         hostname=$(cat /proc/sys/kernel/hostname)
 
