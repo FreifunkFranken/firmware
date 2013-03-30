@@ -39,5 +39,6 @@ config 'switch_vlan' 'eth0_3'
 config 'interface' 'ethmesh'
         option 'ifname' 'eth0.3'
 
-config 'interface' 'wan'
+config 'interface' 'unused'
         option 'ifname' 'eth0.2'
+        option 'proto' 'static'
