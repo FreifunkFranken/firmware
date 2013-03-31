@@ -35,6 +35,7 @@ prepare() {
 	cat build_patches/changeset_35609.diff | patch -p1 -d $target/feeds
 
     #saves ~200MB for each build
+    mkdir ./dl
     ln -s ../../dl $target/dl
 
 	board_prepare
