@@ -3,6 +3,7 @@ config 'wifi-device' 'wifi0'
 	option 'phy' 'phy0'
 	option 'disabled' '0'
 	option 'channel' '6'
+    option 'hwmode' '11g'
 
 config 'wifi-iface'
 	option 'device' 'wifi0'
