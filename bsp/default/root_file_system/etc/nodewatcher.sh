@@ -91,7 +91,7 @@ crawl() {
 	interface_data=""	
 	#Loop interfaces
 	#for entry in $IFACES; do
-    for filename in `grep up /sys/class/net/*/operstate`; do
+    for filename in `grep 'up\|unknown' /sys/class/net/*/operstate`; do
         ifpath=${filename%/operstate*}
         iface=${ifpath#/sys/class/net/}
 		if [ "$iface" = "lo" ]; then
