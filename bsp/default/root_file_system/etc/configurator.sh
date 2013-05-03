@@ -84,12 +84,13 @@ assign_router() {
         err "Failure on router_auto_assign: $errstr. Exiting"
         exit 0
 	elif [ "$ret" = "success" ]; then
-        update_hash=${ergebnis%;*}
+        update_hash=${ergebnis%;*;*}
         update_hash=${update_hash##*;}
+        api_key=${ergebnis##*;}
 		#write new config
 		uci set configurator.@crawl[0].router_id=$errstr
 		uci set configurator.@crawl[0].update_hash=$update_hash
-
+		uci set configurator.@api[0].api_key=$api_key
 		#set also new router id for nodewatcher
 		#uci set nodewatcher.@crawl[0].router_id=$errstr
 
