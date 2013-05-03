@@ -10,6 +10,7 @@ config 'api'
 	option 'ipv6_address' 'fe80::ff:feee:1'
 	option 'timeout' '5'
 	option 'retry' '5'
+	option 'api_key' '1'
 
 config 'crawl'
 	option 'method' 'hash'
