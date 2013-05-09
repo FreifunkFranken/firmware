@@ -68,16 +68,17 @@ build() {
 
 	opath=$(pwd)
 	cd $target
+    cpus=$(grep processor /proc/cpuinfo | wc -l)
 
 	case "$1" in
 		"debug")
 			make V=99
 			;;
 		"fast")
-			ionice -c 2 -- nice -n 1 -- make -j12
+			ionice -c 2 -- nice -n 1 -- make -j$[$cpus*2]
 			;;
 		*)
-			ionice -c 3 -- nice -n 10 -- make -j8
+			ionice -c 3 -- nice -n 10 -- make -j$[$cpus+1]
 			;;
 	esac
 	# actually this does northing!
