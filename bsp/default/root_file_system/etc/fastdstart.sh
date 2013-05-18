@@ -35,40 +35,34 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
 
         mkdir /tmp/fastd_${project}_peers
         ln -s /tmp/fastd_${project}_peers /etc/fastd/$project/peers
-        echo '#!/bin/sh' > /etc/fastd/$project/up.sh
-        echo 'ip link set up dev $1' >> /etc/fastd/$project/up.sh
-        
-        if [ "$SERVER" == "no" ]; then
-            echo 'batctl if add $1' >> /etc/fastd/$project/up.sh
-            
-            secret=$(fastd --generate-key 2>&1 | grep -i secret | awk '{ print $2 }')
-            echo "" >> /etc/config/fastd
-            echo "config fastd $project" >> /etc/config/fastd
-            echo "	option enabled 1" >> /etc/config/fastd
-            echo "	list config_peer_dir '/etc/fastd/$project/peers'" >> /etc/config/fastd
-            echo "	option syslog_level 'verbose'" >> /etc/config/fastd
-            echo "	option method null" >> /etc/config/fastd
-            echo "	option mode 'tap'" >> /etc/config/fastd
-            echo "	option bind '0.0.0.0:10000'" >> /etc/config/fastd
-            echo "	option interface '${project}VPN'" >> /etc/config/fastd
-            echo "	option mtu 1426" >> /etc/config/fastd
-            echo "	option secret '$secret'" >> /etc/config/fastd
-            echo "	option up '/etc/fastd/${project}/up.sh \$1'" >> /etc/config/fastd
-        fi
+        echo "#!/bin/sh" > /etc/fastd/$project/up.sh
+        echo "ip link set up dev ${project}VPN" >> /etc/fastd/$project/up.sh
+        echo "batctl if add ${project}VPN" >> /etc/fastd/$project/up.sh
         chmod +x /etc/fastd/$project/up.sh
+        
+        secret=$(fastd --generate-key 2>&1 | grep -i secret | awk '{ print $2 }')
+        echo "include peers from \"/etc/fastd/$project/peers\";" >> /etc/fastd/${project}/${project}.conf
+        echo "log level warn;" >> /etc/fastd/${project}/${project}.conf
+        echo "method \"null\";" >> /etc/fastd/${project}/${project}.conf
+        echo "bind 0.0.0.0:10000;" >> /etc/fastd/${project}/${project}.conf
+        echo "interface \"${project}VPN\";" >> /etc/fastd/${project}/${project}.conf
+        echo "mtu 1426;" >> /etc/fastd/${project}/${project}.conf
+        echo "secret \"$secret\";" >> /etc/fastd/${project}/${project}.conf
+        echo "on up \"/etc/fastd/${project}/up.sh\";" >> /etc/fastd/${project}/${project}.conf
     fi
 
     if [ ! -d /tmp/fastd_${project}_peers ]; then
         mkdir /tmp/fastd_${project}_peers
     fi	
 
-    pubkey=$(/etc/init.d/fastd show_key $project)
+    pubkey=$(fastd -c /etc/fastd/$project/$project.conf --show-key --machine-readable)
     #port=666
 
 
     # fire up
     if [ "$(/sbin/ifconfig -a | grep -i ethernet | grep $project)" == "" ]; then
-        /etc/init.d/fastd start $project
+        /bin/rm /var/run/fastd.$project.pid
+        fastd -c /etc/fastd/$project/$project.conf -d --pid-file /var/run/fastd.$project.pid --syslog-level verbose
     fi
 
     # register
