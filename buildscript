@@ -29,7 +29,7 @@ prepare() {
 	cp build_patches/mac80211/* $target/package/mac80211/patches
 		
 	#backport kernelpatches from openwrt r36664
-	cp build/linux/ar71xx/patches-3.3/* $target/target/ar71xx/linux/patches
+	cp build_patches/linux/ar71xx/patches-3.3/* $target/target/linux/ar71xx/patches-3.3
 
 	#batman-adv: distributed arp table fixes
 	cat build_patches/changeset_35324.diff | patch -p1 -d $target/feeds
