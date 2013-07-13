@@ -1,0 +1,25 @@
+
+machine=wr841n8
+target=$builddir/$machine
+
+board_prepare() {
+    echo "nothing todo" > /dev/null
+}
+
+board_prebuild() {
+	cp ./bsp/$machine/.config $target/.config
+	cp -r ./bsp/$machine/root_file_system/* $target/files/
+}
+
+board_postbuild() {
+	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-*.bin ./bin/
+}
+
+board_flash() {
+	echo "nothing implemented"
+}
+
+board_clean() {
+	/bin/rm -rf $target bin/*$machine*
+}
+
