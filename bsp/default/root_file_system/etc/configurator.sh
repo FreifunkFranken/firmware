@@ -108,7 +108,9 @@ assign_router() {
 autoadd_ipv6_address() {
 	err "Doing IPv6 autoadd"
     ipv6_link_local_addr=$(ip addr show dev br-mesh scope link | awk '/inet6/{print $2}')
-    ergebnis=$(wget -T $API_TIMEOUT -q -O - "http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr")
+    ipv6_link_local_netmask=${ipv6_link_local_addr##*/}
+    ipv6_link_local_addr=${ipv6_link_local_addr%%/*}
+    ergebnis=$(wget -T $API_TIMEOUT -q -O - "http://$netmon_api/api_csv_configurator.php?section=autoadd_ipv6_address&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID&ip=$ipv6_link_local_addr&netmask=$ipv6_link_local_netmask")
     ret=${ergebnis%%,*}
 	if [ "$ret" = "success" ]; then
 		uci set configurator.@netmon[0].autoadd_ipv6_address='0'
@@ -142,6 +144,10 @@ elif [ $CRAWL_METHOD == "hash" ]; then
         fi
 	else
         err "The router is already assigned to a router in Netmon"
+                if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then                                                 
+                	autoadd_ipv6_address                                                                   
+       		fi                                                                                         
+                                    
 	fi
 fi
 
