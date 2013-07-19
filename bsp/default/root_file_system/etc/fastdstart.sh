@@ -44,7 +44,8 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
         echo "include peers from \"/etc/fastd/$project/peers\";" >> /etc/fastd/${project}/${project}.conf
         echo "log level warn;" >> /etc/fastd/${project}/${project}.conf
         echo "method \"null\";" >> /etc/fastd/${project}/${project}.conf
-        echo "bind 0.0.0.0:10000;" >> /etc/fastd/${project}/${project}.conf
+#        http://lists.nord-west.net/pipermail/freifunk-ol-dev/2013-July/000322.html
+#        echo "bind 0.0.0.0:10000;" >> /etc/fastd/${project}/${project}.conf
         echo "interface \"${project}VPN\";" >> /etc/fastd/${project}/${project}.conf
         echo "mtu 1426;" >> /etc/fastd/${project}/${project}.conf
         echo "secret \"$secret\";" >> /etc/fastd/${project}/${project}.conf
