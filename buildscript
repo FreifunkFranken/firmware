@@ -25,15 +25,15 @@ prepare() {
 	# This adds the sysctl load just before the network comes up
 	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
-	#backport mac80211-patches from openwrt r35786 and r36664
-	cp build_patches/mac80211/* $target/package/mac80211/patches
+	#backport mac80211 from r37266
+	svn up -r 37378 $target/package/mac80211
+	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
 		
 	#backport kernelpatches from openwrt r36664
 	cp build_patches/linux/ar71xx/patches-3.3/* $target/target/linux/ar71xx/patches-3.3
 
 	#batman-adv: distributed arp table fixes
 	cat build_patches/changeset_35324.diff | patch -p1 -d $target/feeds
-
 	#batman-adv: fix dat NULL pointer dereference
 	cat build_patches/changeset_35609.diff | patch -p1 -d $target/feeds
 
