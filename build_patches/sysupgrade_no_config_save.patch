@@ -1,20 +1,13 @@
 Index: package/base-files/files/sbin/sysupgrade
 ===================================================================
---- package/base-files/files/sbin/sysupgrade	(Revision 35186)
+--- package/base-files/files/sbin/sysupgrade	(Revision 35298)
 +++ package/base-files/files/sbin/sysupgrade	(Arbeitskopie)
-@@ -76,6 +76,15 @@
- 	exit 1
- }
- 
-+if [ "$SAVE_CONFIG" = "1" -a "$FORCE" = "0" ]; then
-+    echo "Please let the image serve you with a new config."
-+    echo "Use -n flag to get the new config!"
-+    echo ""
-+    echo "If you don't want to flash a Freifunk-Image you can force"
-+    echo "a sysupgrade without -n using the -F parameter."
-+    exit 1
-+fi
-+
- [ -n "$ARGV" -a -n "$NEED_IMAGE" ] && {
- 	cat <<-EOF
- 		-b|--create-backup and -r|--restore-backup do not perform a firmware upgrade.
+@@ -90,7 +90,7 @@
+ add_uci_conffiles() {
+ 	local file="$1"
+ 	( find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
+-		/etc/sysupgrade.conf /lib/upgrade/keep.d/* 2>/dev/null) \
++		/etc/sysupgrade.conf 2>/dev/null) \
+ 		-type f 2>/dev/null;
+ 	  opkg list-changed-conffiles ) | sort -u > "$file"
+ 	return 0
