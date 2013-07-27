@@ -25,8 +25,8 @@ prepare() {
 	# This adds the sysctl load just before the network comes up
 	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
-	#backport mac80211 from r37266
-	svn up -r 37378 $target/package/mac80211
+	#backport mac80211 from r37483
+	svn up -r 37483 $target/package/mac80211
 	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
 		
 	#backport kernelpatches from openwrt r36664
