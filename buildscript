@@ -19,27 +19,27 @@ prepare() {
 	#fix for building toolchain on texinfo>=5 
 	cp -a build_patches/toolchain $target
 
-    # This changes the default behavior of sysupgrade to not save the config 
-    cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
+	# This changes the default behavior of sysupgrade to not save the config 
+	cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
 
-    # This adds the sysctl load just before the network comes up
-    cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
+	# This adds the sysctl load just before the network comes up
+	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
-	#backport mac80211-patches from openwrt r35786 and r36664
-	cp build_patches/mac80211/* $target/package/mac80211/patches
+	#backport mac80211 from r37483
+	svn up -r 37483 $target/package/mac80211
+	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
 		
 	#backport kernelpatches from openwrt r36664
 	cp build_patches/linux/ar71xx/patches-3.3/* $target/target/linux/ar71xx/patches-3.3
 
 	#batman-adv: distributed arp table fixes
 	cat build_patches/changeset_35324.diff | patch -p1 -d $target/feeds
-
 	#batman-adv: fix dat NULL pointer dereference
 	cat build_patches/changeset_35609.diff | patch -p1 -d $target/feeds
 
-    #saves ~200MB for each build
-    test -d ./dl || mkdir ./dl
-    ln -s ../../dl $target/dl
+	#saves ~200MB for each build
+	test -d ./dl || mkdir ./dl
+	ln -s ../../dl $target/dl
 
 	board_prepare
 }
@@ -54,7 +54,7 @@ prebuild() {
 	board_prebuild
 
 	#insert actual firware version informations into release file
-    version=$(git describe --tags --dirty)
+	version=$(git describe --tags --dirty)
 
 	echo "FIRMWARE_VERSION=\"$version\"" > $target/files/etc/firmware_release
 	echo "RELEASE_DATE=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
@@ -68,7 +68,7 @@ build() {
 
 	opath=$(pwd)
 	cd $target
-    cpus=$(grep processor /proc/cpuinfo | wc -l)
+	cpus=$(grep processor /proc/cpuinfo | wc -l)
 
 	case "$1" in
 		"debug")
@@ -210,3 +210,4 @@ case "$1" in
 		echo "If you need help to one of these options just type $0 command help"
 	;;
 esac
+
