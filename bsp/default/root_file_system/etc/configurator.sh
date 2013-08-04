@@ -139,19 +139,15 @@ elif [ $CRAWL_METHOD == "hash" ]; then
         err "The router is not assigned to a router in Netmon"
         err "Trying to assign the router"
 		assign_router
-        if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
-            autoadd_ipv6_address
-        fi
 	else
         err "The router is already assigned to a router in Netmon"
-                if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then                                                 
-                	autoadd_ipv6_address                                                                   
-       		fi                                                                                         
-                                    
 	fi
+fi
+
+if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
+	autoadd_ipv6_address
 fi
 
 if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
     sync_hostname
 fi
-
