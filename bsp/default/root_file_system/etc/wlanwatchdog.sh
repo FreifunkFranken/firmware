@@ -68,7 +68,7 @@ count_clients() {
     NUMBER=$(brctl showstp $BRIDGE_INTERFACE 2> /dev/null | grep $WLAN_CLIENT_INTERFACE | cut -d" " -f2 | tr -d "()")
   fi
   if [ -n "$BRIDGE_INTERFACE" ] && [ -n "$NUMBER" ]; then
-    COUNT=$(brctl showmacs $BRIDGE_INTERFACE 2> /dev/null | cut -f1 | grep "$NUMBER" | wc -l)
+    COUNT=$(brctl showmacs $BRIDGE_INTERFACE 2> /dev/null | grep -v yes | cut -f1 | grep "$NUMBER" | wc -l)
   fi
   echo $COUNT
 }
