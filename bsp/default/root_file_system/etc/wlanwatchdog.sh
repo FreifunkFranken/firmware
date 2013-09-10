@@ -56,7 +56,7 @@ get_time() {
 count_originators() {
   local COUNT=0
   if [ -n "$BATMAN_INTERFACE" ]; then
-    COUNT=$(tail -n +3 /sys/kernel/debug/batman_adv/$BATMAN_INTERFACE/originators 2> /dev/null | wc -l)
+    COUNT=$(tail -n +3 /sys/kernel/debug/batman_adv/$BATMAN_INTERFACE/originators 2> /dev/null | grep -v "nodes in range" | wc -l)
   fi
   echo $COUNT
 }
