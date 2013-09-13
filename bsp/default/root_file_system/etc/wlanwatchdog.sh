@@ -35,9 +35,9 @@ debug_output() {
   brctl showmacs $BRIDGE_INTERFACE 2>&1
   echo "=== CONNECTIVITY TESTS ==="
   echo "== PING GATEWAY OVER MESH =="
-  ping -6 -c3 fe80::201:2ff:fe03:405%$BRIDGE_INTERFACE 2>&1
-  echo "== PING GATEWAY OVER INTERNET =="
-  ping -4 -c3 vpn.freifunk-ol.de 2>&1
+  ping -6 -c3 $(uci get configurator.@api[0].ipv6_address)%$(uci get configurator.@api[0].ipv6_interface) 2>&1
+  echo "== PING HOST OVER INTERNET =="
+  ping -4 -c3 freifunk-ol.de 2>&1
   echo "=== WLAN ==="
   echo "== $WLAN_CLIENT_INTERFACE =="
   iw dev $WLAN_CLIENT_INTERFACE station dump 2>&1
