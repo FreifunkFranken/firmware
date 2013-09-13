@@ -1,6 +1,6 @@
 config wifi-device  radio0
         option type     mac80211
-        option channel  6
+        option channel  ${BATMAN_CHANNEL}
         option phy      phy0
         option hwmode   11ng
 
@@ -8,8 +8,8 @@ config wifi-iface
         option device   radio0
         option network  wlanmesh
         option mode     adhoc
-        option bssid    '02:CA:FF:EE:BA:BE'
-        option ssid     'batman.oldenburg.freifunk.net'
+        option bssid    '${BSSID_MESH}'
+        option ssid     '${ESSID_MESH}'
         option mcast_rate 6000
 #       option bintval  1000
         option 'encryption' 'none'
@@ -19,5 +19,5 @@ config wifi-iface
         option device   radio0
         option network  mesh
         option mode     ap
-        option ssid     'oldenburg.freifunk.net'
+        option ssid     '${ESSID_AP}'
         option 'encryption' 'none'

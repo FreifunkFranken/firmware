@@ -53,6 +53,13 @@ prebuild() {
 
 	board_prebuild
 
+    for template in $(find $target/files -name *.tpl)
+    do
+        echo "Translating $template .."
+        $tpl_translate $template > $(basename $template .tpl)
+        /bin/rm $template
+    done
+
 	#insert actual firware version informations into release file
 	version=$(git describe --tags --dirty)
 
@@ -118,29 +125,55 @@ routers() {
 	echo "	wr1043nd"
 }
 
-if [ "$1" != "select" ]; then
+if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
 	if [ ! -h selected_bsp ]; then
 		echo "Please select a Board-Support-Package using:"
-		echo "$0 select"
+		echo "$0 selectbsp"
 		exit
-	else
-		echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
-		. selected_bsp
-		echo
-	fi
+    fi
+	if [ ! -h selected_community ]; then
+		echo "Please select a community file using:"
+		echo "$0 selectcommunity"
+		exit
+    fi
+    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
+        "$(/bin/ls -l selected_community | awk '{ print $11 }')"
+    . selected_bsp
+    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+    echo
 fi
 
 case "$1" in
-	"select")
+	"selectbsp")
 		if [ "$2" = "help" ] || [ "$2" = "" ]; then
 			echo "Select a Board-Support-Package:"
 			echo
 			echo "Usage: $0 $1 bsp"
 			echo "bsp: "
-			cd bsp; /bin/ls *.bsp; cd ..
+			/bin/ls bsp/*.bsp
 		else
-			/bin/rm -rf selected_bsp
-			/bin/ln -s bsp/$2 selected_bsp
+            if [ ! -f $2 ]; then
+                echo "Could not find $2"
+            else
+                /bin/rm -rf selected_bsp
+                /bin/ln -s $2 selected_bsp
+            fi
+		fi
+		;;
+	"selectcommunity")
+		if [ "$2" = "help" ] || [ "$2" = "" ]; then
+			echo "Select a Community-File:"
+			echo
+			echo "Usage: $0 $1 community.cfg"
+			echo "community.cfg: "
+			/bin/ls community/*.cfg
+		else
+            if [ ! -f $2 ]; then
+                echo "Could not find $2"
+            else
+                /bin/rm -rf selected_community
+                /bin/ln -s $2 selected_community
+            fi
 		fi
 		;;
 	"prepare")

@@ -1,15 +1,3 @@
-# Put your custom commands here that should be executed once
-# the system init finished. By default this file does nothing.
-
-# collect environment info and write to dot-script
-/etc/environment.sh > /tmp/environment
-
-#. /etc/firewall.user
-
-#busybox-httpd for crawldata
-mkdir /tmp/crawldata
-httpd -h /tmp/crawldata
-
 # fonera to slow?
 sleep 10
 
@@ -36,7 +24,3 @@ fi
 
 batctl if add wlan0-1
 
-# Starting NTP-Client Daemon
-ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
-
-exit 0

@@ -1,10 +1,4 @@
-# Put your custom commands here that should be executed once
-# the system init finished. By default this file does nothing.
 
-# collect environment info and write to dot-script
-/etc/environment.sh > /tmp/environment
-
-# todo: all devices or only dir300 ?
 if uci get network.mesh.macaddr
 then
   echo "MAC is set already"
@@ -43,13 +37,3 @@ fi
 batctl if add wlan0-1
 batctl if add eth0.3
 
-# Starting NTP-Client Daemon
-ntpd -p "fe80::201:2ff:fe03:405%br-mesh"
-
-#. /etc/firewall.user
-
-#busybox-httpd for crawldata
-mkdir /tmp/crawldata
-httpd -h /tmp/crawldata
-
-exit 0
