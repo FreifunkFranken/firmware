@@ -19,7 +19,7 @@ board_prebuild() {
     /bin/rm $target/files/etc/hotplug.d/iface/51-configurator
 
     # Remove fastd
-    /bin/rm $target/files/etc/fastdstart.sh
+    /bin/rm $target/files/etc/fastdstart.sh.tpl
 }
 
 board_postbuild() {
