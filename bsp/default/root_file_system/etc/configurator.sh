@@ -45,16 +45,27 @@ fi
 sync_hostname() {
 	err "Syncing hostname"
 	api_return=$(wget -T $API_TIMEOUT -q -O - "http://$netmon_api/api_csv_configurator.php?section=get_hostname&authentificationmethod=$CRAWL_METHOD&nickname=$CRAWL_NICKNAME&password=$CRAWL_PASSWORD&router_auto_update_hash=$CRAWL_UPDATE_HASH&router_id=$CRAWL_ROUTER_ID")
-	netmon_hostname=${api_return%,*}
-	netmon_hostname=${netmon_hostname#*,}
-	if [ "$netmon_hostname" != "" ]; then
-		if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-			err "Setting new hostname: $netmon_hostname"
-			uci set system.@system[0].hostname=$netmon_hostname
-			uci commit
-			echo $netmon_hostname > /proc/sys/kernel/hostname
+	ret=${api_return%%,*}
+	if [ "$ret" != "success" ]; then
+		err "Ther was an error fetching the hostname"
+		exit 0
+	elif [ "$ret" = "success" ]; then
+		netmon_hostname=${api_return%,*}
+		netmon_hostname=${netmon_hostname#*,}
+		#use regex to check if hostname is valid (not empty, only characters and numbers)
+		#http://stackoverflow.com/questions/8696906/check-for-valid-number-in-busybox
+		if echo -n $netmon_hostname | egrep -q '^[A-Za-z0-9]*$'; then
+			if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
+				err "Setting new hostname: $netmon_hostname"
+				uci set system.@system[0].hostname=$netmon_hostname
+				uci commit
+				echo $netmon_hostname > /proc/sys/kernel/hostname
+			else
+				err "Hostname is up to date"
+			fi
 		else
-			err "Hostname is up to date"
+			err "Hostname ist malformed"
+			exit 0
 		fi
 	fi
 }
