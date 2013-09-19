@@ -113,6 +113,16 @@ clean() {
 	/bin/rm -rf bin $builddir
 }
 
+buildall() {
+	for bsp in $(/bin/ls bsp/*.bsp)
+	do
+		./buildscript selectcommunity $1
+		./buildscript selectbsp $bsp
+		./buildscript prepare
+		./buildscript build
+	done
+}
+
 routers() {
 	echo "router-types: "
 	echo "	dir300"
@@ -125,7 +135,7 @@ routers() {
 	echo "	wr1043nd"
 }
 
-if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
+if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; then
 	if [ ! -h selected_bsp ]; then
 		echo "Please select a Board-Support-Package using:"
 		echo "$0 selectbsp"
@@ -229,6 +239,16 @@ case "$1" in
 			echo "$0 $1 all"
 		else
 			clean
+		fi
+		;;
+	"buildall")
+		if [ "$2" = "help" ] || [ "$2" = "" ]; then
+			echo "This option builds the firmware for all routers of a given community."
+			echo "Usage: $0 $1 community.cfg"
+			echo "community.cfg: "
+			/bin/ls community/*.cfg
+		else
+			buildall $2
 		fi
 		;;
 	*)
