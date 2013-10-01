@@ -52,9 +52,9 @@ sync_hostname() {
 	elif [ "$ret" = "success" ]; then
 		netmon_hostname=${api_return%,*}
 		netmon_hostname=${netmon_hostname#*,}
-		#use regex to check if hostname is valid (not empty, only characters and numbers)
-		#http://stackoverflow.com/questions/8696906/check-for-valid-number-in-busybox
-		if echo -n $netmon_hostname | egrep -q '^[A-Za-z0-9]*$'; then
+		#check for valid hostname as specified in rfc 1123
+		#see http://stackoverflow.com/a/3824105
+		if [ ${#netmon_hostname} -le 255 ] && echo -n $netmon_hostname | egrep -q '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$'; then
 			if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
 				err "Setting new hostname: $netmon_hostname"
 				uci set system.@system[0].hostname=$netmon_hostname
