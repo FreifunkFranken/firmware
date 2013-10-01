@@ -52,19 +52,27 @@ sync_hostname() {
 	elif [ "$ret" = "success" ]; then
 		netmon_hostname=${api_return%,*}
 		netmon_hostname=${netmon_hostname#*,}
-		#use regex to check if hostname is valid (not empty, only characters and numbers)
-		#http://stackoverflow.com/questions/8696906/check-for-valid-number-in-busybox
-		if echo -n $netmon_hostname | egrep -q '^[A-Za-z0-9]*$'; then
-			if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
-				err "Setting new hostname: $netmon_hostname"
-				uci set system.@system[0].hostname=$netmon_hostname
-				uci commit
-				echo $netmon_hostname > /proc/sys/kernel/hostname
+		
+		#check for valid hostname as specified in rfc 1123
+		#see http://stackoverflow.com/a/3824105
+		regex='^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])'
+		regex=$regex'(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$'
+		if [ ${#netmon_hostname} -le 255 ]; then
+			if echo -n $netmon_hostname | egrep -q "$regex"; then
+				if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
+					err "Setting new hostname: $netmon_hostname"
+					uci set system.@system[0].hostname=$netmon_hostname
+					uci commit
+					echo $netmon_hostname > /proc/sys/kernel/hostname
+				else
+					err "Hostname is up to date"
+				fi
 			else
-				err "Hostname is up to date"
+				err "Hostname ist malformed"
+				exit 0
 			fi
 		else
-			err "Hostname ist malformed"
+			err "Hostname exceeds the maximum length of 255 characters"
 			exit 0
 		fi
 	fi
