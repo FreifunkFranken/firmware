@@ -106,6 +106,16 @@ clean() {
 	/bin/rm -rf bin $builddir
 }
 
+
+buildall() {
+	for bsp in $(cd bsp; /bin/ls *.bsp; cd ..)
+	do
+		./buildscript select $bsp
+		./buildscript prepare
+		./buildscript build $1
+	done
+}
+
 routers() {
 	echo "router-types: "
 	echo "	dir300"
@@ -118,7 +128,7 @@ routers() {
 	echo "	wr1043nd"
 }
 
-if [ "$1" != "select" ]; then
+if [ "$1" != "select" ] && [ "$1" != "buildall" ]; then
 	if [ ! -h selected_bsp ]; then
 		echo "Please select a Board-Support-Package using:"
 		echo "$0 select"
@@ -198,6 +208,14 @@ case "$1" in
 			clean
 		fi
 		;;
+	"buildall")
+		if [ "$2" = "help" ]; then
+			echo "This option builds the firmware for all routers."
+			echo "Usage: $0 $1"
+		else
+			buildall $2
+		fi
+		;;
 	*)
 		echo "This is the Build Environment Script of the Freifunk Community Oldenburg."
 		echo "Usage: $0 command"
@@ -206,6 +224,7 @@ case "$1" in
 		echo "	build"
 		echo "	flash"
 		echo "	download"
+		echo "	buildall"
 		echo ""
 		echo "If you need help to one of these options just type $0 command help"
 	;;
