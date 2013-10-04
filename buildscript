@@ -56,7 +56,7 @@ prebuild() {
     for template in $(find $target/files -name *.tpl)
     do
         echo "Translating $template .."
-        $tpl_translate $template > $(basename $template .tpl)
+        $tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
         /bin/rm $template
     done
 
