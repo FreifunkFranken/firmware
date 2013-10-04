@@ -255,6 +255,8 @@ case "$1" in
 		echo "This is the Build Environment Script of the Freifunk Community Oldenburg."
 		echo "Usage: $0 command"
 		echo "command:"
+		echo "	selectcommunity [communityfile]"
+		echo "	selectbsp [bsp file]"
 		echo "	prepare"
 		echo "	build"
 		echo "	flash"
