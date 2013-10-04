@@ -3,11 +3,7 @@
 SERVER="no"
 #SERVERNAME="--servername--"
 
-<<<<<<< HEAD:bsp/default/root_file_system/etc/fastdstart.sh
-project="ffol"
-=======
 project="${VPN_PROJECT}"
->>>>>>> 8804270... buildscript: support community file with templates:bsp/default/root_file_system/etc/fastdstart.sh.tpl
 
 test_internet_host1="mastersword.de"
 test_internet_host2="109.163.229.254"
