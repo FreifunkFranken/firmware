@@ -3,27 +3,27 @@
 # functions
 #FIXME: define here your favorite methods to get the values
 get_wlan_client_interface() {
-  echo "wlan0"
+	echo "wlan0"
 }
 
 get_wlan_mesh_interface() {
-  echo "wlan0-1"
+	echo "wlan0-1"
 }
 
 get_eth_client_interface() {
-  echo ""
+	echo ""
 }
 
 get_eth_mesh_interface() {
-  echo ""
+	echo ""
 }
 
 get_bridge_interface() {
-  echo "br-mesh"
+	echo "br-mesh"
 }
 
 get_batman_interface() {
-  echo "bat0"
+	echo "bat0"
 }
 
 get_vpn_interface() {
