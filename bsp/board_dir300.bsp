@@ -46,6 +46,8 @@ board_flash() {
 	elif [ -f /usr/sbin/invoke-rc.d ];then
 		invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || invoke-rc.d tftpd-hpa start || echo "FAILED TO START TFTD"
 		invoke-rc.d network-manager stop
+	elif [ -f /usr/sbin/systemctl ];then
+		systemctl start tftpd.socket tftpd.service
 	fi
 
 	ifconfig $1 up
@@ -67,6 +69,8 @@ board_flash() {
 	elif [ -f /usr/sbin/invoke-rc.d ];then
 		invoke-rc.d tftpd-hpa stop
 		invoke-rc.d network-manager start
+	elif [ -f /usr/sbin/systemctl ];then
+		systemctl stop tftpd.socket tftpd.service
 	fi
 }
 
