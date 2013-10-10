@@ -26,7 +26,7 @@ prepare() {
 	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
 	#backport mac80211
-	svn up -r 38258 $target/package/mac80211
+	svn up -r 38351 $target/package/mac80211
 	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
 		
 	#backport kernelpatches from openwrt r36664
