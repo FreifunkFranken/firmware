@@ -166,8 +166,24 @@ crawl() {
                 printf "<originator_"i"><originator>"$1"</originator><link_quality>"$3"</link_quality><nexthop>"$4"</nexthop><last_seen>"$2"</last_seen><outgoing_interface>"$5"</outgoing_interface></originator_"i">"
                 i++
             }' /sys/kernel/debug/batman_adv/bat0/originators)
+        
+		batman_adv_gateway_mode=$(batctl gw)
+		
+		batman_adv_gateway_list=$(awk \
+			'BEGIN { FS=" "; i=0 }
+			/Gateway/ { next }
+			/No gateways/ { next }
+			{	sub("=>", "true", $0)
+				sub("  ", "false", $0)
+				sub("\\(", "", $0)
+				sub("\\)", "", $0)
+				sub("\\[", "", $0)
+				sub("\\]:", "", $0)
+				sub("  ", " ", $0)
+				printf "<gateway_"i"><selected>"$1"</selected><gateway>"$2"</gateway><link_quality>"$3"</link_quality><nexthop>"$4"</nexthop><outgoing_interface>"$5"</outgoing_interface><gw_class>"$6" "$7" "$8"</gw_class></gateway_"i">"
+				i++
+			}' /sys/kernel/debug/batman_adv/bat0/gateways)
     fi
-
     err "`date`: Collecting information about conected clients"
 	#CLIENTS
     SEDDEV=$(brctl showstp $MESH_INTERFACE | awk '/\([0-9]\)/ {
@@ -180,7 +196,7 @@ crawl() {
 
     err "`date`: Putting all information into a XML-File and save it at "$SCRIPT_DATA_FILE
 
-	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><client_count>$client_count</client_count></data>"
+	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode><batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list><client_count>$client_count</client_count></data>"
 
 	#write data to hxml file that provides the data on httpd
 	echo $DATA > $SCRIPT_DATA_FILE
