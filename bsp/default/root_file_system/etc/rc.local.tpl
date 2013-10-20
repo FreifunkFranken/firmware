@@ -18,4 +18,6 @@ ntpd -p ${NTPD_IP}
 mkdir /tmp/crawldata
 httpd -h /tmp/crawldata
 
+touch /tmp/started
+
 exit 0

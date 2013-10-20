@@ -8,10 +8,15 @@ project="${VPN_PROJECT}"
 test_internet_host1="mastersword.de"
 test_internet_host2="109.163.229.254"
 
+if [ "$SERVER" == "no" ]; then
+    test -f /tmp/started || exit
+fi
+
 #Only do something with fastd when the router has internet connection
 if ping -w5 -c3 "$test_internet_host1" &>/dev/null || 
    ping -w5 -c3 "$test_internet_host2" &>/dev/null ||
    ping6 -w5 -c3 heise.de &>/dev/null; then
+    mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
     if [ "$SERVER" == "no" ]; then
         hostname=$(cat /proc/sys/kernel/hostname)
 
@@ -20,7 +25,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
         fi
 
         if [ "$hostname" == "" ]; then
-            hostname=$(awk '{ if (mac) next; mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address /sys/class/net/eth0/address /sys/class/net/ath0/address 2>/dev/null)
+            hostname=$mac
         fi
     else
         hostname=$SERVERNAME
@@ -67,7 +72,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
     fi
 
     # register
-    wget -T15 "http://mastersword.de/~reddog/${project}/?name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
+    wget -T15 "http://mastersword.de/~reddog/${project}/?mac=$mac&name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
 
     filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
     for file in $filenames; do
