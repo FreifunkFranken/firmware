@@ -7,6 +7,10 @@ prepare() {
 
 	#Get the OpenWrt Core Source for Firmware
 	svn checkout -r 35298 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/ $target
+
+	# overwrite feeds (from r38172) to support commit ids in feeds.conf
+	cp ./build_patches/openwrt/feeds $target/scripts/feeds
+
 	#apply own feeds.conf
 	cp ./build_patches/feeds.conf $target/feeds.conf
 
