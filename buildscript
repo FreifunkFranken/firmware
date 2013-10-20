@@ -18,7 +18,10 @@ prepare() {
 
 	$target/scripts/feeds update
 	
-	$target/scripts/feeds install -a
+	$target/scripts/feeds install -p packagesol nodewatcher
+	$target/scripts/feeds install -p fastd fastd libuecc
+	$target/scripts/feeds install -p routing alfred kmod-batman-adv kmod-batgat
+	$target/scripts/feeds install -p packages bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
 
 	#fix for building toolchain on texinfo>=5 
 	cp -a build_patches/toolchain $target
