@@ -35,6 +35,9 @@ prepare() {
 	#backport mac80211
 	svn up -r 38351 $target/package/mac80211
 	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
+
+	#backport the latests kernel fixes (needed for newer batman)
+	svn up -r 37768 $target/target/linux/generic/patches-3.3
 		
 	#backport kernelpatches from openwrt r36664
 	cp build_patches/linux/ar71xx/patches-3.3/* $target/target/linux/ar71xx/patches-3.3
