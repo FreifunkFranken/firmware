@@ -47,7 +47,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
         
         secret=$(fastd --generate-key 2>&1 | grep -i secret | awk '{ print $2 }')
         echo "include peers from \"/etc/fastd/$project/peers\";" >> /etc/fastd/${project}/${project}.conf
-        echo "log level warn;" >> /etc/fastd/${project}/${project}.conf
+        echo "log to syslog level warn;" >> /etc/fastd/${project}/${project}.conf
         echo "method \"null\";" >> /etc/fastd/${project}/${project}.conf
 #        http://lists.nord-west.net/pipermail/freifunk-ol-dev/2013-July/000322.html
 #        echo "bind 0.0.0.0:10000;" >> /etc/fastd/${project}/${project}.conf
@@ -68,7 +68,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
     # fire up
     if [ "$(/sbin/ifconfig -a | grep -i ethernet | grep $project)" == "" ]; then
         /bin/rm /var/run/fastd.$project.pid
-        fastd -c /etc/fastd/$project/$project.conf -d --pid-file /var/run/fastd.$project.pid --syslog-level verbose
+        fastd -c /etc/fastd/$project/$project.conf -d --pid-file /var/run/fastd.$project.pid
     fi
 
     # register
