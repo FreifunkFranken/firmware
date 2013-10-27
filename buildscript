@@ -32,8 +32,15 @@ prepare() {
 	# This adds the sysctl load just before the network comes up
 	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
-	#backport mac80211
-	svn up -r 38351 $target/package/mac80211
+	# use nbd's backport of mac80211
+	/bin/rm -rf $target/package/mac80211
+	/bin/rm -rf $target/package/hostapd
+	git clone git://nbd.name/aa-mac80211.git $target/package/aa-mac80211
+	git --git-dir=$target/package/aa-mac80211/.git --work-tree=$target/package/aa-mac80211/ \
+		checkout 767acbf0045924a0619cd494ec72edbbdad7a95e
+	mv $target/package/aa-mac80211/mac80211 $target/package/mac80211
+	mv $target/package/aa-mac80211/hostapd $target/package/hostapd
+
 	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
 
 	#backport the latests kernel fixes (needed for newer batman)
