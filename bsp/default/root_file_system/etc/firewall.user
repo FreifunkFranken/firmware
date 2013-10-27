@@ -9,3 +9,6 @@ WAN=$(uci get network.wan.ifname)
 iptables -A INPUT -i $WAN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -i $WAN -j REJECT
 
+# Limit ssh to 3 new connections per 60 seconds
+/usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name dropbear
+/usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 3 --rttl --name dropbear -j DROP
