@@ -10,6 +10,8 @@ DAY=86400
 TIMEOUT_SHORT=$((4*$MINUTE))
 TIMEOUT_MEDIUM=$((29*$MINUTE))
 TIMEOUT_LONG=$DAY
+ORIGINATOR_QUALITY_MIN=50
+CLIENT_AGE_MAX=60
 STATEFILE="/tmp/wlanwatchdogstate"
 DEBUGFILE="/root/wlanwatchdog_debug.log.gz"
 
@@ -56,7 +58,14 @@ get_time() {
 count_originators() {
 	local COUNT=0
 	if [ -n "$BATMAN_INTERFACE" ]; then
-		COUNT=$(tail -n +3 /sys/kernel/debug/batman_adv/$BATMAN_INTERFACE/originators 2> /dev/null | grep -v "nodes in range" | wc -l)
+		COUNT=$(tail -n +3 /sys/kernel/debug/batman_adv/$BATMAN_INTERFACE/originators 2> /dev/null | \
+			grep "$1" | \
+			grep -o "^\([0-9a-f]\{2\}:\?\)\+[[:space:]]\+[0-9.]\+s[[:space:]]\+([ 0-9]\+)" | \
+			cut -d\( -f2 | \
+			cut -d\) -f1 | \
+			tr -d " " | \
+			awk -vlimit=$ORIGINATOR_QUALITY_MIN '$1>=limit{print $1}' | \
+			wc -l)
 	fi
 	echo $COUNT
 }
@@ -65,27 +74,34 @@ count_clients() {
 	local COUNT=0
 	local NUMBER=
 	if [ -n "$BRIDGE_INTERFACE" ] && [ -n "$WLAN_CLIENT_INTERFACE" ]; then
-		NUMBER=$(brctl showstp $BRIDGE_INTERFACE 2> /dev/null | grep $WLAN_CLIENT_INTERFACE | cut -d" " -f2 | tr -d "()")
+		NUMBER=$(brctl showstp $BRIDGE_INTERFACE 2> /dev/null | \
+			grep $WLAN_CLIENT_INTERFACE | \
+			cut -d" " -f2 | \
+			tr -d "()")
 	fi
 	if [ -n "$BRIDGE_INTERFACE" ] && [ -n "$NUMBER" ]; then
-		COUNT=$(brctl showmacs $BRIDGE_INTERFACE 2> /dev/null | grep -v yes | cut -f1 | grep "$NUMBER" | wc -l)
+		COUNT=$(brctl showmacs "^$BRIDGE_INTERFACE " 2> /dev/null | \
+			grep -o "^[[:space:]]*$NUMBER[[:space:]]\+\([0-9a-f]\{2\}:\?\)\+[[:space:]]\+no[[:space:]]\+[0-9]\+" | \
+				tr "\t" " " | \
+				tr -s " " | \
+				cut -d" " -f5 | \
+				awk -vlimit=$CLIENT_AGE_MAX '$1<=limit{print $1}' | \
+				wc -l)
 	fi
 	echo $COUNT
 }
 
 count_neighbours() {
-	local COUNT=0
-	#FIXME: this counts all nodes that accessable via the WLAN mesh interface
-	if [ -n "$BATMAN_INTERFACE" ] && [ -n "$WLAN_MESH_INTERFACE" ]; then
-		COUNT=$(tail -n +3 /sys/kernel/debug/batman_adv/$BATMAN_INTERFACE/originators | grep "$WLAN_MESH_INTERFACE" | wc -l)
-	fi
-	echo $COUNT
+  count_originators "$WLAN_MESH_INTERFACE"
 }
 
 scan_wlan() {
 	#FIXME: if you can; is there an easier way to get the current frequency?
 	#FIXME: this should reanimate the wlan driver; do passive and active scanning the job equally well?
-	local FREQUENCY=$(iwlist $WLAN_MESH_INTERFACE frequency 2> /dev/null | grep -o "Current Frequency=[0-9.]\+ GHz" | grep -o "[0-9.]*" | tr -d ".")
+	local FREQUENCY=$(iwlist $WLAN_MESH_INTERFACE frequency 2> /dev/null | \
+		grep -o "Current Frequency=[0-9.]\+ GHz" | \
+		grep -o "[0-9.]*" | \
+		tr -d ".")
 	[ -n "$FREQUENCY" ] && iw $WLAN_MESH_INTERFACE scan freq $FREQUENCY passive 1> /dev/null 2> /dev/null
 }
 
