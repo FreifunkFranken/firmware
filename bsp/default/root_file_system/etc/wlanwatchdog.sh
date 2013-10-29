@@ -75,7 +75,7 @@ count_clients() {
 	local NUMBER=
 	if [ -n "$BRIDGE_INTERFACE" ] && [ -n "$WLAN_CLIENT_INTERFACE" ]; then
 		NUMBER=$(brctl showstp $BRIDGE_INTERFACE 2> /dev/null | \
-			grep $WLAN_CLIENT_INTERFACE | \
+			grep -e "^$WLAN_CLIENT_INTERFACE " | \
 			cut -d" " -f2 | \
 			tr -d "()")
 	fi
