@@ -61,6 +61,7 @@ crawl() {
 	
     batman_adv_version=$(cat /sys/module/batman_adv/version)
 	kernel_version=$(uname -r)
+	fastd_version=$(fastd -v | awk '{ print $2 }')
 	nodewatcher_version=$SCRIPT_VERSION
 
     # example for /etc/openwrt_release:
@@ -81,7 +82,7 @@ crawl() {
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
 	. /etc/firmware_release
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 
