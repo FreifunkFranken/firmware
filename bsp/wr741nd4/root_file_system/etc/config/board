@@ -1,0 +1,2 @@
+config model 'model'
+	option name 'tl-wr741nd-v4'
