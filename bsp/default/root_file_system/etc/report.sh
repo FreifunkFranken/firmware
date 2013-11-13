@@ -117,7 +117,11 @@ report() {
 
 	# system
 	echo ",\"system\":{"
-	local HARDWARE=$(uci get board.model.name)
+	local MODEL=$(uci get board.model.name)
+	local CPU=$(cat /proc/cpuinfo |\
+		awk -F': ' '/^cpu model/ { print $2 }')
+	local MEMORY=$(cat /proc/meminfo |\
+		awk -F" " '/^MemTotal:/ {print $2}')
 	local FIRMWARE=$(cat /etc/*release |\
 		grep "^FIRMWARE_VERSION=" |\
 		cut -d= -f2 |\
@@ -127,46 +131,54 @@ report() {
 		cut -d= -f2 |\
 		tr -d "'\"")
 	local LINUX=$(uname -r)
+	local BATMANADV=$(cat /sys/module/batman_adv/version)
 	local FASTD=$(fastd -v | cut -d" " -f2)
-	local MEMORY=$(cat /proc/meminfo |\
-		grep -e "MemTotal:" |\
-		awk -F" " '{print $2}')
-	echo "\"hardware\":\"$HARDWARE\""
-	echo ",\"firmware\":\"$FIRMWARE\""
+	local WLANPOWER=$(iwconfig wlan0 |\
+		grep -o -E "Tx-Power= *[0-9]+" |\
+		cut -d= -f2)
+	[ -n "$WLANPOWER" ] || WLANPOWER=0
+	echo "\"hardware\":{"
+	echo "\"model\":\"$MODEL\""
+	echo ",\"cpu\":\"$CPU\""
+	echo ",\"memory\":$MEMORY"
+	echo "}"
+	echo ",\"software\":{"
+	echo "\"firmware\":\"$FIRMWARE\""
 	echo ",\"distribution\":\"$DISTIBUTION\""
 	echo ",\"linux\":\"$LINUX\""
+	echo ",\"batman-adv\":\"$BATMANADV\""
 	echo ",\"fastd\":\"$FASTD\""
-	echo ",\"memory\":$MEMORY"
+	echo "}"
+	echo ",\"wireless\":{"
+	echo "\"power\":$WLANPOWER"
+	echo "}"
 	echo "}"
 	# /system
 
 
 	# load
 	echo ",\"load\":{"
+	local UPTIME=$(cat /proc/uptime | cut -d" " -f1)
 	local CPU_LOAD=$(cat /proc/loadavg | cut -d" " -f2)
 	local MEMORY_FREE=$(cat /proc/meminfo |\
-		grep -e "MemFree:" |\
-		awk -F" " '{print $2}')
+		awk '/^MemFree:/ {print $2}')
 	local MEMORY_BUFFERS=$(cat /proc/meminfo |\
-		grep -e "Buffers:" |\
-		awk -F" " '{print $2}')
+		awk '/^Buffers:/ {print $2}')
 	local MEMORY_LOAD=$(echo $MEMORY $MEMORY_FREE $MEMORY_BUFFERS |\
 		awk '{printf "%.2f",(($1-$2-$3)/$1)}')
- 	local TRAFFIC_MESH=
+	local TRAFFIC_MESH=
 	local TRAFFIC_WAN=
 	if [ -f '/var/statistics/traffic' ]; then
 		TRAFFIC_MESH=$(cat /var/statistics/traffic |\
-			grep -e "^bat0 " |\
-			awk '{ printf "[%.2f,%.2f]",$4/1024,$2/1024}')
+			awk '/^bat0 / { printf "[%.2f,%.2f]",$4/1024,$2/1024}')
 		TRAFFIC_WAN=$(cat /var/statistics/traffic |\
-			grep -E "^[^ ]*(VPN|vpn)[^ ]* " |\
-			head -n1 |\
-			awk '{ printf "[%.2f,%.2f]",$4/1024,$2/1024}')
+			awk '/^[^ ]*(VPN|vpn)[^ ]* / { printf "[%.2f,%.2f]",$4/1024,$2/1024; exit }')
 	fi
 	[ -n "$TRAFFIC_MESH" ] || TRAFFIC_MESH=[0,0]
 	[ -n "$TRAFFIC_WAN" ] || TRAFFIC_WAN=[0,0]
 	local CLIENTS=$(get_clients)
-	echo "\"cpu\":$CPU_LOAD"
+	echo "\"uptime\":$UPTIME"
+	echo ",\"cpu\":$CPU_LOAD"
 	echo ",\"memory\":$MEMORY_LOAD"
 	echo ",\"clients\":$CLIENTS"
 	echo ",\"traffic\":{"
