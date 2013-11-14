@@ -3,18 +3,6 @@
 # config
 STATSDIR="/tmp/statistics"
 
-# functions
-paste_variables() {
-	local VAR1="$1"
-	local VAR2="$2"
-	local TMP1=$(mktemp) || return 1
-	local TMP2=$(mktemp) || return 1
-	echo "$VAR1" > "$TMP1"
-	echo "$VAR2" > "$TMP2"
-	paste -d" " "$TMP1" "$TMP2"
-	rm "$TMP1" "$TMP2"
-}
-
 get_trafficdata() {
 	cat /proc/net/dev | tail -n +3 | tr ":" " " | sed -e 's/^[ ]\+//g' | tr -s " " | cut -d" " -f 1,2,3,10,11 || return 1
 }
@@ -60,6 +48,3 @@ chmod -R 700 "$STATSDIR"
 
 # update values
 update_traffic
-
-
-
