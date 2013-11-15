@@ -16,13 +16,13 @@ get_clients() {
 	local COUNT=0
 	local DEVNUMBER=
 	DEVNUMBER=$(brctl showstp br-mesh |\
-		grep -e "^wlan0 " |\
-		cut -d" " -f2- | tr -d "()")
+		awk '/^wlan0 / { gsub("[()]", "", $2); printf $2; exit}')
 	if [ -n "$DEVNUMBER" ]; then
 		COUNT=$(brctl showmacs br-mesh |\
-			sed 's/[ \t]\+/ /g' |\
-			grep -o -E "^ $DEVNUMBER [^ ]+ no" |\
-			wc -l)
+			awk -v number=$DEVNUMBER '
+				BEGIN {count=0}
+				{if ($1 == number && $3 == "no") count++}
+				END {print count}')
 	fi
 	echo $COUNT
 }
@@ -119,9 +119,9 @@ report() {
 	echo ",\"system\":{"
 	local MODEL=$(uci get board.model.name)
 	local CPU=$(cat /proc/cpuinfo |\
-		awk -F': ' '/^cpu model/ { print $2 }')
+		awk -F': ' '/^cpu model/ { print $2; exit}')
 	local MEMORY=$(cat /proc/meminfo |\
-		awk -F" " '/^MemTotal:/ {print $2}')
+		awk -F" " '/^MemTotal:/ {print $2; exit}')
 	local FIRMWARE=$(cat /etc/*release |\
 		grep "^FIRMWARE_VERSION=" |\
 		cut -d= -f2 |\
@@ -160,13 +160,15 @@ report() {
 	echo ",\"load\":{"
 	local UPTIME=$(cat /proc/uptime | cut -d" " -f1)
 	local CPU_LOAD=$(cat /proc/loadavg | cut -d" " -f2)
-	local MEMORY_FREE=$(cat /proc/meminfo |\
-		awk '/^MemFree:/ {print $2}')
-	local MEMORY_BUFFERS=$(cat /proc/meminfo |\
-		awk '/^Buffers:/ {print $2}')
-	local MEMORY_LOAD=$(echo $MEMORY $MEMORY_FREE $MEMORY_BUFFERS |\
-		awk '{printf "%.2f",(($1-$2-$3)/$1)}')
-	local TRAFFIC_MESH=
+	local MEMORY_LOAD=$(cat /proc/meminfo |\
+		awk '
+		/^MemTotal:/ {total=$2}
+		/^MemFree:/ {free=$2}
+		/^Buffers:/ {buffers=$2}
+		/^Cached:/ {cached=$2; exit}
+		END {printf "%.2f",(free+buffers+cached)/total}	
+		')
+ 	local TRAFFIC_MESH=
 	local TRAFFIC_WAN=
 	if [ -f '/var/statistics/traffic' ]; then
 		TRAFFIC_MESH=$(cat /var/statistics/traffic |\
