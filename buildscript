@@ -161,7 +161,7 @@ if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; t
     echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
         "$(/bin/ls -l selected_community | awk '{ print $11 }')"
     . selected_bsp
-    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
     echo
 fi
 
