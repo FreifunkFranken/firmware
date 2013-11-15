@@ -166,7 +166,7 @@ report() {
 		/^MemFree:/ {free=$2}
 		/^Buffers:/ {buffers=$2}
 		/^Cached:/ {cached=$2; exit}
-		END {printf "%.2f",(free+buffers+cached)/total}	
+		END {printf "%.2f",(total-free-buffers-cached)/total}
 		')
  	local TRAFFIC_MESH=
 	local TRAFFIC_WAN=
@@ -179,10 +179,15 @@ report() {
 	[ -n "$TRAFFIC_MESH" ] || TRAFFIC_MESH=[0,0]
 	[ -n "$TRAFFIC_WAN" ] || TRAFFIC_WAN=[0,0]
 	local CLIENTS=$(get_clients)
+	MESH=$(batctl o |\
+		tail -n+3 |\
+		awk 'BEGIN {count=0;cumqual=0;} {gsub("[()]", "", $3); cumqual +=$3; count++;} END {printf "%.2f",(cumqual/(count*255))}')
+	[ -n "$MESH" ] || MESH=0
 	echo "\"uptime\":$UPTIME"
 	echo ",\"cpu\":$CPU_LOAD"
 	echo ",\"memory\":$MEMORY_LOAD"
 	echo ",\"clients\":$CLIENTS"
+	echo ",\"mesh\":$MESH"
 	echo ",\"traffic\":{"
 	echo "\"mesh\":"$TRAFFIC_MESH
 	echo ",\"wan\":"$TRAFFIC_WAN
