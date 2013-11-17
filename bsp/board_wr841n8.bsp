@@ -3,8 +3,7 @@ machine=wr841n8
 target=$builddir/$machine
 
 board_prepare() {
-	# Fix multicast on eth0 (see OpenWRT r35564)
-	cat build_patches/wr841n8-enable_multicast_eth1.patch | patch -p1 -d $target
+	echo "nothing todo" > /dev/null
 }
 
 board_prebuild() {

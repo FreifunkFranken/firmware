@@ -2,8 +2,8 @@
 
 builddir=./build
 
-OPENWRTREV=39585 
-OPENWRTURL=svn://svn.openwrt.org/openwrt/branches/attitude_adjustment
+OPENWRTREV=39056
+OPENWRTURL=svn://svn.openwrt.org/openwrt/trunk
 PACKAGEREV=${OPENWRTREV}
 PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
 
@@ -46,7 +46,7 @@ get_source() {
 
 	test -d routing || git clone https://github.com/openwrt-routing/packages.git routing
 	cd routing
-	git checkout 072ba90ce4b126e84d3e1734ba8e9d4beab48f03
+	git checkout 44318d05898069300ce2ad6eb05eb40f232e7123
 	git am --whitespace=nowarn ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
 	cd ..
 
@@ -82,9 +82,6 @@ prepare() {
 	#apply own feeds.conf
 	sed -e"s|PATH|$(pwd)/src/packages|g" ./build_patches/feeds.conf > $target/feeds.conf
 
-	# overwrite feeds (from r38172) to support commit ids in feeds.conf
-	cp ./build_patches/openwrt/feeds $target/scripts/feeds
-
 	test -d $target/feeds && /bin/rm -rf $target/feeds
 
 	$target/scripts/feeds update
@@ -96,12 +93,11 @@ prepare() {
 	$target/scripts/feeds install -p routing alfred kmod-batman-adv kmod-batgat
 	$target/scripts/feeds install -p openwrt bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
 
-	#fix for building toolchain on texinfo>=5 
-	cp -a build_patches/toolchain $target
-
+	# todo evaluate this with the new openwrt
 	# This changes the default behavior of sysupgrade to not save the config 
-	cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
+	#cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
 
+	# todo evaluate this with the new openwrt
 	# This adds the sysctl load just before the network comes up
 	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
 
@@ -181,8 +177,7 @@ build() {
 			ionice -c 3 -- nice -n 10 -- make -j$[$cpus+1]
 			;;
 	esac
-	# actually this does northing!
-	# rm -rf ./build_dir/files/
+
 	cd $opath
 
 	if [ ! -d bin ]; then
