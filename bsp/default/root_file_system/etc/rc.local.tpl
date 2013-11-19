@@ -19,7 +19,7 @@ mkdir /tmp/crawldata
 httpd -h /tmp/crawldata
 
 # serve the 30s-cached output of "report.sh gzip" on port 81 with max 1 request/s
-/etc/serve.sh 81 1 "/etc/cache.sh 30 /etc/report.sh gzip"
+/etc/serve.sh 81 1 "/etc/cache.sh 30 /etc/report.sh gzip" &
 
 touch /tmp/started
 
