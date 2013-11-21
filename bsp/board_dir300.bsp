@@ -3,10 +3,11 @@ machine=dir300
 target=$builddir/$machine
 
 board_prepare() {
-    cat ./bsp/$machine/000-squashfs-image-params.patch | patch -p0 -d $target
+	#cat ./bsp/$machine/000-squashfs-image-params.patch | patch -p0 -d $target
 
-    cat build_patches/dont_overwrite_wan_config.patch | patch -p0 -d $target
-    /bin/rm $target/target/linux/atheros/base-files/etc/uci-defaults/network
+	#cat build_patches/dont_overwrite_wan_config.patch | patch -p0 -d $target
+	#/bin/rm $target/target/linux/atheros/base-files/etc/uci-defaults/network
+	echo "nothing todo" > /dev/null
 }
 
 board_prebuild() {
