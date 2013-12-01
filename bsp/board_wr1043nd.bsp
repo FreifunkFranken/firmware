@@ -7,8 +7,7 @@ board_prepare() {
 }
 
 board_prebuild() {
-	cp ./bsp/$machine/.config $target/.config
-	cp -r ./bsp/$machine/root_file_system/* $target/files/
+	echo "nothing todo" > /dev/null
 }
 
 board_postbuild() {
