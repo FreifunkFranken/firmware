@@ -45,7 +45,10 @@ get_source() {
 	fi
 
 	test -d routing || git clone https://github.com/openwrt-routing/packages.git routing
-	git --git-dir=routing/.git --work-tree=routing/ checkout 072ba90ce4b126e84d3e1734ba8e9d4beab48f03
+	cd routing
+	git checkout 072ba90ce4b126e84d3e1734ba8e9d4beab48f03
+	git am --whitespace=nowarn ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
+	cd ..
 
 	test -d fastd || git clone git://git.metameute.de/lff/pkg_fastd fastd
 	git --git-dir=fastd/.git --work-tree=fastd/ checkout v10

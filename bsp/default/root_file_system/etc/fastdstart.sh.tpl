@@ -42,6 +42,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
 		ln -s /tmp/fastd_${project}_peers /etc/fastd/$project/peers
 		echo "#!/bin/sh" > /etc/fastd/$project/up.sh
 		echo "ip link set up dev ${project}VPN" >> /etc/fastd/$project/up.sh
+		echo "echo enable > /sys/devices/virtual/net/${project}VPN/batman_adv/no_rebroadcast" >> /etc/fastd/$project/up.sh
 		echo "batctl if add ${project}VPN" >> /etc/fastd/$project/up.sh
 		chmod +x /etc/fastd/$project/up.sh
 
@@ -87,3 +88,4 @@ else
 fi
 
 exit 0
+# vim: noexpandtab
