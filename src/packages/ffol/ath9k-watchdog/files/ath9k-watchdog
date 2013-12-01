@@ -1,0 +1,31 @@
+#!/bin/sh
+mkdir -p /usr/lib/ath9k-watchdog
+
+logread -f | while read line
+do
+	case "$line" in
+	*"Could not stop RX"*) 
+        hostname=$(cat /proc/sys/kernel/hostname)
+
+        if [ "$hostname" == "OpenWrt" ]; then
+            hostname=""
+        fi
+
+        if [ "$hostname" == "" ]; then
+            hostname=$(awk '{ if (mac) next; mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address /sys/class/net/eth0/address /sys/class/net/ath0/address 2>/dev/null)
+        fi
+
+        # Perform post-mortem dump
+        tstmp=$(/bin/date +%s)
+        echo -n "data[hostname]=${hostname}&data[tstmp]=${tstmp}" > /tmp/$tstmp
+        
+        # Move into upload directory
+        mv  /tmp/$tstmp /usr/lib/ath9k-watchdog
+
+        #Bye 
+        /sbin/reboot
+		;;
+	*)
+		;;
+	esac
+done

@@ -2,17 +2,71 @@
 
 builddir=./build
 
-prepare() {
-	test -d $builddir || mkdir $builddir
+OPENWRTREV=35298
+OPENWRTURL=svn://svn.openwrt.org/openwrt/branches/attitude_adjustment
+PACKAGEREV=${OPENWRTREV}
+PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
+
+get_source() {
+	cd src
 
 	#Get the OpenWrt Core Source for Firmware
-	svn checkout -r 35298 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/ $target
+	if [ -d openwrt ]; then
+		url=$(svn info openwrt | awk '/^URL/ { print $2 }')
+		if [ "$url" = "$OPENWRTURL" ]; then
+			rev=$(svn info openwrt | awk '/^Revision:/ { print $2 }')
+			if [ "$rev" -ne "$OPENWRTREV" ]; then
+				svn update -r $OPENWRTREV openwrt
+			fi
+		else
+			/bin/rm -rf openwrt
+			svn checkout -r $OPENWRTREV $OPENWRTURL openwrt
+		fi
+	else
+		svn checkout -r $OPENWRTREV $OPENWRTURL openwrt
+	fi
+
+	test -d packages || mkdir packages
+	cd packages
+
+	if [ -d openwrt ]; then
+		url=$(svn info openwrt | awk '/^URL/ { print $2 }')
+		if [ "$url" = "$PACKAGEURL" ]; then
+			rev=$(svn info openwrt | awk '/^Revision:/ { print $2 }')
+			if [ "$rev" -ne "$PACKAGEREV" ]; then
+				svn update -r $PACKAGEREV openwrt
+			fi
+		else
+			/bin/rm -rf openwrt
+			svn checkout -r $PACKAGEREV $PACKAGEURL openwrt
+		fi
+	else
+		svn checkout -r $PACKAGEREV $PACKAGEURL openwrt
+	fi
+
+	test -d routing || git clone https://github.com/openwrt-routing/packages.git routing
+	git --git-dir=routing/.git --work-tree=routing/ checkout 072ba90ce4b126e84d3e1734ba8e9d4beab48f03
+
+	test -d fastd || git clone git://git.metameute.de/lff/pkg_fastd fastd
+	git --git-dir=fastd/.git --work-tree=fastd/ checkout v10
+
+	cd .. # packages
+	cd .. # src
+}
+
+prepare() {
+	get_source
+
+	test -d $builddir || mkdir $builddir
+
+	/bin/rm -rf $target
+	svn export src/openwrt $target
+
+	#apply own feeds.conf
+	sed -e"s|PATH|$(pwd)/src/packages|g" ./build_patches/feeds.conf > $target/feeds.conf
 
 	# overwrite feeds (from r38172) to support commit ids in feeds.conf
 	cp ./build_patches/openwrt/feeds $target/scripts/feeds
-
-	#apply own feeds.conf
-	cp ./build_patches/feeds.conf $target/feeds.conf
 
 	test -d $target/feeds && /bin/rm -rf $target/feeds
 
@@ -21,7 +75,7 @@ prepare() {
 	$target/scripts/feeds install -p packagesol nodewatcher
 	$target/scripts/feeds install -p fastd fastd libuecc
 	$target/scripts/feeds install -p routing alfred kmod-batman-adv kmod-batgat
-	$target/scripts/feeds install -p packages bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
+	$target/scripts/feeds install -p openwrt bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
 
 	#fix for building toolchain on texinfo>=5 
 	cp -a build_patches/toolchain $target
@@ -41,17 +95,17 @@ prepare() {
 	mv $target/package/aa-mac80211/mac80211 $target/package/mac80211
 	mv $target/package/aa-mac80211/hostapd $target/package/hostapd
 
-	svn up -r 37378 $target/target/linux/generic/files/include/linux/ath9k_platform.h 
-
 	#backport the latests kernel fixes (needed for newer batman)
-	svn up -r 37768 $target/target/linux/generic/patches-3.3
-		
+	#svn diff -r 35298:37768 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/target/linux/generic > build_patches/kernel_37768.patch
+	cat build_patches/kernel_generic_37768.patch | patch -p0 -d $target/target/linux/generic
+
 	#backport kernelpatches from openwrt r36664
-	cp build_patches/linux/ar71xx/patches-3.3/* $target/target/linux/ar71xx/patches-3.3
+	#svn diff -r 35298:36664 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/target/linux/ar71xx > build_patches/kernel_ar71xx_36664.patch
+	cat build_patches/kernel_ar71xx_36664.patch | patch -p0 -d $target/target/linux/ar71xx
 
 	#saves ~200MB for each build
-	test -d ./dl || mkdir ./dl
-	ln -s ../../dl $target/dl
+	test -d ./src/dl || mkdir ./src/dl
+	ln -s ../../src/dl $target/dl
 
 	board_prepare
 }
@@ -78,8 +132,8 @@ prebuild() {
 	echo "FIRMWARE_VERSION=\"$version\"" > $target/files/etc/firmware_release
 	echo "RELEASE_DATE=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
 	echo "FIRMWARE_REVISION=\"build date: "`date`"\"" >> $target/files/etc/firmware_release
-	echo "OPENWRT_CORE_REVISION=\""`svn info $target |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
-	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""`svn info $target/feeds/packages |grep Revision: |cut -c11-`"\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_CORE_REVISION=\""${OPENWRTREV}"\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""${PACKAGEREV}"\"" >> $target/files/etc/firmware_release
 }
 
 build() {
