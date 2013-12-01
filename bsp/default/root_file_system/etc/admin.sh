@@ -125,14 +125,6 @@ set_location() {
 	uci commit
 }
 
-set_outdoor() {
-	local OUTDOOR="$1"
-	check bool "$OUTDOOR" || return 1
-	uci set site.location=location
-	uci set site.location.outdoor="$OUTDOOR"
-	uci commit
-}
-
 set_direction() {
 	local DIRECTION="$@"
 	DIRECTION=$(echo "$DIRECTION" | tr "nesw" "NESW") || return 1
@@ -197,10 +189,6 @@ case "$ACTION" in
 
 	location)
 		set_location $@
-	;;
-
-	outdoor)
-		set_outdoor $@
 	;;
 
 	direction)
