@@ -1,0 +1,2 @@
+config model 'model'
+	option name 'wr740n-v4'
