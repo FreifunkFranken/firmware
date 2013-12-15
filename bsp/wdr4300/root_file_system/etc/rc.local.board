@@ -1,4 +1,9 @@
-WLAN0_MACADDR=$(cat /sys/class/net/w5mesh/address)
+if [[ "$(cat /var/sysinfo/board_name)" = "tl-wdr3500" ]]; then
+	WLAN0_MACADDR=$(cat /sys/class/net/w2mesh/address)
+else
+	WLAN0_MACADDR=$(cat /sys/class/net/w5mesh/address)
+fi
+
 BRMESH_MACADDR=$(cat /sys/class/net/br-mesh/address)
 
 if [[ "$WLAN0_MACADDR=" != "$BRMESH_MACADDR=" ]]; then
