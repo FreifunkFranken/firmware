@@ -53,6 +53,20 @@ get_source() {
 	test -d fastd || git clone git://git.metameute.de/lff/pkg_fastd fastd
 	git --git-dir=fastd/.git --work-tree=fastd/ checkout v10
 
+    if [ ! -d tunneldigger ]; then
+        git init tunneldigger
+        cd tunneldigger/
+        git remote add -f origin https://github.com/wlanslovenija/firmware-packages-opkg.git
+        git config core.sparsecheckout true
+        echo net/tunneldigger/ >> .git/info/sparse-checkout
+        git pull origin
+        cd ..
+    fi
+    git --git-dir=tunneldigger/.git --work-tree=tunneldigger checkout a022ddaafb7595aa22084851eddf8650460fa8e7
+
+    test -d libremap || git clone https://github.com/libremap/libremap-agent-openwrt.git libremap
+    git --git-dir=libremap/.git --work-tree=libremap checkout fa994c7900b6331092c2262116ecc7410621e4ac
+
 	cd .. # packages
 	cd .. # src
 }
@@ -77,6 +91,8 @@ prepare() {
 	
 	$target/scripts/feeds install -p packagesol nodewatcher
 	$target/scripts/feeds install -p fastd fastd libuecc
+	$target/scripts/feeds install -p tunneldigger tunneldigger
+	$target/scripts/feeds install -p libremap libremap-agent
 	$target/scripts/feeds install -p routing alfred kmod-batman-adv kmod-batgat
 	$target/scripts/feeds install -p openwrt bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
 
