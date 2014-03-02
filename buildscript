@@ -110,7 +110,7 @@ prepare() {
 	/bin/rm -rf $target/package/hostapd
 	git clone git://nbd.name/aa-mac80211.git $target/package/aa-mac80211
 	git --git-dir=$target/package/aa-mac80211/.git --work-tree=$target/package/aa-mac80211/ \
-		checkout 767acbf0045924a0619cd494ec72edbbdad7a95e
+		checkout 8d86801ae606544faee1e0e25ef59a3f8f059871
 	mv $target/package/aa-mac80211/mac80211 $target/package/mac80211
 	mv $target/package/aa-mac80211/hostapd $target/package/hostapd
 
