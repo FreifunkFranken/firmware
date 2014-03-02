@@ -2,7 +2,7 @@
 
 builddir=./build
 
-OPENWRTREV=35298
+OPENWRTREV=39585 
 OPENWRTURL=svn://svn.openwrt.org/openwrt/branches/attitude_adjustment
 PACKAGEREV=${OPENWRTREV}
 PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
