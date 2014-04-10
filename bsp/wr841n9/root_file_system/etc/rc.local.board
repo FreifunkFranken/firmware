@@ -1,0 +1,9 @@
+
+#Set Mac-Addr of wr1043nd wifi interface if not right
+WLAN0_MACADDR=$(cat /sys/class/net/wlan0/address)
+BRMESH_MACADDR=$(cat /sys/class/net/br-mesh/address)
+
+
+batctl if add wlan0-1
+batctl if add eth1.3
+
