@@ -2,7 +2,7 @@
 
 builddir=./build
 
-OPENWRTREV=39056
+OPENWRTREV=40449
 OPENWRTURL=svn://svn.openwrt.org/openwrt/trunk
 PACKAGEREV=${OPENWRTREV}
 PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
