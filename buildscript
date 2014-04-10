@@ -62,7 +62,7 @@ get_source() {
         git pull origin
         cd ..
     fi
-    git --git-dir=tunneldigger/.git --work-tree=tunneldigger checkout a022ddaafb7595aa22084851eddf8650460fa8e7
+    git --git-dir=tunneldigger/.git --work-tree=tunneldigger checkout 3ece2128b70a6e25b02f27705d19251c3ba342f0
 
     test -d libremap || git clone https://github.com/libremap/libremap-agent-openwrt.git libremap
     git --git-dir=libremap/.git --work-tree=libremap checkout fa994c7900b6331092c2262116ecc7410621e4ac
