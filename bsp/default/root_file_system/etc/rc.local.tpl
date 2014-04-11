@@ -5,6 +5,11 @@ BOARD=$(cat /var/sysinfo/board_name)
 if ! uci get board.model.name; then
     uci set board.model.name=BOARD
 fi
+
+. /etc/network.$BOARD
+
+. /etc/network.sh
+
 . /etc/rc.local.$BOARD
 
 # collect environment info and write to dot-script

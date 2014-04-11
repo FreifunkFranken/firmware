@@ -6,45 +6,6 @@ if ! uci get nodewatcher.@network[0].client_interfaces; then
     uci commit
 fi
 
-WANDEV=eth1
-SWITCHDEV=eth0
-CLIENT_PORTS="1 2 0t"
-WAN_PORTS=
-BATMAN_PORTS="3 4 0t"
-
-if ! uci get network.$SWITCHDEV.ifname; then
-    uci set network.$SWITCHDEV=switch
-    uci set network.$SWITCHDEV.enable=1
-    uci set network.$SWITCHDEV.reset=1
-    uci set network.$SWITCHDEV.enable_vlan=1
-
-    uci set network.${SWITCHDEV}_1=switch_vlan
-    uci set network.${SWITCHDEV}_1.device=$SWITCHDEV
-    uci set network.${SWITCHDEV}_1.vlan=1
-    uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
-
-    if [[ "$WANDEV" = "$SWITCHDEV" ]]; then
-        uci set network.${SWITCHDEV}_2=switch_vlan
-        uci set network.${SWITCHDEV}_2.device=$SWITCHDEV
-        uci set network.${SWITCHDEV}_2.vlan=2
-        uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
-    fi
-    
-    uci set network.${SWITCHDEV}_3=switch_vlan
-    uci set network.${SWITCHDEV}_3.device=$SWITCHDEV
-    uci set network.${SWITCHDEV}_3.vlan=3
-    uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
-
-    uci set network.mesh.ifname="$SWITCHDEV.1 bat0"
-
-    uci set network.ethmesh.ifname="$SWITCHDEV.3"
-
-    uci set network.wan.ifname=$WANDEV
-
-    uci commit
-    /etc/init.d/network reload
-fi
-
 if uci get network.ethmesh.macaddr
 then
     echo "MAC for ethmesh is set already"
