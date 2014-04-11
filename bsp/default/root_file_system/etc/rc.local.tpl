@@ -1,11 +1,14 @@
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
+BOARD=$(cat /var/sysinfo/board_name)
+if ! uci get board.model.name; then
+    uci set board.model.name=BOARD
+fi
+. /etc/rc.local.$BOARD
+
 # collect environment info and write to dot-script
 /etc/environment.sh > /tmp/environment
-
-BOARD=$(cat /var/sysinfo/board_name)
-. /etc/rc.local.$BOARD
 
 # Starting NTP-Client Daemon
 ntpd -p ${NTPD_IP}
