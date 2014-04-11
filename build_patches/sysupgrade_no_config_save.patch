@@ -1,8 +1,8 @@
 Index: package/base-files/files/sbin/sysupgrade
 ===================================================================
---- package/base-files/files/sbin/sysupgrade	(Revision 35298)
-+++ package/base-files/files/sbin/sysupgrade	(Arbeitskopie)
-@@ -90,7 +90,7 @@
+--- package/base-files/files/sbin/sysupgrade
++++ package/base-files/files/sbin/sysupgrade
+@@ -101,7 +101,7 @@
  add_uci_conffiles() {
  	local file="$1"
  	( find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \

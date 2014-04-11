@@ -95,28 +95,7 @@ prepare() {
 
 	# todo evaluate this with the new openwrt
 	# This changes the default behavior of sysupgrade to not save the config 
-	#cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
-
-	# todo evaluate this with the new openwrt
-	# This adds the sysctl load just before the network comes up
-	cat build_patches/invoke_sysctl_before_network.patch | patch -p0 -d $target
-
-	# use nbd's backport of mac80211
-	/bin/rm -rf $target/package/mac80211
-	/bin/rm -rf $target/package/hostapd
-	git clone git://nbd.name/aa-mac80211.git $target/package/aa-mac80211
-	git --git-dir=$target/package/aa-mac80211/.git --work-tree=$target/package/aa-mac80211/ \
-		checkout 8d86801ae606544faee1e0e25ef59a3f8f059871
-	mv $target/package/aa-mac80211/mac80211 $target/package/mac80211
-	mv $target/package/aa-mac80211/hostapd $target/package/hostapd
-
-	#backport the latests kernel fixes (needed for newer batman)
-	#svn diff -r 35298:37768 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/target/linux/generic > build_patches/kernel_37768.patch
-	cat build_patches/kernel_generic_37768.patch | patch -p0 -d $target/target/linux/generic
-
-	#backport kernelpatches from openwrt r36664
-	#svn diff -r 35298:36664 svn://svn.openwrt.org/openwrt/branches/attitude_adjustment/target/linux/ar71xx > build_patches/kernel_ar71xx_36664.patch
-	cat build_patches/kernel_ar71xx_36664.patch | patch -p0 -d $target/target/linux/ar71xx
+	cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
 
 	#saves ~200MB for each build
 	test -d ./src/dl || mkdir ./src/dl
