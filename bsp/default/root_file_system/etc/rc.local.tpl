@@ -4,7 +4,8 @@
 # collect environment info and write to dot-script
 /etc/environment.sh > /tmp/environment
 
-. /etc/rc.local.board
+BOARD=$(cat /var/sysinfo/board_name)
+. /etc/rc.local.$BOARD
 
 # Starting NTP-Client Daemon
 ntpd -p ${NTPD_IP}
