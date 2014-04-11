@@ -25,7 +25,7 @@ then
     echo "MAC for mesh is set already"
 else
     echo "Fixing MAC on br-mesh (mesh)"
-    NEW_MACADDR=$(cat /sys/class/net/eth0/address)
+    NEW_MACADDR=$(cat /sys/class/net/wlan0/address)
     uci set network.mesh.macaddr=$NEW_MACADDR
     uci commit
     ifconfig br-mesh down
