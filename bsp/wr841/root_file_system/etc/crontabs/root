@@ -1,7 +1,0 @@
-*/5 * * * *	sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh; sh /etc/statistics.sh; sh /etc/wlanwatchdog.sh >> /var/log/wlanwatchdog.log 2>&1
-
-#15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
-
-#Enable zapp script if you are running a gateway
-#*/1 * * * * /etc/init.d/zapp
-

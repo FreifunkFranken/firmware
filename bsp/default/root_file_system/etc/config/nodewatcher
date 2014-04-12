@@ -6,4 +6,3 @@ config 'script'
 
 config 'network'
 	option 'mesh_interface' 'br-mesh'
-	option 'client_interfaces' 'ath0 wlan0 eth0.1'

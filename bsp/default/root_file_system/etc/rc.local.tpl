@@ -2,6 +2,14 @@
 # the system init finished. By default this file does nothing.
 
 BOARD=$(cat /var/sysinfo/board_name)
+case "$BOARD" in
+    tl-wr1043nd)
+        BOARD=tl-wr1043nd-v1
+        ;;
+    tl-wr741nd)
+        grep "Atheros AR7240 rev 2" /proc/cpuinfo && BOARD=tl-wr741nd-v2 || BOARD=tl-wr741nd-v4
+        ;;
+esac
 if ! uci get board.model.name; then
     uci set board.model.name=BOARD
 fi
@@ -9,8 +17,6 @@ fi
 . /etc/network.$BOARD
 
 . /etc/network.sh
-
-. /etc/rc.local.$BOARD
 
 # collect environment info and write to dot-script
 /etc/environment.sh > /tmp/environment

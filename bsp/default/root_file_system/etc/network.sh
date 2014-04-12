@@ -1,3 +1,8 @@
+if ! uci get nodewatcher.@network[0].client_interfaces; then
+    echo "Setting nodewatchers client interfaces to: $CLIENTIF"
+    uci set nodewatcher.@network[0].client_interfaces="$CLIENTIF"
+    uci commit
+fi
 
 if ! uci get network.$SWITCHDEV.ifname; then
     uci set network.$SWITCHDEV=switch
@@ -46,4 +51,36 @@ if ! uci get network.$SWITCHDEV.ifname; then
 
     uci commit
     /etc/init.d/network reload
+fi
+
+if [[ -n "$ETHMESHMAC" ]]; then
+    if uci get network.ethmesh.macaddr
+    then
+        echo "MAC for ethmesh is set already"
+    else
+        echo "Fixing MAC on eth0.3 (ethmesh)"
+        NEW_MACADDR=$(cat /sys/class/net/$ETHMESHMAC/address)
+        uci set network.ethmesh.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig eth0.3 down
+        ifconfig eth0.3 hw ether $NEW_MACADDR
+        ifconfig eth0.3 up
+        /etc/init.d/network reload
+    fi
+fi
+
+if [[ -n "$ROUTERMAC" ]]; then
+    if uci get network.mesh.macaddr
+    then
+        echo "MAC for mesh is set already"
+    else
+        echo "Fixing MAC on br-mesh (mesh)"
+        NEW_MACADDR=$(cat /sys/class/net/$ROUTERMAC/address)
+        uci set network.mesh.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig br-mesh down
+        ifconfig br-mesh hw ether $NEW_MACADDR
+        ifconfig br-mesh up
+        /etc/init.d/network reload
+    fi
 fi

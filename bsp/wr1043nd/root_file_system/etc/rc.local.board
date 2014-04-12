@@ -1,3 +1,0 @@
-
-batctl if add wlan0-1
-batctl if add eth0.3

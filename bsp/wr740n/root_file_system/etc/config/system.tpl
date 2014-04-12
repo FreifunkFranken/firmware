@@ -11,10 +11,9 @@ config led 'status_led'
 	option sysfs 'tp-link:green:system'
 	option trigger 'heartbeat'
 
-
 config led 'led_vpn'
 	option name 'VPN'
 	option sysfs 'tp-link:green:qss'
 	option trigger 'netdev'
-	option dev 'ffhbVPN'
+	option dev '${VPN_PROJECT}VPN'
 	option mode 'link'
