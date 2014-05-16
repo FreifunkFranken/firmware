@@ -224,7 +224,7 @@ buildall() {
 		./buildscript selectcommunity $1
 		./buildscript selectbsp $bsp
 		./buildscript prepare
-		./buildscript build
+		./buildscript build $2
 	done
 }
 
@@ -364,11 +364,11 @@ case "$1" in
 	"buildall")
 		if [ "$2" = "help" ] || [ "$2" = "" ]; then
 			echo "This option builds the firmware for all routers of a given community."
-			echo "Usage: $0 $1 community.cfg"
+			echo "Usage: $0 $1 community.cfg [fast]"
 			echo "community.cfg: "
 			/bin/ls community/*.cfg
 		else
-			buildall $2
+			buildall $2 $3
 		fi
 		;;
 	*)
@@ -380,6 +380,7 @@ case "$1" in
 		echo "	prepare"
 		echo "	config"
 		echo "	build"
+		echo "	buildall"
 		echo "	flash"
 		echo "	download"
 		echo ""
