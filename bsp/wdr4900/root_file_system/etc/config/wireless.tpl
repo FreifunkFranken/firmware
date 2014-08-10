@@ -19,7 +19,7 @@ config wifi-iface 'w5mesh'
 
 config wifi-iface 'w5ap'
 	option device   radio0
-	option network  w5ap
+	option network  mesh
 	option ifname   w5ap
 	option mode     ap
 	option ssid     '${ESSID_AP}'
@@ -46,7 +46,7 @@ config wifi-iface 'w2mesh'
 
 config wifi-iface 'w2ap'
 	option device   radio1
-	option network  w2ap
+	option network  mesh
 	option ifname   w2ap
 	option mode     ap
 	option ssid     '${ESSID_AP}'
