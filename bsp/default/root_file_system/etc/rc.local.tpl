@@ -9,6 +9,9 @@ case "$BOARD" in
     tl-wr741nd)
         grep "Atheros AR7240 rev 2" /proc/cpuinfo && BOARD=tl-wr741nd-v2 || BOARD=tl-wr741nd-v4
         ;;
+    tl-wr741nd-v4)
+        grep 740 /var/sysinfo/model && BOARD=tl-wr740n-v4
+        ;;
 esac
 if ! uci get board.model.name; then
     uci set board.model.name=BOARD
