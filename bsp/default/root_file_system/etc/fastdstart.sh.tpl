@@ -56,6 +56,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
 		echo "mtu 1426;" >> /etc/fastd/${project}/${project}.conf
 		echo "secret \"$secret\";" >> /etc/fastd/${project}/${project}.conf
 		echo "on up \"/etc/fastd/${project}/up.sh\";" >> /etc/fastd/${project}/${project}.conf
+		echo "secure handshakes no;" >> /etc/fastd/${project}/${project}.conf
 	fi
 
 	if [ ! -d /tmp/fastd_${project}_peers ]; then
@@ -77,7 +78,8 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
 
 	filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
 	for file in $filenames; do
-		awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_${project}_output > /etc/fastd/$project/peers/$file
+		awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_${project}_output | sed 's/ float;/;/g' > /etc/fastd/$project/peers/$file
+		echo 'float yes;' >> /etc/fastd/$project/peers/$file
 	done
 
 	#reload
