@@ -4,6 +4,8 @@
 
 SCRIPT_VERSION="30"
 
+test -f /tmp/started || exit
+
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
 if [ -f /etc/config/nodewatcher ];then

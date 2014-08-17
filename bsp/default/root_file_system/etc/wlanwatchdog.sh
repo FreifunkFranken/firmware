@@ -1,4 +1,6 @@
 #!/bin/ash
+	
+test -f /tmp/started || exit
 
 # environment
 . "/tmp/environment" || exit 1

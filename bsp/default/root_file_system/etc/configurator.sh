@@ -2,6 +2,8 @@
 # Netmon Configurator (C) 2010-2012 Freifunk Oldenburg
 # Lizenz: GPL v3
 
+test -f /tmp/started || exit
+
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
 if [ -f /etc/config/configurator ];then
