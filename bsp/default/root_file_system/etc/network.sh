@@ -54,7 +54,7 @@ if ! uci get network.$SWITCHDEV.ifname; then
     fi
 
     uci commit
-    /etc/init.d/network reload
+    /etc/init.d/network restart
 fi
 
 if [[ -n "$ETHMESHMAC" ]]; then
@@ -63,13 +63,14 @@ if [[ -n "$ETHMESHMAC" ]]; then
         echo "MAC for ethmesh is set already"
     else
         echo "Fixing MAC on eth0.3 (ethmesh)"
+        sleep 10
         NEW_MACADDR=$(cat /sys/class/net/$ETHMESHMAC/address)
         uci set network.ethmesh.macaddr=$NEW_MACADDR
         uci commit
         ifconfig eth0.3 down
         ifconfig eth0.3 hw ether $NEW_MACADDR
         ifconfig eth0.3 up
-        /etc/init.d/network reload
+        /etc/init.d/network restart
     fi
 fi
 
@@ -79,12 +80,13 @@ if [[ -n "$ROUTERMAC" ]]; then
         echo "MAC for mesh is set already"
     else
         echo "Fixing MAC on br-mesh (mesh)"
+        sleep 10
         NEW_MACADDR=$(cat /sys/class/net/$ROUTERMAC/address)
         uci set network.mesh.macaddr=$NEW_MACADDR
         uci commit
         ifconfig br-mesh down
         ifconfig br-mesh hw ether $NEW_MACADDR
         ifconfig br-mesh up
-        /etc/init.d/network reload
+        /etc/init.d/network restart
     fi
 fi
