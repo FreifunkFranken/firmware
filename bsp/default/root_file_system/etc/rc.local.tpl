@@ -14,7 +14,7 @@ case "$BOARD" in
         ;;
 esac
 if ! uci get board.model.name; then
-    uci set board.model.name=BOARD
+    uci set board.model.name=$BOARD
 fi
 
 . /etc/network.$BOARD
