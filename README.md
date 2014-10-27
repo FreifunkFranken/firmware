@@ -8,30 +8,30 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 
 ## Benutzung des Buildscripts
 ### Prerequisites
-* apt-get install zlib1g-dev lua5.2 (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst
+* `apt-get install zlib1g-dev lua5.2` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst
 git clone https://github.com/FreifunkFranken/firmware.git)
-* cd firmware
+* `cd firmware`
 
 ### Erste Schritte
 Mit Hilfe der Community-Files werden Parameter, wie die ESSID, der Kanal sowie z.B. die Netmon-IP gesetzt. Diese Einstellungen sind Community weit einheitlich und müssen i.d.R. nicht geändert werden.
-* ./buildscript selectcommunity community/franken.cfg
+* `./buildscript selectcommunity community/franken.cfg`
 Je nach dem, für welche Hardware die Firmware gebaut werden soll muss das BSP gewählt werden:
-* ./buildscript selectbsp bsp/board wr1043nd.bsp
-* ./buildscript
+* `./buildscript selectbsp bsp/board wr1043nd.bsp`
+* `./buildscript`
 
-## Was ist ein BSP?[Bearbeiten]
+## Was ist ein BSP?
 Ein BSP beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
 Typischerweise ist eine folgene Ordner-Struktur vorhanden:
 * .config
 * root_file_system/
-** etc/
-*** rc.local.board
-*** config/
-**** board
-**** network
-**** system
-*** crontabs/
-**** root
+  * etc/
+    * rc.local.board
+    * config/
+      * board
+      * network
+      * system
+    * crontabs/
+      * root
 
 Die Daten des BSP werden nie alleine verwendet. Zu erst werden immer die Daten aus dem "default"-BSP zum Ziel kopiert, erst danach werden die Daten des eigentlichen BSPs dazu kopiert. Durch diesen Effekt kann ein BSP die "default" Daten überschreiben.
 
@@ -39,10 +39,10 @@ Die Daten des BSP werden nie alleine verwendet. Zu erst werden immer die Daten a
 Das BSP file durch das Buildscript automatisch als dot-Script geladen, somit stehen dort alle Funktionen zur Verfügung.
 Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein dynamisches sed-Script, dies geschieht, damit die Templates mit den richtigen Werten gefüllt werden können.
 
-### ./buildscript prepare
+### `./buildscript prepare`
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese noch schont da sind. Zu den Sourcen zählen folgende Komponenten:
-** OpenWRT
-** Sämtliche Packages (ggfs werden Patches angewandt)
+  * OpenWRT
+  * Sämtliche Packages (ggfs werden Patches angewandt)
 
 * Ein ggfs altes Target wird gelöscht
 * OpenWRT wird ins Target exportiert (kopiert)
@@ -52,23 +52,23 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
 * Patches werden angewandt
 * board_prepare() aus dem BSP wird aufgerufen (wird. z.B. fur Patches für eine bestimmte HW verwendet)
 
-### ./buildscript build
+### `./buildscript build`
 * prebuild
-** $target/files aufräumen
-*** (In $target/files liegen Dateien, die später direkt im Ziel-Image landen)
-** Files aus default-bsp und bsp kopieren
-** OpenWRT- und Kernel-Config kopieren
-** board_prebuild() aus dem BSP wird aufgerufen
+  * $target/files aufräumen
+    * (In $target/files liegen Dateien, die später direkt im Ziel-Image landen)
+  * Files aus default-bsp und bsp kopieren
+  * OpenWRT- und Kernel-Config kopieren
+  * board_prebuild() aus dem BSP wird aufgerufen
 * Templates transformieren
 * GIT Versionen speichern: $target/files/etc/firmware_release
 * OpenWRT: make
 * postbuild
-** board_postbuild() wird aufgerufen
+  * board_postbuild() wird aufgerufen
 
-### ./buildscript config
+### `./buildscript config`
 Um das Arbeiten mit den OpenWRT .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWRT menuconfig und die OpenWRT kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
 * prebuild
-* OpenWRT: make menuconfig ; make kernel_menuconfig
+* OpenWRT: `make menuconfig ; make kernel_menuconfig`
 * Speichern, y/n?
 * Config-Format vereinfachen
 * Config ins BSP zurück speichern
@@ -95,7 +95,8 @@ board_postbuild() {
 ```
 
 Dann muss auf jeden Fall noch das Netzwerk richtig konfiguriert werden. Dazu muss man den Router sehr gut kennen, i.d.R. lernt man den erst beim Verwenden kennen, daher ist ein guter Startpunkt die Config vom v1 zu kopieren und erstmal zu gucken was passiert:
-```cp bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v1 bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v2
+```
+cp bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v1 bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v2
 ```
 Anschließend kann ein erstes Image erzeugt werden:
 ```
@@ -116,7 +117,7 @@ reboot
 ```
 
 ### Switch konfigurieren
-Wenn der Router wieder hochgefahren ist, sollten die Einstellungen sein, so wie sie konfiguriert wurden. Ggfs muss man hier noch mal eine Runde drehen, wenn etwas nicht richtig war. Ansonsten ist es jetzt an der Zeit den Switch einzustellen. Das geht am einfachsten, wenn man die Einstellungen nun direkt in der /etc/config/network vornimmt. Dabei ist eth0_2 der WAN Port (sofern er über den Switch läuft). eth0_1 sind die Client-Ports und eth0_3 sind die Ports um Batman Knoten zu verbinden. Am Anfang weiß man meist noch nicht welcher Switch Port wirklich am Router wo rausgeführt ist. Manchmal kann es helfen einen Port nach dem anderen aktiv zu schalten (Rechner anstecken) und die Ausgabe von swconfig anzugucken (z.B. swconfig dev switch0 show). Das ganze ist manchmal ein wenig try-and-error. :( Aber wenn man denkt es passt, prüft man alles durch. Tauchen BATMAN Nachbarn in "batctl o" auf und aktualisiert sich die Anzeige, wenn ein anderer Knoten an dem Batman-Port angeschlossen wird? Funktioniert das mit beiden Ports? Taucht ein PC in "/etc/showmacs.sh br-mesh" auf, den man an die Client-Ports angeschlossen hat? Wenn am Ende alles passt, übernimmt man die Switch-Config in die /etc/network.tl-wr1043nd-v2 und probiert das ganze nochmal aus:
+Wenn der Router wieder hochgefahren ist, sollten die Einstellungen sein, so wie sie konfiguriert wurden. Ggfs muss man hier noch mal eine Runde drehen, wenn etwas nicht richtig war. Ansonsten ist es jetzt an der Zeit den Switch einzustellen. Das geht am einfachsten, wenn man die Einstellungen nun direkt in der /etc/config/network vornimmt. Dabei ist eth0_2 der WAN Port (sofern er über den Switch läuft). eth0_1 sind die Client-Ports und eth0_3 sind die Ports um Batman Knoten zu verbinden. Am Anfang weiß man meist noch nicht welcher Switch Port wirklich am Router wo rausgeführt ist. Manchmal kann es helfen einen Port nach dem anderen aktiv zu schalten (Rechner anstecken) und die Ausgabe von swconfig anzugucken (z.B. swconfig dev switch0 show). Das ganze ist manchmal ein wenig try-and-error. :( Aber wenn man denkt es passt, prüft man alles durch. Tauchen BATMAN Nachbarn in `batctl o` auf und aktualisiert sich die Anzeige, wenn ein anderer Knoten an dem Batman-Port angeschlossen wird? Funktioniert das mit beiden Ports? Taucht ein PC in `/etc/showmacs.sh br-mesh` auf, den man an die Client-Ports angeschlossen hat? Wenn am Ende alles passt, übernimmt man die Switch-Config in die /etc/network.tl-wr1043nd-v2 und probiert das ganze nochmal aus:
 ```
 cp /rom/etc/config/network /etc/config/network
 reboot
