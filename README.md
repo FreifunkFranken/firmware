@@ -8,8 +8,8 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 
 ## Benutzung des Buildscripts
 ### Prerequisites
-* `apt-get install zlib1g-dev lua5.2` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst
-git clone https://github.com/FreifunkFranken/firmware.git)
+* `apt-get install zlib1g-dev lua5.2` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst)
+* `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
 ### Erste Schritte
@@ -117,7 +117,7 @@ reboot
 ```
 
 ### Switch konfigurieren
-Wenn der Router wieder hochgefahren ist, sollten die Einstellungen sein, so wie sie konfiguriert wurden. Ggfs muss man hier noch mal eine Runde drehen, wenn etwas nicht richtig war. Ansonsten ist es jetzt an der Zeit den Switch einzustellen. Das geht am einfachsten, wenn man die Einstellungen nun direkt in der /etc/config/network vornimmt. Dabei ist eth0_2 der WAN Port (sofern er über den Switch läuft). eth0_1 sind die Client-Ports und eth0_3 sind die Ports um Batman Knoten zu verbinden. Am Anfang weiß man meist noch nicht welcher Switch Port wirklich am Router wo rausgeführt ist. Manchmal kann es helfen einen Port nach dem anderen aktiv zu schalten (Rechner anstecken) und die Ausgabe von swconfig anzugucken (z.B. swconfig dev switch0 show). Das ganze ist manchmal ein wenig try-and-error. :( Aber wenn man denkt es passt, prüft man alles durch. Tauchen BATMAN Nachbarn in `batctl o` auf und aktualisiert sich die Anzeige, wenn ein anderer Knoten an dem Batman-Port angeschlossen wird? Funktioniert das mit beiden Ports? Taucht ein PC in `/etc/showmacs.sh br-mesh` auf, den man an die Client-Ports angeschlossen hat? Wenn am Ende alles passt, übernimmt man die Switch-Config in die /etc/network.tl-wr1043nd-v2 und probiert das ganze nochmal aus:
+Wenn der Router wieder hochgefahren ist, sollten die Einstellungen sein, so wie sie konfiguriert wurden. Gegebenenfalls muss man hier noch mal eine Runde drehen, wenn etwas nicht richtig war. Ansonsten ist es jetzt an der Zeit den Switch einzustellen. Das geht am einfachsten, wenn man die Einstellungen nun direkt in der /etc/config/network vornimmt. Dabei ist eth0_2 der WAN Port (sofern er über den Switch läuft). eth0_1 sind die Client-Ports und eth0_3 sind die Ports um Batman Knoten zu verbinden. Am Anfang weiß man meist noch nicht welcher Switch Port wirklich am Router wo rausgeführt ist. Manchmal kann es helfen einen Port nach dem anderen aktiv zu schalten (Rechner anstecken) und die Ausgabe von swconfig anzugucken (z.B. `swconfig dev switch0 show`). Das ganze ist manchmal ein wenig try-and-error. :( Aber wenn man denkt es passt, prüft man alles durch. Tauchen BATMAN Nachbarn in `batctl o` auf und aktualisiert sich die Anzeige, wenn ein anderer Knoten an dem Batman-Port angeschlossen wird? Funktioniert das mit beiden Ports? Taucht ein PC in `/etc/showmacs.sh br-mesh` auf, den man an die Client-Ports angeschlossen hat? Wenn am Ende alles passt, übernimmt man die Switch-Config in die /etc/network.tl-wr1043nd-v2 und probiert das ganze nochmal aus:
 ```
 cp /rom/etc/config/network /etc/config/network
 reboot
@@ -130,7 +130,7 @@ scp root@[ipv6ll%scope]:/etc/network.tl-wr1043nd-v2 /path/to/git/firmware/bsp/wr
 ```
 
 ### BSP commiten und Patch erzeugen
-Nun kann man mit "git status" die Änderungen sehen. Mit "git add" staged man diese und mit "git commit" checkt man sie ein. "git format-patch origin/HEAD" erzeugt dann aus deinen Commits ein (oder mehr) Patches. Diese schickst du dann mit "git send-email --to franken-dev@freifunk.net *.patch" an unsere Liste. Dort nimmt sich jemand die Zeit und schaut kurz drüber und wenn alles passt finden deine Änderungen in den Hauptentwicklungszweig und sind ab dann Teil der Freifunk-Franken-Firmware.
+Nun kann man mit `git status` die Änderungen sehen. Mit `git add` staged man diese und mit `git commit` checkt man sie ein. `git format-patch origin/HEAD` erzeugt dann aus deinen Commits ein (oder mehr) Patches. Diese schickst du dann mit `git send-email --to franken-dev@freifunk.net *.patch` an unsere Liste. Dort nimmt sich jemand die Zeit und schaut kurz drüber und wenn alles passt finden deine Änderungen in den Hauptentwicklungszweig und sind ab dann Teil der Freifunk-Franken-Firmware.
 
 ### Patch schicken
 Auf der Mailingliste franken-dev@freifunk.net kannst du natürlich jederzeit Fragen stellen, falls etwas nicht klar sein sollte.
