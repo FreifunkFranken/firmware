@@ -8,7 +8,7 @@ project="${VPN_PROJECT}"
 test_internet_host1="mastersword.de"
 test_internet_host2="109.163.229.254"
 
-if [ "$SERVER" == "no" ]; then
+if [ "$SERVER" = "no" ]; then
 	test -f /tmp/started || exit
 fi
 
@@ -17,14 +17,14 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
    ping -w5 -c3 "$test_internet_host2" &>/dev/null ||
    ping6 -w5 -c3 heise.de &>/dev/null; then
 	mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
-	if [ "$SERVER" == "no" ]; then
+	if [ "$SERVER" = "no" ]; then
 		hostname=$(cat /proc/sys/kernel/hostname)
 
-		if [ "$hostname" == "OpenWrt" ]; then
+		if [ "$hostname" = "OpenWrt" ]; then
 			hostname=""
 		fi
 
-		if [ "$hostname" == "" ]; then
+		if [ "$hostname" = "" ]; then
 			hostname=$mac
 		fi
 	else
@@ -68,7 +68,7 @@ if ping -w5 -c3 "$test_internet_host1" &>/dev/null ||
 
 
 #	fire up
-	if [ "$(/sbin/ifconfig -a | grep -i ethernet | grep $project)" == "" ]; then
+	if [ "$(/sbin/ifconfig -a | grep -i ethernet | grep $project)" = "" ]; then
 		/bin/rm /var/run/fastd.$project.pid
 		fastd -c /etc/fastd/$project/$project.conf -d --pid-file /var/run/fastd.$project.pid
 	fi

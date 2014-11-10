@@ -28,13 +28,13 @@ fi
 
 API_RETRY=$(($API_RETRY - 1))
 
-if [[ $API_IPV4_ADRESS != "1" ]]; then
+if [ "$API_IPV4_ADRESS" != "1" ]; then
 	netmon_api=$API_IPV4_ADRESS
 else
 	netmon_api="[$API_IPV6_ADRESS"%"$API_IPV6_INTERFACE]"
 fi
 
-if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+if [ "$SCRIPT_ERROR_LEVEL" -gt "1" ]; then
 	err() {
 		echo "$(date) [configurator]: $1" >> $SCRIPT_LOGFILE
 	}
@@ -59,7 +59,7 @@ sync_hostname() {
 		#see http://stackoverflow.com/a/3824105
 		regex='^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])'
 		regex=$regex'(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$'
-		if [ ${#netmon_hostname} -le 255 ]; then
+		if [ "${#netmon_hostname}" -le "255" ]; then
 			if echo -n $netmon_hostname | egrep -q "$regex"; then
 				if [ "$netmon_hostname" != "`cat /proc/sys/kernel/hostname`" ]; then
 					err "Setting new hostname: $netmon_hostname"
@@ -140,7 +140,7 @@ autoadd_ipv6_address() {
 		err "IPv6 Autoadd has been disabled cause it is no longer necesarry"
 	else
 		routerid=${ergebnis##*,}
-		if [ "$routerid" == "$CRAWL_ROUTER_ID" ]; then
+		if [ "$routerid" = "$CRAWL_ROUTER_ID" ]; then
 			err "The IPv6 address already exists in Netmon on this router. Maybe because of a previos assignment"
 			uci set configurator.@netmon[0].autoadd_ipv6_address='0'
 			uci commit
@@ -151,12 +151,12 @@ autoadd_ipv6_address() {
 	fi
 }
 
-if [ $CRAWL_METHOD == "login" ]; then
+if [ "$CRAWL_METHOD" = "login" ]; then
 	err "Authentification method is: username and passwort"
-elif [ $CRAWL_METHOD == "hash" ]; then
+elif [ "$CRAWL_METHOD" = "hash" ]; then
 	err "Authentification method: autoassign and hash"
 	err "Checking if the router is already assigned to a router in Netmon"
-	if [ $CRAWL_UPDATE_HASH == "1" ]; then
+	if [ "$CRAWL_UPDATE_HASH" = "1" ]; then
 		err "The router is not assigned to a router in Netmon"
 		err "Trying to assign the router"
 		assign_router
@@ -165,10 +165,10 @@ elif [ $CRAWL_METHOD == "hash" ]; then
 	fi
 fi
 
-if [[ $AUTOADD_IPV6_ADDRESS = "1" ]]; then
+if [ "$AUTOADD_IPV6_ADDRESS" = "1" ]; then
 	autoadd_ipv6_address
 fi
 
-if [[ $SCRIPT_SYNC_HOSTNAME = "1" ]]; then
+if [ "$SCRIPT_SYNC_HOSTNAME" = "1" ]; then
 	sync_hostname
 fi

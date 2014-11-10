@@ -126,7 +126,7 @@ fsm_entry() {
 			scan_wlan
 		;;
 		error)
-			if [ -n "$DEBUG" ] && [ $DEBUG -eq 1 ]; then
+			if [ -n "$DEBUG" ] && [ "$DEBUG" -eq "1" ]; then
 				debug_output | gzip > ${DEBUGFILE}
 			fi
 			reboot
@@ -140,28 +140,28 @@ fsm_transition() {
 	local OLDSTATE=$STATE
 	case $STATE in
 		working)
-			if [ $(count_neighbours) -eq 0 ] && [ $(count_clients) -eq 0 ]; then
+			if [ "$(count_neighbours)" -eq "0" ] && [ "$(count_clients)" -eq "0" ]; then
 				STATE=pending
 			fi
 		;;
 		pending)
-			if [ $AGE -ge $TIMEOUT_MEDIUM ]; then
+			if [ "$AGE" -ge "$TIMEOUT_MEDIUM" ]; then
 				STATE=error
-			elif [ $(count_originators) -eq 0 ] && [ $AGE -ge $TIMEOUT_SHORT ]; then
+			elif [ "$(count_originators)" -eq "0" ] && [ "$AGE" -ge "$TIMEOUT_SHORT" ]; then
 				STATE=error
-			elif [ $(count_neighbours) -gt 0 ] || [ $(count_clients) -gt 0 ]; then
+			elif [ "$(count_neighbours)" -gt "0" ] || [ "$(count_clients)" -gt "0" ]; then
 				STATE=working
 			fi
 		;;
 		*)
-			if [ $AGE -ge $TIMEOUT_LONG ]; then
+			if [ "$AGE" -ge "$TIMEOUT_LONG" ]; then
 				STATE=error
-			elif [ $(count_neighbours) -gt 0 ] || [ $(count_clients) -gt 0 ]; then
+			elif [ "$(count_neighbours)" -gt "0" ] || [ "$(count_clients)" -gt "0" ]; then
 				STATE=working
 			fi
 		;;
 	esac
-	if [ ! "$OLDSTATE" == "$STATE" ]; then
+	if [ ! "$OLDSTATE" = "$STATE" ]; then
 		echo "$(date) '$OLDSTATE' -> '$STATE'"
 		fsm_entry
 	fi
