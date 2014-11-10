@@ -7,11 +7,11 @@ do
 	*"Could not stop RX"*) 
         hostname=$(cat /proc/sys/kernel/hostname)
 
-        if [ "$hostname" == "OpenWrt" ]; then
+        if [ "$hostname" = "OpenWrt" ]; then
             hostname=""
         fi
 
-        if [ "$hostname" == "" ]; then
+        if [ "$hostname" = "" ]; then
             hostname=$(awk '{ if (mac) next; mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address /sys/class/net/eth0/address /sys/class/net/ath0/address 2>/dev/null)
         fi
 
