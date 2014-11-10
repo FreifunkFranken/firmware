@@ -1,4 +1,3 @@
-
 machine=wdr4900
 target=$builddir/$machine
 
@@ -22,4 +21,3 @@ board_flash() {
 board_clean() {
 	/bin/rm -rf $target bin/*$machine*
 }
-
