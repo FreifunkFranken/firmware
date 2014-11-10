@@ -5,9 +5,9 @@ SERVER="no"
 
 project="${VPN_PROJECT}"
 
-test_ipv4_host1="mastersword.de"
-test_ipv4_host2="109.163.229.254"
-test_ipv6_host1="heise.de"
+test_ipv4_host1="mastersword.de" # Tims server
+test_ipv4_host2="8.8.8.8"        # Google DNS
+test_ipv6_host1="heise.de"       # heise Zeitschriftenverlag
 
 if [ "$SERVER" = "no" ]; then
 	test -f /tmp/started || exit
