@@ -209,7 +209,7 @@ postbuild() {
 }
 
 flash() {
-	# some flash tools need an arguement..
+	# some flash tools need an argument..
 	board_flash $1
 }
 
@@ -219,25 +219,12 @@ clean() {
 }
 
 buildall() {
-	for bsp in $(/bin/ls bsp/*.bsp)
-	do
+	for bsp in $(/bin/ls bsp/*.bsp); do
 		./buildscript selectcommunity $1
 		./buildscript selectbsp $bsp
 		./buildscript prepare
 		./buildscript build $2
 	done
-}
-
-routers() {
-	echo "router-types: "
-	echo "	dir300"
-	echo "	dir300b_adhoc"
-	echo "	dir300b_ap"
-	echo "	fonera"
-	echo "	wrt54g_ap"
-	echo "	wrt54g_adhoc"
-	echo "	wr741nd"
-	echo "	wr1043nd"
 }
 
 if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; then
@@ -324,35 +311,6 @@ case "$1" in
 				;;
 		esac
 		;;
-	"download")
-		if [ "$2" = "help" ] || [ "$2" = "" ]; then
-			echo "This option downloads the ready configured images from an external location if needet."
-			echo "Usage: $0 $1 http://downloadfolder router-type"
-			echo "Common downloadfolder for firmware version 0.3 is http://dev.freifunk-ol.de/firmware/0.3/"
-			routers
-			echo
-			echo
-			echo "This function is broken!"
-		else
-			exit
-			mkdir ./bin
-			cd ./bin
-			wget "$2/$3/openwrt-$3-root.squashfs"
-			wget "$2/$3/openwrt-$3-vmlinux.lzma"
-			cd ..
-		fi
-		;;
-	"flash")
-		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
-			echo "This option flashes the router."
-			echo "$0 $1 net-dev"
-			routers
-			echo "net-dev:"
-			echo "	ethX"
-		else
-			flash "$2"
-		fi
-		;;
 	"clean")
 		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
 			echo "This option cleans all build files."
@@ -372,7 +330,7 @@ case "$1" in
 		fi
 		;;
 	*)
-		echo "This is the Build Environment Script of the Freifunk Community Oldenburg."
+		echo "This is the Build Environment Script of the Freifunk Community Franken."
 		echo "Usage: $0 command"
 		echo "command:"
 		echo "	selectcommunity [communityfile]"
@@ -381,8 +339,6 @@ case "$1" in
 		echo "	config"
 		echo "	build"
 		echo "	buildall"
-		echo "	flash"
-		echo "	download"
 		echo ""
 		echo "If you need help to one of these options just type $0 command help"
 	;;
