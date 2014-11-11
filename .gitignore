@@ -9,3 +9,4 @@ src/packages/libremap/
 src/packages/openwrt/
 src/packages/routing/
 src/packages/tunneldigger/
+.project
