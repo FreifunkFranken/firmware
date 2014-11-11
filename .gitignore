@@ -1,5 +1,11 @@
 selected_bsp
 selected_community
-src
 build
 bin
+src/dl/
+src/openwrt/
+src/packages/fastd/
+src/packages/libremap/
+src/packages/openwrt/
+src/packages/routing/
+src/packages/tunneldigger/
