@@ -20,7 +20,7 @@ Je nach dem, für welche Hardware die Firmware gebaut werden soll muss das BSP g
 * `./buildscript`
 
 ## Was ist ein BSP?
-Ein BSP beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
+Ein BSP (Board-Support-Package) beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
 Typischerweise ist eine folgene Ordner-Struktur vorhanden:
 * .config
 * root_file_system/
