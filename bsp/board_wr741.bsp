@@ -14,10 +14,6 @@ board_postbuild() {
 	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v4-squashfs-*.bin ./bin/
 }
 
-board_flash() {
-	echo "nothing implemented"
-}
-
 board_clean() {
 	/bin/rm -rf $target bin/*$machine*
 }
