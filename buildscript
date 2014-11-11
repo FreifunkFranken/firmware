@@ -121,8 +121,7 @@ prebuild() {
 
 	board_prebuild
 
-    for template in $(find $target/files -name *.tpl)
-    do
+    for template in $(find $target/files -name *.tpl); do
         echo "Translating $template .."
         $tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
         /bin/rm $template
@@ -201,16 +200,10 @@ config() {
 				;;
 		esac
 	fi
-
 }
 
 postbuild() {
 	board_postbuild
-}
-
-flash() {
-	# some flash tools need an argument..
-	board_flash $1
 }
 
 clean() {
