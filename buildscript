@@ -307,7 +307,7 @@ case "$1" in
 	"clean")
 		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
 			echo "This option cleans all build files."
-			echo "$0 $1 all"
+			echo "$0 $1"
 		else
 			clean
 		fi
@@ -332,6 +332,7 @@ case "$1" in
 		echo "	config"
 		echo "	build"
 		echo "	buildall"
+		echo "  clean"
 		echo ""
 		echo "If you need help to one of these options just type $0 command help"
 	;;
