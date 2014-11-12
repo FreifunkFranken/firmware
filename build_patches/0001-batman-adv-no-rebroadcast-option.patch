@@ -32,7 +32,7 @@ index 0000000..57d8491
 +Using this option wrongly will break your mesh network, use this option
 +wisely and at your own risk!
 +
-+Signed-off-by: Linus Lüssing <linus.luessing@web.de>
++Signed-off-by: Linus Lï¿½ssing <linus.luessing@web.de>
 +---
 + hard-interface.c           |    2 ++
 + send.c                     |    4 +++
@@ -79,7 +79,7 @@ index 0000000..57d8491
 + 
 ++What:           /sys/class/net/<iface>/batman-adv/no_rebroadcast
 ++Date:           Sep 2013
-++Contact:        Linus Lüssing <linus.luessing@web.de>
+++Contact:        Linus Lï¿½ssing <linus.luessing@web.de>
 ++Description:
 ++                With this option set incoming multicast payload frames on
 ++                <iface> are not being rebroadcasted on <iface> again. This
@@ -192,4 +192,3 @@ index 0000000..57d8491
 +
 -- 
 1.7.10.4
-

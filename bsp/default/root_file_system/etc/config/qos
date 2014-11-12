@@ -48,14 +48,12 @@ config reclassify
 	option mark	        "!Bulk"
 	option tcpflags     "ACK"
 
-
 # Don't change the stuff below unless you
 # really know what it means :)
 
 config classgroup "Default"
 	option classes      "Priority Express Normal Bulk"
 	option default      "Normal"
-
 
 config class "Priority"
 	option packetsize  400
