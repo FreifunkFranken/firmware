@@ -244,7 +244,7 @@ case "$1" in
 			echo "Select a Board-Support-Package:"
 			echo
 			echo "Usage: $0 $1 bsp"
-			echo "bsp: "
+			echo "available packages:"
 			/bin/ls bsp/*.bsp
 		else
             if [ ! -f $2 ]; then
@@ -329,9 +329,9 @@ case "$1" in
 		echo "	selectcommunity [communityfile]"
 		echo "	selectbsp [bsp file]"
 		echo "	prepare"
-		echo "	config"
-		echo "	build"
-		echo "	buildall"
+		echo "	config <openwrt|kernel>"
+		echo "	build [<fast|debug>]"
+		echo "	buildall <community> [<fast>]"
 		echo "  clean"
 		echo ""
 		echo "If you need help to one of these options just type $0 command help"
