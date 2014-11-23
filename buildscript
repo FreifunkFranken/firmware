@@ -7,54 +7,84 @@ OPENWRTURL=svn://svn.openwrt.org/openwrt/branches/barrier_breaker
 PACKAGEREV=${OPENWRTREV}
 PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
 
+
+checkout_svn(){
+	local DIRECTORY=$1
+	local REPO_URL=$2
+	local REVISION=$3
+
+	echo checking out $REPO_URL to $DIRECTORY in version $REVISION
+	if [ -d $DIRECTORY ]; then
+		local url=$(svn info ${DIRECTORY} | awk '/^URL/ { print $2 }')
+		if [ "$url" = "$REPO_URL" ]; then
+			if [ -z "$REVISION" ]; then
+				svn update $DIRECTORY
+			else
+				local rev=$(svn info $DIRECTORY | awk '/^Revision:/ { print $2 }')
+				if [ "$rev" -ne "$REVISION" ]; then
+					svn update -r $REVISION $DIRECTORY
+				fi
+			fi
+		else
+			echo wrong svn url -\> deleting whole directory
+			/bin/rm -rf $DIRECTORY
+			svn checkout -r $REVISION $REPO_URL $DIRECTORY
+		fi
+	else
+		svn checkout -r $REVISION $REPO_URL $DIRECTORY
+	fi
+}
+
+checkout_git(){
+	local DIRECTORY=$1
+	local REPO_URL=$2
+	local COMMITID=$3
+
+	local MYGIT="git -C $DIRECTORY"
+	echo checking out $REPO_URL to $DIRECTORY in version $REVISION
+	if [ -d $DIRECTORY ]; then
+		if $MYGIT remote -v | grep $REPO_URL ; then
+			echo Right remote detected
+			if ! $MYGIT checkout $COMMITID ; then
+				echo commitid not found trying to fetch new commits
+				$MYGIT	pull && $MYGIT checkout $COMMITID
+			fi
+		else
+			echo wrong remote or not an git repo at all -\> deleting whole directory
+			/bin/rm -rf $DIRECTORY
+			$MYGIT clone $REPO_URL $DIRECTORY
+			$MYGIT checkout $COMMITID
+		fi
+	else
+		echo We need to do a fresh checkout
+		#needs to be without -C!!!
+		git clone $REPO_URL $DIRECTORY
+		$MYGIT checkout $COMMITID
+	fi
+}
+
 get_source() {
 	cd src
 
 	#Get the OpenWrt Core Source for Firmware
-	if [ -d openwrt ]; then
-		url=$(svn info openwrt | awk '/^URL/ { print $2 }')
-		if [ "$url" = "$OPENWRTURL" ]; then
-			rev=$(svn info openwrt | awk '/^Revision:/ { print $2 }')
-			if [ "$rev" -ne "$OPENWRTREV" ]; then
-				svn update -r $OPENWRTREV openwrt
-			fi
-		else
-			/bin/rm -rf openwrt
-			svn checkout -r $OPENWRTREV $OPENWRTURL openwrt
-		fi
-	else
-		svn checkout -r $OPENWRTREV $OPENWRTURL openwrt
-	fi
+	checkout_svn openwrt $OPENWRTURL $OPENWRTREV
 
+	#checkout needed package feeds
 	test -d packages || mkdir packages
 	cd packages
 
-	if [ -d openwrt ]; then
-		url=$(svn info openwrt | awk '/^URL/ { print $2 }')
-		if [ "$url" = "$PACKAGEURL" ]; then
-			rev=$(svn info openwrt | awk '/^Revision:/ { print $2 }')
-			if [ "$rev" -ne "$PACKAGEREV" ]; then
-				svn update -r $PACKAGEREV openwrt
-			fi
-		else
-			/bin/rm -rf openwrt
-			svn checkout -r $PACKAGEREV $PACKAGEURL openwrt
-		fi
-	else
-		svn checkout -r $PACKAGEREV $PACKAGEURL openwrt
-	fi
+	#get official openwrt package feed
+	checkout_svn openwrt $PACKAGEURL $PACKAGEREV
 
-	test -d routing || git clone https://github.com/openwrt-routing/packages.git routing
-	cd routing
-	git checkout 44318d05898069300ce2ad6eb05eb40f232e7123
-	git am --whitespace=nowarn ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
-	cd ..
+	#get official openwrt routing package feed
+	checkout_git routing https://github.com/openwrt-routing/packages.git 44318d05898069300ce2ad6eb05eb40f232e7123
+	git -C routing	am --whitespace=nowarn ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
 
-	test -d fastd || git clone git://git.metameute.de/lff/pkg_fastd fastd
-	git --git-dir=fastd/.git --work-tree=fastd/ checkout v14-1
+	#checkout package feed containing fastd
+	checkout_git fastd git://git.metameute.de/lff/pkg_fastd v14-1
 
-    test -d libremap || git clone https://github.com/libremap/libremap-agent-openwrt.git libremap
-    git --git-dir=libremap/.git --work-tree=libremap checkout 7194289d4b8a009df10613a3a88dc841fa26f423
+	#checkout libremap package feed
+	checkout_git libremap https://github.com/libremap/libremap-agent-openwrt.git 7194289d4b8a009df10613a3a88dc841fa26f423
 
 	cd .. # packages
 	cd .. # src
