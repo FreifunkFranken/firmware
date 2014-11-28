@@ -7,6 +7,41 @@ OPENWRTURL=svn://svn.openwrt.org/openwrt/branches/barrier_breaker
 PACKAGEREV=${OPENWRTREV}
 PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
 
+## Feed definition [0]: name aka directory [1]: type git vs svn [2]: url [3]: revision evtl [4]: Patches
+
+#official openwrt packages
+OPENWRT=(openwrt
+         svn
+         svn://svn.openwrt.org/openwrt/packages
+         $OPENWRTREV)
+OPENWRT_PKGS="bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling"
+
+#official openwrt routing packages
+ROUTING=(routing
+         git
+         https://github.com/openwrt-routing/packages.git
+         44318d05898069300ce2ad6eb05eb40f232e7123
+         ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch)
+ROUTING_PKGS="alfred kmod-batman-adv kmod-batgat"
+
+FASTD=(fastd
+       git
+       git://git.metameute.de/lff/pkg_fastd
+       v14-1)
+FASTD_PKGS="fastd libuecc"
+
+LIBREMAP=(libremap
+          git
+          https://github.com/libremap/libremap-agent-openwrt.git
+          7194289d4b8a009df10613a3a88dc841fa26f423)
+LIBREMAP_PKGS="libremap-agent"
+
+FFOL=(ffol
+      'local'
+      ${PWD}/src/packages/ffol/)
+FFOL_PKGS="nodewatcher"
+
+FEEDS=(OPENWRT ROUTING FASTD LIBREMAP FFOL)
 
 checkout_svn(){
 	local DIRECTORY=$1
@@ -69,22 +104,32 @@ get_source() {
 	#Get the OpenWrt Core Source for Firmware
 	checkout_svn openwrt $OPENWRTURL $OPENWRTREV
 
-	#checkout needed package feeds
 	test -d packages || mkdir packages
 	cd packages
 
-	#get official openwrt package feed
-	checkout_svn openwrt $PACKAGEURL $PACKAGEREV
+	#checkout needed package feeds
+	for FEEDVAR in ${FEEDS[@]} ; do
+		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
 
-	#get official openwrt routing package feed
-	checkout_git routing https://github.com/openwrt-routing/packages.git 44318d05898069300ce2ad6eb05eb40f232e7123
-	git -C routing	am --whitespace=nowarn ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
+		local NAME=${FEED[0]}
+		local TYPE=${FEED[1]}
+		local URL=${FEED[2]}
+		local REV=${FEED[3]}
+		local PATCH=${FEED[4]}
 
-	#checkout package feed containing fastd
-	checkout_git fastd git://git.metameute.de/lff/pkg_fastd v14-1
-
-	#checkout libremap package feed
-	checkout_git libremap https://github.com/libremap/libremap-agent-openwrt.git 7194289d4b8a009df10613a3a88dc841fa26f423
+		echo Adding Feed $NAME
+		if [[ $TYPE == "svn" ]] ; then
+			checkout_svn $NAME $URL $REV
+		elif [[ $TYPE == "git" ]] ; then
+			checkout_git $NAME $URL $REV
+			# Patches for feeds could be stored in known directories like build_patches/$NAME/
+			# That way multiple patches for one feed could be supported
+			if [ ! -z "$PATCH" ] ; then
+				echo Patching $PATCH
+				git -C $NAME am --whitespace=nowarn $PATCH
+			fi
+		fi
+	done
 
 	cd .. # packages
 	cd .. # src
@@ -98,18 +143,32 @@ prepare() {
 	/bin/rm -rf $target
 	svn export src/openwrt $target
 
-	#apply own feeds.conf
-	sed -e"s|PATH|$(pwd)/src/packages|g" ./build_patches/feeds.conf > $target/feeds.conf
+	## generate own feeds.conf
+	#this local variable should be globally configure variable used in get_source and here
+	local PACKAGEBASE=${PWD}/src/packages
+	rm -f $target/feeds.conf
+	for FEEDVAR in ${FEEDS[@]} ; do
+		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
+		local NAME=${FEED[0]}
+		echo adding $NAME to package feeds
+		echo src-link $NAME $PACKAGEBASE/$NAME >> $target/feeds.conf
+	done
 
+	echo cleaning feeds
 	test -d $target/feeds && /bin/rm -rf $target/feeds
 
 	$target/scripts/feeds update
-	
-	$target/scripts/feeds install -p packagesol nodewatcher
-	$target/scripts/feeds install -p fastd fastd libuecc
-	$target/scripts/feeds install -p libremap libremap-agent
-	$target/scripts/feeds install -p routing alfred kmod-batman-adv kmod-batgat
-	$target/scripts/feeds install -p openwrt bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling
+
+	for FEEDVAR in ${FEEDS[@]} ; do
+		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
+		local NAME=${FEED[0]}
+		local PACKAGESVAR=${FEEDVAR}_PKGS
+
+		if [[ -n "${!PACKAGESVAR}" ]] ; then
+			echo adding ${!PACKAGESVAR} from feed $NAME to available packages
+			$target/scripts/feeds install -p $NAME ${!PACKAGESVAR}
+		fi
+	done
 
 	# todo evaluate this with the new openwrt
 	# This changes the default behavior of sysupgrade to not save the config 
