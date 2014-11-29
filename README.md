@@ -40,7 +40,7 @@ Das BSP file durch das Buildscript automatisch als dot-Script geladen, somit ste
 Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein dynamisches sed-Script, dies geschieht, damit die Templates mit den richtigen Werten gefüllt werden können.
 
 ### `./buildscript prepare`
-* Sourcen werden in einen separaten src-Folder geladen, sofern diese noch schont da sind. Zu den Sourcen zählen folgende Komponenten:
+* Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
   * OpenWRT
   * Sämtliche Packages (ggfs werden Patches angewandt)
 
