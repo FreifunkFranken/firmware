@@ -13,7 +13,7 @@
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 
@@ -22,4 +22,4 @@ DEV=$1
 SEDDEV=`brctl showstp $DEV | egrep '\([0-9]\)' | sed -e "s/(//;s/)//" | awk '{ print "s/^  "$2"/"$1"/;" }'`
 SEDMAC=`cat /etc/bat-hosts | sed -e "s/^/s\//;s/$/\/;/;s/ /\//"`
 
-brctl showmacs $DEV | sed -e "$SEDMAC" | sed -e "$SEDDEV" 
+brctl showmacs $DEV | sed -e "$SEDMAC" | sed -e "$SEDDEV"

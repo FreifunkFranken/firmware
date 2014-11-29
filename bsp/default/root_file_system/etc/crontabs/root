@@ -4,4 +4,3 @@
 
 #Enable zapp script if you are running a gateway
 #*/1 * * * * /etc/init.d/zapp
-

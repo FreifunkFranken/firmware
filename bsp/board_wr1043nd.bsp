@@ -16,10 +16,6 @@ board_postbuild() {
 	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v2-squashfs-sysupgrade.bin ./bin/
 }
 
-board_flash() {
-	echo "nothing implemented"
-}
-
 board_clean() {
 	/bin/rm -rf $target bin/*$machine*
 }

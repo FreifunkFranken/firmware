@@ -9,4 +9,3 @@ config contact 'contact'
 	option name ''
 	option email ''
 	option telephone ''
-

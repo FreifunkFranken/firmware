@@ -1,4 +1,3 @@
-
 WANDEV=eth1
 # WANDEV=eth0
 SWITCHDEV=eth0
