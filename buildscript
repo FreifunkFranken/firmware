@@ -198,11 +198,12 @@ prebuild() {
 
 	board_prebuild
 
-    for template in $(find $target/files -name *.tpl); do
-        echo "Translating $template .."
-        $tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
-        /bin/rm $template
-    done
+	for template in $(find $target/files -name *.tpl)
+	do
+		echo "Translating $template .."
+		$tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
+		/bin/rm $template
+	done
 
 	#insert actual firware version informations into release file
 	version=$(git describe --tags --dirty)
@@ -238,7 +239,7 @@ build() {
 	if [ ! -d bin ]; then
 		mkdir bin
 	fi
-	
+
 	postbuild
 }
 
@@ -302,17 +303,17 @@ if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; t
 		echo "Please select a Board-Support-Package using:"
 		echo "$0 selectbsp"
 		exit
-    fi
+	fi
 	if [ ! -h selected_community ]; then
 		echo "Please select a community file using:"
 		echo "$0 selectcommunity"
 		exit
-    fi
-    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
-        "$(/bin/ls -l selected_community | awk '{ print $11 }')"
-    . selected_bsp
-    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
-    echo
+	fi
+	echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
+			"$(/bin/ls -l selected_community | awk '{ print $11 }')"
+	. selected_bsp
+	tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+	echo
 fi
 
 case "$1" in
@@ -324,12 +325,12 @@ case "$1" in
 			echo "available packages:"
 			/bin/ls bsp/*.bsp
 		else
-            if [ ! -f $2 ]; then
-                echo "Could not find $2"
-            else
-                /bin/rm -rf selected_bsp
-                /bin/ln -s $2 selected_bsp
-            fi
+			if [ ! -f $2 ]; then
+				echo "Could not find $2"
+			else
+				/bin/rm -rf selected_bsp
+				/bin/ln -s $2 selected_bsp
+			fi
 		fi
 		;;
 	"selectcommunity")
@@ -340,12 +341,12 @@ case "$1" in
 			echo "community.cfg: "
 			/bin/ls community/*.cfg
 		else
-            if [ ! -f $2 ]; then
-                echo "Could not find $2"
-            else
-                /bin/rm -rf selected_community
-                /bin/ln -s $2 selected_community
-            fi
+			if [ ! -f $2 ]; then
+				echo "Could not find $2"
+			else
+				/bin/rm -rf selected_community
+				/bin/ln -s $2 selected_community
+			fi
 		fi
 		;;
 	"prepare")
