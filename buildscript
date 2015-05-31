@@ -30,18 +30,12 @@ FASTD=(fastd
        v14-1)
 FASTD_PKGS="fastd libuecc"
 
-LIBREMAP=(libremap
-          git
-          https://github.com/libremap/libremap-agent-openwrt.git
-          7194289d4b8a009df10613a3a88dc841fa26f423)
-LIBREMAP_PKGS="libremap-agent"
-
 FFOL=(ffol
       'local'
       ${PWD}/src/packages/ffol/)
 FFOL_PKGS="nodewatcher"
 
-FEEDS=(OPENWRT ROUTING FASTD LIBREMAP FFOL)
+FEEDS=(OPENWRT ROUTING FASTD FFOL)
 
 checkout_svn(){
 	local DIRECTORY=$1
