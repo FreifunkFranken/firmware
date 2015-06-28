@@ -16,6 +16,11 @@ OPENWRT=(openwrt
          $PACKAGEREV)
 OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
 
+OPENWRT_OLDPACKAGES=(openwrt_oldpackages
+                     git
+                     http://git.openwrt.org/14.07/packages.git
+                     ee10403aab0b9b23096532662471e8052377444c)
+
 #official openwrt routing packages
 ROUTING=(routing
          git
@@ -30,7 +35,7 @@ FASTD=(fastd
        v14-1)
 FASTD_PKGS="fastd"
 
-FEEDS=(OPENWRT ROUTING FASTD)
+FEEDS=(OPENWRT OPENWRT_OLDPACKAGES ROUTING FASTD)
 
 checkout_svn(){
 	local DIRECTORY=$1
