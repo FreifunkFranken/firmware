@@ -4,14 +4,14 @@ builddir=./build
 
 OPENWRTREV="861527622c343b2eebb483b5e723c103a6b6432f"
 OPENWRTURL="git://git.openwrt.org/14.07/openwrt.git"
-PACKAGEREV=42096
-PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
+PACKAGEREV="289cc1505143e4b6cfaaabd452143e159dd22d25"
+PACKAGEURL="https://github.com/openwrt/packages.git"
 
 ## Feed definition [0]: name aka directory [1]: type git vs svn [2]: url [3]: revision evtl [4]: Patches
 
 #official openwrt packages
 OPENWRT=(openwrt
-         svn
+         git
          $PACKAGEURL
          $PACKAGEREV)
 OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
