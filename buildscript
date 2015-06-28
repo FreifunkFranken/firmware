@@ -12,8 +12,8 @@ PACKAGEURL=svn://svn.openwrt.org/openwrt/packages
 #official openwrt packages
 OPENWRT=(openwrt
          svn
-         svn://svn.openwrt.org/openwrt/packages
-         $OPENWRTREV)
+         $PACKAGEURL
+         $PACKAGEREV)
 OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
 
 #official openwrt routing packages
