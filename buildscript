@@ -14,7 +14,7 @@ OPENWRT=(openwrt
          svn
          svn://svn.openwrt.org/openwrt/packages
          $OPENWRTREV)
-OPENWRT_PKGS="bridge ethtool gpioctl-sysfs horst libugpio mii-tool wavemon kmod-gpiotoggling"
+OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
 
 #official openwrt routing packages
 ROUTING=(routing
@@ -22,20 +22,15 @@ ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
          44318d05898069300ce2ad6eb05eb40f232e7123
          ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch)
-ROUTING_PKGS="alfred kmod-batman-adv kmod-batgat"
+ROUTING_PKGS="kmod-batman-adv"
 
 FASTD=(fastd
        git
        git://git.metameute.de/lff/pkg_fastd
        v14-1)
-FASTD_PKGS="fastd libuecc"
+FASTD_PKGS="fastd"
 
-FFOL=(ffol
-      'local'
-      ${PWD}/src/packages/ffol/)
-FFOL_PKGS="nodewatcher"
-
-FEEDS=(OPENWRT ROUTING FASTD FFOL)
+FEEDS=(OPENWRT ROUTING FASTD)
 
 checkout_svn(){
 	local DIRECTORY=$1
@@ -93,6 +88,7 @@ checkout_git(){
 }
 
 get_source() {
+	test -d src || mkdir src
 	cd src
 
 	#Get the OpenWrt Core Source for Firmware
