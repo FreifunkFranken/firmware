@@ -13,6 +13,9 @@ case "$BOARD" in
     tl-wr741nd-v4)
         grep 740 /var/sysinfo/model && BOARD=tl-wr740n-v4
         ;;
+    tl-wr841n-v7)
+        BOARD=tl-wr841nd-v7
+        ;;
 esac
 if ! uci get board.model.name; then
     uci set board.model.name=$BOARD
