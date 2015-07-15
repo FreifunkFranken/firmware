@@ -2,11 +2,5 @@ selected_bsp
 selected_community
 build
 bin
-src/dl/
-src/openwrt/
-src/packages/fastd/
-src/packages/libremap/
-src/packages/openwrt/
-src/packages/openwrt_oldpackages/
-src/packages/routing/
+src
 .project
