@@ -20,6 +20,8 @@ OPENWRT_OLDPACKAGES=(openwrt_oldpackages
                      ee10403aab0b9b23096532662471e8052377444c)
 
 #official openwrt routing packages
+## Be careful: FFF uses COMPAT_VERSION 14 at the moment.
+## see http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
          44318d05898069300ce2ad6eb05eb40f232e7123
