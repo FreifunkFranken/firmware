@@ -169,8 +169,8 @@ prebuild() {
 
 	echo "FIRMWARE_VERSION=\"$version\"" > $target/files/etc/firmware_release
 	echo "BUILD_DATE=\"build date: $(date)\"" >> $target/files/etc/firmware_release
-	echo "OPENWRT_CORE_REVISION=\""${OPENWRTREV}"\"" >> $target/files/etc/firmware_release
-	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\""${PACKAGEREV}"\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\"" >> $target/files/etc/firmware_release
+	echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\"" >> $target/files/etc/firmware_release
 }
 
 build() {
