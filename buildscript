@@ -36,351 +36,350 @@ FASTD_PKGS="fastd"
 FEEDS=(OPENWRT OPENWRT_OLDPACKAGES ROUTING FASTD)
 
 checkout_git(){
-	local DIRECTORY=$1
-	local REPO_URL=$2
-	local COMMITID=$3
+    local DIRECTORY=$1
+    local REPO_URL=$2
+    local COMMITID=$3
 
-	local MYGIT="git -C $DIRECTORY"
-	echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
-	if [ -d "$DIRECTORY" ]; then
-		if $MYGIT remote -v | grep -q "$REPO_URL" ; then
-			echo "Right remote detected"
-			if ! $MYGIT checkout "$COMMITID" ; then
-				echo "commitid not found trying to fetch new commits"
-				$MYGIT	pull && $MYGIT checkout "$COMMITID"
-			fi
-		else
-			echo "wrong remote or not an git repo at all -> deleting whole directory"
-			/bin/rm -rf "$DIRECTORY"
-			#needs to be without -C!!!
-			git clone "$REPO_URL" "$DIRECTORY"
-			$MYGIT checkout "$COMMITID"
-		fi
-	else
-		echo "We need to do a fresh checkout"
-		#needs to be without -C!!!
-		git clone "$REPO_URL" "$DIRECTORY"
-		$MYGIT checkout "$COMMITID"
-	fi
+    local MYGIT="git -C $DIRECTORY"
+    echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
+    if [ -d "$DIRECTORY" ]; then
+        if $MYGIT remote -v | grep -q "$REPO_URL" ; then
+            echo "Right remote detected"
+            if ! $MYGIT checkout "$COMMITID" ; then
+                echo "commitid not found trying to fetch new commits"
+                $MYGIT pull && $MYGIT checkout "$COMMITID"
+            fi
+        else
+            echo "wrong remote or not an git repo at all -> deleting whole directory"
+            /bin/rm -rf "$DIRECTORY"
+            #needs to be without -C!!!
+            git clone "$REPO_URL" "$DIRECTORY"
+            $MYGIT checkout "$COMMITID"
+        fi
+    else
+        echo "We need to do a fresh checkout"
+        #needs to be without -C!!!
+        git clone "$REPO_URL" "$DIRECTORY"
+        $MYGIT checkout "$COMMITID"
+    fi
 }
 
 get_source() {
-	test -d src || mkdir src
-	cd src
+    test -d src || mkdir src
+    cd src
 
-	#Get the OpenWrt Core Source for Firmware
-	checkout_git openwrt $OPENWRTURL $OPENWRTREV
+    #Get the OpenWrt Core Source for Firmware
+    checkout_git openwrt $OPENWRTURL $OPENWRTREV
 
-	test -d packages || mkdir packages
-	cd packages
+    test -d packages || mkdir packages
+    cd packages
 
-	#checkout needed package feeds
-	for FEEDVAR in "${FEEDS[@]}" ; do
-		FEED="${FEEDVAR}[@]"
-		FEED=("${!FEED}")
+    #checkout needed package feeds
+    for FEEDVAR in "${FEEDS[@]}" ; do
+        FEED="${FEEDVAR}[@]"
+        FEED=("${!FEED}")
 
-		local NAME=${FEED[0]}
-		local URL=${FEED[1]}
-		local REV=${FEED[2]}
-		local PATCH=${FEED[3]}
+        local NAME=${FEED[0]}
+        local URL=${FEED[1]}
+        local REV=${FEED[2]}
+        local PATCH=${FEED[3]}
 
-		checkout_git "$NAME" "$URL" "$REV"
-		# Patches for feeds could be stored in known directories like build_patches/$NAME/
-		# That way multiple patches for one feed could be supported
-		if [ ! -z "$PATCH" ] ; then
-			echo "Patching $PATCH"
-			git -C "$NAME" am --whitespace=nowarn "$PATCH"
-		fi
-	done
+        checkout_git "$NAME" "$URL" "$REV"
+        # Patches for feeds could be stored in known directories like build_patches/$NAME/
+        # That way multiple patches for one feed could be supported
+        if [ ! -z "$PATCH" ] ; then
+            echo "Patching $PATCH"
+            git -C "$NAME" am --whitespace=nowarn "$PATCH"
+        fi
+    done
 
-	cd .. # packages
-	cd .. # src
+    cd .. # packages
+    cd .. # src
 }
 
 prepare() {
-	get_source
+    get_source
 
-	test -d $builddir || mkdir $builddir
+    test -d $builddir || mkdir $builddir
 
-	/bin/rm -rf "$target"
-	cp -a src/openwrt "$target"
+    /bin/rm -rf "$target"
+    cp -a src/openwrt "$target"
 
-	## generate own feeds.conf
-	#this local variable should be globally configure variable used in get_source and here
-	local PACKAGEBASE=${PWD}/src/packages
-	rm -f "$target"/feeds.conf
-	for FEEDVAR in "${FEEDS[@]}" ; do
-		FEED="${FEEDVAR}[@]"
-		FEED=("${!FEED}")
-		local NAME=${FEED[0]}
-		echo "adding $NAME to package feeds"
-		echo src-link "$NAME" "$PACKAGEBASE"/"$NAME" >> "$target"/feeds.conf
-	done
+    ## generate own feeds.conf
+    #this local variable should be globally configure variable used in get_source and here
+    local PACKAGEBASE=${PWD}/src/packages
+    rm -f "$target"/feeds.conf
+    for FEEDVAR in "${FEEDS[@]}" ; do
+        FEED="${FEEDVAR}[@]"
+        FEED=("${!FEED}")
+        local NAME=${FEED[0]}
+        echo "adding $NAME to package feeds"
+        echo src-link "$NAME" "$PACKAGEBASE"/"$NAME" >> "$target"/feeds.conf
+    done
 
-	echo "cleaning feeds"
-	/bin/rm -rf "$target"/feeds
+    echo "cleaning feeds"
+    /bin/rm -rf "$target"/feeds
 
-	"$target"/scripts/feeds update
+    "$target"/scripts/feeds update
 
-	for FEEDVAR in "${FEEDS[@]}" ; do
-		FEED="${FEEDVAR}[@]"
-		FEED=("${!FEED}")
-		local NAME=${FEED[0]}
-		local PACKAGESVAR="${FEEDVAR}_PKGS"
-		PACKAGESVAR="${PACKAGESVAR}[@]"
-		PACKAGESVAR=(${!PACKAGESVAR})
+    for FEEDVAR in "${FEEDS[@]}" ; do
+        FEED="${FEEDVAR}[@]"
+        FEED=("${!FEED}")
+        local NAME=${FEED[0]}
+        local PACKAGESVAR="${FEEDVAR}_PKGS"
+        PACKAGESVAR="${PACKAGESVAR}[@]"
+        PACKAGESVAR=(${!PACKAGESVAR})
 
-		if [[ -n "${PACKAGESVAR[@]}" ]] ; then
-			echo "adding ${PACKAGESVAR[*]} from feed $NAME to available packages"
-			"$target"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
-		fi
-	done
+        if [[ -n "${PACKAGESVAR[@]}" ]] ; then
+            echo "adding ${PACKAGESVAR[*]} from feed $NAME to available packages"
+            "$target"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
+        fi
+    done
 
-	# todo evaluate this with the new openwrt
-	# This changes the default behavior of sysupgrade to not save the config 
-	patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
+    # todo evaluate this with the new openwrt
+    # This changes the default behavior of sysupgrade to not save the config 
+    patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
 
-	#saves ~200MB for each build
-	test -d ./src/dl || mkdir ./src/dl
-	ln -s ../../src/dl "$target"/dl
+    #saves ~200MB for each build
+    test -d ./src/dl || mkdir ./src/dl
+    ln -s ../../src/dl "$target"/dl
 
-	board_prepare
+    board_prepare
 }
 
 prebuild() {
-	#create filesdir for our config
-	/bin/rm -rf "$target"/files
-	mkdir "$target"/files
+    #create filesdir for our config
+    /bin/rm -rf "$target"/files
+    mkdir "$target"/files
 
-	cp -r ./bsp/default/root_file_system/* "$target"/files/
-	cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
-	cp ./bsp/"$machine"/.config "$target"/.config
+    cp -r ./bsp/default/root_file_system/* "$target"/files/
+    cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
+    cp ./bsp/"$machine"/.config "$target"/.config
 
-	arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{print gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
-	version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
-	test -f ./bsp/"$machine"/.kernelconfig-"$version" && \
-		cp ./bsp/"$machine"/.kernelconfig-"$version" \
-		"$target"/target/linux/"$arch"/config-"$version"
+    arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{print gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
+    version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
+    test -f ./bsp/"$machine"/.kernelconfig-"$version" && \
+        cp ./bsp/"$machine"/.kernelconfig-"$version" \
+        "$target"/target/linux/"$arch"/config-"$version"
 
-	board_prebuild
+    board_prebuild
 
-	shopt -s globstar nullglob
-	for template in $target/files/**/*.tpl
-	do
-		echo "Translating $template .."
-		$tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
-		/bin/rm "$template"
-	done
+    shopt -s globstar nullglob
+    for template in $target/files/**/*.tpl
+    do
+        echo "Translating $template .."
+        $tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
+        /bin/rm "$template"
+    done
 
-	#insert actual firware version informations into release file
-	version=$(git describe --tags --dirty)
+    #insert actual firware version informations into release file
+    version=$(git describe --tags --dirty)
 
-	{
-		echo "FIRMWARE_VERSION=\"$version\""
-		echo "BUILD_DATE=\"build date: $(date)\""
-		echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
-		echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
-	} > "$target"/files/etc/firmware_release
+    {
+        echo "FIRMWARE_VERSION=\"$version\""
+        echo "BUILD_DATE=\"build date: $(date)\""
+        echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
+        echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
+    } > "$target"/files/etc/firmware_release
 }
 
 build() {
-	prebuild
+    prebuild
 
-	opath=$(pwd)
-	cd "$target"
-	cpus=$(grep -c processor /proc/cpuinfo)
+    opath=$(pwd)
+    cd "$target"
+    cpus=$(grep -c processor /proc/cpuinfo)
 
-	case "$1" in
-		"debug")
-			make V=99
-			;;
-		"fast")
-			ionice -c 2 -- nice -n 1 -- make -j $((cpus*2))
-			;;
-		*)
-			ionice -c 3 -- nice -n 10 -- make -j $((cpus+1))
-			;;
-	esac
+    case "$1" in
+        "debug")
+            make V=99
+            ;;
+        "fast")
+            ionice -c 2 -- nice -n 1 -- make -j $((cpus*2))
+            ;;
+        *)
+            ionice -c 3 -- nice -n 10 -- make -j $((cpus+1))
+            ;;
+    esac
 
-	cd "$opath"
+    cd "$opath"
 
-	if [ ! -d bin ]; then
-		mkdir bin
-	fi
+    if [ ! -d bin ]; then
+        mkdir bin
+    fi
 
-	postbuild
+    postbuild
 }
 
 config() {
-	prebuild
+    prebuild
 
-	opath=$(pwd)
-	cd "$target"
+    opath=$(pwd)
+    cd "$target"
 
-	case "$1" in
-		"openwrt")
-			make menuconfig
-			;;
-		"kernel")
-			make kernel_menuconfig
-			;;
-	esac
+    case "$1" in
+        "openwrt")
+            make menuconfig
+            ;;
+        "kernel")
+            make kernel_menuconfig
+            ;;
+    esac
 
-	cd "$opath"
+    cd "$opath"
 
-	save=""
-	until [ "$save" = "y" -o "$save" = "n" ]; do
-		echo "Do you want to save the generated config? (y/n)"
-		read save
-	done
+    save=""
+    until [ "$save" = "y" -o "$save" = "n" ]; do
+        echo "Do you want to save the generated config? (y/n)"
+        read save
+    done
 
-	if [ "$save" = "y" ]; then
-		case "$1" in
-			"openwrt")
-				grep '^CON\|^# CON' "$target"/.config | sort > ./bsp/"$machine"/.config
-				;;
-			"kernel")
-				arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
-				version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
-				grep '^CON\|^# CON' "$target"/target/linux/"$arch"/config-"$version" | sort > ./bsp/"$machine"/.kernelconfig-"$version"
-				;;
-		esac
-	fi
+    if [ "$save" = "y" ]; then
+        case "$1" in
+            "openwrt")
+                grep '^CON\|^# CON' "$target"/.config | sort > ./bsp/"$machine"/.config
+                ;;
+            "kernel")
+                arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
+                version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
+                grep '^CON\|^# CON' "$target"/target/linux/"$arch"/config-"$version" | sort > ./bsp/"$machine"/.kernelconfig-"$version"
+                ;;
+        esac
+    fi
 }
 
 postbuild() {
-	board_postbuild
+    board_postbuild
 }
 
 clean() {
-	board_clean
-	/bin/rm -rf bin $builddir
+    board_clean
+    /bin/rm -rf bin $builddir
 }
 
 buildall() {
-	for bsp in $(/bin/ls bsp/*.bsp); do
-		./buildscript selectcommunity "$1"
-		./buildscript selectbsp "$bsp"
-		./buildscript prepare
-		./buildscript build "$2"
-	done
+    for bsp in $(/bin/ls bsp/*.bsp); do
+        ./buildscript selectcommunity "$1"
+        ./buildscript selectbsp "$bsp"
+        ./buildscript prepare
+        ./buildscript build "$2"
+    done
 }
 
 if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; then
-	if [ ! -h selected_bsp ]; then
-		echo "Please select a Board-Support-Package using:"
-		echo "$0 selectbsp"
-		exit
-	fi
-	if [ ! -h selected_community ]; then
-		echo "Please select a community file using:"
-		echo "$0 selectcommunity"
-		exit
-	fi
-	echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
-			"$(/bin/ls -l selected_community | awk '{ print $11 }')"
-	. selected_bsp
-	tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
-	echo
+    if [ ! -h selected_bsp ]; then
+        echo "Please select a Board-Support-Package using:"
+        echo "$0 selectbsp"
+        exit
+    fi
+    if [ ! -h selected_community ]; then
+        echo "Please select a community file using:"
+        echo "$0 selectcommunity"
+        exit
+    fi
+    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
+            "$(/bin/ls -l selected_community | awk '{ print $11 }')"
+    . selected_bsp
+    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+    echo
 fi
 
 case "$1" in
-	"selectbsp")
-		if [ "$2" = "help" ] || [ "$2" = "" ]; then
-			echo "Select a Board-Support-Package:"
-			echo
-			echo "Usage: $0 $1 bsp"
-			echo "available packages:"
-			/bin/ls bsp/*.bsp
-		else
-			if [ ! -f "$2" ]; then
-				echo "Could not find $2"
-			else
-				/bin/rm -rf selected_bsp
-				/bin/ln -s "$2" selected_bsp
-			fi
-		fi
-		;;
-	"selectcommunity")
-		if [ "$2" = "help" ] || [ "$2" = "" ]; then
-			echo "Select a Community-File:"
-			echo
-			echo "Usage: $0 $1 community.cfg"
-			echo "community.cfg: "
-			/bin/ls community/*.cfg
-		else
-			if [ ! -f "$2" ]; then
-				echo "Could not find $2"
-			else
-				/bin/rm -rf selected_community
-				/bin/ln -s "$2" selected_community
-			fi
-		fi
-		;;
-	"prepare")
-		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
-			echo "This option fetches the sources for the images and configurates the build so that it can be compiled"
-			echo "Usage: $0 $1"
-		else
-			prepare
-		fi
-		;;
-	"build")
-		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
-			echo "This option compiles the firmware"
-			echo "Normaly the build uses lower IO and System priorities, "
-			echo "you can append \"fast\" option, to use normal user priorities"
-			echo "Usage: $0 $1 [fast|debug]"
-		else
-			build "$2"
-		fi
-		;;
-	"config")
-		case "$2" in
-			openwrt)
-				config openwrt
-				;;
-			kernel)
-				config kernel
-				;;
-			*)
-				echo "This open the OpenWRT menuconfig dialog"
-				echo
-				echo "Usage: $0 $1 openwrt|kernel"
-				;;
-		esac
-		;;
-	"clean")
-		if [ "$2" = "help" ] || [ "$2" = "x" ]; then
-			echo "This option cleans all build files."
-			echo "$0 $1"
-		else
-			clean
-		fi
-		;;
-	"buildall")
-		if [ "$2" = "help" ] || [ "$2" = "" ]; then
-			echo "This option builds the firmware for all routers of a given community."
-			echo "Usage: $0 $1 community.cfg [fast]"
-			echo "community.cfg: "
-			/bin/ls community/*.cfg
-		else
-			buildall "$2" "$3"
-		fi
-		;;
-	*)
-		echo "This is the Build Environment Script of the Freifunk Community Franken."
-		echo "Usage: $0 command"
-		echo "command:"
-		echo "	selectcommunity [communityfile]"
-		echo "	selectbsp [bsp file]"
-		echo "	prepare"
-		echo "	config <openwrt|kernel>"
-		echo "	build [<fast|debug>]"
-		echo "	buildall <community> [<fast>]"
-		echo "  clean"
-		echo ""
-		echo "If you need help to one of these options just type $0 command help"
-	;;
+    "selectbsp")
+        if [ "$2" = "help" ] || [ "$2" = "" ]; then
+            echo "Select a Board-Support-Package:"
+            echo
+            echo "Usage: $0 $1 bsp"
+            echo "available packages:"
+            /bin/ls bsp/*.bsp
+        else
+            if [ ! -f "$2" ]; then
+                echo "Could not find $2"
+            else
+                /bin/rm -rf selected_bsp
+                /bin/ln -s "$2" selected_bsp
+            fi
+        fi
+        ;;
+    "selectcommunity")
+        if [ "$2" = "help" ] || [ "$2" = "" ]; then
+            echo "Select a Community-File:"
+            echo
+            echo "Usage: $0 $1 community.cfg"
+            echo "community.cfg: "
+            /bin/ls community/*.cfg
+        else
+            if [ ! -f "$2" ]; then
+                echo "Could not find $2"
+            else
+                /bin/rm -rf selected_community
+                /bin/ln -s "$2" selected_community
+            fi
+        fi
+        ;;
+    "prepare")
+        if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+            echo "This option fetches the sources for the images and configurates the build so that it can be compiled"
+            echo "Usage: $0 $1"
+        else
+            prepare
+        fi
+        ;;
+    "build")
+        if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+            echo "This option compiles the firmware"
+            echo "Normaly the build uses lower IO and System priorities, "
+            echo "you can append \"fast\" option, to use normal user priorities"
+            echo "Usage: $0 $1 [fast|debug]"
+        else
+            build "$2"
+        fi
+        ;;
+    "config")
+        case "$2" in
+            openwrt)
+                config openwrt
+                ;;
+            kernel)
+                config kernel
+                ;;
+            *)
+                echo "This open the OpenWRT menuconfig dialog"
+                echo
+                echo "Usage: $0 $1 openwrt|kernel"
+                ;;
+        esac
+        ;;
+    "clean")
+        if [ "$2" = "help" ] || [ "$2" = "x" ]; then
+            echo "This option cleans all build files."
+            echo "$0 $1"
+        else
+            clean
+        fi
+        ;;
+    "buildall")
+        if [ "$2" = "help" ] || [ "$2" = "" ]; then
+            echo "This option builds the firmware for all routers of a given community."
+            echo "Usage: $0 $1 community.cfg [fast]"
+            echo "community.cfg: "
+            /bin/ls community/*.cfg
+        else
+            buildall "$2" "$3"
+        fi
+        ;;
+    *)
+        echo "This is the Build Environment Script of the Freifunk Community Franken."
+        echo "Usage: $0 command"
+        echo "command:"
+        echo "  selectcommunity [communityfile]"
+        echo "  selectbsp [bsp file]"
+        echo "  prepare"
+        echo "  config <openwrt|kernel>"
+        echo "  build [<fast|debug>]"
+        echo "  buildall <community> [<fast>]"
+        echo "  clean"
+        echo ""
+        echo "If you need help to one of these options just type $0 command help"
+    ;;
 esac
-# vim: noexpandtab
