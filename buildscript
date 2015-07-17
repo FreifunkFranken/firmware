@@ -160,7 +160,8 @@ prebuild() {
 
 	board_prebuild
 
-	for template in $(find $target/files -name *.tpl)
+	shopt -s globstar nullglob
+	for template in $target/files/**/*.tpl
 	do
 		echo "Translating $template .."
 		$tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
