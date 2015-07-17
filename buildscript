@@ -7,62 +7,31 @@ OPENWRTURL="git://git.openwrt.org/14.07/openwrt.git"
 PACKAGEREV="289cc1505143e4b6cfaaabd452143e159dd22d25"
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
-## Feed definition [0]: name aka directory [1]: type git vs svn [2]: url [3]: revision evtl [4]: Patches
+## Feed definition [0]: name aka directory [1]: url [2]: revision [3]: patches
 
 #official openwrt packages
 OPENWRT=(openwrt
-         git
          $PACKAGEURL
          $PACKAGEREV)
 OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
 
 OPENWRT_OLDPACKAGES=(openwrt_oldpackages
-                     git
                      http://git.openwrt.org/14.07/packages.git
                      ee10403aab0b9b23096532662471e8052377444c)
 
 #official openwrt routing packages
 ROUTING=(routing
-         git
          https://github.com/openwrt-routing/packages.git
          44318d05898069300ce2ad6eb05eb40f232e7123
          ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch)
 ROUTING_PKGS="kmod-batman-adv"
 
 FASTD=(fastd
-       git
        git://git.metameute.de/lff/pkg_fastd
        v14-1)
 FASTD_PKGS="fastd"
 
 FEEDS=(OPENWRT OPENWRT_OLDPACKAGES ROUTING FASTD)
-
-checkout_svn(){
-	local DIRECTORY=$1
-	local REPO_URL=$2
-	local REVISION=$3
-
-	echo checking out $REPO_URL to $DIRECTORY in version $REVISION
-	if [ -d $DIRECTORY ]; then
-		local url=$(svn info ${DIRECTORY} | awk '/^URL/ { print $2 }')
-		if [ "$url" = "$REPO_URL" ]; then
-			if [ -z "$REVISION" ]; then
-				svn update $DIRECTORY
-			else
-				local rev=$(svn info $DIRECTORY | awk '/^Revision:/ { print $2 }')
-				if [ "$rev" -ne "$REVISION" ]; then
-					svn update -r $REVISION $DIRECTORY
-				fi
-			fi
-		else
-			echo wrong svn url -\> deleting whole directory
-			/bin/rm -rf $DIRECTORY
-			svn checkout -r $REVISION $REPO_URL $DIRECTORY
-		fi
-	else
-		svn checkout -r $REVISION $REPO_URL $DIRECTORY
-	fi
-}
 
 checkout_git(){
 	local DIRECTORY=$1
@@ -107,22 +76,16 @@ get_source() {
 		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
 
 		local NAME=${FEED[0]}
-		local TYPE=${FEED[1]}
-		local URL=${FEED[2]}
-		local REV=${FEED[3]}
-		local PATCH=${FEED[4]}
+		local URL=${FEED[1]}
+		local REV=${FEED[2]}
+		local PATCH=${FEED[3]}
 
-		echo Adding Feed $NAME
-		if [[ $TYPE == "svn" ]] ; then
-			checkout_svn $NAME $URL $REV
-		elif [[ $TYPE == "git" ]] ; then
-			checkout_git $NAME $URL $REV
-			# Patches for feeds could be stored in known directories like build_patches/$NAME/
-			# That way multiple patches for one feed could be supported
-			if [ ! -z "$PATCH" ] ; then
-				echo Patching $PATCH
-				git -C $NAME am --whitespace=nowarn $PATCH
-			fi
+		checkout_git $NAME $URL $REV
+		# Patches for feeds could be stored in known directories like build_patches/$NAME/
+		# That way multiple patches for one feed could be supported
+		if [ ! -z "$PATCH" ] ; then
+			echo Patching $PATCH
+			git -C $NAME am --whitespace=nowarn $PATCH
 		fi
 	done
 
