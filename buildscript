@@ -113,7 +113,7 @@ prepare() {
 	done
 
 	echo cleaning feeds
-	test -d $target/feeds && /bin/rm -rf $target/feeds
+	/bin/rm -rf $target/feeds
 
 	$target/scripts/feeds update
 
