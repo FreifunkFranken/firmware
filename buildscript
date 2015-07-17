@@ -42,25 +42,25 @@ checkout_git(){
 
 	local MYGIT="git -C $DIRECTORY"
 	echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
-	if [ -d $DIRECTORY ]; then
-		if $MYGIT remote -v | grep -q $REPO_URL ; then
+	if [ -d "$DIRECTORY" ]; then
+		if $MYGIT remote -v | grep -q "$REPO_URL" ; then
 			echo "Right remote detected"
-			if ! $MYGIT checkout $COMMITID ; then
+			if ! $MYGIT checkout "$COMMITID" ; then
 				echo "commitid not found trying to fetch new commits"
-				$MYGIT	pull && $MYGIT checkout $COMMITID
+				$MYGIT	pull && $MYGIT checkout "$COMMITID"
 			fi
 		else
 			echo "wrong remote or not an git repo at all -> deleting whole directory"
-			/bin/rm -rf $DIRECTORY
+			/bin/rm -rf "$DIRECTORY"
 			#needs to be without -C!!!
-			git clone $REPO_URL $DIRECTORY
-			$MYGIT checkout $COMMITID
+			git clone "$REPO_URL" "$DIRECTORY"
+			$MYGIT checkout "$COMMITID"
 		fi
 	else
 		echo "We need to do a fresh checkout"
 		#needs to be without -C!!!
-		git clone $REPO_URL $DIRECTORY
-		$MYGIT checkout $COMMITID
+		git clone "$REPO_URL" "$DIRECTORY"
+		$MYGIT checkout "$COMMITID"
 	fi
 }
 
@@ -84,12 +84,12 @@ get_source() {
 		local REV=${FEED[2]}
 		local PATCH=${FEED[3]}
 
-		checkout_git $NAME $URL $REV
+		checkout_git "$NAME" "$URL" "$REV"
 		# Patches for feeds could be stored in known directories like build_patches/$NAME/
 		# That way multiple patches for one feed could be supported
 		if [ ! -z "$PATCH" ] ; then
 			echo "Patching $PATCH"
-			git -C $NAME am --whitespace=nowarn $PATCH
+			git -C "$NAME" am --whitespace=nowarn "$PATCH"
 		fi
 	done
 
@@ -102,25 +102,25 @@ prepare() {
 
 	test -d $builddir || mkdir $builddir
 
-	/bin/rm -rf $target
-	cp -a src/openwrt $target
+	/bin/rm -rf "$target"
+	cp -a src/openwrt "$target"
 
 	## generate own feeds.conf
 	#this local variable should be globally configure variable used in get_source and here
 	local PACKAGEBASE=${PWD}/src/packages
-	rm -f $target/feeds.conf
+	rm -f "$target"/feeds.conf
 	for FEEDVAR in "${FEEDS[@]}" ; do
 		FEED="${FEEDVAR}[@]"
 		FEED=("${!FEED}")
 		local NAME=${FEED[0]}
 		echo "adding $NAME to package feeds"
-		echo src-link $NAME $PACKAGEBASE/$NAME >> $target/feeds.conf
+		echo src-link "$NAME" "$PACKAGEBASE"/"$NAME" >> "$target"/feeds.conf
 	done
 
 	echo "cleaning feeds"
-	/bin/rm -rf $target/feeds
+	/bin/rm -rf "$target"/feeds
 
-	$target/scripts/feeds update
+	"$target"/scripts/feeds update
 
 	for FEEDVAR in "${FEEDS[@]}" ; do
 		FEED="${FEEDVAR}[@]"
@@ -132,35 +132,35 @@ prepare() {
 
 		if [[ -n "${PACKAGESVAR[@]}" ]] ; then
 			echo "adding ${PACKAGESVAR[*]} from feed $NAME to available packages"
-			$target/scripts/feeds install -p $NAME ${PACKAGESVAR[@]}
+			"$target"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
 		fi
 	done
 
 	# todo evaluate this with the new openwrt
 	# This changes the default behavior of sysupgrade to not save the config 
-	patch -p0 -d $target -i $PWD/build_patches/sysupgrade_no_config_save.patch
+	patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
 
 	#saves ~200MB for each build
 	test -d ./src/dl || mkdir ./src/dl
-	ln -s ../../src/dl $target/dl
+	ln -s ../../src/dl "$target"/dl
 
 	board_prepare
 }
 
 prebuild() {
 	#create filesdir for our config
-	/bin/rm -rf $target/files
-	mkdir $target/files
+	/bin/rm -rf "$target"/files
+	mkdir "$target"/files
 
-	cp -r ./bsp/default/root_file_system/* $target/files/
-	cp -r ./bsp/$machine/root_file_system/* $target/files/
-	cp ./bsp/$machine/.config $target/.config
+	cp -r ./bsp/default/root_file_system/* "$target"/files/
+	cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
+	cp ./bsp/"$machine"/.config "$target"/.config
 
-	arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{print gsub(/"/,"",$2); print $2;}' ./bsp/$machine/.config)
-	version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/$machine/.config)
-	test -f ./bsp/$machine/.kernelconfig-$version && \
-		cp ./bsp/$machine/.kernelconfig-$version \
-		$target/target/linux/$arch/config-$version
+	arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{print gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
+	version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
+	test -f ./bsp/"$machine"/.kernelconfig-"$version" && \
+		cp ./bsp/"$machine"/.kernelconfig-"$version" \
+		"$target"/target/linux/"$arch"/config-"$version"
 
 	board_prebuild
 
@@ -168,8 +168,8 @@ prebuild() {
 	for template in $target/files/**/*.tpl
 	do
 		echo "Translating $template .."
-		$tpl_translate $template > $(dirname $template)/$(basename $template .tpl)
-		/bin/rm $template
+		$tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
+		/bin/rm "$template"
 	done
 
 	#insert actual firware version informations into release file
@@ -180,14 +180,14 @@ prebuild() {
 		echo "BUILD_DATE=\"build date: $(date)\""
 		echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
 		echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
-	} > $target/files/etc/firmware_release
+	} > "$target"/files/etc/firmware_release
 }
 
 build() {
 	prebuild
 
 	opath=$(pwd)
-	cd $target
+	cd "$target"
 	cpus=$(grep -c processor /proc/cpuinfo)
 
 	case "$1" in
@@ -202,7 +202,7 @@ build() {
 			;;
 	esac
 
-	cd $opath
+	cd "$opath"
 
 	if [ ! -d bin ]; then
 		mkdir bin
@@ -215,7 +215,7 @@ config() {
 	prebuild
 
 	opath=$(pwd)
-	cd $target
+	cd "$target"
 
 	case "$1" in
 		"openwrt")
@@ -226,7 +226,7 @@ config() {
 			;;
 	esac
 
-	cd $opath
+	cd "$opath"
 
 	save=""
 	until [ "$save" = "y" -o "$save" = "n" ]; do
@@ -237,12 +237,12 @@ config() {
 	if [ "$save" = "y" ]; then
 		case "$1" in
 			"openwrt")
-				grep '^CON\|^# CON' $target/.config | sort > ./bsp/$machine/.config
+				grep '^CON\|^# CON' "$target"/.config | sort > ./bsp/"$machine"/.config
 				;;
 			"kernel")
-				arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' ./bsp/$machine/.config)
-				version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/$machine/.config)
-				grep '^CON\|^# CON' $target/target/linux/$arch/config-$version | sort > ./bsp/$machine/.kernelconfig-$version
+				arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
+				version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
+				grep '^CON\|^# CON' "$target"/target/linux/"$arch"/config-"$version" | sort > ./bsp/"$machine"/.kernelconfig-"$version"
 				;;
 		esac
 	fi
@@ -259,10 +259,10 @@ clean() {
 
 buildall() {
 	for bsp in $(/bin/ls bsp/*.bsp); do
-		./buildscript selectcommunity $1
-		./buildscript selectbsp $bsp
+		./buildscript selectcommunity "$1"
+		./buildscript selectbsp "$bsp"
 		./buildscript prepare
-		./buildscript build $2
+		./buildscript build "$2"
 	done
 }
 
@@ -293,11 +293,11 @@ case "$1" in
 			echo "available packages:"
 			/bin/ls bsp/*.bsp
 		else
-			if [ ! -f $2 ]; then
+			if [ ! -f "$2" ]; then
 				echo "Could not find $2"
 			else
 				/bin/rm -rf selected_bsp
-				/bin/ln -s $2 selected_bsp
+				/bin/ln -s "$2" selected_bsp
 			fi
 		fi
 		;;
@@ -309,11 +309,11 @@ case "$1" in
 			echo "community.cfg: "
 			/bin/ls community/*.cfg
 		else
-			if [ ! -f $2 ]; then
+			if [ ! -f "$2" ]; then
 				echo "Could not find $2"
 			else
 				/bin/rm -rf selected_community
-				/bin/ln -s $2 selected_community
+				/bin/ln -s "$2" selected_community
 			fi
 		fi
 		;;
@@ -365,7 +365,7 @@ case "$1" in
 			echo "community.cfg: "
 			/bin/ls community/*.cfg
 		else
-			buildall $2 $3
+			buildall "$2" "$3"
 		fi
 		;;
 	*)
