@@ -126,11 +126,13 @@ prepare() {
 		FEED="${FEEDVAR}[@]"
 		FEED=("${!FEED}")
 		local NAME=${FEED[0]}
-		local PACKAGESVAR=${FEEDVAR}_PKGS
+		local PACKAGESVAR="${FEEDVAR}_PKGS"
+		PACKAGESVAR="${PACKAGESVAR}[@]"
+		PACKAGESVAR=(${!PACKAGESVAR})
 
-		if [[ -n "${!PACKAGESVAR}" ]] ; then
-			echo "adding ${!PACKAGESVAR} from feed $NAME to available packages"
-			$target/scripts/feeds install -p $NAME ${!PACKAGESVAR}
+		if [[ -n "${PACKAGESVAR[@]}" ]] ; then
+			echo "adding ${PACKAGESVAR[*]} from feed $NAME to available packages"
+			$target/scripts/feeds install -p $NAME ${PACKAGESVAR[@]}
 		fi
 	done
 
