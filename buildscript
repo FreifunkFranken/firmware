@@ -39,23 +39,23 @@ checkout_git(){
 	local COMMITID=$3
 
 	local MYGIT="git -C $DIRECTORY"
-	echo checking out $REPO_URL to $DIRECTORY in version $COMMITID
+	echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
 	if [ -d $DIRECTORY ]; then
 		if $MYGIT remote -v | grep $REPO_URL ; then
-			echo Right remote detected
+			echo "Right remote detected"
 			if ! $MYGIT checkout $COMMITID ; then
-				echo commitid not found trying to fetch new commits
+				echo "commitid not found trying to fetch new commits"
 				$MYGIT	pull && $MYGIT checkout $COMMITID
 			fi
 		else
-			echo wrong remote or not an git repo at all -\> deleting whole directory
+			echo "wrong remote or not an git repo at all -> deleting whole directory"
 			/bin/rm -rf $DIRECTORY
 			#needs to be without -C!!!
 			git clone $REPO_URL $DIRECTORY
 			$MYGIT checkout $COMMITID
 		fi
 	else
-		echo We need to do a fresh checkout
+		echo "We need to do a fresh checkout"
 		#needs to be without -C!!!
 		git clone $REPO_URL $DIRECTORY
 		$MYGIT checkout $COMMITID
@@ -85,7 +85,7 @@ get_source() {
 		# Patches for feeds could be stored in known directories like build_patches/$NAME/
 		# That way multiple patches for one feed could be supported
 		if [ ! -z "$PATCH" ] ; then
-			echo Patching $PATCH
+			echo "Patching $PATCH"
 			git -C $NAME am --whitespace=nowarn $PATCH
 		fi
 	done
@@ -109,11 +109,11 @@ prepare() {
 	for FEEDVAR in ${FEEDS[@]} ; do
 		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
 		local NAME=${FEED[0]}
-		echo adding $NAME to package feeds
+		echo "adding $NAME to package feeds"
 		echo src-link $NAME $PACKAGEBASE/$NAME >> $target/feeds.conf
 	done
 
-	echo cleaning feeds
+	echo "cleaning feeds"
 	/bin/rm -rf $target/feeds
 
 	$target/scripts/feeds update
@@ -124,7 +124,7 @@ prepare() {
 		local PACKAGESVAR=${FEEDVAR}_PKGS
 
 		if [[ -n "${!PACKAGESVAR}" ]] ; then
-			echo adding ${!PACKAGESVAR} from feed $NAME to available packages
+			echo "adding ${!PACKAGESVAR} from feed $NAME to available packages"
 			$target/scripts/feeds install -p $NAME ${!PACKAGESVAR}
 		fi
 	done
