@@ -73,8 +73,9 @@ get_source() {
 	cd packages
 
 	#checkout needed package feeds
-	for FEEDVAR in ${FEEDS[@]} ; do
-		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
+	for FEEDVAR in "${FEEDS[@]}" ; do
+		FEED="${FEEDVAR}[@]"
+		FEED=("${!FEED}")
 
 		local NAME=${FEED[0]}
 		local URL=${FEED[1]}
@@ -106,8 +107,9 @@ prepare() {
 	#this local variable should be globally configure variable used in get_source and here
 	local PACKAGEBASE=${PWD}/src/packages
 	rm -f $target/feeds.conf
-	for FEEDVAR in ${FEEDS[@]} ; do
-		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
+	for FEEDVAR in "${FEEDS[@]}" ; do
+		FEED="${FEEDVAR}[@]"
+		FEED=("${!FEED}")
 		local NAME=${FEED[0]}
 		echo "adding $NAME to package feeds"
 		echo src-link $NAME $PACKAGEBASE/$NAME >> $target/feeds.conf
@@ -118,8 +120,9 @@ prepare() {
 
 	$target/scripts/feeds update
 
-	for FEEDVAR in ${FEEDS[@]} ; do
-		FEED=$FEEDVAR[@] FEED=( ${!FEED} )
+	for FEEDVAR in "${FEEDS[@]}" ; do
+		FEED="${FEEDVAR}[@]"
+		FEED=("${!FEED}")
 		local NAME=${FEED[0]}
 		local PACKAGESVAR=${FEEDVAR}_PKGS
 
