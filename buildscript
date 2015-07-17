@@ -185,10 +185,10 @@ build() {
 			make V=99
 			;;
 		"fast")
-			ionice -c 2 -- nice -n 1 -- make -j $(($cpus*2))
+			ionice -c 2 -- nice -n 1 -- make -j $((cpus*2))
 			;;
 		*)
-			ionice -c 3 -- nice -n 10 -- make -j $(($cpus+1))
+			ionice -c 3 -- nice -n 10 -- make -j $((cpus+1))
 			;;
 	esac
 
