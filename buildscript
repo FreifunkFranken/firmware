@@ -50,7 +50,8 @@ checkout_git(){
 		else
 			echo wrong remote or not an git repo at all -\> deleting whole directory
 			/bin/rm -rf $DIRECTORY
-			$MYGIT clone $REPO_URL $DIRECTORY
+			#needs to be without -C!!!
+			git clone $REPO_URL $DIRECTORY
 			$MYGIT checkout $COMMITID
 		fi
 	else
