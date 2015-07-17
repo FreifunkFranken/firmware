@@ -39,7 +39,7 @@ checkout_git(){
 	local COMMITID=$3
 
 	local MYGIT="git -C $DIRECTORY"
-	echo checking out $REPO_URL to $DIRECTORY in version $REVISION
+	echo checking out $REPO_URL to $DIRECTORY in version $COMMITID
 	if [ -d $DIRECTORY ]; then
 		if $MYGIT remote -v | grep $REPO_URL ; then
 			echo Right remote detected
