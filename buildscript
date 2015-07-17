@@ -130,7 +130,7 @@ prepare() {
 
 	# todo evaluate this with the new openwrt
 	# This changes the default behavior of sysupgrade to not save the config 
-	cat build_patches/sysupgrade_no_config_save.patch | patch -p0 -d $target
+	patch -p0 -d $target -i $PWD/build_patches/sysupgrade_no_config_save.patch
 
 	#saves ~200MB for each build
 	test -d ./src/dl || mkdir ./src/dl
