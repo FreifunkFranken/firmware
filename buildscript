@@ -43,7 +43,7 @@ checkout_git(){
 	local MYGIT="git -C $DIRECTORY"
 	echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
 	if [ -d $DIRECTORY ]; then
-		if $MYGIT remote -v | grep $REPO_URL ; then
+		if $MYGIT remote -v | grep -q $REPO_URL ; then
 			echo "Right remote detected"
 			if ! $MYGIT checkout $COMMITID ; then
 				echo "commitid not found trying to fetch new commits"
