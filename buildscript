@@ -179,7 +179,7 @@ build() {
 
 	opath=$(pwd)
 	cd $target
-	cpus=$(grep processor /proc/cpuinfo | wc -l)
+	cpus=$(grep -c processor /proc/cpuinfo)
 
 	case "$1" in
 		"debug")
