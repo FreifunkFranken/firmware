@@ -79,12 +79,11 @@ crawl() {
 
     # example for /etc/firmware_release:
     #FIRMWARE_VERSION="95f36685e7b6cbf423f02cf5c7f1e785fd4ccdae-dirty"
-    #RELEASE_DATE="build date: Di 29. Jan 19:33:34 CET 2013"
-    #FIRMWARE_REVISION="build date: Di 29. Jan 19:33:34 CET 2013"
+    #BUILD_DATE="build date: Di 29. Jan 19:33:34 CET 2013"
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
 	. /etc/firmware_release
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$FIRMWARE_REVISION</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 
