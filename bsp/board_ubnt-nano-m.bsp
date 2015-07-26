@@ -1,4 +1,3 @@
-
 machine=ubnt-nano-m
 target=$builddir/$machine
 
@@ -13,10 +12,6 @@ board_prebuild() {
 board_postbuild() {
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-ubnt-nano-m-squashfs-factory.bin ./bin/
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-ubnt-nano-m-squashfs-sysupgrade.bin ./bin/
-}
-
-board_flash() {
-	echo "nothing implemented"
 }
 
 board_clean() {
