@@ -29,8 +29,8 @@ ROUTING=(routing
 ROUTING_PKGS="kmod-batman-adv"
 
 FASTD=(fastd
-       git://git.metameute.de/lff/pkg_fastd
-       v14-1)
+       git://git.universe-factory.net/fastd
+       v17)
 FASTD_PKGS="fastd"
 
 FEEDS=(OPENWRT OPENWRT_OLDPACKAGES ROUTING FASTD)
