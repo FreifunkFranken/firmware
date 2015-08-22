@@ -5,7 +5,7 @@ SERVER="no"
 
 project="${VPN_PROJECT}"
 
-test_ipv4_host1="mastersword.de" # Tims server
+test_ipv4_host1="keyserver.freifunk-franken.de" # Freifunk-Franken keyserver
 test_ipv4_host2="8.8.8.8"        # Google DNS
 test_ipv6_host1="heise.de"       # heise Zeitschriftenverlag
 
@@ -75,7 +75,7 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
 	fi
 
 #	register
-	wget -T15 "http://mastersword.de/~reddog/${project}/?mac=$mac&name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
+	wget -T15 "http://keyserver.freifunk-franken.de/${project}/?mac=$mac&name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
 
 	filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
 	for file in $filenames; do
