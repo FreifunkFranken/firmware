@@ -4,7 +4,7 @@ builddir=./build
 
 OPENWRTREV="f816c4907951b49f8c42e2ad58c2ca5672a807d1"
 OPENWRTURL="git://git.openwrt.org/14.07/openwrt.git"
-PACKAGEREV="289cc1505143e4b6cfaaabd452143e159dd22d25"
+PACKAGEREV="de5e37ac5be3d44c335faa9652bf4ce15784f4ad"
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
 ## Feed definition [0]: name aka directory [1]: url [2]: revision [3]: patches
