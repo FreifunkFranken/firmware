@@ -28,8 +28,8 @@ fi
 # collect environment info and write to dot-script
 /etc/environment.sh > /tmp/environment
 
-# Starting NTP-Client Daemon
-ntpd -p ${NTPD_IP}
+# Starting NTP-Client Daemon after 30s to ensure that the interface is up
+( sleep 30 ; ntpd -p ${NTPD_IP} ) &
 
 . /etc/firewall.user
 
