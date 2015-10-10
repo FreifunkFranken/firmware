@@ -14,6 +14,7 @@ if [ -f /etc/config/nodewatcher ];then
 	SCRIPT_DATA_FILE=`uci get nodewatcher.@script[0].data_file`
 	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
 	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
+	IFACEBLACKLIST=`uci get nodewatcher.@network[0].iface_blacklist`
 else
 	. `dirname $0`/nodewatcher_config
 fi
@@ -36,6 +37,16 @@ delete_log() {
             err "`date`: Logfile has been made smaller"
 		fi
 	fi
+}
+
+inArray() {
+	local value
+	for value in $1; do
+		if [ "$value" = "$2" ]; then
+			return 0
+		fi
+	done
+	return 1
 }
 
 #this method generates the crawl data xml file that is beeing fetched by netmon
@@ -83,7 +94,7 @@ crawl() {
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
 	. /etc/firmware_release
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 
@@ -96,7 +107,7 @@ crawl() {
     for filename in `grep 'up\|unknown' /sys/class/net/*/operstate`; do
         ifpath=${filename%/operstate*}
         iface=${ifpath#/sys/class/net/}
-		if [ "$iface" = "lo" ]; then
+        if inArray "$IFACEBLACKLIST" "$iface"; then
             continue
         fi
 		

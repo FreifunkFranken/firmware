@@ -6,3 +6,4 @@ config 'script'
 
 config 'network'
 	option 'mesh_interface' 'br-mesh'
+	option 'iface_blacklist' 'lo ifb0' # This devices won't be sent to netmon at all
