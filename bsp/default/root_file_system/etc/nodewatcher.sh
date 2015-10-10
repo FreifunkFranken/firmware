@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="30"
+SCRIPT_VERSION="31"
 
 test -f /tmp/started || exit
 
@@ -67,6 +67,7 @@ crawl() {
         /model/ { printf "<cpu>"$2"</cpu>" }
         /system type/ { printf "<chipset>"$2"</chipset>" }
     ' /proc/cpuinfo)
+	model="<model>$(uci get board.model.name)</model>"
 	local_time="`date +%s`"
 	load=$(awk '{ printf "<loadavg>"$3"</loadavg><processes>"$4"</processes>" }' /proc/loadavg)
 
