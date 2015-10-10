@@ -15,6 +15,7 @@ if [ -f /etc/config/nodewatcher ];then
 	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
 	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
 	IFACEBLACKLIST=`uci get nodewatcher.@network[0].iface_blacklist`
+	IPWHITELIST=`uci get nodewatcher.@network[0].ip_whitelist`
 else
 	. `dirname $0`/nodewatcher_config
 fi
@@ -111,20 +112,19 @@ crawl() {
         if inArray "$IFACEBLACKLIST" "$iface"; then
             continue
         fi
-		
-        #Get interface data
-        addrs="$(ip addr show dev ${iface} | awk '
+
+        #Get interface data for whitelisted interfaces
+        awkscript='
             /ether/ { printf "<mac_addr>"$2"</mac_addr>" }
-            /inet / { split($2, a, "/"); printf "<ipv4_addr>"a[1]"</ipv4_addr>" }
-            /inet6/ && /scope global/ { printf "<ipv6_addr>"$2"</ipv6_addr>" }
-            /inet6/ && /scope link/ { printf "<ipv6_link_local_addr>"$2"</ipv6_link_local_addr>"}
-            /mtu/ { printf "<mtu>"$5"</mtu>" }
-        ')"
-        #mac_addr="`cat $ifpath/address`"
-        #ipv4_addr="`ip addr show dev ${iface} | awk '/inet / { split($2, a, "/"); print a[1] }'`"
-        #ipv6_addr="`ip addr show dev ${iface} scope global | awk '/inet6/ { print $2 }'`"
-        #ipv6_link_local_addr="`ip addr show dev ${iface} scope link | awk '/inet6/ { print $2 }'`"
-        #mtu=`cat $ifpath/mtu`
+            /mtu/ { printf "<mtu>"$5"</mtu>" }'
+        if inArray "$IPWHITELIST" "$iface"; then
+            awkscript=$awkscript'
+                /inet / { split($2, a, "/"); printf "<ipv4_addr>"a[1]"</ipv4_addr>" }
+                /inet6/ && /scope global/ { printf "<ipv6_addr>"$2"</ipv6_addr>" }
+                /inet6/ && /scope link/ { printf "<ipv6_link_local_addr>"$2"</ipv6_link_local_addr>"}'
+        fi
+        addrs=$(ip addr show dev ${iface} | awk "$awkscript")
+
         traffic_rx=`cat $ifpath/statistics/rx_bytes`
         traffic_tx=`cat $ifpath/statistics/tx_bytes`
         
