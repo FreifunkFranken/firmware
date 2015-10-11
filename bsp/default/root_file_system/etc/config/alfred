@@ -1,0 +1,6 @@
+config 'alfred' 'alfred'
+    option interface 'br-mesh'
+    option mode 'slave'
+    option batmanif 'bat0'
+    option start_vis '0'
+    option run_facters '0'

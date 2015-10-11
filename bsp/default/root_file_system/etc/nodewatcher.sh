@@ -218,7 +218,7 @@ crawl() {
 	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode><batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list><client_count>$client_count</client_count></data>"
 
 	#write data to hxml file that provides the data on httpd
-	echo $DATA | gzip > $SCRIPT_DATA_FILE
+	echo $DATA | gzip | tee $SCRIPT_DATA_FILE | alfred -s 64
 }
 
 LANG=C
