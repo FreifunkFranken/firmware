@@ -25,7 +25,8 @@ OPENWRT_OLDPACKAGES=(openwrt_oldpackages
 ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
          44318d05898069300ce2ad6eb05eb40f232e7123
-         ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch)
+         ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch
+         ../../../build_patches/0002-alfred-workaround-race-condition-when-batmanif-is-no.patch)
 ROUTING_PKGS="kmod-batman-adv alfred"
 
 FASTD=(fastd
