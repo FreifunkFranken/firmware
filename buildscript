@@ -26,7 +26,7 @@ ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
          44318d05898069300ce2ad6eb05eb40f232e7123
          ../../../build_patches/0001-batman-adv-no-rebroadcast-option.patch)
-ROUTING_PKGS="kmod-batman-adv"
+ROUTING_PKGS="kmod-batman-adv alfred"
 
 FASTD=(fastd
        git://git.universe-factory.net/fastd
