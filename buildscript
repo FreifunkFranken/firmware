@@ -7,7 +7,7 @@ OPENWRTURL="git://git.openwrt.org/14.07/openwrt.git"
 PACKAGEREV="de5e37ac5be3d44c335faa9652bf4ce15784f4ad"
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
-## Feed definition [0]: name aka directory [1]: url [2]: revision [3]: patches
+## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
 
 #official openwrt packages
 OPENWRT=(openwrt
@@ -82,15 +82,23 @@ get_source() {
         local NAME=${FEED[0]}
         local URL=${FEED[1]}
         local REV=${FEED[2]}
-        local PATCH=${FEED[3]}
 
         checkout_git "$NAME" "$URL" "$REV"
+
         # Patches for feeds could be stored in known directories like build_patches/$NAME/
         # That way multiple patches for one feed could be supported
-        if [ ! -z "$PATCH" ] ; then
-            echo "Patching $PATCH"
-            git -C "$NAME" am --whitespace=nowarn "$PATCH"
-        fi
+        count=3
+        while [ "x${FEED[count]}" != "x" ]
+        do
+            local PATCH=${FEED[count]}
+            if [ ! -z "$PATCH" ] ; then
+                echo "Patching $PATCH"
+                git -C "$NAME" am --whitespace=nowarn "$PATCH"
+            else
+                echo "Warning, $PATCH not found."
+            fi
+            count=$(( count + 1 ))
+        done
     done
 
     cd .. # packages
