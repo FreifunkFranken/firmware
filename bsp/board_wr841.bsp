@@ -13,6 +13,7 @@ board_postbuild() {
 	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841nd-v7-squashfs-*.bin ./bin/
 	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-*.bin ./bin/
 	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v9-squashfs-*.bin ./bin/
+	cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v10-squashfs-*.bin ./bin/
 }
 
 board_clean() {

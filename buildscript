@@ -65,6 +65,8 @@ get_source() {
 
     #Get the OpenWrt Core Source for Firmware
     checkout_git openwrt $OPENWRTURL $OPENWRTREV
+    git -C openwrt am --whitespace=nowarn ../../build_patches/0001-ar71xx-add-support-for-TP-LINK-TL-WR841N-ND-v10.patch
+    git -C openwrt am --whitespace=nowarn ../../build_patches/0002-ar71xx-fix-ath79_soc_rev-value-for-QCA9531-ver.-2.patch
 
     test -d packages || mkdir packages
     cd packages
