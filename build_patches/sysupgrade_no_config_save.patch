@@ -8,6 +8,6 @@ Index: package/base-files/files/sbin/sysupgrade
  	( find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
 -		/etc/sysupgrade.conf /lib/upgrade/keep.d/* 2>/dev/null) \
 +		/etc/sysupgrade.conf 2>/dev/null) \
- 		-type f 2>/dev/null;
+ 		-type f -o -type l 2>/dev/null;
  	  opkg list-changed-conffiles ) | sort -u > "$file"
  	return 0

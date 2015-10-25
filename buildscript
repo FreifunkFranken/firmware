@@ -2,9 +2,9 @@
 
 builddir=./build
 
-OPENWRTREV="f816c4907951b49f8c42e2ad58c2ca5672a807d1"
-OPENWRTURL="git://git.openwrt.org/14.07/openwrt.git"
-PACKAGEREV="de5e37ac5be3d44c335faa9652bf4ce15784f4ad"
+OPENWRTREV="87d4425f9ac4ffe8b7d179d19939df16ad83e275"
+OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
+PACKAGEREV="ee0bb7b9df86cec0f1d7c27046c50b1fc45b7c4f"
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
@@ -14,10 +14,6 @@ OPENWRT=(openwrt
          $PACKAGEURL
          $PACKAGEREV)
 OPENWRT_PKGS="bridge gpioctl-sysfs libugpio mii-tool kmod-gpiotoggling"
-
-OPENWRT_OLDPACKAGES=(openwrt_oldpackages
-                     http://git.openwrt.org/14.07/packages.git
-                     ee10403aab0b9b23096532662471e8052377444c)
 
 ## Be careful: FFF uses COMPAT_VERSION 14 at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
@@ -38,7 +34,7 @@ FASTD=(fastd
        v17)
 FASTD_PKGS="fastd"
 
-FEEDS=(OPENWRT OPENWRT_OLDPACKAGES ROUTING FASTD BATMAN_ADV)
+FEEDS=(OPENWRT ROUTING FASTD BATMAN_ADV)
 
 checkout_git(){
     local DIRECTORY=$1
