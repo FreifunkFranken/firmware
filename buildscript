@@ -26,7 +26,7 @@ BATMAN_ADV_PKGS="kmod-batman-adv"
 #official openwrt routing packages
 ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
-         ad556e87598f9b2a1561900b882f385137ff85e4)
+         e870c3373eea80df852d42fac3f40aaffd7a0f58)
 ROUTING_PKGS="alfred"
 
 FEEDS=(OPENWRT ROUTING BATMAN_ADV)
