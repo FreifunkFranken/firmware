@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="33"
+SCRIPT_VERSION="34"
 
 test -f /tmp/started || exit
 
@@ -205,13 +205,11 @@ crawl() {
     fi
     err "`date`: Collecting information about conected clients"
 	#CLIENTS
-    SEDDEV=$(brctl showstp $MESH_INTERFACE | awk '/\([0-9]\)/ {
-            sub("\\(", "", $0)
-            sub("\\)", "", $0)
-            print "s/^  "$2"/"$1"/;"
-        }')
-
-    client_count=$(brctl showmacs $MESH_INTERFACE | sed -e "$SEDDEV" | egrep -c "(${CLIENT_INTERFACES// /|}).*no")
+	client_count=0
+	for clientif in ${CLIENT_INTERFACES}; do
+		local cc=$(bridge fdb show br $MESH_INTERFACE brport $clientif | grep -v self | grep -v permanent -c)
+		client_count=$((client_count + $cc))
+	done
 
     err "`date`: Putting all information into a XML-File and save it at "$SCRIPT_DATA_FILE
 
