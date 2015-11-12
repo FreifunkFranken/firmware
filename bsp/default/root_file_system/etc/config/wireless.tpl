@@ -14,7 +14,6 @@ config wifi-iface
         option bssid    '${BSSID_MESH}'
         option ssid     '${ESSID_MESH}'
         option mcast_rate 6000
-#       option bintval  1000
         option 'encryption' 'none'
         option 'hidden' '1'
 
