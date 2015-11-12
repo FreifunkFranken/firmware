@@ -4,6 +4,7 @@ config wifi-device  radio0
         option phy      phy0
         option hwmode   11g
         option htmode   HT20
+        option country  DE
 
 config wifi-iface
         option device   radio0
