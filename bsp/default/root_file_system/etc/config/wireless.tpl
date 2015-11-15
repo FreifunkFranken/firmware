@@ -11,11 +11,11 @@ config wifi-iface
         option network  w2mesh
         option ifname   w2mesh
         option mode     adhoc
-        option bssid    '${BSSID_MESH}'
+        option bssid    ${BSSID_MESH}
         option ssid     '${ESSID_MESH}'
         option mcast_rate 6000
-        option 'encryption' 'none'
-        option 'hidden' '1'
+        option encryption none
+        option hidden 1
 
 config wifi-iface
         option device   radio0
@@ -23,4 +23,4 @@ config wifi-iface
         option ifname   w2ap
         option mode     ap
         option ssid     '${ESSID_AP}'
-        option 'encryption' 'none'
+        option encryption none
