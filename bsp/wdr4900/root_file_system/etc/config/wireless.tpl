@@ -2,7 +2,7 @@ config wifi-device  radio0
 	option type     mac80211
 	option channel  ${BATMAN_CHANNEL_5GHZ}
 	option phy      phy0
-	option hwmode   11na
+	option hwmode   11a
 	option htmode   HT40+
 	option country  DE
 
@@ -29,7 +29,7 @@ config wifi-device  radio1
 	option type     mac80211
 	option channel  ${BATMAN_CHANNEL}
 	option phy      phy1
-	option hwmode   11ng
+	option hwmode   11g
 	option htmode   HT40+
 	option country  DE
 

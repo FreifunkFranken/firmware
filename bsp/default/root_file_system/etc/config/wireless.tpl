@@ -2,7 +2,7 @@ config wifi-device  radio0
         option type     mac80211
         option channel  ${BATMAN_CHANNEL}
         option phy      phy0
-        option hwmode   11ng
+        option hwmode   11g
 
 config wifi-iface
         option device   radio0
