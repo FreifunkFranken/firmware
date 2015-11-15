@@ -3,6 +3,7 @@ config wifi-device  radio0
         option channel  ${BATMAN_CHANNEL}
         option phy      phy0
         option hwmode   11g
+        option htmode   HT20
 
 config wifi-iface
         option device   radio0

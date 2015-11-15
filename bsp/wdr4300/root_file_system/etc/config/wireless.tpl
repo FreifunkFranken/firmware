@@ -3,7 +3,7 @@ config wifi-device  radio0
 	option channel  ${BATMAN_CHANNEL}
 	option phy      phy0
 	option hwmode   11g
-	option htmode   HT40+
+	option htmode   HT20
 	option country  DE
 
 config wifi-iface 'w2mesh'
