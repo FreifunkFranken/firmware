@@ -1,5 +1,4 @@
 config 'script'
-        option 'version' '25'
 	option 'error_level' '0'
 	option 'logfile' '/var/log/nodewatcher.log'
 	option 'data_file' '/tmp/crawldata/node.data'
