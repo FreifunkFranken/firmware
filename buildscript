@@ -179,9 +179,11 @@ prebuild() {
 
     #insert actual firware version informations into release file
     version=$(git describe --tags --dirty)
+    community=$(basename "$(realpath selected_community)" .cfg)
 
     {
         echo "FIRMWARE_VERSION=\"$version\""
+        echo "FIRMWARE_COMMUNITY=\"$community\""
         echo "BUILD_DATE=\"build date: $(date)\""
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
