@@ -12,7 +12,6 @@ if [ -f /etc/config/configurator ];then
 	API_IPV6_INTERFACE=`uci get configurator.@api[0].ipv6_interface`
 	API_TIMEOUT=`uci get configurator.@api[0].timeout`
 	API_RETRY=`uci get configurator.@api[0].retry`
-	SCRIPT_VERSION=`uci get configurator.@script[0].version`
 	SCRIPT_ERROR_LEVEL=`uci get configurator.@script[0].error_level`
 	SCRIPT_LOGFILE=`uci get configurator.@script[0].logfile`
 	CRAWL_METHOD=`uci get configurator.@crawl[0].method`
