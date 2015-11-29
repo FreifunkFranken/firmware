@@ -1,4 +1,4 @@
-*/5 * * * *	sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh
+*/5 * * * *	sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sh /etc/configurator.sh; /etc/syncHostname.sh
 */1 * * * * /usr/sbin/batctl gw off; sleep 1; /usr/sbin/batctl gw client
 
 #15 01 * * *	rdate -s time.fu-berlin.de > /dev/null
