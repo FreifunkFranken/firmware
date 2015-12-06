@@ -89,22 +89,24 @@ get_source() {
         local URL=${FEED[1]}
         local REV=${FEED[2]}
 
-        checkout_git "$NAME" "$URL" "$REV"
+        if [ -n "$URL" ] && [ -n "$REV" ]; then
+            checkout_git "$NAME" "$URL" "$REV"
 
-        # Patches for feeds could be stored in known directories like build_patches/$NAME/
-        # That way multiple patches for one feed could be supported
-        count=3
-        while [ "x${FEED[count]}" != "x" ]
-        do
-            local PATCH=${FEED[count]}
-            if [ ! -z "$PATCH" ] ; then
-                echo "Patching $PATCH"
-                git -C "$NAME" am --whitespace=nowarn "$PATCH"
-            else
-                echo "Warning, $PATCH not found."
-            fi
-            count=$(( count + 1 ))
-        done
+            # Patches for feeds could be stored in known directories like build_patches/$NAME/
+            # That way multiple patches for one feed could be supported
+            count=3
+            while [ "x${FEED[count]}" != "x" ]
+            do
+                local PATCH=${FEED[count]}
+                if [ ! -z "$PATCH" ] ; then
+                    echo "Patching $PATCH"
+                    git -C "$NAME" am --whitespace=nowarn "$PATCH"
+                else
+                    echo "Warning, $PATCH not found."
+                fi
+                count=$(( count + 1 ))
+            done
+        fi
     done
 
     cd .. # packages
@@ -278,8 +280,12 @@ clean() {
         FEED=("${!FEED}")
 
         local NAME=${FEED[0]}
+        local URL=${FEED[1]}
+        local REV=${FEED[2]}
 
-        /bin/rm -rf src/packages/"$NAME"
+        if [ -n "$URL" ] && [ -n "$REV" ]; then
+            /bin/rm -rf src/packages/"$NAME"
+        fi
     done
 }
 
