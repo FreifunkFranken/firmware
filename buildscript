@@ -39,7 +39,10 @@ ROUTING=(routing
          e870c3373eea80df852d42fac3f40aaffd7a0f58)
 ROUTING_PKGS="alfred"
 
-FEEDS=(OPENWRT ROUTING BATMAN_ADV)
+FFF=(fff)
+FFF_PKGS="-a"
+
+FEEDS=(OPENWRT ROUTING BATMAN_ADV FFF)
 
 checkout_git(){
     local DIRECTORY=$1
