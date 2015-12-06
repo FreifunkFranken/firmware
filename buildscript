@@ -175,12 +175,6 @@ prebuild() {
     cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
     cp ./bsp/"$machine"/.config "$target"/.config
 
-    arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{print gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
-    version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
-    test -f ./bsp/"$machine"/.kernelconfig-"$version" && \
-        cp ./bsp/"$machine"/.kernelconfig-"$version" \
-        "$target"/target/linux/"$arch"/config-"$version"
-
     board_prebuild
 
     shopt -s globstar nullglob
@@ -247,9 +241,6 @@ config() {
         "openwrt")
             make menuconfig
             ;;
-        "kernel")
-            make kernel_menuconfig
-            ;;
     esac
 
     save=""
@@ -265,11 +256,6 @@ config() {
                 echo "# Do no edit manually" >> "$opath"/bsp/"$machine"/.config
                 echo "#" >> "$opath"/bsp/"$machine"/.config
                 ./scripts/diffconfig.sh >> "$opath"/bsp/"$machine"/.config
-                ;;
-            "kernel")
-                arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' "$opath"/bsp/"$machine"/.config)
-                version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' "$opath"/bsp/"$machine"/.config)
-                grep '^CON\|^# CON' target/linux/"$arch"/config-"$version" | sort > "$opath"/bsp/"$machine"/.kernelconfig-"$version"
                 ;;
         esac
     fi
@@ -383,13 +369,10 @@ case "$1" in
             openwrt)
                 config openwrt
                 ;;
-            kernel)
-                config kernel
-                ;;
             *)
                 echo "This open the OpenWRT menuconfig dialog"
                 echo
-                echo "Usage: $0 $1 openwrt|kernel"
+                echo "Usage: $0 $1 openwrt"
                 ;;
         esac
         ;;
@@ -418,7 +401,7 @@ case "$1" in
         echo "  selectcommunity [communityfile]"
         echo "  selectbsp [bsp file]"
         echo "  prepare"
-        echo "  config <openwrt|kernel>"
+        echo "  config <openwrt>"
         echo "  build [<fast|debug>]"
         echo "  buildall <community> [<fast>]"
         echo "  clean"
