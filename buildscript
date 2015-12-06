@@ -13,7 +13,7 @@
 
 builddir=./build
 
-OPENWRTREV="c5287f92027e9709262d2424bb0c121ab2a7597e"
+OPENWRTREV="1cd5709e5d9d6e73eb501f1f2840379aa8d171db"
 OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
 PACKAGEREV="ee0bb7b9df86cec0f1d7c27046c50b1fc45b7c4f"
 PACKAGEURL="https://github.com/openwrt/packages.git"
@@ -76,8 +76,6 @@ get_source() {
 
     #Get the OpenWrt Core Source for Firmware
     checkout_git openwrt $OPENWRTURL $OPENWRTREV
-    git -C openwrt am --whitespace=nowarn ../../build_patches/0001-ar71xx-add-support-for-TP-LINK-TL-WR841N-ND-v10.patch
-    git -C openwrt am --whitespace=nowarn ../../build_patches/0002-ar71xx-fix-ath79_soc_rev-value-for-QCA9531-ver.-2.patch
 
     test -d packages || mkdir packages
     cd packages
