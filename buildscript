@@ -202,6 +202,11 @@ prebuild() {
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
     } > "$target"/files/etc/firmware_release
+
+    opath=$(pwd)
+    cd "$target"
+    make defconfig
+    cd "$opath"
 }
 
 build() {
