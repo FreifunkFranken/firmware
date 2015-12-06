@@ -252,8 +252,6 @@ config() {
             ;;
     esac
 
-    cd "$opath"
-
     save=""
     until [ "$save" = "y" -o "$save" = "n" ]; do
         echo "Do you want to save the generated config? (y/n)"
@@ -263,15 +261,20 @@ config() {
     if [ "$save" = "y" ]; then
         case "$1" in
             "openwrt")
-                grep '^CON\|^# CON' "$target"/.config | sort > ./bsp/"$machine"/.config
+                echo "# Generated using \"./buildscript config openwrt\"." > "$opath"/bsp/"$machine"/.config
+                echo "# Do no edit manually" >> "$opath"/bsp/"$machine"/.config
+                echo "#" >> "$opath"/bsp/"$machine"/.config
+                ./scripts/diffconfig.sh >> "$opath"/bsp/"$machine"/.config
                 ;;
             "kernel")
-                arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' ./bsp/"$machine"/.config)
-                version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' ./bsp/"$machine"/.config)
-                grep '^CON\|^# CON' "$target"/target/linux/"$arch"/config-"$version" | sort > ./bsp/"$machine"/.kernelconfig-"$version"
+                arch=$(awk -F= '/^CONFIG_TARGET_BOARD/{gsub(/"/,"",$2); print $2;}' "$opath"/bsp/"$machine"/.config)
+                version=$(awk '/^CONFIG_LINUX/ { sub(/CONFIG_LINUX_/,""); sub(/=y/,""); gsub(/_/,"."); print; }' "$opath"/bsp/"$machine"/.config)
+                grep '^CON\|^# CON' target/linux/"$arch"/config-"$version" | sort > "$opath"/bsp/"$machine"/.kernelconfig-"$version"
                 ;;
         esac
     fi
+
+    cd "$opath"
 }
 
 postbuild() {
