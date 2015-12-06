@@ -1,0 +1,33 @@
+machine=ar71xx
+target=$builddir/$machine
+
+board_prepare() {
+    echo "nothing todo" > /dev/null
+}
+
+board_prebuild() {
+    echo "nothing todo" > /dev/null
+}
+
+board_postbuild() {
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-ubnt-nano-m-squashfs-*.bin ./bin/
+
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr740n-v4-squashfs-*.bin ./bin/
+
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v2-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v4-squashfs-*.bin ./bin/
+
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841nd-v7-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v9-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr841n-v10-squashfs-*.bin ./bin/
+
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr842n-v2-squashfs-*.bin ./bin/
+
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v1-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v2-squashfs-*.bin ./bin/
+}
+
+board_clean() {
+    /bin/rm -rf $target bin/*$machine*
+}
