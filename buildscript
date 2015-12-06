@@ -270,7 +270,17 @@ postbuild() {
 
 clean() {
     board_clean
-    /bin/rm -rf bin $builddir
+    /bin/rm -rf bin $builddir src/openwrt
+
+    # remove downloaded package feeds
+    for FEEDVAR in "${FEEDS[@]}" ; do
+        FEED="${FEEDVAR}[@]"
+        FEED=("${!FEED}")
+
+        local NAME=${FEED[0]}
+
+        /bin/rm -rf src/packages/"$NAME"
+    done
 }
 
 buildall() {
