@@ -3,6 +3,7 @@
 # the system init finished. By default this file does nothing.
 
 BOARD=$(cat /var/sysinfo/board_name)
+
 case "$BOARD" in
     tl-wr1043nd)
         BOARD=tl-wr1043nd-v1
@@ -19,7 +20,11 @@ case "$BOARD" in
     tl-wr841n-v9)
         grep "v10" /var/sysinfo/model && BOARD=tl-wr841n-v10
         ;;
+    nanostation-m)
+        BOARD=ubnt-nano-m
+        ;;
 esac
+
 if ! uci get board.model.name; then
     uci set board.model.name=$BOARD
 fi
