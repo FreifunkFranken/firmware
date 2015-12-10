@@ -16,6 +16,7 @@ if [ -f /etc/config/nodewatcher ];then
 	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
 	IFACEBLACKLIST=`uci get nodewatcher.@network[0].iface_blacklist`
 	IPWHITELIST=`uci get nodewatcher.@network[0].ip_whitelist`
+	SCRIPT_STATUS_FILE=`uci get nodewatcher.@script[0].status_text_file`
 else
 	. `dirname $0`/nodewatcher_config
 fi
@@ -79,6 +80,10 @@ crawl() {
 	fastd_version=$(fastd -v | awk '{ print $2 }')
 	nodewatcher_version=$SCRIPT_VERSION
 
+	if [ -f "$SCRIPT_STATUS_FILE" ]; then
+		status_text="<status_text>$(cat "$SCRIPT_STATUS_FILE")</status_text>"
+	fi
+
     # example for /etc/openwrt_release:
     #DISTRIB_ID="OpenWrt"
     #DISTRIB_RELEASE="Attitude Adjustment"
@@ -96,7 +101,7 @@ crawl() {
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
 	. /etc/firmware_release
-	SYSTEM_DATA="<status>online</status><hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_community>$FIRMWARE_COMMUNITY</firmware_community><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+	SYSTEM_DATA="<status>online</status>$status_text<hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_community>$FIRMWARE_COMMUNITY</firmware_community><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 

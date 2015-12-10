@@ -2,6 +2,7 @@ config 'script'
 	option 'error_level' '0'
 	option 'logfile' '/var/log/nodewatcher.log'
 	option 'data_file' '/tmp/crawldata/node.data'
+	option 'status_text_file' '/tmp/status.txt'
 
 config 'network'
 	option 'mesh_interface' 'br-mesh'
