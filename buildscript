@@ -159,6 +159,9 @@ prepare() {
     # This changes the default behavior of sysupgrade to not save the config 
     patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
 
+    # set default password to 'ffol'
+    patch -p0 -d "$target" -i "$PWD"/build_patches/set_root_password.patch
+
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
     ln -s ../../src/dl "$target"/dl
