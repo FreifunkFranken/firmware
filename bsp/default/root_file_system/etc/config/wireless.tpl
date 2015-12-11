@@ -15,7 +15,6 @@ config wifi-iface
     option ssid       '${ESSID_MESH}'
     option mcast_rate 6000
     option encryption none
-    option hidden     1
 
 config wifi-iface
     option device     radio0
