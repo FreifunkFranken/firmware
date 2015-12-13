@@ -24,14 +24,14 @@ PACKAGEURL="https://github.com/openwrt/packages.git"
 OPENWRT=(openwrt
          $PACKAGEURL
          $PACKAGEREV)
-OPENWRT_PKGS="gpioctl-sysfs libugpio fastd"
+OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 
 ## Be careful: FFF uses COMPAT_VERSION 14 at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 BATMAN_ADV=(batman_adv
             https://github.com/freifunk-gluon/packages.git
             b4f04f51d53b151a45f0618eef6d89d32f52dae7)
-BATMAN_ADV_PKGS="kmod-batman-adv-legacy micrond"
+BATMAN_ADV_PKGS="kmod-batman-adv-legacy micrond simple-tc"
 
 #official openwrt routing packages
 ROUTING=(routing
