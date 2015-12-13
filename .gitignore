@@ -2,5 +2,10 @@ selected_bsp
 selected_community
 build
 bin
-src
+src/dl
+src/openwrt
+src/packages/fastd
+src/packages/openwrt
+src/packages/batman_adv
+src/packages/routing
 .project
