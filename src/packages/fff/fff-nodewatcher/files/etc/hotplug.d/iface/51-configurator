@@ -1,4 +1,4 @@
 #!/bin/sh
 [ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" ] && {
-	sh /etc/configurator.sh
+	/usr/sbin/configurator
 }

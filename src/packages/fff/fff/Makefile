@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff
 
@@ -14,7 +14,7 @@ define Package/fff-base
     DEFAULT:=y
     TITLE:= Freifunk-Franken Base
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+micrond
+    DEPENDS:=+micrond +fff-nodewatcher
 endef
 
 define Package/fff-base/description

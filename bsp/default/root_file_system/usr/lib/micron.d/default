@@ -1,3 +1,2 @@
-*/5 * * * * sleep $(/usr/bin/random 0 29); sh /etc/fastdstart.sh; sh /etc/nodewatcher.sh; sleep $(/usr/bin/random 0 209); sh /etc/configurator.sh
-*/30 * * * * sleep $(/usr/bin/random 0 1790); /etc/syncHostname.sh
+*/5 * * * * sleep $(/usr/bin/random 0 29); sh /etc/fastdstart.sh
 */1 * * * * /usr/sbin/batctl gw off; sleep 1; /usr/sbin/batctl gw client

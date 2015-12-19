@@ -1,0 +1,2 @@
+*/5 * * * * sleep $(/usr/bin/random 0 29); /usr/sbin/nodewatcher; sleep $(/usr/bin/random 0 209); /usr/sbin/configurator
+*/30 * * * * sleep $(/usr/bin/random 0 1790); /usr/sbin/syncHostname
