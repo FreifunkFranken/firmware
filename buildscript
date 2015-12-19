@@ -31,7 +31,7 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd"
 BATMAN_ADV=(batman_adv
             https://github.com/freifunk-gluon/packages.git
             b4f04f51d53b151a45f0618eef6d89d32f52dae7)
-BATMAN_ADV_PKGS="kmod-batman-adv-legacy"
+BATMAN_ADV_PKGS="kmod-batman-adv-legacy micrond"
 
 #official openwrt routing packages
 ROUTING=(routing
