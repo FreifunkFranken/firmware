@@ -101,3 +101,15 @@ if [[ -n "$ROUTERMAC" ]]; then
         /etc/init.d/network restart
     fi
 fi
+
+if [[ -n "$ETH0MAC" ]]; then
+        echo "Fixing MAC on eth0"
+        sleep 10
+        NEW_MACADDR=$(cat /sys/class/net/w2ap/address)
+        uci set network.eth0.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig eth0 down
+        ifconfig eth0 hw ether $NEW_MACADDR
+        ifconfig eth0 up
+        /etc/init.d/network restart
+fi

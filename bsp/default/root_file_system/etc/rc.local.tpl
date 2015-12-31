@@ -23,6 +23,9 @@ case "$BOARD" in
     nanostation-m)
         BOARD=ubnt-nano-m
         ;;
+    tl-wa860re)
+        BOARD=tl-wa860re-v1
+        ;;
 esac
 
 if ! uci get board.model.name; then
