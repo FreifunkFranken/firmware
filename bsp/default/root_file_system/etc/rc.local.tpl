@@ -29,6 +29,9 @@ case "$BOARD" in
     tl-wdr3500)
         BOARD=tl-wdr3500-v1
         ;;
+    tl-wdr4300)
+        grep "4300" /var/sysinfo/model && BOARD=tl-wdr4300-v1
+        ;;
 esac
 
 if ! uci get board.model.name; then
