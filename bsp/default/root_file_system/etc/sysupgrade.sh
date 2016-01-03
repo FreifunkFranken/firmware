@@ -1,7 +1,15 @@
 #!/bin/sh
 
 BOARD=`uci get board.model.name`
-FILE="openwrt-ar71xx-generic-$BOARD-squashfs-sysupgrade.bin"
+
+case $BOARD in
+    tl-wdr4900-v1 )
+        SOC="mpc85xx" ;;
+    * )
+        SOC="ar71xx" ;;
+esac
+
+FILE="openwrt-${SOC}-generic-${BOARD}-squashfs-sysupgrade.bin"
 
 echo -ne "\nHardware: $BOARD\n"
 echo -ne "Downloading $FILE\n\n"
