@@ -30,6 +30,7 @@ case "$BOARD" in
         BOARD=tl-wdr3500-v1
         ;;
     tl-wdr4300)
+        grep "3600" /var/sysinfo/model && BOARD=tl-wdr3600-v1
         grep "4300" /var/sysinfo/model && BOARD=tl-wdr4300-v1
         ;;
 esac
