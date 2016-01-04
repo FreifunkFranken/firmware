@@ -6,8 +6,8 @@ FILE="openwrt-ar71xx-generic-$BOARD-squashfs-sysupgrade.bin"
 echo -ne "\nHardware: $BOARD\n"
 echo -ne "Downloading $FILE\n\n"
 cd /tmp/
-wget http://$(uci get configurator.@api[0].ipv6_address)%$(uci get configurator.@api[0].ipv6_interface)/dev/firmware/current/${FILE}
-wget http://$(uci get configurator.@api[0].ipv6_address)%$(uci get configurator.@api[0].ipv6_interface)/dev/firmware/current/${FILE}.md5
+wget $(uci get firmware.upgrade.path)/${FILE}
+wget $(uci get firmware.upgrade.path)/${FILE}.md5
 echo -ne "\ndone. Comparing md5 sums: "
 md5sum -c ${FILE}.md5
 ret=$?
