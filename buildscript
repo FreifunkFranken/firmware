@@ -180,13 +180,12 @@ prebuild() {
 
     board_prebuild
 
-    shopt -s globstar nullglob
-    for template in $target/files/**/*.tpl
+    while IFS= read -r -d '' template
     do
         echo "Translating $template .."
         $tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
         /bin/rm "$template"
-    done
+    done < <(find "${target}/files" -name '*.tpl' -print0)
 
     #insert actual firware version informations into release file
     version=$(git describe --tags --dirty)
