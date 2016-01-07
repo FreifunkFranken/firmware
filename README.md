@@ -8,7 +8,7 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 
 ## Benutzung des Buildscripts
 ### Prerequisites
-* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst)
+* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst)
 * `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
