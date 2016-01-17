@@ -23,6 +23,9 @@ case "$BOARD" in
     nanostation-m)
         BOARD=ubnt-nano-m
         ;;
+    tl-wa850re)
+        BOARD=tl-wa850re-v1
+        ;;
     tl-wa860re)
         BOARD=tl-wa860re-v1
         ;;

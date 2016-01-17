@@ -28,6 +28,7 @@ board_postbuild() {
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v2-squashfs-*.bin ./bin/
 
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wa860re-v1-squashfs-*.bin ./bin/
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wa850re-v1-squashfs-*.bin ./bin/
 }
 
 board_clean() {
