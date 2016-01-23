@@ -105,7 +105,7 @@ fi
 if [[ -n "$ETH0MAC" ]]; then
         echo "Fixing MAC on eth0"
         sleep 10
-        NEW_MACADDR=$(cat /sys/class/net/w2ap/address)
+        NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
         uci set network.eth0.macaddr=$NEW_MACADDR
         uci commit
         ifconfig eth0 down

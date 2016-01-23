@@ -28,5 +28,5 @@ elif [ "$ETHMODE" = "CLIENT" ] ; then
 else
   ## Activate BATMAN:
   uci set network.ethmesh.ifname="$SWITCHDEV"
-  ETH0MAC=1
+  ETH0MAC="w2ap"
 fi
