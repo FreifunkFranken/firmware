@@ -64,11 +64,23 @@ function appendSetting(p, path, value, mode)
 		addInputCheck(b.lastChild, /^$|^\d{1,3}\.\d{1,8}$/, "Ung\xfcltige Eingabe. Bitte nur maximal 8 Nachkommastellen und keine Kommas verwenden.");
 		addHelpText(b, "Die Longitude Koordinate dieses Knotens auf der Freifunk-Karte (z.B. \"8.52829987\").");
 		break;
+	case "position_comment":
+		b = append_input(p, "Standort Beschreibung", id, value);
+		b.lastChild.placeholder = "Am Antennenmast";
+		addInputCheck(b.lastChild, /^$|^[\-\^'\w\.\:\[\]\(\)\/ &@\+\u0080-\u00FF]{0,255}$/, "Ung\xfcltige Eingabe.");
+		addHelpText(b, "Eine genauere Beschreibung zum Standort");
+		break;
 	case "hostname":
 		b = append_input(p, "Knotenname", id, value);
 		b.lastChild.placeholder = "MeinRouter";
 		addInputCheck(b.lastChild, /^$|^[\-\^'\w\.\:\[\]\(\)\/ &@\+\u0080-\u00FF]{0,32}$/, "Ung\xfcltige Eingabe.");
 		addHelpText(b, "Der Name dieses Knotens auf der Freifunk-Karte.");
+		break;
+	case "description":
+		b = append_input(p, "Knotenbeschreibung", id, value);
+		b.lastChild.placeholder = "In einer grauen Kiste versteckt";
+		addInputCheck(b.lastChild, /^$|^[\-\^'\w\.\:\[\]\(\)\/ &@\+\u0080-\u00FF]{0,255}$/, "Ung\xfcltige Eingabe.");
+		addHelpText(b, "Beschreibung dieses Knotens.");
 		break;
 	case "contact":
 		b = append_input(p, "Kontaktdaten", id, value);
@@ -116,8 +128,10 @@ function rebuild_general()
 		var f = uci['system'];
 		var i = firstSectionID(f, "system");
 		appendSetting(gfs, ['system', i, "hostname"], f[i]["hostname"]);
+		appendSetting(gfs, ['system', i, "description"], f[i]["description"]);
 		appendSetting(gfs, ['system', i, "latitude"], f[i]["latitude"]);
 		appendSetting(gfs, ['system', i, "longitude"], f[i]["longitude"]);
+		appendSetting(gfs, ['system', i, "position_comment"], f[i]["position_comment"]);
 		appendSetting(gfs, ['system', i, "contact"], f[i]["contact"]);
 	}
 

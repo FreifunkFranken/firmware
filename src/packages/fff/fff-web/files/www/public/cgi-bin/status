@@ -23,10 +23,19 @@ if [ -n "$contact" ]; then
 	echo "				<li><a href='#'>Kontakt: $contact</a></li>"
 fi
 
+description="$(uci get -q system.@system[0].description)"
+if [ -n "$description" ]; then
+	echo "				<li><a href='#'>Beschreibung: $description</a></li>"
+fi
+
 lat="$(uci get -q system.@system[0].latitude)"
 lon="$(uci get -q system.@system[0].longitude)"
 if [ -n "$lat" -a -n "$lon" ]; then
 	echo "				<li><a href=\"https://monitoring.freifunk-franken.de/map?mapcenter=$lat,$lon,16\">Position: ${lat:0:8}N, ${lon:0:8}E</a></li>"
+fi
+position_comment="$(uci get -q system.@system[0].position_comment)"
+if [ -n "$position_comment" ]; then
+	echo "				<li>${position_comment}</li>"
 fi
 %>
 				<li><form action="https://<% echo -n "$HTTP_HOST" %>"><button type="submit" class="pure-button">Login</button></form></li>
