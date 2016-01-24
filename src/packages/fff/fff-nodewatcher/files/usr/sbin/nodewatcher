@@ -55,8 +55,17 @@ inArray() {
 #and provided by a small local httpd
 crawl() {
 	#Get system data from other locations
-    err "`date`: Collecting basic system status data"
-    hostname="$(cat /proc/sys/kernel/hostname)"
+	err "`date`: Collecting basic system status data"
+	hostname="$(cat /proc/sys/kernel/hostname)"
+	latitude="$(uci get system.@system[0].latitude)"
+	longitude="$(uci get system.@system[0].longitude)"
+	if [ -n "$longitude" -a -n "$latitude" ]; then
+		geo="<geo><lat>$latitude</lat><lng>$longitude</lng></geo>";
+	fi
+	contact="$(uci get system.@system[0].contact)"
+	if [ -n "$contact" ]; then
+		contact="<contact>$contact</contact>"
+	fi
 	uptime=$(awk '{ printf "<uptime>"$1"</uptime><idletime>"$2"</idletime>" }' /proc/uptime)
 	
     memory=$(awk '
@@ -101,7 +110,7 @@ crawl() {
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
 	. /etc/firmware_release
-	SYSTEM_DATA="<status>online</status>$status_text<hostname>$hostname</hostname><distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_community>$FIRMWARE_COMMUNITY</firmware_community><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+	SYSTEM_DATA="<status>online</status>$status_text<hostname>$hostname</hostname>${geo}${contact}<distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_community>$FIRMWARE_COMMUNITY</firmware_community><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 
