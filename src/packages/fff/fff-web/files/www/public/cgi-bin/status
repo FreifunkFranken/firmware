@@ -18,15 +18,15 @@
 			<a class="pure-menu-heading" href="http://www.freifunk-franken.de">freifunk-franken.de</a>
 			<ul>
 <%
-contact="$(uci get -q freifunk.@settings[0].contact)"
+contact="$(uci get -q system.@system[0].contact)"
 if [ -n "$contact" ]; then
 	echo "				<li><a href='#'>Kontakt: $contact</a></li>"
 fi
 
-geo="$(uci get -q freifunk.@settings[0].geo)"
-if [ -n "$geo" ]; then
-	lat="${geo%% *}" lon="${geo##* }"
-	echo "				<li><a href=\"https://www.openstreetmap.org?mlat=$lat&mlon=$lon&zoom=17\">Position: ${lat:0:8}N, ${lon:0:8}E</a></li>"
+lat="$(uci get -q system.@system[0].latitude)"
+lon="$(uci get -q system.@system[0].longitude)"
+if [ -n "$lat" -a -n "$lon" ]; then
+	echo "				<li><a href=\"https://monitoring.freifunk-franken.de/map?mapcenter=$lat,$lon,16\">Position: ${lat:0:8}N, ${lon:0:8}E</a></li>"
 fi
 %>
 				<li><form action="https://<% echo -n "$HTTP_HOST" %>"><button type="submit" class="pure-button">Login</button></form></li>
@@ -35,7 +35,7 @@ fi
 	</div>
 	<div class="header">
 <%
-echo "		<h1>$(uci get -q freifunk.@settings[0].name)</h1>"
+echo "		<h1>$(uci get -q system.@system[0].hostname)</h1>"
 %>
 		<h2>Firmware Version <% echo -n $FIRMWARE_VERSION %></h2>
 	</div>
