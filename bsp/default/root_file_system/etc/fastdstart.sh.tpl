@@ -66,7 +66,8 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
 
 	pubkey=$(fastd -c /etc/fastd/$project/$project.conf --show-key --machine-readable)
 #	port=666
-
+	lat=$(uci get system.@system[0].latitude)
+	long=$(uci get system.@system[0].longitude)
 
 #	fire up
 	if [ "$(/sbin/ifconfig -a | grep -i ethernet | grep $project)" = "" ]; then
@@ -75,7 +76,7 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
 	fi
 
 #	register
-	wget -T15 "http://keyserver.freifunk-franken.de/${project}/?mac=$mac&name=$hostname&port=$port&key=$pubkey" -O /tmp/fastd_${project}_output
+	wget -T15 "http://keyserver.freifunk-franken.de/${project}/geo.php?mac=$mac&name=$hostname&port=$port&key=$pubkey&lat=$lat&long=$long" -O /tmp/fastd_${project}_output
 
 	filenames=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
 	for file in $filenames; do
