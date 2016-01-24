@@ -1,0 +1,7 @@
+#!/usr/bin/haserl
+<%
+echo -en "content-type: text/css\r\n\r\n"
+
+zcat /www/ssl/leaflet.css.gz
+
+%>

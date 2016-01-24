@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Router Position ausw&auml;hlen</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="/cgi-bin/leaflet.css" />
+<script src="/cgi-bin/leaflet.js"></script>
+<style type="text/css">
+html, body, #map {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+#map {
+	cursor: default;
+}
+.leaflet-dragging #map {
+	cursor: grabbing;
+}
+</style>
+<script type="text/javascript">
+var router_blue_svg = "data:image/svg+xml;base64," +
+	"PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0" +
+	"PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0xMDM4" +
+	"LjM2MikiPjxjaXJjbGUgY3g9IjciIGN5PSIxMDQ1LjM2MiIgcj0iNi42MTIiIGZpbGw9IiMxMjNj" +
+	"ZmYiLz48Y2lyY2xlIGN4PSI3IiBjeT0iMTA0NS4zNjIiIHI9IjIuMDc4Ii8+PC9nPjwvc3ZnPgo=";
+
+var map;
+var marker;
+
+function oebn0(name) {
+	var f = window.opener.uci['system'];
+	var i = window.opener.firstSectionID(f, "system");
+	return window.opener.document.getElementsByName(['system', i, name].join('#'))[0];
+}
+
+function add_marker(pos) {
+	marker = L.marker(pos, {icon: L.icon({iconUrl: router_blue_svg, iconSize: [14, 14]}), draggable: true}).addTo(map);
+	marker.on('dragend', function(e) {
+		report_marker_pos();
+	});
+}
+
+function handle_map_click(e) {
+	if (marker) {
+		marker.setLatLng(e.latlng);
+	}
+	else {
+		add_marker(e.latlng);
+	}
+	report_marker_pos();
+}
+
+function report_marker_pos() {
+	var pos = marker.getLatLng();
+	oebn0('latitude').value = pos.lat.toFixed(8);
+	oebn0('longitude').value = pos.lng.toFixed(8);
+}
+
+function init_map() {
+	map = L.map('map');
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: 'Map data &copy; <a href="https://openstreetmap.org">OSM</a> contributors, ' +
+		             '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+		maxNativeZoom: 19,
+		maxZoom: 22
+	}).addTo(map);
+
+	var lat = oebn0('latitude').value;
+	var lng = oebn0('longitude').value;
+
+	if (lat != "" && lng != "") {
+		add_marker([lat, lng]);
+		map.setView([lat, lng], 18);
+	}
+	else {
+		map.setView([49.46, 11.07], 10);
+	}
+
+	map.on('click', handle_map_click);
+}
+</script>
+</head>
+<body onload="init_map();">
+<div id="map"></div>
+</body>
+</html>

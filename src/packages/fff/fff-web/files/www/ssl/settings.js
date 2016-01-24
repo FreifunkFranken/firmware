@@ -57,6 +57,14 @@ function appendSetting(p, path, value, mode)
 		b.lastChild.placeholder = "52.02713078";
 		addInputCheck(b.lastChild, /^$|^\d{1,3}\.\d{1,8}$/, "Ung\xfcltige Eingabe. Bitte nur maximal 8 Nachkommastellen und keine Kommas verwenden.");
 		addHelpText(b, "Die Latitude Koordinate dieses Knotens auf der Freifunk-Karte (z.B. \"52.02713078\").");
+		var map_button = append_button(b, "Position auf Karte anzeigen / setzen", function() {
+			window.open('/map.html', '_blank', 'location=0,status=0,scrollbars=1,width=400,height=300')
+		});
+		b.style["position"] = "relative";
+		map_button.style["position"] = "absolute";
+		map_button.style["height"] = "44px";
+		map_button.style["margin-left"] = "5px";
+		map_button.style["z-index"] = "-1";
 		break;
 	case "longitude":
 		b = append_input(p, "GPS-Koordinaten Longitude", id, value);
