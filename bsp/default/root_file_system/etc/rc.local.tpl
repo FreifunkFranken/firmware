@@ -8,6 +8,9 @@ case "$BOARD" in
     tl-wr1043nd)
         BOARD=tl-wr1043nd-v1
         ;;
+    tl-wr1043nd-v2)
+        grep "v3" /var/sysinfo/model && BOARD=tl-wr1043nd-v3
+        ;;
     tl-wr741nd)
         grep "Atheros AR7240 rev 2" /proc/cpuinfo && BOARD=tl-wr741nd-v2 || BOARD=tl-wr741nd-v4
         ;;

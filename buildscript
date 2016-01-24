@@ -80,6 +80,8 @@ get_source() {
     #Get the OpenWrt Core Source for Firmware
     checkout_git openwrt $OPENWRTURL $OPENWRTREV
 
+    git -C openwrt am ../../build_patches/ar71xx-add-support-for-TP-Link-TL-WR1043ND-v3.patch
+
     test -d packages || mkdir packages
     cd packages
 
