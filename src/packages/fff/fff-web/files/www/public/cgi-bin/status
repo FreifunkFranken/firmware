@@ -6,7 +6,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>info</title>
+	<title>FFF Router :: <% echo $(uci get -q system.@system[0].hostname) %></title>
 	<link rel="stylesheet" href="/css/pure-min.css">
 	<link rel="stylesheet" href="/css/side-menu.css">
 	<link rel="stylesheet" href="/css/grids-responsive-min.css">
@@ -24,8 +24,9 @@ if [ -n "$contact" ]; then
 fi
 
 description="$(uci get -q system.@system[0].description)"
+mac="$(uci -q get network.mesh.macaddr)"
 if [ -n "$description" ]; then
-	echo "				<li><a href='#'>Beschreibung: $description</a></li>"
+	echo "				<li><a href='https://monitoring.freifunk-franken.de/api/get_router_by_mac/${mac}'>Beschreibung: $description</a></li>"
 fi
 
 lat="$(uci get -q system.@system[0].latitude)"
@@ -35,7 +36,7 @@ if [ -n "$lat" -a -n "$lon" ]; then
 fi
 position_comment="$(uci get -q system.@system[0].position_comment)"
 if [ -n "$position_comment" ]; then
-	echo "				<li>${position_comment}</li>"
+	echo "				<li><a href='#'>${position_comment}</a></li>"
 fi
 %>
 				<li><form action="https://<% echo -n "$HTTP_HOST" %>"><button type="submit" class="pure-button">Login</button></form></li>
