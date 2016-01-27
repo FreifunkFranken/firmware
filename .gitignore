@@ -9,3 +9,4 @@ src/packages/openwrt
 src/packages/batman_adv
 src/packages/routing
 .project
+./*.patch
