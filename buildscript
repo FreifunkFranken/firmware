@@ -158,7 +158,7 @@ prepare() {
     done
 
     # todo evaluate this with the new openwrt
-    # This changes the default behavior of sysupgrade to not save the config 
+    # This changes the default behavior of sysupgrade to not save the config
     patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
 
     # set default password to 'ffol'
@@ -325,9 +325,10 @@ case "$1" in
         if [ "$2" = "help" ] || [ "$2" = "" ]; then
             echo "Select a Board-Support-Package:"
             echo
-            echo "Usage: $0 $1 bsp"
+            echo "Usage: $0 $1 <bsp-file>"
             echo "available packages:"
             /bin/ls bsp/*.bsp
+            echo
         else
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
@@ -341,9 +342,10 @@ case "$1" in
         if [ "$2" = "help" ] || [ "$2" = "" ]; then
             echo "Select a Community-File:"
             echo
-            echo "Usage: $0 $1 community.cfg"
-            echo "community.cfg: "
+            echo "Usage: $0 $1 <community-file>"
+            echo "available community-files: "
             /bin/ls community/*.cfg
+            echo
         else
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
@@ -356,7 +358,9 @@ case "$1" in
     "prepare")
         if [ "$2" = "help" ] || [ "$2" = "x" ]; then
             echo "This option fetches the sources for the images and configurates the build so that it can be compiled"
+            echo
             echo "Usage: $0 $1"
+            echo
         else
             prepare
         fi
@@ -366,7 +370,9 @@ case "$1" in
             echo "This option compiles the firmware"
             echo "Normaly the build uses lower IO and System priorities, "
             echo "you can append \"fast\" option, to use normal user priorities"
+            echo
             echo "Usage: $0 $1 [fast|debug]"
+            echo
         else
             build "$2"
         fi
@@ -380,13 +386,16 @@ case "$1" in
                 echo "This open the OpenWRT menuconfig dialog"
                 echo
                 echo "Usage: $0 $1 openwrt"
+                echo
                 ;;
         esac
         ;;
     "clean")
         if [ "$2" = "help" ] || [ "$2" = "x" ]; then
             echo "This option cleans all build files."
-            echo "$0 $1"
+            echo
+            echo "Usage: $0 $1"
+            echo
         else
             clean
         fi
@@ -394,25 +403,29 @@ case "$1" in
     "buildall")
         if [ "$2" = "help" ] || [ "$2" = "" ]; then
             echo "This option builds the firmware for all routers of a given community."
-            echo "Usage: $0 $1 community.cfg [fast]"
-            echo "community.cfg: "
+            echo
+            echo "Usage: $0 $1 <community-file> [fast]"
+            echo "available community-files: "
             /bin/ls community/*.cfg
+            echo
         else
             buildall "$2" "$3"
         fi
         ;;
     *)
         echo "This is the Build Environment Script of the Freifunk Community Franken."
+        echo
         echo "Usage: $0 command"
         echo "command:"
-        echo "  selectcommunity [communityfile]"
-        echo "  selectbsp [bsp file]"
+        echo "  selectcommunity <community-file>"
+        echo "  selectbsp <bsp-file>"
         echo "  prepare"
-        echo "  config <openwrt>"
-        echo "  build [<fast|debug>]"
-        echo "  buildall <community> [<fast>]"
+        echo "  config openwrt"
+        echo "  build [fast|debug]"
+        echo "  buildall <community-file> [fast]"
         echo "  clean"
         echo ""
-        echo "If you need help to one of these options just type $0 command help"
+        echo "If you need help to one of these options just type: $0 <command> help"
+        echo
     ;;
 esac
