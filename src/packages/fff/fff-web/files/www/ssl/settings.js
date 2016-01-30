@@ -64,7 +64,6 @@ function appendSetting(p, path, value, mode)
 		map_button.style["position"] = "absolute";
 		map_button.style["height"] = "44px";
 		map_button.style["margin-left"] = "5px";
-		map_button.style["z-index"] = "-1";
 		break;
 	case "longitude":
 		b = append_input(p, "GPS-Koordinaten Longitude", id, value);
