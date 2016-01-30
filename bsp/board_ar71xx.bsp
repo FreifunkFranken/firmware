@@ -12,6 +12,8 @@ board_prebuild() {
 board_postbuild() {
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-ubnt-nano-m-squashfs-*.bin ./bin/
 
+    cp $target/bin/ar71xx/openwrt-ar71xx-generic-ubnt-loco-m-xw-squashfs-*.bin ./bin/
+
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr740n-v4-squashfs-*.bin ./bin/
 
     cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr741nd-v2-squashfs-*.bin ./bin/
