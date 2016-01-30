@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+START=50
+
+USE_PROCD=1
+
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+
+URADVD_BIN=/usr/sbin/uradvd
+
+service_triggers()
+{
+        procd_add_reload_trigger "fff-uradvd"
+}
+
+start_service() {
+        procd_open_instance
+        procd_set_param command "$URADVD_BIN" -i br-mesh -p $(uci get network.globals.ula_prefix)
+}
