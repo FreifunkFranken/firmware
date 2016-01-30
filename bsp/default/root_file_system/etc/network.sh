@@ -113,3 +113,43 @@ if [[ -n "$ETH0MAC" ]]; then
         ifconfig eth0 up
         /etc/init.d/network restart
 fi
+
+if uci get network.mesh.ip6addr
+then
+    echo "IPv6 for mesh is set already"
+else
+    # Some time needed :(
+    sleep 5
+
+    for ip in $(ip -6 addr show br-mesh | awk '/fdff/{ print $2 }'); do
+        ip -6 addr del $ip dev br-mesh
+    done
+
+    prefix="fdff:0::/64"
+    # Set $prefix::MAC as IP
+    suffix=$(awk -F: '{ print $1$2":"$3$4":"$5$6 }' /sys/class/net/br-mesh/address)
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+
+    uci -q del network.globals
+    uci -q set network.globals=globals
+    uci -q set network.globals.ula_prefix=$prefix
+    uci -q add_list network.mesh.ip6addr=$addr
+    uci -q set network.mesh.proto=static
+
+    # Set $prefix::1 as IP
+    suffix="1"
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+    uci -q add_list network.mesh.ip6addr=$addr
+
+    # Set $prefix::link-local as IP
+    suffix=$(awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' /sys/class/net/br-mesh/address)
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+    uci -q add_list network.mesh.ip6addr=$addr
+
+    uci -q commit network
+
+    /etc/init.d/fff-uradvd restart
+fi

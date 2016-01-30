@@ -59,6 +59,14 @@ ebtables -A MULTICAST_OUT -p IPv4 --ip-proto igmp -j RETURN
 ######## INPUT ############
 ebtables -P INPUT ACCEPT
 
+# Erlaube router solicitation von client zu knoten
+ebtables -A INPUT -p IPv6 -i ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j ACCEPT
+ebtables -A INPUT -d Multicast --logical-in br-mesh -i ! bat0 -j ACCEPT
+
+# No input from/to local node ip from batman
+ebtables -A INPUT --logical-in br-mesh -i bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
+ebtables -A INPUT --logical-in br-mesh -i bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
+
 # Erlaube nur DHCP Antworten von BATMAN -> KNOTEN
 ebtables -A INPUT -p IPv4 --ip-proto udp --ip-dport 68 -j IN_ONLY
 # Erlaube nur DHCPv6 Antworten von BATMAN -> KNOTEN
@@ -70,6 +78,10 @@ ebtables -A INPUT -p IPv6 -i bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-s
 
 ######## FORWARD ############
 ebtables -P FORWARD ACCEPT
+
+# Do not forward local node ip
+ebtables -A FORWARD --logical-out br-mesh -o bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
+ebtables -A FORWARD --logical-out br-mesh -o bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
 
 # Erlaube nur DHCP Request von CLIENT -> BATMAN
 ebtables -A FORWARD -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY
@@ -88,6 +100,13 @@ ebtables -A FORWARD -d Multicast --logical-out br-mesh -o bat0 -j MULTICAST_OUT
 
 ######## OUTPUT ############
 ebtables -P OUTPUT ACCEPT
+
+# Erlaube router advertisment von knoten zu client
+ebtables -A OUTPUT -p IPv6 -o ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j ACCEPT
+
+# Do not output local node ip to batman
+ebtables -A OUTPUT --logical-out br-mesh -o bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
+ebtables -A OUTPUT --logical-out br-mesh -o bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
 
 # Erlaube nur DHCP Request von KNOTEN -> BATMAN
 ebtables -A OUTPUT -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY
