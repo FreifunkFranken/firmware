@@ -97,19 +97,19 @@ function appendSetting(p, path, value, mode)
 		break;
 	case "enabled":
 		if(cfg == "simple-tc") {
-			b = append_radio(p, "Bandbreitenkontrolle", id, value, [["An", "1"], ["Aus", "0"]]);
-			addHelpText(b, "Bandbreitenkontrolle f\xfcr den Upload-/Download \xfcber das Freifunknetz \xfcber den eigenen Internetanschluss.");
+			b = append_radio(p, "Bitratenkontrolle", id, value, [["An", "1"], ["Aus", "0"]]);
+			addHelpText(b, "Bitratenkontrolle f\xfcr den Upload-/Download \xfcber das Freifunknetz \xfcber den eigenen Internetanschluss.");
 		}
 		break;
 	case "limit_egress":
 		b = append_input(p, "Freifunk Upload", id, value);
 		addInputCheck(b.lastChild, /^\d+$/, "Upload ist ung\xfcltig.");
-		addHelpText(b, "Maximaler Upload in KBit/s f\xfcr die Bandbreitenkontrolle.");
+		addHelpText(b, "Maximaler Upload in KBit/s f\xfcr die Bitratenkontrolle.");
 		break;
 	case "limit_ingress":
 		b = append_input(p, "Freifunk Download", id, value);
 		addInputCheck(b.lastChild, /^\d+$/, "Download ist ung\xfcltig.");
-		addHelpText(b, "Maximaler Download in KBit/s f\xfcr die Bandbreitenkontrolle.");
+		addHelpText(b, "Maximaler Download in KBit/s f\xfcr die Bitratenkontrolle.");
 		break;
 	default:
 		return;
