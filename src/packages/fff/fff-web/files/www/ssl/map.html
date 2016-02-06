@@ -54,8 +54,12 @@ function handle_map_click(e) {
 
 function report_marker_pos() {
 	var pos = marker.getLatLng();
-	oebn0('latitude').value = pos.lat.toFixed(8);
-	oebn0('longitude').value = pos.lng.toFixed(8);
+	var lat_field = oebn0('latitude');
+	var lng_field = oebn0('longitude');
+	lat_field.value = pos.lat.toFixed(8);
+	lng_field.value = pos.lng.toFixed(8);
+	window.opener.updateFrom(lat_field);
+	window.opener.updateFrom(lng_field);
 }
 
 function init_map() {
