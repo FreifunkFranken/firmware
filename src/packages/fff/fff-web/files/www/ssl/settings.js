@@ -53,7 +53,7 @@ function appendSetting(p, path, value, mode)
 	switch(name)
 	{
 	case "latitude":
-		b = append_input(p, "GPS-Koordinaten Latitude", id, value);
+		b = append_input(p, "GPS Breitengrad", id, value);
 		b.lastChild.placeholder = "52.02713078";
 		addInputCheck(b.lastChild, /^$|^\d{1,3}\.\d{1,8}$/, "Ung\xfcltige Eingabe. Bitte nur maximal 8 Nachkommastellen und keine Kommas verwenden.");
 		addHelpText(b, "Die Latitude Koordinate dieses Knotens auf der Freifunk-Karte (z.B. \"52.02713078\").");
@@ -66,7 +66,7 @@ function appendSetting(p, path, value, mode)
 		map_button.style["margin-left"] = "5px";
 		break;
 	case "longitude":
-		b = append_input(p, "GPS-Koordinaten Longitude", id, value);
+		b = append_input(p, "GPS L&auml;ngengrad", id, value);
 		b.lastChild.placeholder = "8.52829987";
 		addInputCheck(b.lastChild, /^$|^\d{1,3}\.\d{1,8}$/, "Ung\xfcltige Eingabe. Bitte nur maximal 8 Nachkommastellen und keine Kommas verwenden.");
 		addHelpText(b, "Die Longitude Koordinate dieses Knotens auf der Freifunk-Karte (z.B. \"8.52829987\").");
@@ -90,7 +90,7 @@ function appendSetting(p, path, value, mode)
 		addHelpText(b, "Beschreibung dieses Knotens.");
 		break;
 	case "contact":
-		b = append_input(p, "Kontaktdaten", id, value);
+		b = append_input(p, "E-Mail Adresse", id, value);
 		b.lastChild.placeholder = "info@example.com";
 		addInputCheck(b.lastChild, /^$|^[\-\^'\w\.\:\[\]\(\)\/ &@\+\u0080-\u00FF]{0,128}$/, "Ung\xfcltige Eingabe.");
 		addHelpText(b, "Kontaktdaten f\xfcr die \xf6ffentliche Freifunk-Karte und Statusseite. Falls ihr euch von anderen Leuten kontaktieren lassen wollt (z.B. \"info@example.com\").");
