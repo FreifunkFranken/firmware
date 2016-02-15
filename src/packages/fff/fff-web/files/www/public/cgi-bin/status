@@ -20,7 +20,7 @@
 <%
 contact="$(uci get -q system.@system[0].contact)"
 if [ -n "$contact" ]; then
-	echo "				<li><a href='#'>Kontakt: $contact</a></li>"
+		echo "<li> <a href="mailto:$contact">Kontakt: $contact</a></li>"
 fi
 
 description="$(uci get -q system.@system[0].description)"
