@@ -41,7 +41,7 @@ print 'uptime' "${uptime##*up}"
 print 'uname' "$(uname -s -m -r)"
 print 'date' "$(date)"
 
-if [ $(sockread /var/run/fastd.status < /dev/null 2> /dev/null | grep  -c '"connection": {') -gt 0 ]; then
+if pidof fastd >/dev/null ; then
 	print 'has_vpn' 'Ja'
 else
 	print 'has_vpn' 'Nein'
