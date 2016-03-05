@@ -10,3 +10,4 @@
 /src/packages/routing
 /.project
 /*.patch
+/.mailmap
