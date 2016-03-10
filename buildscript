@@ -13,7 +13,7 @@
 
 builddir=./build
 
-OPENWRTREV="a03a846c49c067048cd225d476a7adf91ef8ff03"
+OPENWRTREV="c75367d20240da182fcbdb68c8cce64eabd71ac5"
 OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
 PACKAGEREV="ee0bb7b9df86cec0f1d7c27046c50b1fc45b7c4f"
 PACKAGEURL="https://github.com/openwrt/packages.git"
@@ -79,8 +79,6 @@ get_source() {
 
     #Get the OpenWrt Core Source for Firmware
     checkout_git openwrt $OPENWRTURL $OPENWRTREV
-
-    git -C openwrt am ../../build_patches/ar71xx-add-support-for-TP-Link-TL-WR1043ND-v3.patch
 
     test -d packages || mkdir packages
     cd packages
