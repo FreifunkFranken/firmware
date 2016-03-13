@@ -30,9 +30,7 @@ var map;
 var marker;
 
 function oebn0(name) {
-	var f = window.opener.uci['system'];
-	var i = window.opener.firstSectionID(f, "system");
-	return window.opener.document.getElementsByName(['system', i, name].join('#'))[0];
+	return window.opener.document.getElementsByName(name)[0];
 }
 
 function add_marker(pos) {
@@ -58,8 +56,6 @@ function report_marker_pos() {
 	var lng_field = oebn0('longitude');
 	lat_field.value = pos.lat.toFixed(8);
 	lng_field.value = pos.lng.toFixed(8);
-	window.opener.updateFrom(lat_field);
-	window.opener.updateFrom(lng_field);
 }
 
 function init_map() {
