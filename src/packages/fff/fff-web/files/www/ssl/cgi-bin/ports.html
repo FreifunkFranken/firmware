@@ -1,0 +1,104 @@
+#!/usr/bin/haserl
+
+<%                                                                                
+# write
+if [ "$REQUEST_METHOD" == "POST" ] ; then
+	sed -i '/^.*# set via WebUI/d' /etc/network.mode
+	echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.mode
+	cp /rom/etc/sysctl.conf /etc/sysctl.conf
+	cp /rom/etc/config/network /etc/config/network
+	do_reboot=1
+	MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+fi
+%>
+<%in /www/ssl/cgi-bin/header %>
+<%in /www/ssl/cgi-bin/helpers %>
+<% show_msg %>
+<form method="POST">
+<table style="width: 100%;">
+<% if swconfig list | grep -q switch0 ; then %>
+	<%# Device has a switch %>
+	<tr><td>
+	<fieldset>
+		<legend>Switch</legend>
+		<table>
+			<tr>
+				<%
+				swconfig dev switch0 show | grep "\t*link:" | while read line ; do
+					line=$(echo "$line" | tr -d '\n' | tr -d '\t')
+					port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+					link=$(echo "$line" | sed 's/.* link:\([^ ]*\).*/\1/')
+					if [ "$link" == "up" ] ; then
+						speed=$(echo "$line" | sed 's/.* speed:\([^ ]*\).*/\1/')
+						duplex=$(echo "$line" | sed 's/.* \([^ ]*-duplex\).*/\1/')
+					else
+						speed="no link"
+						duplex=""
+					fi
+					port="Port ${port}"
+					echo "<td class=\"swport\">"
+					echo "<span class=\"port\">${port}</span><br />"
+					echo "<img src=\"/port_${link}.png\" alt=\"${link}\" /><br />"
+					echo "<span class=\"stat\">$speed<br />$duplex</span>"
+					echo "</td>"
+				done
+				%>
+			</tr>
+		</table>
+		<table>
+			<tr><td></td></tr>
+			<tr><td>
+				Die Nummerierung und Reihenfolge der Ports entspricht nicht notwendigerweise der der Netzwerkanschl&uuml;sse am Router!<br />
+				Einer (oder mehrere) der Ports sind keine Netzwerkanschl&uuml;sse am Router sondern binden die Router CPU an den internen Switch an.
+			</td></tr>
+		</table>
+	</fieldset>
+	</td></tr>
+<% fi %>
+<% if grep -q network.mode /etc/network.$(uci -q get board.model.name) ; then %>
+	<%
+		# Device has only one or two ports and makes use of /etc/network.mode
+		. /etc/network.mode
+	%>
+	<tr><td>
+	<fieldset>
+		<legend>Ethernet Anschluss</legend>
+		<table>
+			<tr>
+				<th style="width: 1em;">Anschluss&nbsp;Modus:</th>
+				<td>
+					<select name="mode">
+						<% if grep ETHMODE /etc/network.$(uci -q get board.model.name) | grep -q WAN ; then %>
+							<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n selected %>>WAN</option>
+						<% fi %>
+						<% if grep ETHMODE /etc/network.$(uci -q get board.model.name) | grep -q CLIENT ; then %>
+							<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n selected %>>Client</option>
+						<% fi %>
+						<option value="BATMAN" <% [ "$ETHMODE" == "BATMAN" ] && echo -n selected %>>BATMAN</option>
+					</select>
+				</td>
+			</tr>
+			<tr><td colspan="2"><input type="submit" name="change_mode" /></td></tr>
+			<tr><td colspan="2"></td></tr>
+			<tr><td colspan="2">
+				WAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zum Internet her.<br />
+				Client: Normale Clients stellen &uuml;ber Ethernet Anschluss des Knotens Verbindung zum Freifunk Netz her.<br />
+				BATMAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zu anderen MESH Knoten her.<br /><br />
+
+				Wenn diese Einstellung ver&auml;ndert wird, wird eine evtl. vorhandene manuelle Netzwerkkonfiguration in der
+				<tt>/etc/config/network</tt> &uuml;berschrieben.<br />
+				Anschlie&szlig;end wird der Router neugestartet.
+			</td></tr>
+		</table>
+	</fieldset>
+	</td></tr>
+<% fi %>
+</table>
+</form>
+<%in /www/ssl/cgi-bin/footer %>
+<%
+# write
+if [ "$do_reboot" == "1" ] ; then
+	reboot
+fi
+%>

@@ -1,0 +1,84 @@
+#!/usr/bin/haserl
+
+<%
+# write
+if [ "$REQUEST_METHOD" == "POST" ] ; then
+	#check for valid hostname as specified in rfc 1123
+	#see http://stackoverflow.com/a/3824105
+	regex='^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])'
+	regex=$regex'(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$'
+	if [ "${#POST_hostname}" -ge "255" ] ; then
+		MSG='<span class="red">Knotenname ist l&auml;nger als 255 Zeichen!</span>'
+        elif ! echo -n "$POST_hostname" | egrep -q "$regex"; then   
+		MSG='<span class="red">Knotenname enth&auml;lt ung&uuml;ltige Zeichen!</span>'
+	else
+		# Allgemeine Einstellungen
+		uci set -q "system.@system[0].hostname=${POST_hostname}"
+		uci get -q 'system.@system[0].hostname' > /proc/sys/kernel/hostname
+		uci set -q "system.@system[0].description=${POST_description}"
+		uci set -q "system.@system[0].latitude=${POST_latitude}"
+		uci set -q "system.@system[0].longitude=${POST_longitude}"
+		uci set -q "system.@system[0].position_comment=${POST_position_comment}"
+		uci set -q "system.@system[0].contact=${POST_contact}"
+
+		# Bitratenbegrenzung
+		if [ "$POST_traffic_limit" == "on" ] ; then
+			uci set -q "simple-tc.example.ifname=$(uci -q get network.wan.ifname)"
+			uci set -q "simple-tc.example.enabled=1"
+		else
+			uci set -q "simple-tc.example.enabled=0"
+		fi
+		uci set -q "simple-tc.example.limit_ingress=${POST_limit_ingress}"
+		uci set -q "simple-tc.example.limit_egress=${POST_limit_egress}"
+
+		uci commit
+		MSG='<span class="green">Daten gespeichert! - Bitte Router neustarten.</span>'
+	fi
+fi
+%>
+<%in /www/ssl/cgi-bin/header %>
+<%in /www/ssl/cgi-bin/helpers %>
+<%
+# read
+if [ "$(uci get -q 'simple-tc.example.enabled')" == "1" ] ; then
+	traffic_checked="checked"
+else
+	traffic_checked=""
+fi
+%>
+<% show_msg %>
+<form method="POST">
+<table style="width: 100%;">
+<tr><td>
+<fieldset style="min-height: 13em;">
+	<legend>Allgemeine Einstellungen</legend>
+	<table>
+		<tr><th>Knotenname:</th><td><input type="text" name="hostname" value="<%= ${HOSTNAME} %>" /></td></tr>
+		<tr><th>Knotenbeschreibung:</th><td><input type="text" name="description" value="<%= $(uci get -q 'system.@system[0].description') %>" /></td></tr>
+		<tr><th>GPS Breitengrad:</th>
+			<td><input type="text" name="latitude" value="<%= $(uci get -q 'system.@system[0].latitude') %>" /></td>
+			<td rowspan="2" style="vertical-align: middle;">
+				<button type="button" style="height: 100%; width: 126px; margin-left: 5px;" onclick="window.open('/map.html', '_blank', 'location=0,status=0,scrollbars=1,width=400,height=300');">Position auf Karte anzeigen / setzen</button>
+			</td>
+		</tr>
+		<tr><th>GPS L&auml;ngengrad:</th><td><input type="text" name="longitude" value="<%= $(uci get -q 'system.@system[0].longitude') %>" /></td></tr>
+		<tr><th>Standortbeschreibung:</th><td><input type="text" name="position_comment" value="<%= $(uci get -q 'system.@system[0].position_comment') %>" /></td></tr>
+		<tr><th>E-Mail Adresse:</th><td><input type="email" name="contact" value="<%= $(uci get -q 'system.@system[0].contact') %>" /></td></tr>
+	</table>
+</fieldset>
+</td><td>
+<fieldset style="min-height: 13em;" class="smallinput">
+	<legend>Bitratenbegrenzung</legend>
+	<table>
+		<tr><th>Aktiviert:</th><td colspan="2">
+			<input type="checkbox" name="traffic_limit" <%= ${traffic_checked} %>>
+		</td></tr>
+		<tr><th>Freifunk&nbsp;Download:</th><td><input type="text" name="limit_ingress" value="<%= $(uci get -q 'simple-tc.example.limit_ingress') %>" /></td><td>kbit/s</td></tr>
+		<tr><th>Freifunk&nbsp;Upload:</th><td><input type="text" name="limit_egress" value="<%= $(uci get -q 'simple-tc.example.limit_egress') %>" /></td><td>kbit/s</td></tr>
+	</table>
+</fieldset>
+</td></tr>
+</table>
+<input type="submit" style="margin-top: 5px; margin-left: 3px;" />
+</form>
+<%in /www/ssl/cgi-bin/footer %>

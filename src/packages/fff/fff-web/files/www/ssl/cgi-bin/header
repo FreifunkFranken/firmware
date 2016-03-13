@@ -1,0 +1,46 @@
+#!/usr/bin/haserl
+
+<%
+echo -en "Content-Type: text/html\r\n\r\n"
+nav_entry() {
+	script_file="/cgi-bin/$1"
+	if [ "$script_file" == "$REQUEST_URI" ] ; then
+		local class_active=' class="active"'
+	fi
+	echo -ne "\t<li${class_active}><a href=\"${script_file}\">$2</a></li>\n\t\t"
+}
+
+HOSTNAME=$(uci get -q 'system.@system[0].hostname')
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title><%= ${HOSTNAME} %></title>
+	<link href="/style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+	<div id="header" style="position: relative;">
+		<h1><%= ${HOSTNAME} %></h1>
+		<h2>Freifunk Franken Router</h2>
+		<img src="/freifunk.svg" style="position: absolute; top: 1px; right: 42px;" />
+	</div>
+	<div style="height: 30px; background-color: #ffb400;"></div>
+	<div id="menu">
+		<ul>
+		<%
+			nav_entry home.html		"Home"
+			nav_entry settings.html		"Einstellungen"
+			nav_entry ports.html		"Anschl&uuml;sse"
+			nav_entry wifiscan.html		"Wifi Scan"
+			nav_entry upgrade.html		"Upgrade"
+			nav_entry password.html		"Password"
+			nav_entry reboot.html		"Neustart"
+			nav_entry logout.html		"Logout"
+		%>
+		</ul>
+		<div></div>
+	</div>
+	<div id="container">
+		<div id="primarycontainer">
+			<div id="primarycontent">

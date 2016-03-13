@@ -1,0 +1,88 @@
+#!/usr/bin/haserl
+
+<%in /www/ssl/cgi-bin/header %>
+<%in /www/ssl/cgi-bin/helpers %>
+<%
+if pidof fastd >/dev/null ; then
+	vpn_active="Ja"
+else
+	vpn_active="Nein"
+fi
+up="$(uptime)"
+load="${up##*:}"
+uptime="${up%%,*}"
+uptime="${uptime##*up}"
+
+#include OpenWrt version
+. /etc/openwrt_release
+. /etc/firmware_release
+
+addr() {
+	local addr="$(ip -$1 address show dev $2 2>/dev/null | tr '/' ' '| awk '/inet/{ printf("%s<br />", $2); }')"
+	echo "${addr:--}"
+}
+default_gw() {
+	ip -$1 route list 0/0 dev $2 2> /dev/null | awk '{print($3); exit(0)}'
+}
+wanif=$(uci -q get network.wan.ifname)
+if [ -n "$(default_gw 4 $wanif)" -o  -n "$(default_gw 6 $wanif)" ]; then
+	internet_active="Ja"
+else
+	internet_active="Nein"
+fi
+
+%>
+<table style="width: 100%;">
+<tr><td>
+<fieldset style="min-height: 15.05em;">
+	<legend>System</legend>
+	<table>
+		<tr><th>Name:</th><td><%= ${HOSTNAME} %></td></tr>
+		<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
+		<tr><th>MAC-Adresse:</th><td><% uci -q get network.mesh.macaddr %></td></tr>
+		<tr><th>Bekannte Knoten:</th><td><%= $((`cat /sys/kernel/debug/batman_adv/bat0/transtable_global | grep '^ [^ ]' | cut -b 39-55 | sort | uniq | wc -l 2>/dev/null`+1)) %></td></tr>
+		<tr><th>Nachbarknoten:</th><td><%= $(cat /sys/kernel/debug/batman_adv/bat0/originators | grep '^[0-9a-f]' | cut -b 37-53 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
+		<tr><th>VPN Aktiv:</th><td><%= ${vpn_active} %></td></tr>
+		<tr><th>Laufzeit:</th><td><%= ${uptime} %></td></tr>
+		<tr><th>Auslastung:</th><td><%= ${load} %></td></tr>
+		<tr><th>Uhrzeit:</th><td><% date %></td></tr>
+	</table>
+</fieldset>
+</td><td>
+<fieldset style="min-height: 15.05em;">
+	<legend>Software</legend>
+	<table>
+		<tr><th>Firmware Version:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
+		<tr><th>OpenWRT Version:</th><td><%= ${DISTRIB_DESCRIPTION} %></td></tr>
+		<tr><th>Kernel Version:</th><td><% uname -s -m -r %></td></tr>
+		<tr><th>Batman-Adv Version:</th><td><% cat /sys/module/batman_adv/version 2>/dev/null %></td></tr>
+		<tr><th>Fastd Version:</th><td><% fastd --version 2> /dev/null | cut -d' ' -f 2 %></td></tr>
+	</table>
+</fieldset>
+</td></tr>
+<tr><td>
+<fieldset style="min-height: 12.65em;">
+	<legend>Netz: Freifunk</legend>
+	<table>
+		<tr><th>Nutzer:</th><td><% cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W' %></td></tr>
+		<tr><th>Empfangen:</th><td><% cat /sys/class/net/br-mesh/statistics/rx_bytes | human_bytes %></td></tr>
+		<tr><th>Gesendet:</th><td><% cat /sys/class/net/br-mesh/statistics/tx_bytes | human_bytes %></td></tr>
+		<tr><th>IPv4 Adressen:</th><td><% addr 4 br-mesh %></td></tr>
+		<tr><th>IPv6 Adressen:</th><td><% addr 6 br-mesh %></td></tr>
+	</table>
+</fieldset>
+</td><td>
+<fieldset style="min-height: 12.65em;">
+	<legend>Netz: WAN</legend>
+	<table>
+		<tr><th>Internet vorhanden:</th><td><%= ${internet_active} %></td></tr>
+		<tr><th>Empfangen:</th><td><% cat /sys/class/net/${wanif}/statistics/rx_bytes | human_bytes %></td></tr>
+		<tr><th>Gesendet:</th><td><% cat /sys/class/net/${wanif}/statistics/tx_bytes | human_bytes %></td></tr>
+		<tr><th>IPv4 Adressen:</th><td><% addr 4 $wanif %></td></tr>
+		<tr><th>IPv6 Adressen:</th><td><% addr 6 $wanif %></td></tr>
+	</table>
+</fieldset>
+</td></tr>
+</table>
+
+<%in /www/ssl/cgi-bin/footer %>
