@@ -116,6 +116,12 @@ get_source() {
     cd .. # src
 }
 
+patch_target() {
+    for patch in "$PWD"/build_patches/openwrt/*.patch; do
+        patch -p0 -d "$target" -i "$patch"
+    done
+}
+
 prepare() {
     get_source
 
@@ -155,15 +161,7 @@ prepare() {
         fi
     done
 
-    # todo evaluate this with the new openwrt
-    # This changes the default behavior of sysupgrade to not save the config
-    patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
-
-    # set default password to 'ffol'
-    patch -p0 -d "$target" -i "$PWD"/build_patches/set_root_password.patch
-
-    #add Support for GL-AR150 see also http://git.openwrt.org/?p=openwrt.git;a=commit;h=8211e81bce57392635fa3ad6572514387118e4a5
-    patch -p0 -d "$target" -i "$PWD"/build_patches/ar71xx-add-support-for-GL-AR150.patch
+    patch_target
 
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
