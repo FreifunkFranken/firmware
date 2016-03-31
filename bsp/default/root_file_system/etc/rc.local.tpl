@@ -26,6 +26,9 @@ case "$BOARD" in
     nanostation-m)
         BOARD=ubnt-nano-m
         ;;
+    bullet-m)
+        BOARD=ubnt-bullet-m
+        ;;
     loco-m-xw)
         BOARD=ubnt-loco-m-xw
         ;;
