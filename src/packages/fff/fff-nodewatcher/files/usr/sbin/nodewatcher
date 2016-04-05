@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="36"
+SCRIPT_VERSION="37"
 
 test -f /tmp/started || exit
 
@@ -238,6 +238,8 @@ crawl() {
 	DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode><batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list><client_count>$client_count</client_count></data>"
 
 	#write data to hxml file that provides the data on httpd
+	SCRIPT_DATA_DIR=$(dirname $SCRIPT_DATA_FILE)
+	test -d $SCRIPT_DATA_DIR || mkdir -p $SCRIPT_DATA_DIR
 	echo $DATA | gzip | tee $SCRIPT_DATA_FILE | alfred -s 64
 }
 

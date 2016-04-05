@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-nodewatcher
-PKG_VERSION:=36
-PKG_RELEASE:=3
+PKG_VERSION:=37
+PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-nodewatcher
 

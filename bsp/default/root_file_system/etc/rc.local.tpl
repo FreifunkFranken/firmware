@@ -59,10 +59,6 @@ fi
 /etc/init.d/qos disable
 /etc/init.d/qos stop
 
-#busybox-httpd for crawldata
-mkdir /tmp/crawldata
-httpd -h /tmp/crawldata
-
 touch /tmp/started
 
 exit 0
