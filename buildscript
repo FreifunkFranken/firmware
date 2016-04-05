@@ -200,6 +200,8 @@ prebuild() {
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
     } > "$target"/files/etc/firmware_release
 
+    cp selected_community "$target"/files/etc/community.cfg
+
     opath=$(pwd)
     cd "$target"
     make defconfig
