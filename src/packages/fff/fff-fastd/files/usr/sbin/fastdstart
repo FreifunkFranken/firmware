@@ -3,7 +3,9 @@
 SERVER="no"
 #SERVERNAME="--servername--"
 
-project="${VPN_PROJECT}"
+. /etc/community.cfg
+
+project="$VPN_PROJECT"
 
 test_ipv4_host1="keyserver.freifunk-franken.de" # Freifunk-Franken keyserver
 test_ipv4_host2="8.8.8.8"        # Google DNS
