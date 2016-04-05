@@ -279,6 +279,25 @@ cp_firmware() {
     done
 }
 
+buildrelease() {
+    if [ "$1" = "all" ];then
+        buildall
+    elif [ "$1" = "fast" ];then
+        build fast
+    elif [ "$1" = "all" ] && [ "$2" = "fast" ];then
+        buildall fast
+    else
+        build
+    fi
+    cd bin
+    for binary in *.bin; do
+        md5sum "$binary" > ./"$binary".md5
+        sha256sum "$binary" > ./"$binary".sha256
+    done
+    cd ..
+    echo -e "VERSION:$version" > ./bin/release.nfo
+}
+
 clean() {
     /bin/rm -rf bin $builddir src/openwrt
 
@@ -416,6 +435,16 @@ case "$1" in
             buildall "$2" "$3"
         fi
         ;;
+    "release")
+        if [ "$2" = help ]; then
+            echo "This option builds the firmware for a given board. It also creates hash sums and a the file release.nfo"
+            echo
+            echo "Usage: $0 $1 [all] [fast]"
+            echo
+        else
+            buildrelease "$2"
+        fi
+        ;;
     *)
         echo "This is the Build Environment Script of the Freifunk Community Franken."
         echo
@@ -427,6 +456,7 @@ case "$1" in
         echo "  config openwrt"
         echo "  build [fast|debug]"
         echo "  buildall <community-file> [fast]"
+        echo "  release [all] [fast]"
         echo "  clean"
         echo ""
         echo "If you need help to one of these options just type: $0 <command> help"
