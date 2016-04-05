@@ -17,6 +17,7 @@ images=("openwrt-ar71xx-generic-ubnt-nano-m-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-wa860re-v1-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-wa850re-v1-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-gl-ar150-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-sysupgrade.bin"
         )
 
 board_prepare() {
