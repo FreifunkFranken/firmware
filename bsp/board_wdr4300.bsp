@@ -1,28 +1,17 @@
 machine=wdr4300
+chipset=ar71xx
 target=$builddir/$machine
+images=(
+        "openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr3600-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr4300-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr4310-v1-squashfs-sysupgrade.bin"
+       )
 
 board_prepare() {
-	echo "nothing todo" > /dev/null
+    echo "nothing todo" > /dev/null
 }
 
 board_prebuild() {
-	echo "nothing todo" > /dev/null
-}
-
-board_postbuild() {
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin ./bin/
-
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr3600-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr3600-v1-squashfs-sysupgrade.bin ./bin/
-
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr4300-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr4300-v1-squashfs-sysupgrade.bin ./bin/
-
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr4310-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wdr4310-v1-squashfs-sysupgrade.bin ./bin/
-}
-
-board_clean() {
-	/bin/rm -rf $target bin/*$machine*
+    echo "nothing todo" > /dev/null
 }

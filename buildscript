@@ -231,7 +231,7 @@ build() {
         mkdir bin
     fi
 
-    postbuild
+    cp_firmware
 }
 
 config() {
@@ -266,12 +266,20 @@ config() {
     cd "$opath"
 }
 
-postbuild() {
-    board_postbuild
+cp_firmware() {
+    for image in ${images[@]}; do
+        filename_build=${image//openwrt/${community}-${version}}
+        cp "$target/bin/${chipset}/$image" "./bin/$filename_build"
+
+        image_factory=${image/sysupgrade/factory}
+        if [[ -f "$target/bin/${chipset}/$image_factory" ]]; then
+          filename_build_factory=${filename_build/sysupgrade/factory}
+          cp "$target/bin/${chipset}/$image_factory" "./bin/$filename_build_factory"
+        fi
+    done
 }
 
 clean() {
-    board_clean
     /bin/rm -rf bin $builddir src/openwrt
 
     # remove downloaded package feeds
