@@ -1,0 +1,5 @@
+# Erlaube router solicitation von client zu knoten
+ebtables -A INPUT -p IPv6 -i ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j ACCEPT
+
+# Erlaube router advertisment von knoten zu client
+ebtables -A OUTPUT -p IPv6 -o ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j ACCEPT

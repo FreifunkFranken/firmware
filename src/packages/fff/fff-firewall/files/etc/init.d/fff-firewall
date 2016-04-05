@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+
+START=50
+
+USE_PROCD=1
+
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+
+FIREWALL_DIR=/usr/lib/firewall.d
+
+service_triggers()
+{
+    procd_add_reload_trigger "fff-firewall"
+}
+
+start_service()
+{
+    local file
+
+    IF_WAN=$(uci get network.wan.ifname)
+
+    for file in ${FIREWALL_DIR}/*; do
+        if [ -f "$file" ]; then
+            . "$file"
+        fi
+    done
+}

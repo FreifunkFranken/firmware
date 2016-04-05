@@ -56,8 +56,6 @@ fi
 # Starting NTP-Client Daemon after 30s to ensure that the interface is up
 ( sleep 30 ; ntpd -p ${NTPD_IP} ) &
 
-. /etc/firewall.user
-
 /etc/init.d/qos disable
 /etc/init.d/qos stop
 

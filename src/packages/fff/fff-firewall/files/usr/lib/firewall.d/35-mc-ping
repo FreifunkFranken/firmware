@@ -1,0 +1,6 @@
+# Erlaube PING
+ebtables -A MULTICAST_OUT -p IPv4 --ip-proto icmp -j RETURN
+
+# Erlaube PINGv6
+ebtables -A MULTICAST_OUT -p IPv6 --ip6-proto ipv6-icmp -j RETURN
+
