@@ -21,6 +21,26 @@ VERSION=$(cat release.nfo|awk -F: '/VERSION:/ { print $2 }')
 rm -f release.nfo
 echo -ne "Firmware found on server: $VERSION\n"
 
+if [ $VERSION -eq $FIRMWARE_VERSION ]; then
+  echo -ne "The installed firmware version is already the current version.\n\n"
+
+  while true; do
+    echo -ne "Do you want to reinstall the current version? [y/N]\n"
+    read DO_UPDATE
+    case $DO_UPDATE in
+      [yY])
+        break
+        ;;
+      [nN] | "")
+        exit 1
+        ;;
+      *)
+        echo "Invalid input"
+        ;;
+    esac
+  done
+fi
+
 FILE="${FIRMWARE_COMMUNITY}-${VERSION}-${SOC}-generic-${BOARD}-squashfs-sysupgrade.bin"
 echo -ne "Downloading $FILE\n\n"
 wget $(uci get firmware.upgrade.path)/${FILE}
