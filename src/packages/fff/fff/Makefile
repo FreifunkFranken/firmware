@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff
-PKG_VERSION:=0.0.1
-PKG_RELEASE:=6
+PKG_VERSION:=0.0.2
+PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff
 
@@ -40,7 +40,7 @@ define Build/Compile
 endef
 
 define Package/fff-base/install
-    $(CP) ./files/* $(1)/
+    # nothing
 endef
 
 $(eval $(call BuildPackage,fff-base))

@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-fastd
 PKG_VERSION:=1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-fastd
 
@@ -18,7 +18,8 @@ define Package/fff-fastd
              +@FASTD_ENABLE_METHOD_NULL \
              +@FASTD_ENABLE_CIPHER_NULL \
              +@FASTD_WITH_STATUS_SOCKET \
-             +fastd
+             +fastd \
+             +fff-random
 endef
 
 define Package/fff-fastd/description

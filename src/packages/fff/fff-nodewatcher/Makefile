@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-nodewatcher
 PKG_VERSION:=36
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-nodewatcher
 
@@ -13,7 +13,7 @@ define Package/fff-nodewatcher
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken Nodewatcher
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+alfred +micrond
+    DEPENDS:=+alfred +micrond +fff-random
 endef
 
 define Package/fff-nodewatcher/description
