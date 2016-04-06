@@ -20,11 +20,3 @@ images=("openwrt-ar71xx-generic-ubnt-nano-m-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-ubnt-bullet-m-squashfs-sysupgrade.bin"
         )
-
-board_prepare() {
-    echo "nothing todo" > /dev/null
-}
-
-board_prebuild() {
-    echo "nothing todo" > /dev/null
-}

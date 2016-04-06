@@ -5,11 +5,3 @@ target=$builddir/$machine
 images=(
         "openwrt-mpc85xx-generic-tl-wdr4900-v1-squashfs-sysupgrade.bin"
        )
-
-board_prepare() {
-	echo "nothing todo" > /dev/null
-}
-
-board_prebuild() {
-	echo "nothing todo" > /dev/null
-}

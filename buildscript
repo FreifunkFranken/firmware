@@ -166,8 +166,6 @@ prepare() {
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
     ln -s ../../src/dl "$target"/dl
-
-    board_prepare
 }
 
 prebuild() {
@@ -178,8 +176,6 @@ prebuild() {
     cp -r ./bsp/default/root_file_system/* "$target"/files/
     cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
     cp ./bsp/"$machine"/.config "$target"/.config
-
-    board_prebuild
 
     while IFS= read -r -d '' template
     do
