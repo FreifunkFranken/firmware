@@ -22,6 +22,7 @@ case "$BOARD" in
         ;;
     tl-wr841n-v9)
         grep "v10" /var/sysinfo/model && BOARD=tl-wr841n-v10
+        grep "v11" /var/sysinfo/model && BOARD=tl-wr841n-v11
         ;;
     nanostation-m)
         BOARD=ubnt-nano-m
