@@ -1,6 +1,6 @@
 /selected_bsp
 /selected_community
-/build*
+/build
 /bin*
 /src/dl
 /src/openwrt
