@@ -6,7 +6,7 @@
 /src/openwrt
 /src/packages/fastd
 /src/packages/openwrt
-/src/packages/batman_adv
+/src/packages/gluon
 /src/packages/routing
 /.project
 /*.patch

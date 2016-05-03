@@ -28,10 +28,10 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 
 ## Be careful: FFF uses COMPAT_VERSION 14 at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
-BATMAN_ADV=(batman_adv
+GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
             bdb56bba02168a7fdd7c8bbf380ae59a4febac7c)
-BATMAN_ADV_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
+GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
@@ -42,7 +42,7 @@ ROUTING_PKGS="alfred"
 FFF=(fff)
 FFF_PKGS="-a"
 
-FEEDS=(OPENWRT ROUTING BATMAN_ADV FFF)
+FEEDS=(OPENWRT ROUTING GLUON FFF)
 
 checkout_git(){
     local DIRECTORY=$1
