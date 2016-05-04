@@ -20,7 +20,8 @@ define Package/fff-base
              +fff-uradvd \
              +fff-batman-adv-legacy \
              +fff-fastd \
-             +fff-firewall
+             +fff-firewall \
+             +fff-support
 endef
 
 define Package/fff-base/description
