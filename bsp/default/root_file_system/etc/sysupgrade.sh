@@ -4,6 +4,8 @@ cd /tmp/
 . /etc/firmware_release
 
 BOARD=$(uci get board.model.name)
+
+#decide SOC
 case $BOARD in
     tl-wdr4900-v1 )
         SOC="mpc85xx" ;;
@@ -11,6 +13,12 @@ case $BOARD in
         SOC="ar71xx" ;;
 esac
 echo -ne "\nHardware: $BOARD\n"
+
+#rewrite BOARD
+case $BOARD in
+    cpe210 )
+        BOARD="cpe210-220-510-520" ;;
+esac
 
 wget $(uci get firmware.upgrade.path)/release.nfo
 if [ ! -f release.nfo ]; then

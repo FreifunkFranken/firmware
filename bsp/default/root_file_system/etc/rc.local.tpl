@@ -50,6 +50,9 @@ case "$BOARD" in
     tl-mr3020)
         BOARD=tl-mr3020-v1
         ;;
+    cpe510)
+        grep "CPE210" /var/sysinfo/model && BOARD=cpe210
+        ;;
 esac
 
 if ! uci get board.model.name; then

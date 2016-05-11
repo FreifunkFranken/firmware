@@ -1,7 +1,8 @@
 machine=ar71xx
 chipset=ar71xx
 target=$builddir/$machine
-images=("openwrt-ar71xx-generic-ubnt-nano-m-squashfs-sysupgrade.bin"
+images=("openwrt-ar71xx-generic-cpe210-220-510-520-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-ubnt-nano-m-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-ubnt-loco-m-xw-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-wr740n-v4-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-wr741nd-v2-squashfs-sysupgrade.bin"
