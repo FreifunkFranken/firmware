@@ -23,19 +23,20 @@ define Package/fff-support/description
 endef
 
 define Build/Prepare
-    echo "all: " > $(PKG_BUILD_DIR)/Makefile
+	echo "all: " > $(PKG_BUILD_DIR)/Makefile
 endef
 
 define Build/Configure
-    # nothing
+	# nothing
 endef
 
 define Build/Compile
-    # nothing
+	# nothing
 endef
 
 define Package/fff-support/install
-    $(CP) ./files/* $(1)/
+	$(CP) ./files/* $(1)/
+	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/
 endef
 
 $(eval $(call BuildPackage,fff-support))
