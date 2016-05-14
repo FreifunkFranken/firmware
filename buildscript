@@ -314,6 +314,31 @@ clean() {
     done
 }
 
+loadBSP()
+{
+    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
+    . selected_bsp
+}
+
+loadCommunity()
+{
+    echo "Working with $(/bin/ls -l selected_community | awk '{ print $11 }')"
+    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+}
+
+setCommunity() {
+    /bin/rm -rf selected_community
+    /bin/ln -s "$1" selected_community
+    loadCommunity
+}
+
+setBSP()
+{
+    /bin/rm -rf selected_bsp
+    /bin/ln -s "$1" selected_bsp
+    loadBSP
+}
+
 buildall() {
     for bsp in $(/bin/ls bsp/*.bsp); do
         ./buildscript selectbsp "$bsp"
@@ -333,10 +358,8 @@ if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
         echo "$0 selectcommunity"
         exit
     fi
-    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
-            "$(/bin/ls -l selected_community | awk '{ print $11 }')"
-    . selected_bsp
-    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+    loadBSP
+    loadCommunity
     echo
 fi
 
@@ -353,8 +376,7 @@ case "$1" in
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
             else
-                /bin/rm -rf selected_bsp
-                /bin/ln -s "$2" selected_bsp
+                setBSP "$2"
             fi
         fi
         ;;
@@ -370,8 +392,7 @@ case "$1" in
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
             else
-                /bin/rm -rf selected_community
-                /bin/ln -s "$2" selected_community
+                setCommunity "$2"
             fi
         fi
         ;;
