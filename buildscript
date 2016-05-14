@@ -279,14 +279,23 @@ cp_firmware() {
 
 buildrelease() {
     if [ "$1" = "all" ];then
-        buildall
+        all=true
     elif [ "$1" = "fast" ];then
-        build fast
-    elif [ "$1" = "all" ] && [ "$2" = "fast" ];then
-        buildall fast
-    else
-        build
+        fast=fast
     fi
+
+    if [ "$2" = "all" ];then
+        all=true
+    elif [ "$2" = "fast" ];then
+        fast=fast
+    fi
+
+    if [ $all ]; then
+        buildall $fast
+    else
+        build $fast
+    fi
+
     cd bin
     for binary in *.bin; do
         md5sum "$binary" > ./"$binary".md5
@@ -458,7 +467,7 @@ case "$1" in
             echo "Usage: $0 $1 [all] [fast]"
             echo
         else
-            buildrelease "$2"
+            buildrelease "$2" "$3"
         fi
         ;;
     *)
