@@ -341,9 +341,9 @@ setBSP()
 
 buildall() {
     for bsp in $(/bin/ls bsp/*.bsp); do
-        ./buildscript selectbsp "$bsp"
-        ./buildscript prepare
-        ./buildscript build "$1"
+        setBSP "$bsp"
+        prepare
+        build "$1"
     done
 }
 
