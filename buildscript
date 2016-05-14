@@ -316,14 +316,13 @@ clean() {
 
 buildall() {
     for bsp in $(/bin/ls bsp/*.bsp); do
-        ./buildscript selectcommunity "$1"
         ./buildscript selectbsp "$bsp"
         ./buildscript prepare
-        ./buildscript build "$2"
+        ./buildscript build "$1"
     done
 }
 
-if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; then
+if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
     if [ ! -h selected_bsp ]; then
         echo "Please select a Board-Support-Package using:"
         echo "$0 selectbsp"
@@ -422,15 +421,13 @@ case "$1" in
         fi
         ;;
     "buildall")
-        if [ "$2" = "help" ] || [ "$2" = "" ]; then
+        if [ "$2" = "help" ]; then
             echo "This option builds the firmware for all routers of a given community."
             echo
-            echo "Usage: $0 $1 <community-file> [fast]"
-            echo "available community-files: "
-            /bin/ls community/*.cfg
+            echo "Usage: $0 $1 [fast]"
             echo
         else
-            buildall "$2" "$3"
+            buildall "$2"
         fi
         ;;
     "release")
@@ -453,7 +450,7 @@ case "$1" in
         echo "  prepare"
         echo "  config openwrt"
         echo "  build [fast|debug]"
-        echo "  buildall <community-file> [fast]"
+        echo "  buildall [fast]"
         echo "  release [all] [fast]"
         echo "  clean"
         echo ""
