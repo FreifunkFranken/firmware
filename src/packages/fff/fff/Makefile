@@ -21,7 +21,8 @@ define Package/fff-base
              +fff-batman-adv-legacy \
              +fff-fastd \
              +fff-firewall \
-             +fff-support
+             +fff-support \
+             +fff-network
 endef
 
 define Package/fff-base/description

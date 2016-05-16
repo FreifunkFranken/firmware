@@ -59,9 +59,7 @@ if ! uci get board.model.name; then
     uci set board.model.name=$BOARD
 fi
 
-. /etc/network.$BOARD
-
-. /etc/network.sh
+/usr/sbin/configurenetwork
 
 # Starting NTP-Client Daemon after 30s to ensure that the interface is up
 ( sleep 30 ; ntpd -p ${NTPD_IP} ) &

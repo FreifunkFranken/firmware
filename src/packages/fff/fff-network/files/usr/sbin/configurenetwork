@@ -9,6 +9,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
 if ! uci get nodewatcher.@network[0].client_interfaces; then
     echo "Setting nodewatchers client interfaces to: $CLIENTIF"
     uci set nodewatcher.@network[0].client_interfaces="$CLIENTIF"
