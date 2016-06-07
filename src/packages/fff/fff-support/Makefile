@@ -36,7 +36,7 @@ endef
 
 define Package/fff-support/install
 	$(CP) ./files/* $(1)/
-	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/
+	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/ || true
 endef
 
 $(eval $(call BuildPackage,fff-support))
