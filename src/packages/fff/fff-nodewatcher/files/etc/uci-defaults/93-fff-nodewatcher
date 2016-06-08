@@ -1,0 +1,18 @@
+#!/bin/sh
+
+touch /etc/config/nodewatcher
+
+uci batch <<EOF
+  add nodewatcher script
+  set nodewatcher.@script[0].error_level='0'
+  set nodewatcher.@script[0].logfile='/var/log/nodewatcher.log'
+  set nodewatcher.@script[0].data_file='/tmp/crawldata/node.data'
+  set nodewatcher.@script[0].status_text_file='/tmp/status.txt'
+  add nodewatcher network
+  set nodewatcher.@network[0].mesh_interface='br-mesh'
+  set nodewatcher.@network[0].iface_blacklist='lo ifb0'
+  set nodewatcher.@network[0].ip_whitelist='br-mesh'
+EOF
+uci commit
+
+exit 0
