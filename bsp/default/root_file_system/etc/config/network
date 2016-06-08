@@ -12,16 +12,12 @@ config interface 'w2mesh'
 config interface 'mesh'
         option type 'bridge'
         option auto '1'
-                                   
+
 config interface 'wan'
         option proto 'dhcp'
         option ifname 'eth1'
-                            
+
 config interface 'ethmesh'
-        option mtu '1532' 
+        option mtu '1528'
         option proto 'batadv'
-        option mesh 'bat0'   
-                                          
-config interface 'bat'                    
-        option ifname 'bat0'              
-        option mtu '1500'
+        option mesh 'bat0'
