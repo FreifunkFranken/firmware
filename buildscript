@@ -118,7 +118,7 @@ get_source() {
 
 patch_target() {
     for patch in "$PWD"/build_patches/openwrt/*.patch; do
-        patch -p0 -d "$target" -i "$patch"
+        patch --no-backup-if-mismatch -p0 -d "$target" -i "$patch"
     done
 }
 
