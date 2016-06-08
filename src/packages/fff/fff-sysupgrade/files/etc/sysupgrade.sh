@@ -3,6 +3,8 @@ cd /tmp/
 
 . /etc/firmware_release
 
+. /etc/community.cfg
+
 BOARD=$(uci get board.model.name)
 
 #decide SOC
@@ -20,7 +22,7 @@ case $BOARD in
         BOARD="cpe210-220-510-520" ;;
 esac
 
-wget $(uci get firmware.upgrade.path)/release.nfo
+wget "${UPGRADE_PATH}/release.nfo"
 if [ ! -f release.nfo ]; then
   echo -ne "Latest release information not found. Please try to update manually.\n\n"
   exit 1
@@ -51,8 +53,8 @@ fi
 
 FILE="${FIRMWARE_COMMUNITY}-${VERSION}-${SOC}-generic-${BOARD}-squashfs-sysupgrade.bin"
 echo -ne "Downloading $FILE\n\n"
-wget $(uci get firmware.upgrade.path)/${FILE}
-wget $(uci get firmware.upgrade.path)/${FILE}.sha256
+wget "${UPGRADE_PATH}/${FILE}"
+wget "${UPGRADE_PATH}/${FILE}.sha256"
 
 echo -ne "\ndone. Comparing sha256 sums: "
 sha256sum -c ${FILE}.sha256
