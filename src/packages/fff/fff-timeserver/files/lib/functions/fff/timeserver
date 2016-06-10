@@ -1,0 +1,24 @@
+#!/bin/sh
+# Copyright 2016 Tim Niemeyer
+# License GPLv3
+
+setTimeserver() {
+	if [ $# -ne "1" ]
+	then
+		echo "Usage: setTimeserver <ntp-server-address>"
+		return 1
+	fi
+
+	local ntp=$1
+
+	uci batch <<-__EOF__
+		set system.ntp='timeserver'
+		add_list system.ntp.server='$ntp'
+		set system.ntp.enable_server='0'
+		commit system
+	__EOF__
+
+	return 0
+}
+
+# vim: set noexpandtab:tabstop=4
