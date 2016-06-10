@@ -12,12 +12,6 @@
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
-if ! uci get nodewatcher.@network[0].client_interfaces; then
-    echo "Setting nodewatchers client interfaces to: $CLIENTIF"
-    uci set nodewatcher.@network[0].client_interfaces="$CLIENTIF"
-    uci commit
-fi
-
 if ! uci get network.$SWITCHDEV.ifname; then
 
     SWITCHHW=$(swconfig list | awk '{ print $4 }')

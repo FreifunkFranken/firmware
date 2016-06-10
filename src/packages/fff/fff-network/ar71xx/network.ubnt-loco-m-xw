@@ -6,7 +6,6 @@ BATMAN_PORTS=""
 
 . /etc/network.mode
 
-CLIENTIF="w2ap"
 ETHMESHMAC=
 ROUTERMAC=w2mesh
 
@@ -25,7 +24,6 @@ if [ "$ETHMODE" = "WAN" ] ; then
   uci set network.wan.ifname=$WANDEV
 elif [ "$ETHMODE" = "CLIENT" ] ; then
   ## Activate Client:
-  CLIENTIF="w2ap eth0"
   uci set network.mesh.ifname="bat0 $SWITCHDEV"
 else
   ## Activate BATMAN:

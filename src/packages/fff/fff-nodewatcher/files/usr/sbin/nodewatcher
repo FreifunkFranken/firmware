@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="37"
+SCRIPT_VERSION="38"
 
 test -f /tmp/started || exit
 
@@ -13,7 +13,6 @@ if [ -f /etc/config/nodewatcher ];then
 	SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
 	SCRIPT_DATA_FILE=`uci get nodewatcher.@script[0].data_file`
 	MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
-	CLIENT_INTERFACES=`uci get nodewatcher.@network[0].client_interfaces`
 	IFACEBLACKLIST=`uci get nodewatcher.@network[0].iface_blacklist`
 	IPWHITELIST=`uci get nodewatcher.@network[0].ip_whitelist`
 	SCRIPT_STATUS_FILE=`uci get nodewatcher.@script[0].status_text_file`
@@ -228,6 +227,7 @@ crawl() {
     err "`date`: Collecting information about conected clients"
 	#CLIENTS
 	client_count=0
+	CLIENT_INTERFACES=$(bridge link | awk '$2 !~/^bat/{ printf $2" " }')
 	for clientif in ${CLIENT_INTERFACES}; do
 		local cc=$(bridge fdb show br $MESH_INTERFACE brport $clientif | grep -v self | grep -v permanent -c)
 		client_count=$((client_count + $cc))
