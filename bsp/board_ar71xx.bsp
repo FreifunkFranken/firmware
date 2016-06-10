@@ -21,4 +21,8 @@ images=("openwrt-ar71xx-generic-cpe210-220-510-520-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-gl-ar150-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-tl-mr3020-v1-squashfs-sysupgrade.bin"
         "openwrt-ar71xx-generic-ubnt-bullet-m-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr3600-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr4300-v1-squashfs-sysupgrade.bin"
+        "openwrt-ar71xx-generic-tl-wdr4310-v1-squashfs-sysupgrade.bin"
         )
