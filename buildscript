@@ -174,7 +174,6 @@ prebuild() {
     mkdir "$target"/files
 
     cp -r ./bsp/default/root_file_system/* "$target"/files/
-    cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
     cp ./bsp/"$machine"/.config "$target"/.config
 
     while IFS= read -r -d '' template
