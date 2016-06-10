@@ -1,0 +1,117 @@
+#!/bin/sh
+# Copyright 2016 Tim Niemeyer
+# License GPLv3
+
+wifiDelAll() {
+	if [ $# -ne "0" ]
+	then
+		echo "Usage: wifiDelAll"
+		return 1
+	fi
+
+	> /etc/config/wireless
+
+	return 0
+}
+
+wifiAddPhy() {
+	if [ $# -ne "2" ]
+	then
+		echo "Usage: wifiAddPhy <phy> <channel>"
+		return 1
+	fi
+
+	local phy=$1
+	local channel=$2
+	local radio="radio$(echo $phy | tr -d -C [0-9])"
+	local hwmode="11g"
+	if [ "$channel" -gt "14" ]; then
+		hwmode="11a"
+	fi
+
+	uci batch <<-__EOF__
+		set wireless.${radio}='wifi-device'
+		set wireless.${radio}.type='mac80211'
+		set wireless.${radio}.channel='${channel}'
+		set wireless.${radio}.phy='${phy}'
+		set wireless.${radio}.hwmode='${hwmode}'
+		set wireless.${radio}.htmode='HT20'
+		set wireless.${radio}.country='DE'
+		commit wireless
+	__EOF__
+
+	echo "${radio}"
+	return 0
+}
+
+wifiAddAdHocMesh() {
+	if [ $# -ne "3" ]
+	then
+		echo "Usage: wifiAddAdHocMesh <radio> <essid> <bssid>"
+		return 1
+	fi
+
+	local radio=$1
+	local essid=$2
+	local bssid=$3
+
+	local channel=$(uci get "wireless.${radio}.channel")
+	local iface="w2mesh"
+	if [ "$channel" -gt "14" ]; then
+		iface="w5mesh"
+	fi
+
+	uci batch <<-__EOF__
+		set wireless.${iface}='wifi-iface'
+		set wireless.${iface}.device='${radio}'
+		set wireless.${iface}.network='${iface}'
+		set wireless.${iface}.ifname='${iface}'
+		set wireless.${iface}.mode='adhoc'
+		set wireless.${iface}.bssid='${bssid}'
+		set wireless.${iface}.ssid='${essid}'
+		set wireless.${iface}.mcast_rate='6000'
+		set wireless.${iface}.encryption='none'
+		commit wireless
+
+		set network.${iface}='interface'
+		set network.${iface}.mtu='1528'
+		set network.${iface}.proto='batadv'
+		set network.${iface}.mesh='bat0'
+		commit network
+	__EOF__
+
+	echo "${iface}"
+	return 0
+}
+
+wifiAddAP() {
+	if [ $# -ne "2" ]
+	then
+		echo "Usage: wifiAddAP <radio> <essid>"
+		return 1
+	fi
+
+	local radio=$1
+	local essid=$2
+
+	local channel=$(uci get "wireless.${radio}.channel")
+	local iface="w2ap"
+	if [ "$channel" -gt "14" ]; then
+		iface="w5ap"
+	fi
+	uci batch <<-__EOF__
+		set wireless.${iface}='wifi-iface'
+		set wireless.${iface}.device='${radio}'
+		set wireless.${iface}.network='mesh'
+		set wireless.${iface}.ifname='${iface}'
+		set wireless.${iface}.mode='ap'
+		set wireless.${iface}.ssid='${essid}'
+		set wireless.${iface}.encryption='none'
+
+		commit wireless
+	__EOF__
+
+	echo "${iface}"
+}
+
+# vim: set noexpandtab:tabstop=4

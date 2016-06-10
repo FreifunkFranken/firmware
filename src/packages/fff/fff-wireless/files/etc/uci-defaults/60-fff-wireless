@@ -1,0 +1,43 @@
+#!/bin/sh
+# Copyright 2016 Tim Niemeyer
+# License GPLv3
+
+. /lib/functions/fff/wireless
+
+. /etc/community.cfg
+
+if ! wifiDelAll; then
+	echo "Can't delete current wifi setup"
+	exit 1
+fi
+
+for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+	if iw phy "$phy" info | grep -q -m1 "2... MHz"; then
+		echo "$phy is 2.4 GHz"
+		radio=$(wifiAddPhy "$phy" "$BATMAN_CHANNEL")
+		if [ -z "$radio" ]; then
+			echo "Can't create radio for $phy"
+			exit 1
+		fi
+	fi
+	if iw phy "$phy" info | grep -q -m1 "5... MHz"; then
+		echo "$phy is 5 GHz"
+		radio=$(wifiAddPhy "$phy" "$BATMAN_CHANNEL_5GHZ")
+		if [ -z "$radio" ]; then
+			echo "Can't create radio for $phy"
+			exit 1
+		fi
+	fi
+
+	if ! wifiAddAP "$radio" "$ESSID_AP"; then
+		echo "Can't add AP interface on $radio0."
+		exit 1
+	fi
+
+	if ! wifiAddAdHocMesh "$radio" "$ESSID_MESH" "$BSSID_MESH"; then
+		echo "Can't add AP interface on $radio0."
+		exit 1
+	fi
+done
+
+# vim: set noexpandtab:tabstop=4

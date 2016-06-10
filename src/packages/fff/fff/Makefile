@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff
 PKG_VERSION:=0.0.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff
 
@@ -23,7 +23,8 @@ define Package/fff-base
              +fff-firewall \
              +fff-support \
              +fff-network \
-             +fff-sysupgrade
+             +fff-sysupgrade \
+             +fff-wireless
 endef
 
 define Package/fff-base/description
