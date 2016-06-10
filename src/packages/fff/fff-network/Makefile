@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-network
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-network
 
@@ -13,7 +13,7 @@ define Package/fff-network
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken network configuration
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-uradvd
+    DEPENDS:=+fff-uradvd +fff-boardname
 endef
 
 define Package/fff-network/description

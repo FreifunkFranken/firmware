@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web
 PKG_VERSION:=0.0.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-web
 
@@ -13,7 +13,7 @@ define Package/fff-web
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken Webinterface
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+uhttpd +haserl +uhttpd-mod-tls +px5g +simple-tc
+    DEPENDS:=+uhttpd +haserl +uhttpd-mod-tls +px5g +simple-tc +fff-boardname
 endef
 
 define Package/fff-web/description
