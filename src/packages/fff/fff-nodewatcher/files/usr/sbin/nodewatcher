@@ -9,20 +9,20 @@ test -f /tmp/started || exit
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
 if [ -f /etc/config/nodewatcher ];then
-    SCRIPT_ERROR_LEVEL=`uci get nodewatcher.@script[0].error_level`
-    SCRIPT_LOGFILE=`uci get nodewatcher.@script[0].logfile`
-    SCRIPT_DATA_FILE=`uci get nodewatcher.@script[0].data_file`
-    MESH_INTERFACE=`uci get nodewatcher.@network[0].mesh_interface`
-    IFACEBLACKLIST=`uci get nodewatcher.@network[0].iface_blacklist`
-    IPWHITELIST=`uci get nodewatcher.@network[0].ip_whitelist`
-    SCRIPT_STATUS_FILE=`uci get nodewatcher.@script[0].status_text_file`
+    SCRIPT_ERROR_LEVEL=$(uci get nodewatcher.@script[0].error_level)
+    SCRIPT_LOGFILE=$(uci get nodewatcher.@script[0].logfile)
+    SCRIPT_DATA_FILE=$(uci get nodewatcher.@script[0].data_file)
+    MESH_INTERFACE=$(uci get nodewatcher.@network[0].mesh_interface)
+    IFACEBLACKLIST=$(uci get nodewatcher.@network[0].iface_blacklist)
+    IPWHITELIST=$(uci get nodewatcher.@network[0].ip_whitelist)
+    SCRIPT_STATUS_FILE=$(uci get nodewatcher.@script[0].status_text_file)
 else
-    . `dirname $0`/nodewatcher_config
+    . "$(dirname "$0")/nodewatcher_config"
 fi
 
-if [ $SCRIPT_ERROR_LEVEL -gt "1" ]; then
+if [ "$SCRIPT_ERROR_LEVEL" -gt "1" ]; then
     err() {
-        echo $1 >> $SCRIPT_LOGFILE
+        echo "$1" >> "$SCRIPT_LOGFILE"
     }
 else
     err() {
@@ -32,10 +32,10 @@ fi
 
 #this method checks id the logfile has bekome too big and deletes the first X lines
 delete_log() {
-    if [ -f $SCRIPT_LOGFILE ]; then
-        if [ `ls -la $SCRIPT_LOGFILE | awk '{ print $5 }'` -gt "6000" ]; then
-            sed -i '1,60d' $SCRIPT_LOGFILE
-            err "`date`: Logfile has been made smaller"
+    if [ -f "$SCRIPT_LOGFILE" ]; then
+        if [ "$(find "$SCRIPT_LOGFILE" -printf "%s")" -gt "6000" ]; then
+            sed -i '1,60d' "$SCRIPT_LOGFILE"
+            err "$(date): Logfile has been made smaller"
         fi
     fi
 }
@@ -54,7 +54,7 @@ inArray() {
 #and provided by a small local httpd
 crawl() {
     #Get system data from other locations
-    err "`date`: Collecting basic system status data"
+    err "$(date): Collecting basic system status data"
     hostname="$(cat /proc/sys/kernel/hostname)"
     description="$(uci get system.@system[0].description)"
     if [ -n "$description" ]; then
@@ -87,10 +87,10 @@ crawl() {
         /platform/ { printf "<chipset>"$2"</chipset>" }
     ' /proc/cpuinfo)
     model="<model>$(cat /var/sysinfo/model)</model>"
-    local_time="`date +%s`"
+    local_time="$(date +%s)"
     load=$(awk '{ printf "<loadavg>"$3"</loadavg><processes>"$4"</processes>" }' /proc/loadavg)
 
-    err "`date`: Collecting version information"
+    err "$(date): Collecting version information"
 
     batman_adv_version=$(cat /sys/module/batman_adv/version)
     kernel_version=$(uname -r)
@@ -146,12 +146,13 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"<openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision>"
     SYSTEM_DATA=$SYSTEM_DATA"<openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
-    err "`date`: Collecting information from network interfaces"
+    err "$(date): Collecting information from network interfaces"
 
     #Get interfaces
     interface_data=""
     #Loop interfaces
-    for filename in `grep 'up\|unknown' /sys/class/net/*/operstate`; do
+    #for entry in $IFACES; do
+    for filename in $(grep 'up\|unknown' /sys/class/net/*/operstate); do
         ifpath=${filename%/operstate*}
         iface=${ifpath#/sys/class/net/}
         if inArray "$IFACEBLACKLIST" "$iface"; then
@@ -159,23 +160,25 @@ crawl() {
         fi
 
         #Get interface data for whitelisted interfaces
+        # shellcheck disable=SC2016
         awkscript='
             /ether/ { printf "<mac_addr>"$2"</mac_addr>" }
             /mtu/ { printf "<mtu>"$5"</mtu>" }'
         if inArray "$IPWHITELIST" "$iface"; then
+            # shellcheck disable=SC2016
             awkscript=$awkscript'
                 /inet / { split($2, a, "/"); printf "<ipv4_addr>"a[1]"</ipv4_addr>" }
                 /inet6/ && /scope global/ { printf "<ipv6_addr>"$2"</ipv6_addr>" }
                 /inet6/ && /scope link/ { printf "<ipv6_link_local_addr>"$2"</ipv6_link_local_addr>"}'
         fi
-        addrs=$(ip addr show dev ${iface} | awk "$awkscript")
+        addrs=$(ip addr show dev "${iface}" | awk "$awkscript")
 
-        traffic_rx=`cat $ifpath/statistics/rx_bytes`
-        traffic_tx=`cat $ifpath/statistics/tx_bytes`
+        traffic_rx=$(cat "$ifpath/statistics/rx_bytes")
+        traffic_tx=$(cat "$ifpath/statistics/tx_bytes")
 
         interface_data=$interface_data"<$iface><name>$iface</name>$addrs<traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx>"
 
-        interface_data=$interface_data$(iwconfig ${iface} 2>/dev/null | awk -F':' '
+        interface_data=$interface_data$(iwconfig "${iface}" 2>/dev/null | awk -F':' '
             /Mode/{ split($2, m, " "); printf "<wlan_mode>"m[1]"</wlan_mode>" }
             /Cell/{ split($0, c, " "); printf "<wlan_bssid>"c[5]"</wlan_bssid>" }
             /ESSID/ { split($0, e, "\""); printf "<wlan_essid>"e[2]"</wlan_essid>" }
@@ -184,7 +187,7 @@ crawl() {
         ')"</$iface>"
     done
 
-    err "`date`: Collecting information from batman advanced and it´s interfaces"
+    err "$(date): Collecting information from batman advanced and its interfaces"
     #B.A.T.M.A.N. advanced
     if [ -f /sys/module/batman_adv/version ]; then
         for iface in $(grep active /sys/class/net/*/batman_adv/iface_status); do
@@ -229,16 +232,16 @@ crawl() {
                 i++
             }' /sys/kernel/debug/batman_adv/bat0/gateways)
     fi
-    err "`date`: Collecting information about conected clients"
+    err "$(date): Collecting information about conected clients"
     #CLIENTS
     client_count=0
     CLIENT_INTERFACES=$(bridge link | awk '$2 !~/^bat/{ printf $2" " }')
     for clientif in ${CLIENT_INTERFACES}; do
-        local cc=$(bridge fdb show br $MESH_INTERFACE brport $clientif | grep -v self | grep -v permanent -c)
-        client_count=$((client_count + $cc))
+        local cc=$(bridge fdb show br "$MESH_INTERFACE" brport "$clientif" | grep -v self | grep -v permanent -c)
+        client_count=$((client_count + cc))
     done
 
-    err "`date`: Putting all information into a XML-File and save it at "$SCRIPT_DATA_FILE
+    err "$(date): Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
 
     DATA="<?xml version='1.0' standalone='yes'?><data>"
     DATA=$DATA"<system_data>$SYSTEM_DATA</system_data>"
@@ -251,19 +254,19 @@ crawl() {
     DATA=$DATA"</data>"
 
     #write data to hxml file that provides the data on httpd
-    SCRIPT_DATA_DIR=$(dirname $SCRIPT_DATA_FILE)
-    test -d $SCRIPT_DATA_DIR || mkdir -p $SCRIPT_DATA_DIR
-    echo $DATA | gzip | tee $SCRIPT_DATA_FILE | alfred -s 64
+    SCRIPT_DATA_DIR=$(dirname "$SCRIPT_DATA_FILE")
+    test -d "$SCRIPT_DATA_DIR" || mkdir -p "$SCRIPT_DATA_DIR"
+    echo "$DATA" | gzip | tee "$SCRIPT_DATA_FILE" | alfred -s 64
 }
 
 LANG=C
 
 #Prüft ob das logfile zu groß geworden ist
-err "`date`: Check logfile"
+err "$(date): Check logfile"
 delete_log
 
 #Erzeugt die statusdaten
-err "`date`: Generate actual status data"
+err "$(date): Generate actual status data"
 crawl
 
 exit 0
