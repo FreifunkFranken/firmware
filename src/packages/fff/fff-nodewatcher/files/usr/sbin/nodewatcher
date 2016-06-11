@@ -122,11 +122,8 @@ crawl() {
     err "`date`: Collecting information from network interfaces"
 
 	#Get interfaces
-	#IFACES=`cat /proc/net/dev | awk -F: '!/\|/ { gsub(/[[:space:]]*/, "", $1); split($2, a, " "); printf("%s=%s=%s ", $1, a[1], a[9]) }'`
-
 	interface_data=""	
 	#Loop interfaces
-	#for entry in $IFACES; do
     for filename in `grep 'up\|unknown' /sys/class/net/*/operstate`; do
         ifpath=${filename%/operstate*}
         iface=${ifpath#/sys/class/net/}
@@ -149,9 +146,7 @@ crawl() {
         traffic_rx=`cat $ifpath/statistics/rx_bytes`
         traffic_tx=`cat $ifpath/statistics/tx_bytes`
         
-        #interface_data=$interface_data"<$iface><name>$iface</name><mac_addr>$mac_addr</mac_addr><ipv4_addr>$ipv4_addr</ipv4_addr><ipv6_addr>$ipv6_addr</ipv6_addr><ipv6_link_local_addr>$ipv6_link_local_addr</ipv6_link_local_addr><traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx><mtu>$mtu</mtu>"
         interface_data=$interface_data"<$iface><name>$iface</name>$addrs<traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx>"
-        
 
         interface_data=$interface_data$(iwconfig ${iface} 2>/dev/null | awk -F':' '
             /Mode/{ split($2, m, " "); printf "<wlan_mode>"m[1]"</wlan_mode>" }
@@ -160,23 +155,6 @@ crawl() {
             /Freq/{ split($3, f, " "); printf "<wlan_frequency>"f[1]f[2]"</wlan_frequency>" }
             /Tx-Power/{ split($0, p, "="); sub(/[[:space:]]*$/, "", p[2]); printf "<wlan_tx_power>"p[2]"</wlan_tx_power>" }
         ')"</$iface>"
-
-        #if [ "`iwconfig ${iface} 2>/dev/null | grep IEEE`" != "" ]; then
-        #    wlan_mode="`iwconfig $iface | awk -F':' '/Mode/{ split($2, m, " "); print m[1] }'`"
-        #
-        #    if [ $wlan_mode = "Master" ]; then	
-        #        wlan_bssid="`iw $iface info | awk '/addr/{ print $2 }'`"
-        #    elif [ $wlan_mode = "Ad-Hoc" ]; then	
-        #        wlan_bssid="`iwconfig $iface | awk '/Cell/{ print $5 }'`"
-        #    fi
-        #    
-        #    wlan_essid="`iwconfig ${iface} | awk -F'"' '/ESSID/ { print $2 }'`"
-        #    wlan_frequency="`iwconfig $iface | awk -F':' '/Freq/{ split($3, f, " "); print f[1] }'`"
-        #    wlan_tx_power="`iwconfig $iface | awk -F'=' '/Tx-Power/{ print $2 }'`"
-        #
-        #    interface_data=$interface_data"<wlan_mode>$wlan_mode</wlan_mode><wlan_frequency>$wlan_frequency</wlan_frequency><wlan_essid>$wlan_essid</wlan_essid><wlan_bssid>$wlan_bssid</wlan_bssid><wlan_tx_power>$wlan_tx_power</wlan_tx_power>"
-        #fi
-        #interface_data=$interface_data"</$iface>"
 	done
 
     err "`date`: Collecting information from batman advanced and it´s interfaces"
