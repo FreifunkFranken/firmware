@@ -117,7 +117,31 @@ crawl() {
     #OPENWRT_CORE_REVISION="35298"
     #OPENWRT_FEEDS_PACKAGES_REVISION="35298"
     . /etc/firmware_release
-    SYSTEM_DATA="<status>online</status>$status_text<hostname>$hostname</hostname>${description}${geo}${position_comment}${contact}<distname>$distname</distname><distversion>$distversion</distversion>$cpu$model$memory$load$uptime<local_time>$local_time</local_time><batman_advanced_version>$batman_adv_version</batman_advanced_version><kernel_version>$kernel_version</kernel_version><fastd_version>$fastd_version</fastd_version><nodewatcher_version>$nodewatcher_version</nodewatcher_version><firmware_version>$FIRMWARE_VERSION</firmware_version><firmware_community>$FIRMWARE_COMMUNITY</firmware_community><firmware_revision>$BUILD_DATE</firmware_revision><openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision><openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
+
+    SYSTEM_DATA="<status>online</status>"
+    SYSTEM_DATA=$SYSTEM_DATA"$status_text"
+    SYSTEM_DATA=$SYSTEM_DATA"<hostname>$hostname</hostname>"
+    SYSTEM_DATA=$SYSTEM_DATA"${description}"
+    SYSTEM_DATA=$SYSTEM_DATA"${geo}"
+    SYSTEM_DATA=$SYSTEM_DATA"${position_comment}"
+    SYSTEM_DATA=$SYSTEM_DATA"${contact}"
+    SYSTEM_DATA=$SYSTEM_DATA"<distname>$distname</distname>"
+    SYSTEM_DATA=$SYSTEM_DATA"<distversion>$distversion</distversion>"
+    SYSTEM_DATA=$SYSTEM_DATA"$cpu"
+    SYSTEM_DATA=$SYSTEM_DATA"$model"
+    SYSTEM_DATA=$SYSTEM_DATA"$memory"
+    SYSTEM_DATA=$SYSTEM_DATA"$load"
+    SYSTEM_DATA=$SYSTEM_DATA"$uptime"
+    SYSTEM_DATA=$SYSTEM_DATA"<local_time>$local_time</local_time>"
+    SYSTEM_DATA=$SYSTEM_DATA"<batman_advanced_version>$batman_adv_version</batman_advanced_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"<kernel_version>$kernel_version</kernel_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"<fastd_version>$fastd_version</fastd_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"<nodewatcher_version>$nodewatcher_version</nodewatcher_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"<firmware_version>$FIRMWARE_VERSION</firmware_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"<firmware_community>$FIRMWARE_COMMUNITY</firmware_community>"
+    SYSTEM_DATA=$SYSTEM_DATA"<firmware_revision>$BUILD_DATE</firmware_revision>"
+    SYSTEM_DATA=$SYSTEM_DATA"<openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision>"
+    SYSTEM_DATA=$SYSTEM_DATA"<openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
     err "`date`: Collecting information from network interfaces"
 
@@ -213,7 +237,15 @@ crawl() {
 
     err "`date`: Putting all information into a XML-File and save it at "$SCRIPT_DATA_FILE
 
-    DATA="<?xml version='1.0' standalone='yes'?><data><system_data>$SYSTEM_DATA</system_data><interface_data>$interface_data</interface_data><batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces><batman_adv_originators>$batman_adv_originators</batman_adv_originators><batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode><batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list><client_count>$client_count</client_count></data>"
+    DATA="<?xml version='1.0' standalone='yes'?><data>"
+    DATA=$DATA"<system_data>$SYSTEM_DATA</system_data>"
+    DATA=$DATA"<interface_data>$interface_data</interface_data>"
+    DATA=$DATA"<batman_adv_interfaces>$BATMAN_ADV_INTERFACES</batman_adv_interfaces>"
+    DATA=$DATA"<batman_adv_originators>$batman_adv_originators</batman_adv_originators>"
+    DATA=$DATA"<batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode>"
+    DATA=$DATA"<batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list>"
+    DATA=$DATA"<client_count>$client_count</client_count>"
+    DATA=$DATA"</data>"
 
     #write data to hxml file that provides the data on httpd
     SCRIPT_DATA_DIR=$(dirname $SCRIPT_DATA_FILE)
