@@ -84,6 +84,7 @@ crawl() {
     cpu=$(awk -F': ' '
         /model/ { printf "<cpu>"$2"</cpu>" }
         /system type/ { printf "<chipset>"$2"</chipset>" }
+        /platform/ { printf "<chipset>"$2"</chipset>" }
     ' /proc/cpuinfo)
     model="<model>$(cat /var/sysinfo/model)</model>"
     local_time="`date +%s`"
