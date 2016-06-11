@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="38"
+SCRIPT_VERSION="39"
 
 test -f /tmp/started || exit
 
