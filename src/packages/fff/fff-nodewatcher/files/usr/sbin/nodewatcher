@@ -94,7 +94,9 @@ crawl() {
 
     batman_adv_version=$(cat /sys/module/batman_adv/version)
     kernel_version=$(uname -r)
-    fastd_version=$(fastd -v | awk '{ print $2 }')
+    if [ -x /usr/bin/fastd ]; then
+        fastd_version="<fastd_version>$(/usr/bin/fastd -v | awk '{ print $2 }')</fastd_version>"
+    fi
     nodewatcher_version=$SCRIPT_VERSION
 
     if [ -f "$SCRIPT_STATUS_FILE" ]; then
@@ -136,7 +138,7 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"<local_time>$local_time</local_time>"
     SYSTEM_DATA=$SYSTEM_DATA"<batman_advanced_version>$batman_adv_version</batman_advanced_version>"
     SYSTEM_DATA=$SYSTEM_DATA"<kernel_version>$kernel_version</kernel_version>"
-    SYSTEM_DATA=$SYSTEM_DATA"<fastd_version>$fastd_version</fastd_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"$fastd_version"
     SYSTEM_DATA=$SYSTEM_DATA"<nodewatcher_version>$nodewatcher_version</nodewatcher_version>"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_version>$FIRMWARE_VERSION</firmware_version>"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_community>$FIRMWARE_COMMUNITY</firmware_community>"
