@@ -1,6 +1,7 @@
 #!/bin/sh
 
 uci batch <<EOF
+  delete uhttpd.main
   delete uhttpd.public
   delete uhttpd.ssl
   delete uhttpd.px5g
@@ -30,5 +31,5 @@ uci batch <<EOF
   set uhttpd.px5g.commonname='OpenWrt'
 EOF
 
-uci commit
+uci commit uhttpd
 exit 0
