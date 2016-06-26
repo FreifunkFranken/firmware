@@ -19,13 +19,13 @@ define Package/fff-base
              +fff-web \
              +fff-uradvd \
              +fff-batman-adv-legacy \
-             +fff-fastd \
              +fff-firewall \
              +fff-support \
              +fff-network \
              +fff-sysupgrade \
              +fff-wireless \
-             +fff-timeserver
+             +fff-timeserver \
+             +fff-vpn-select
 endef
 
 define Package/fff-base/description
