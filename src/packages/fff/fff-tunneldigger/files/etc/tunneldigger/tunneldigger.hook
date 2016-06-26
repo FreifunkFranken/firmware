@@ -1,0 +1,10 @@
+#!/bin/sh
+
+HOOK=$1
+INTERFACE=$2
+
+if [ "$HOOK" = session.up ]; then
+       ip l s dev $INTERFACE up
+       batctl if add $INTERFACE
+       echo "enabled" > /sys/devices/virtual/net/$INTERFACE/batman_adv/no_rebroadcast
+fi
