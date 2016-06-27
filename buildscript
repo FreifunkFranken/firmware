@@ -39,10 +39,15 @@ ROUTING=(routing
          e870c3373eea80df852d42fac3f40aaffd7a0f58)
 ROUTING_PKGS="alfred"
 
+WLANSLOVENIJA=(wlanslovenija
+       https://github.com/wlanslovenija/firmware-packages-opkg
+       fec592e0540ef883bc8b27b77e7ff45d93ed3f24)
+WLANSLOVENIJA_PKGS="tunneldigger"
+
 FFF=(fff)
 FFF_PKGS="-a"
 
-FEEDS=(OPENWRT ROUTING GLUON FFF)
+FEEDS=(OPENWRT ROUTING GLUON WLANSLOVENIJA FFF)
 
 checkout_git(){
     local DIRECTORY=$1
