@@ -34,6 +34,10 @@ echo -ne "Firmware found on server: $VERSION\n"
 if [ $VERSION -eq $FIRMWARE_VERSION ]; then
   echo -ne "The installed firmware version is already the current version.\n\n"
 
+  if [ "$1" = "--script" ]; then
+    exit 1
+  fi
+
   while true; do
     echo -ne "Do you want to reinstall the current version? [y/N]\n"
     read DO_UPDATE
@@ -65,6 +69,10 @@ if [ $ret -ne 0 ]; then
   rm -f ${FILE}*
   exit 1
 else
+  if [ "$1" = "--script" ]; then
+    echo -ne "\nStarting firmware upgrade. Don't touch me until I reboot.\n\n\n"
+    sysupgrade ${FILE}
+  fi
   while true; do
     read -p "sha256 sums correct. Should I start upgrading the firmware (y/N)? " yn
     case $yn in
