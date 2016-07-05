@@ -1,0 +1,80 @@
+#!/bin/sh
+
+test -f /tmp/started || exit
+
+make_config() {
+# remove old config
+>/etc/config/tunneldigger
+rm /tmp/fastd_${project}_peers/*
+count=0
+# get fastd peers
+pubkey=$(echo "secret \"$(uci get fastd.fff.secret)\";" | fastd -c - --show-key --machine-readable)
+wget -T15 "http://keyserver.freifunk-franken.de/${project}/geo.php?mac=$mac&name=$hostname&port=$port&key=$pubkey&lat=$lat&long=$long" -O /tmp/fastd_${project}_output
+filecounts=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_${project}_output)
+for file in $filecounts; do
+    awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_${project}_output | sed 's/ float;/;/g' > /etc/fastd/$project/peers/$file
+    echo 'float yes;' >> /etc/fastd/$project/peers/$file
+
+    # ask for Broker and select the tunnel
+    IP=$(awk -F\" '/remote/ {print $2}' /etc/fastd/${project}/peers/$file)
+    if [ "l2tp" = "$(wget -T10 $IP/vpn.txt -O - 2>/dev/null)" ]; then
+        # Gateway offers l2tp
+        FDPORT=$(awk '/remote/{gsub(";", ""); print $5}' /etc/fastd/${project}/peers/$file)
+        L2PORT=$((FDPORT + 10000))
+        UUID=_$hostname
+
+        uci set tunneldigger.$count=broker
+        uci set tunneldigger.$count.address="$IP:$L2PORT"
+        uci set tunneldigger.$count.uuid="$UUID"
+        uci set tunneldigger.$count.interface="l2tp$count"
+        uci set tunneldigger.$count.enabled="1"
+        uci set tunneldigger.$count.hook_script='/etc/tunneldigger/tunneldigger.hook'
+        uci commit tunneldigger
+        count=$((count + 1))
+        # remove this fastd-peer
+        rm /etc/fastd/${project}/peers/$file
+    fi
+done
+}
+
+# main
+test_ipv4_host1="keyserver.freifunk-franken.de" # Freifunk-Franken keyserver
+test_ipv4_host2="8.8.8.8"        # Google DNS
+test_ipv6_host1="heise.de"       # heise Zeitschriftenverlag
+
+# Only do something when the router has internet connection
+if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
+   ping -w5 -c3 "$test_ipv4_host2" &>/dev/null ||
+   ping6 -w5 -c3 "$test_ipv6_host1" &>/dev/null; then
+
+    # set some vars
+    . /etc/community.cfg
+    project="$VPN_PROJECT"
+    mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
+    lat=$(uci get system.@system[0].latitude)
+    long=$(uci get system.@system[0].longitude)
+    hostname=$(cat /proc/sys/kernel/hostname)
+    [ "$hostname" = "OpenWrt" ] && hostname=""
+    [ "$hostname" = "" ] &&  hostname="$mac"
+
+    if [ ! -d /tmp/fastd_${project}_peers ]; then
+        # first run after reboot
+        mkdir /tmp/fastd_${project}_peers
+        # do we have a fastd secret
+        if ! egrep "option secret '[0-9a-f]{64}'" /etc/config/fastd &>dev/null; then
+            secret=$(fastd --generate-key 2>&1 |  awk '/[Ss]ecret/ { print $2 }')
+            uci set fastd.${project}.secret="$secret"
+            uci commit fastd
+        fi
+        make_config
+        /etc/init.d/fastd start
+        /etc/init.d/tunneldigger start
+    else
+        # check if new tunneldigger conf is different
+        sumold=$(sha256sum /etc/config/tunneldigger)
+        make_config
+        sumnew=$(sha256sum /etc/config/tunneldigger)
+        [ "$sumnew" != "$sumold" ] && /etc/init.d/tunneldigger restart
+        /etc/init.d/fastd reload
+    fi
+fi
