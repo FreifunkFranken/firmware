@@ -55,7 +55,11 @@ if [ $VERSION -eq $FIRMWARE_VERSION ]; then
   done
 fi
 
-FILE="${FIRMWARE_COMMUNITY}-${VERSION}-${SOC}-generic-${BOARD}-squashfs-sysupgrade.bin"
+if [ "$FIRMWARE_COMMUNITY" == "franken" ]; then
+    FIRMWARE_COMMUNITY="fff"
+fi
+
+FILE="${FIRMWARE_COMMUNITY}-${VERSION}-${SOC}-g-${BOARD}-squashfs-sysupgrade.bin"
 echo -ne "Downloading $FILE\n\n"
 wget "${UPGRADE_PATH}/${FILE}"
 wget "${UPGRADE_PATH}/${FILE}.sha256"

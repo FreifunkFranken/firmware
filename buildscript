@@ -269,13 +269,21 @@ config() {
 }
 
 cp_firmware() {
+    if [ "$community" = "franken" ]; then
+        local community="fff"
+    fi
+
     for image in ${images[@]}; do
         filename_build=${image//openwrt/${community}-${version}}
+        filename_build=${filename_build//generic/g}
         cp "$target/bin/${chipset}/$image" "./bin/$filename_build"
 
         image_factory=${image/sysupgrade/factory}
         if [[ -f "$target/bin/${chipset}/$image_factory" ]]; then
           filename_build_factory=${filename_build/sysupgrade/factory}
+          if [ ${#image_factory} -lt ${#filename_build_factory} ]; then
+            echo "Warning: The factory image file name (${filename_build_factory}) is longer than the OpenWrt one, which might be incompatibility with the stock firmware."
+          fi
           cp "$target/bin/${chipset}/$image_factory" "./bin/$filename_build_factory"
         fi
     done
