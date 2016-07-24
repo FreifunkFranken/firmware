@@ -76,5 +76,13 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
         sumnew=$(sha256sum /etc/config/tunneldigger)
         [ "$sumnew" != "$sumold" ] && /etc/init.d/tunneldigger restart
         /etc/init.d/fastd reload
+
+        # fastd start/stop for various situations
+        if [ "$(ls /etc/fastd/${project}/peers/* 2>/dev/null)" ]; then
+            [ -d /proc/$(cat /tmp/run/fastd.${project}.pid) ] || /etc/init.d/fastd start
+        else
+            [ -d /proc/$(cat /tmp/run/fastd.${project}.pid) ] && /etc/init.d/fastd stop
+        fi
+
     fi
 fi
