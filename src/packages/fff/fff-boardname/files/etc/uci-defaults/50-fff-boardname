@@ -28,6 +28,9 @@ case "$BOARD" in
     bullet-m)
         BOARD=ubnt-bullet-m
         ;;
+    unifi)
+        BOARD=ubnt-unifi
+        ;;
     loco-m-xw)
         BOARD=ubnt-loco-m-xw
         ;;

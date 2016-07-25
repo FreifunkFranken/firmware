@@ -21,7 +21,7 @@
 ## For devices only including one ethernet port the specifier is called
 ## ETHMODE. The default mode for these devices is "BATMAN".
 ## For example this is the case for: gl-ar150, tl-mr3020-v1, tl-wa850re-v1,
-## tl-wa860re-v1, ubnt-bullet-m, ubnt-loco-m-xw, ubnt-nano-m
+## tl-wa860re-v1, ubnt-bullet-m, ubnt-loco-m-xw, ubnt-nano-m, ubnt-unifi
 ETHMODE="BATMAN"
 ## Devices featuring 2 ethernet ports are configured by SPECIFIERs ressembling
 ## the labels on the PORT itself. For the cpe210 these are called LAN0 and LAN1.
