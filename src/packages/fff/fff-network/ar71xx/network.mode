@@ -5,7 +5,6 @@
 ## If you want to change their behavior, you can do so below.
 ## After that you have to reset the config with following commands.
 #cp /rom/etc/sysctl.conf /etc/sysctl.conf
-#cp /rom/etc/config/network /etc/config/network
 #reboot
 #
 ### The canonical syntax of this file is:

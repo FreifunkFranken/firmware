@@ -6,7 +6,6 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 	sed -i '/^.*# set via WebUI/d' /etc/network.mode
 	echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.mode
 	cp /rom/etc/sysctl.conf /etc/sysctl.conf
-	cp /rom/etc/config/network /etc/config/network
 	do_reboot=1
 	MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
 fi
