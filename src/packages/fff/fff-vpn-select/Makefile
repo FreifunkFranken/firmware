@@ -18,7 +18,7 @@ define Package/fff-vpn-select
 endef
 
 define Package/fff-vpn-select/description
-    Thie package selects and starts the VPN 
+    This package selects and starts the VPN 
     In this version fastd and l2tp via tunneldigger
 endef
 
