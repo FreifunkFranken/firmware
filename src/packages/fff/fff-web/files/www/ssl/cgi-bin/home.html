@@ -53,7 +53,7 @@ fi
 	<legend>Software</legend>
 	<table>
 		<tr><th>Firmware Version:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
-		<tr><th>OpenWRT Version:</th><td><%= ${DISTRIB_DESCRIPTION} %></td></tr>
+		<tr><th>OpenWrt Version:</th><td><%= ${DISTRIB_DESCRIPTION} %></td></tr>
 		<tr><th>Kernel Version:</th><td><% uname -s -m -r %></td></tr>
 		<tr><th>Batman-Adv Version:</th><td><% cat /sys/module/batman_adv/version 2>/dev/null %></td></tr>
 		<tr><th>Fastd Version:</th><td><% fastd --version 2> /dev/null | cut -d' ' -f 2 %></td></tr>

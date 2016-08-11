@@ -437,7 +437,7 @@ case "$1" in
                 config openwrt
                 ;;
             *)
-                echo "This open the OpenWRT menuconfig dialog"
+                echo "This open the OpenWrt menuconfig dialog"
                 echo
                 echo "Usage: $0 $1 openwrt"
                 echo

@@ -8,7 +8,7 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 
 ## Benutzung des Buildscripts
 ### Prerequisites
-* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst)
+* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
 * `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
@@ -41,12 +41,12 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
 
 ### `./buildscript prepare`
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
-  * OpenWRT
+  * OpenWrt
   * Sämtliche Packages (ggfs werden Patches angewandt)
 
 * Ein ggfs altes Target wird gelöscht
-* OpenWRT wird ins Target exportiert (kopiert)
-* Eine OpenWRT Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
+* OpenWrt wird ins Target exportiert (kopiert)
+* Eine OpenWrt Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
 * Die Feeds werden geladen
 * Spezielle Auswahl an Paketen wird geladen
 * Patches werden angewandt
@@ -57,18 +57,18 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
   * $target/files aufräumen
     * (In $target/files liegen Dateien, die später direkt im Ziel-Image landen)
   * Files aus default-bsp und bsp kopieren
-  * OpenWRT- und Kernel-Config kopieren
+  * OpenWrt- und Kernel-Config kopieren
   * board_prebuild() aus dem BSP wird aufgerufen
 * Templates transformieren
 * GIT Versionen speichern: $target/files/etc/firmware_release
-* OpenWRT: make
+* OpenWrt: make
 * postbuild
   * board_postbuild() wird aufgerufen
 
 ### `./buildscript config`
-Um das Arbeiten mit den OpenWRT .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWRT menuconfig und die OpenWRT kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
+Um das Arbeiten mit den OpenWrt .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWrt menuconfig und die OpenWrt kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
 * prebuild
-* OpenWRT: `make menuconfig ; make kernel_menuconfig`
+* OpenWrt: `make menuconfig ; make kernel_menuconfig`
 * Speichern, y/n?
 * Config-Format vereinfachen
 * Config ins BSP zurück speichern
