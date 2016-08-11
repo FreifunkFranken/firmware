@@ -1,6 +1,7 @@
 config 'system'
 	option 'hostname' 'OpenWrt'
 	option 'timezone' 'CET-1CEST,M3.5.0,M10.5.0/3'
+	option 'factory' '1'
 
 config 'led' 'status_led_green'
 	option 'name' 'status'
