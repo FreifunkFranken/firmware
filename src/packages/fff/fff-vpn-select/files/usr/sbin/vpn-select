@@ -21,7 +21,7 @@ for file in $filecounts; do
         # Gateway offers l2tp
         FDPORT=$(awk '/remote/{gsub(";", ""); print $5}' /etc/fastd/${project}/peers/$file)
         L2PORT=$((FDPORT + 10000))
-        UUID=_$hostname
+        UUID=$hostname
 
         uci set tunneldigger.$count=broker
         uci set tunneldigger.$count.address="$IP:$L2PORT"
