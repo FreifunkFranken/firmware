@@ -61,7 +61,7 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
         # first run after reboot
         mkdir /tmp/fastd_${project}_peers
         # do we have a fastd secret
-        if ! egrep "option secret '[0-9a-f]{64}'" /etc/config/fastd &>dev/null; then
+        if ! egrep "option secret '[0-9a-f]{64}'" /etc/config/fastd &>/dev/null; then
             secret=$(fastd --generate-key 2>&1 |  awk '/[Ss]ecret/ { print $2 }')
             uci set fastd.${project}.secret="$secret"
             uci commit fastd
