@@ -14,7 +14,6 @@ define Package/fff-fastd
     TITLE:=Freifunk-Franken fastd configuration script
     URL:=http://www.freifunk-franken.de
     DEPENDS:=+@BUSYBOX_CUSTOM \
-             +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT \
              +@FASTD_ENABLE_METHOD_NULL \
              +@FASTD_ENABLE_CIPHER_NULL \
              +@FASTD_WITH_STATUS_SOCKET \
