@@ -29,7 +29,7 @@ if ! uci get network.$SWITCHDEV.ifname; then
 
     echo "# Allow IPv6 RAs on WAN Port" >> /etc/sysctl.conf
 
-    if [[ "$WANDEV" = "$SWITCHDEV" ]]; then
+    if [[ "$WANDEV" = "$SWITCHDEV" ]] || ! [[ -z "$WAN_PORTS" ]]; then
         uci set network.${SWITCHDEV}_2=switch_vlan
         uci set network.${SWITCHDEV}_2.device=$SWITCHHW
         uci set network.${SWITCHDEV}_2.vlan=2

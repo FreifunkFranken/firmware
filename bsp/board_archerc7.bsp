@@ -1,0 +1,5 @@
+machine=archerc7
+chipset=ar71xx
+target=$builddir/$machine
+images=("openwrt-ar71xx-generic-archer-c7-v2-squashfs-sysupgrade.bin"
+        )
