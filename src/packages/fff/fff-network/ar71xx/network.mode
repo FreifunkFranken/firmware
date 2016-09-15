@@ -3,8 +3,7 @@
 ## if the routers interfaces differ from the standard WAN+4LAN-Ports
 ## +2Wireless APs.
 ## If you want to change their behavior, you can do so below.
-## After that you have to reset the config with following commands.
-#cp /rom/etc/sysctl.conf /etc/sysctl.conf
+## After that you have to reboot the router with following command.
 #reboot
 #
 ### The canonical syntax of this file is:

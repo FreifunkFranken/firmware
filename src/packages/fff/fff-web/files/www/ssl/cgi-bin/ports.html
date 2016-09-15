@@ -5,7 +5,6 @@
 if [ "$REQUEST_METHOD" == "POST" ] ; then
 	sed -i '/^.*# set via WebUI/d' /etc/network.mode
 	echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.mode
-	cp /rom/etc/sysctl.conf /etc/sysctl.conf
 	do_reboot=1
 	MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
 fi
@@ -67,12 +66,8 @@ fi
 				<th style="width: 1em;">Anschluss&nbsp;Modus:</th>
 				<td>
 					<select name="mode">
-						<% if grep ETHMODE /etc/network.$(uci -q get board.model.name) | grep -q WAN ; then %>
-							<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n selected %>>WAN</option>
-						<% fi %>
-						<% if grep ETHMODE /etc/network.$(uci -q get board.model.name) | grep -q CLIENT ; then %>
-							<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n selected %>>Client</option>
-						<% fi %>
+						<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n selected %>>WAN</option>
+						<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n selected %>>Client</option>
 						<option value="BATMAN" <% [ "$ETHMODE" == "BATMAN" ] && echo -n selected %>>BATMAN</option>
 					</select>
 				</td>

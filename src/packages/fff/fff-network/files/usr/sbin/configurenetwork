@@ -65,6 +65,41 @@ if ! uci get network.$SWITCHDEV.ifname; then
     /etc/init.d/network restart
 fi
 
+if [ "$ONE_PORT" = "YES" ]; then
+    uci set network.$SWITCHDEV=interface
+    uci set network.$SWITCHDEV.ifname=$SWITCHDEV
+    if [ "$ETHMODE" = "WAN" ]; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0"
+        uci set network.wan.ifname="$WANDEV"
+        uci del uci set network.ethmesh.ifname
+        uci del network.eth0.macaddr
+    elif [ "$ETHMODE" = "CLIENT" ] ; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0 $SWITCHDEV"
+        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci del network.ethmesh.ifname
+        uci del network.eth0.macaddr
+    elif [ "$ETHMODE" = "BATMAN" ] ; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0"
+        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci set network.ethmesh.ifname="$SWITCHDEV"
+        ETH0MAC="w2ap"
+    fi
+    uci commit
+    /etc/init.d/network restart
+fi
+
 if [[ -n "$ETHMESHMAC" ]]; then
     if uci get network.ethmesh.macaddr
     then
