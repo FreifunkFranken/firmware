@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="39"
+SCRIPT_VERSION="40"
 
 test -f /tmp/started || exit
 
@@ -58,7 +58,7 @@ crawl() {
     hostname="$(cat /proc/sys/kernel/hostname)"
     description="$(uci get system.@system[0].description)"
     if [ -n "$description" ]; then
-        description="<description>$description</description>"
+        description="<description><![CDATA[$description]]></description>"
     fi
     latitude="$(uci get system.@system[0].latitude)"
     longitude="$(uci get system.@system[0].longitude)"
@@ -67,7 +67,7 @@ crawl() {
     fi
     position_comment="$(uci get system.@system[0].position_comment)"
     if [ -n "$position_comment" ]; then
-        position_comment="<position_comment>$position_comment</position_comment>"
+        position_comment="<position_comment><![CDATA[$position_comment]]></position_comment>"
     fi
     contact="$(uci get system.@system[0].contact)"
     if [ -n "$contact" ]; then
