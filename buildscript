@@ -13,7 +13,7 @@
 
 builddir=./build
 
-OPENWRTREV="eadf19c0b43d2f75f196ea8d875a08c7c348530c"
+OPENWRTREV="fa885ed5db012f8d470271d14bf8653db00ef2a5"
 OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
 PACKAGEREV="d3468397509bc98586712b601502e9ef84e061c6"
 PACKAGEURL="https://github.com/openwrt/packages.git"
