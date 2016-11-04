@@ -253,7 +253,7 @@ crawl() {
     DATA=$DATA"<client_count>$client_count</client_count>"
     DATA=$DATA"</data>"
 
-    #write data to hxml file that provides the data on httpd
+    #write data to xml file that provides the data on httpd
     SCRIPT_DATA_DIR=$(dirname "$SCRIPT_DATA_FILE")
     test -d "$SCRIPT_DATA_DIR" || mkdir -p "$SCRIPT_DATA_DIR"
     echo "$DATA" | gzip | tee "$SCRIPT_DATA_FILE" | alfred -s 64
