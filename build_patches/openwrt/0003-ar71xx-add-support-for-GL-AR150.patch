@@ -1,6 +1,6 @@
 --- target/linux/ar71xx/base-files/etc/uci-defaults/01_leds
 +++ target/linux/ar71xx/base-files/etc/uci-defaults/01_leds
-@@ -181,6 +181,10 @@ dlan-pro-1200-ac)
+@@ -188,6 +188,10 @@ dlan-pro-1200-ac)
  	ucidef_set_led_trigger_gpio "plcr" "dLAN" "devolo:error:dlan" "16" "0"
  	;;
  
@@ -13,7 +13,7 @@
  	ucidef_set_led_wlan "wlan" "WLAN" "gl-connect:red:wlan" "phy0tpt"
 --- target/linux/ar71xx/base-files/etc/uci-defaults/02_network
 +++ target/linux/ar71xx/base-files/etc/uci-defaults/02_network
-@@ -375,6 +375,7 @@ dir-505-a1)
+@@ -382,6 +382,7 @@ dir-505-a1)
  alfa-ap96 |\
  alfa-nx |\
  ap83 |\
@@ -23,7 +23,7 @@
  pb42 |\
 --- target/linux/ar71xx/base-files/lib/ar71xx.sh
 +++ target/linux/ar71xx/base-files/lib/ar71xx.sh
-@@ -454,6 +454,9 @@ ar71xx_board_detect() {
+@@ -461,6 +461,9 @@ ar71xx_board_detect() {
  		name="gl-inet"
  		gl_inet_board_detect
  		;;
@@ -35,7 +35,7 @@
  		;;
 --- target/linux/ar71xx/base-files/lib/upgrade/platform.sh
 +++ target/linux/ar71xx/base-files/lib/upgrade/platform.sh
-@@ -216,6 +216,7 @@ platform_check_image() {
+@@ -217,6 +217,7 @@ platform_check_image() {
  	esr900 | \
  	ew-dorin | \
  	ew-dorin-router | \
@@ -45,7 +45,7 @@
  	mzk-w04nu | \
 --- target/linux/ar71xx/config-3.18
 +++ target/linux/ar71xx/config-3.18
-@@ -68,6 +68,7 @@ CONFIG_ATH79_MACH_ESR1750=y
+@@ -70,6 +70,7 @@ CONFIG_ATH79_MACH_ESR1750=y
  CONFIG_ATH79_MACH_ESR900=y
  CONFIG_ATH79_MACH_EW_DORIN=y
  CONFIG_ATH79_MACH_F9K1115V2=y
