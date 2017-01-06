@@ -1,0 +1,13 @@
+diff --git package/utils/busybox/files/sysntpd package/utils/busybox/files/sysntpd
+index f73bb83..61cb54c 100755
+--- package/utils/busybox/files/sysntpd
++++ package/utils/busybox/files/sysntpd
+@@ -9,7 +9,7 @@ HOTPLUG_SCRIPT=/usr/sbin/ntpd-hotplug
+ 
+ validate_ntp_section() {
+ 	uci_validate_section system timeserver "${1}" \
+-		'server:list(host)' 'enabled:bool:1' 'enable_server:bool:0'
++		'server:list(string)' 'enabled:bool:1' 'enable_server:bool:0'
+ }
+ 
+ start_service() {
