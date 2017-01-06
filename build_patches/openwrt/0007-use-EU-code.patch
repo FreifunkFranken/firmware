@@ -19,3 +19,13 @@ index a8073f2..5f0df54 100644
  		-k $@ \
  		-o $@.new \
  		-s -S \
+@@ -589,6 +598,9 @@ define Device/tl-wr841n-v11
+     BOARDNAME := TL-WR841N-v11
+     DEVICE_PROFILE := TLWR841
+     TPLINK_HWID := 0x08410011
++    IMAGES += factory-us.bin factory-eu.bin
++    IMAGE/factory-eu.bin := append-rootfs | mktplinkfw factory -C EU
++    IMAGE/factory-us.bin := append-rootfs | mktplinkfw factory -C US
+ endef
+ 
+ define Device/tl-wr842n-v2
