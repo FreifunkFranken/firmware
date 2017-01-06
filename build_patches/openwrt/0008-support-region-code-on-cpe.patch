@@ -1,0 +1,24 @@
+diff --git tools/firmware-utils/src/tplink-safeloader.c tools/firmware-utils/src/tplink-safeloader.c
+index 77a894b..5889bda 100644
+--- tools/firmware-utils/src/tplink-safeloader.c
++++ tools/firmware-utils/src/tplink-safeloader.c
+@@ -134,11 +134,19 @@ static const char cpe510_support_list[] =
+ 	"SupportList:\r\n"
+ 	"CPE510(TP-LINK|UN|N300-5):1.0\r\n"
+ 	"CPE510(TP-LINK|UN|N300-5):1.1\r\n"
++	"CPE510(TP-LINK|US|N300-5):1.1\r\n"
++	"CPE510(TP-LINK|EU|N300-5):1.1\r\n"
+ 	"CPE520(TP-LINK|UN|N300-5):1.0\r\n"
+ 	"CPE520(TP-LINK|UN|N300-5):1.1\r\n"
++	"CPE520(TP-LINK|US|N300-5):1.1\r\n"
++	"CPE520(TP-LINK|EU|N300-5):1.1\r\n"
+ 	"CPE210(TP-LINK|UN|N300-2):1.0\r\n"
+ 	"CPE210(TP-LINK|UN|N300-2):1.1\r\n"
++	"CPE210(TP-LINK|US|N300-2):1.1\r\n"
++	"CPE210(TP-LINK|EU|N300-2):1.1\r\n"
+ 	"CPE220(TP-LINK|UN|N300-2):1.0\r\n"
++	"CPE220(TP-LINK|US|N300-2):1.1\r\n"
++	"CPE220(TP-LINK|EU|N300-2):1.1\r\n"
+ 	"CPE220(TP-LINK|UN|N300-2):1.1\r\n";
+ 
+ #define error(_ret, _errno, _str, ...)				\
