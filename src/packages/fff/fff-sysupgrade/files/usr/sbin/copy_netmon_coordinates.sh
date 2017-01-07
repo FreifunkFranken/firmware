@@ -26,6 +26,9 @@ xml_data=$( wget -q -O - "http://fe80::ff:feee:1%br-mesh/api/rest/api.php?rquest
 if [ -z "$xml_data" ]; then
 	echo "xml_data is not set"
 	exit 1
+elif echo "$xml_data"|grep "can't connect to remote host" ;then
+	echo "The Netmon Server can't be reached."
+	exit 1
 elif echo "$xml_data"|grep "HTTP/1.1 404 Not Found" ;then
 	echo "This Router is not present in the Netmon Database."
 	delete_myself
@@ -45,6 +48,9 @@ if [ "$latitude" -eq 0 ] && [ "$longitude" -eq 0 ]; then
 	echo "Unable to retrieve coordinates from Netmon."
 	echo "Maybe the coordinates are suppressed."
 	delete_myself
+elif [ -z "$latitude" ] || [ -z "$longitude" ]; then
+    echo "No coordinates, looks like an error"
+    exit 1
 fi
 
 uci set system.@system[0]=system
