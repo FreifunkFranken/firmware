@@ -14,7 +14,10 @@ define Package/fff-base
     DEFAULT:=y
     TITLE:= Freifunk-Franken Base
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+micrond \
+    DEPENDS:=+iptables \
+             +ip6tables \
+             +odhcp6c \
+             +micrond \
              +fff-nodewatcher \
              +fff-web \
              +fff-uradvd \

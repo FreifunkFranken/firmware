@@ -44,6 +44,9 @@ FFF_PKGS="-a"
 
 FEEDS=(OPENWRT ROUTING GLUON FFF)
 
+# Disable dnsmasq and other useless stuff
+export DEVICE_TYPE=
+
 checkout_git(){
     local DIRECTORY=$1
     local REPO_URL=$2
