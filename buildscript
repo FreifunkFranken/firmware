@@ -13,8 +13,8 @@
 
 builddir=./build
 
-OPENWRTREV="1fea0d89f5b7867262213fc0ac459c4ab861e465"
-OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
+OPENWRTREV="f2b885d82e6e7859f7cc32b557bbd80735e32b47" # LEDE 17.01
+OPENWRTURL="https://git.lede-project.org/source.git"
 PACKAGEREV="d3468397509bc98586712b601502e9ef84e061c6"
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
