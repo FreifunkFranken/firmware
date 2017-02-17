@@ -1,0 +1,13 @@
+diff --git package/utils/busybox/files/sysntpd package/utils/busybox/files/sysntpd
+index 98260be..07b738c 100755
+--- package/utils/busybox/files/sysntpd
++++ package/utils/busybox/files/sysntpd
+@@ -30,7 +30,7 @@ get_dhcp_ntp_servers() {
+ 
+ validate_ntp_section() {
+ 	uci_validate_section system timeserver "${1}" \
+-		'server:list(host)' 'enabled:bool:1' 'enable_server:bool:0' 'use_dhcp:bool:1' 'dhcp_interface:list(string)'
++		'server:list(string)' 'enabled:bool:1' 'enable_server:bool:0' 'use_dhcp:bool:1' 'dhcp_interface:list(string)'
+ }
+ 
+ start_service() {
