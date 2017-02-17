@@ -1,0 +1,16 @@
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS="1 2 0t"
+WAN_PORTS="5 0t"
+BATMAN_PORTS="3 4 0t"
+
+. /lib/functions/system.sh
+. /lib/functions/uci-defaults.sh
+. /lib/ar71xx.sh
+
+# Load second MAC from Flash because we haven't any Interface with this MAC where we can copy the MAC from
+# https://github.com/lede-project/source/pull/613/files#diff-abd6f42f54204372151e73eac0556db1
+
+NEWMAC=$(mtd_get_mac_binary config 0x1017c)
+ETHMESHMAC=1
+ROUTERMAC=eth0
