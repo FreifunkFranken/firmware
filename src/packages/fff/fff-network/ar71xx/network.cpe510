@@ -1,0 +1,27 @@
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS="0t"
+WAN_PORTS="0t"
+BATMAN_PORTS="0t"
+
+ETHMESHMAC="w2ap"
+
+. /etc/network.mode
+
+#LAN0: default: BATMAN
+if [ "${LAN0MODE}" = "BATMAN" ] ; then
+  BATMAN_PORTS="${BATMAN_PORTS} 5"
+elif [ "${LAN0MODE}" = "CLIENT" ] ; then
+  CLIENT_PORTS="${CLIENT_PORTS} 5"
+else
+  WAN_PORTS="${WAN_PORTS} 5"
+fi
+
+#LAN1: default: BATMAN
+if [ "${LAN1MODE}" = "WAN" ] ; then
+  WAN_PORTS="${WAN_PORTS} 4"
+elif [ "${LAN1MODE}" = "CLIENT" ] ; then
+  CLIENT_PORTS="${CLIENT_PORTS} 4"
+else
+  BATMAN_PORTS="${BATMAN_PORTS} 4"
+fi

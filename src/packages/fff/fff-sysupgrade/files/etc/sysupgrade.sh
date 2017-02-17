@@ -19,7 +19,19 @@ echo -ne "\nHardware: $BOARD\n"
 #rewrite BOARD
 case $BOARD in
     cpe210 )
-        BOARD="cpe210-220-510-520" ;;
+        BOARD="cpe210-220" ;;
+    cpe510 )
+        BOARD="cpe510-520" ;;
+    wr841nd-v7 )
+        BOARD="wr841-v7" ;;
+    wr841n-v8 )
+        BOARD="wr841-v8" ;;
+    wr841n-v9 )
+        BOARD="wr841-v9" ;;
+    wr841n-v10 )
+        BOARD="wr841-v10" ;;
+    wr841n-v11 )
+        BOARD="wr841-v11" ;;
 esac
 
 wget "${UPGRADE_PATH}/release.nfo"

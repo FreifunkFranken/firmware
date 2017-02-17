@@ -51,9 +51,6 @@ case "$BOARD" in
     tl-mr3020)
         BOARD=tl-mr3020-v1
         ;;
-    cpe510)
-        grep "CPE210" /var/sysinfo/model && BOARD=cpe210
-        ;;
     archer-c7)
         BOARD=archer-c7-v2
         ;;
