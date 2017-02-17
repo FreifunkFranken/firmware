@@ -12,6 +12,7 @@ setTimeserver() {
 	local ntp=$1
 
 	uci batch <<-__EOF__
+		delete system.ntp
 		set system.ntp='timeserver'
 		add_list system.ntp.server='$ntp'
 		set system.ntp.enable_server='0'
