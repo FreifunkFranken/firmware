@@ -15,7 +15,7 @@ builddir=./build
 
 OPENWRTREV="f2b885d82e6e7859f7cc32b557bbd80735e32b47" # LEDE 17.01
 OPENWRTURL="https://git.lede-project.org/source.git"
-PACKAGEREV="d3468397509bc98586712b601502e9ef84e061c6"
+PACKAGEREV="06198d9c8c1ba061a0a5d566545a5c0bbce2b0a4" # lede-17.01
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
