@@ -13,7 +13,7 @@ define Package/fff-web
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken Webinterface
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+uhttpd +haserl +uhttpd-mod-tls +px5g +simple-tc +fff-boardname
+    DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +simple-tc +fff-boardname
 endef
 
 define Package/fff-web/description
