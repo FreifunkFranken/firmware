@@ -277,18 +277,18 @@ cp_firmware() {
     fi
 
     for image in ${images[@]}; do
-        filename_build=${image//openwrt/${community}-${version}}
+        filename_build=${image//lede/${community}-${version}}
         filename_build=${filename_build//generic/g}
-        cp "$target/bin/${chipset}/$image" "./bin/$filename_build"
+        cp "$target/bin/targets/${chipset}/generic/$image" "./bin/$filename_build"
 
         for region in "" "-eu" "-us"; do
             image_factory=${image/sysupgrade/factory$region}
-            if [[ -f "$target/bin/${chipset}/$image_factory" ]]; then
+            if [[ -f "$target/bin/targets/${chipset}/generic/$image_factory" ]]; then
               filename_build_factory=${filename_build/sysupgrade/factory$region}
               if [ ${#image_factory} -lt ${#filename_build_factory} ]; then
                 echo "Warning: The factory image file name (${filename_build_factory}) is longer than the OpenWrt one, which might be incompatibility with the stock firmware."
               fi
-              cp "$target/bin/${chipset}/$image_factory" "./bin/$filename_build_factory"
+              cp "$target/bin/targets/${chipset}/generic/$image_factory" "./bin/$filename_build_factory"
             fi
         done
     done
