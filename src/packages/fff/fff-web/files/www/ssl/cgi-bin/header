@@ -10,7 +10,7 @@ nav_entry() {
 	echo -ne "\t<li${class_active}><a href=\"${script_file}\">$2</a></li>\n\t\t"
 }
 
-HOSTNAME=$(uci get -q 'system.@system[0].hostname')
+HOSTNAME=$(uci -q get 'system.@system[0].hostname')
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

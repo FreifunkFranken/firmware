@@ -2,12 +2,12 @@
 
 <%
 echo -en "Content-Type: text/html\r\n\r\n"
-HOSTNAME=$(uci get -q 'system.@system[0].hostname')
+HOSTNAME=$(uci -q get 'system.@system[0].hostname')
 
 MAC="$(uci -q get network.mesh.macaddr)"
-lat="$(uci get -q system.@system[0].latitude)"
-lon="$(uci get -q system.@system[0].longitude)"
-contact="$(uci get -q system.@system[0].contact)"
+lat="$(uci -q get system.@system[0].latitude)"
+lon="$(uci -q get system.@system[0].longitude)"
+contact="$(uci -q get system.@system[0].contact)"
 
 . /etc/firmware_release
 
@@ -47,11 +47,11 @@ contact="$(uci get -q system.@system[0].contact)"
 								<tr><th>MAC-Adresse:</th><td style="text-transform: uppercase;"><a href="https://monitoring.freifunk-franken.de/api/get_router_by_mac/<%= $MAC %>"><%= $MAC %></a></td></tr>
 								<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
 								<tr><th>Firmware:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
-								<tr><th>Beschreibung:</th><td><% uci get -q 'system.@system[0].description' %></td></tr>
+								<tr><th>Beschreibung:</th><td><% uci -q get 'system.@system[0].description' %></td></tr>
 								<tr><th>Position:</th><td><% if [ -n "$lat" -a -n "$lon" ]; then
 									echo "<a href=\"https://monitoring.freifunk-franken.de/map?mapcenter=$lat,$lon,16\">${lat:0:8}N, ${lon:0:8}E</a>"
 								fi %></td></tr>
-								<tr><th>Standort:</th><td><% uci get -q 'system.@system[0].position_comment' %></td></tr>
+								<tr><th>Standort:</th><td><% uci -q get 'system.@system[0].position_comment' %></td></tr>
 								<tr><th>E-Mail Adresse:</th><td><a href="mailto:<%= $contact %>"><%= $contact %></a></td></tr>
 							</table>
 						</fieldset>
