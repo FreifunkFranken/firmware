@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-sysupgrade
-PKG_VERSION:=0.0.3
+PKG_VERSION:=0.0.4
 PKG_RELEASE:=4
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-sysupgrade
@@ -13,7 +13,7 @@ define Package/fff-sysupgrade
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken sysupgrade
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-boardname +micrond +@BUSYBOX_CONFIG_WGET
+    DEPENDS:=+fff-boardname +@BUSYBOX_CONFIG_WGET
 endef
 
 define Package/fff-sysupgrade/description
