@@ -29,7 +29,7 @@ for file in $filecounts; do
         uci set tunneldigger.$count.interface="l2tp$count"
         uci set tunneldigger.$count.enabled="1"
         uci set tunneldigger.$count.hook_script='/etc/tunneldigger/tunneldigger.hook'
-        uci commit tunneldigger
+        uci -c /tmp commit tunneldigger
         count=$((count + 1))
         # remove this fastd-peer
         rm /etc/fastd/${project}/peers/$file

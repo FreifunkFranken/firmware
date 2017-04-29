@@ -1,2 +1,3 @@
 /etc/init.d/tunneldigger disable
->/etc/config/tunneldigger
+rm /etc/config/tunneldigger
+ln -s /tmp/tunneldigger /etc/config/
