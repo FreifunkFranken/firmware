@@ -67,7 +67,8 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
             uci commit fastd
         fi
         make_config
-        /etc/init.d/fastd start
+        # start fastd only if there are some peers left
+        [ "$(ls /etc/fastd/${project}/peers/* 2>/dev/null)" ] && /etc/init.d/fastd start
         /etc/init.d/tunneldigger start
     else
         # check if new tunneldigger conf is different
