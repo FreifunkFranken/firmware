@@ -4,9 +4,14 @@
 <%in /www/ssl/cgi-bin/helpers %>
 <%
 if pidof fastd >/dev/null ; then
-	vpn_active="Ja"
+	vpn_active="aktiv"
 else
-	vpn_active="Nein"
+	vpn_active="inaktiv"
+fi
+if grep -q '1' /sys/class/net/l2tp*/carrier ; then
+	l2tp_active="aktiv"
+else
+	l2tp_active="inaktiv"
 fi
 up="$(uptime)"
 load="${up##*:}"
@@ -42,7 +47,8 @@ fi
 		<tr><th>MAC-Adresse:</th><td><% uci -q get network.mesh.macaddr %></td></tr>
 		<tr><th>Bekannte Knoten:</th><td><%= $((`cat /sys/kernel/debug/batman_adv/bat0/transtable_global | grep '^ [^ ]' | cut -b 39-55 | sort | uniq | wc -l 2>/dev/null`+1)) %></td></tr>
 		<tr><th>Nachbarknoten:</th><td><%= $(cat /sys/kernel/debug/batman_adv/bat0/originators | grep '^[0-9a-f]' | cut -b 37-53 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
-		<tr><th>VPN Aktiv:</th><td><%= ${vpn_active} %></td></tr>
+		<tr><th>VPN via fastd:</th><td><%= ${vpn_active} %></td></tr>
+		<tr><th>VPN via L2TP:</th><td><%= ${l2tp_active} %></td></tr>
 		<tr><th>Laufzeit:</th><td><%= ${uptime} %></td></tr>
 		<tr><th>Auslastung:</th><td><%= ${load} %></td></tr>
 		<tr><th>Uhrzeit:</th><td><% date %></td></tr>
