@@ -1,0 +1,41 @@
+--- target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch	1970-01-01 01:00:00.000000000 +0100
++++ target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch	2016-03-12 18:41:32.818602442 +0100
+@@ -0,0 +1,38 @@
++From 19b1c8733b99f13005f2d8918bce588f0b2556f8 Mon Sep 17 00:00:00 2001
++From: Dominik Heidler <dominik@heidler.eu>
++Date: Sat, 12 Mar 2016 18:37:42 +0100
++Subject: [PATCH] Fix l2tp stats couter on 32 Bit Systems
++
++---
++ net/l2tp/l2tp_eth.c | 9 +++++++++
++ 1 file changed, 9 insertions(+)
++
++diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
++index e253c26..a18c2ff 100644
++--- a/net/l2tp/l2tp_eth.c
+++++ b/net/l2tp/l2tp_eth.c
++@@ -111,12 +111,21 @@ static struct rtnl_link_stats64 *l2tp_eth_get_stats64(struct net_device *dev,
++ {
++ 	struct l2tp_eth *priv = netdev_priv(dev);
++ 
+++	#if BITS_PER_LONG == 64
++ 	stats->tx_bytes   = atomic_long_read(&priv->tx_bytes);
++ 	stats->tx_packets = atomic_long_read(&priv->tx_packets);
++ 	stats->tx_dropped = atomic_long_read(&priv->tx_dropped);
++ 	stats->rx_bytes   = atomic_long_read(&priv->rx_bytes);
++ 	stats->rx_packets = atomic_long_read(&priv->rx_packets);
++ 	stats->rx_errors  = atomic_long_read(&priv->rx_errors);
+++	#else
+++	stats->tx_bytes   = (unsigned long) atomic_long_read(&priv->tx_bytes);
+++	stats->tx_packets = (unsigned long) atomic_long_read(&priv->tx_packets);
+++	stats->tx_dropped = (unsigned long) atomic_long_read(&priv->tx_dropped);
+++	stats->rx_bytes   = (unsigned long) atomic_long_read(&priv->rx_bytes);
+++	stats->rx_packets = (unsigned long) atomic_long_read(&priv->rx_packets);
+++	stats->rx_errors  = (unsigned long) atomic_long_read(&priv->rx_errors);
+++	#endif
++ 	return stats;
++ }
++ 
++-- 
++2.7.2
++
