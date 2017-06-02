@@ -37,6 +37,8 @@ wifiAddPhy() {
 		set wireless.${radio}.hwmode='${hwmode}'
 		set wireless.${radio}.htmode='HT20'
 		set wireless.${radio}.country='DE'
+		set wireless.${radio}.supported_rates='6000 9000 12000 18000 24000 36000 48000 54000'
+		set wireless.${radio}.basic_rate='6000 9000 18000 36000 54000'
 		commit wireless
 	__EOF__
 
