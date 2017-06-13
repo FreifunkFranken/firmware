@@ -44,7 +44,7 @@ fi
 	<table>
 		<tr><th>Name:</th><td><%= ${HOSTNAME} %></td></tr>
 		<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
-		<tr><th>MAC-Adresse:</th><td><% uci -q get network.mesh.macaddr %></td></tr>
+		<tr><th>MAC-Adresse:</th><td><%= $(cat /sys/class/net/br-mesh/address) %></td></tr>
 		<tr><th>Bekannte Knoten:</th><td><%= $((`cat /sys/kernel/debug/batman_adv/bat0/transtable_global | grep '^ [^ ]' | cut -b 39-55 | sort | uniq | wc -l 2>/dev/null`+1)) %></td></tr>
 		<tr><th>Nachbarknoten:</th><td><%= $(cat /sys/kernel/debug/batman_adv/bat0/originators | grep '^[0-9a-f]' | cut -b 37-53 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
 		<tr><th>VPN via fastd:</th><td><%= ${vpn_active} %></td></tr>
