@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="40"
+SCRIPT_VERSION="41"
 
 test -f /tmp/started || exit
 
@@ -135,6 +135,10 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"${geo}"
     SYSTEM_DATA=$SYSTEM_DATA"${position_comment}"
     SYSTEM_DATA=$SYSTEM_DATA"${contact}"
+    if [ "$(uci -q get "system.@system[0].hood")" ] 
+    then                                                                                                                         
+        SYSTEM_DATA=$SYSTEM_DATA"<hood>$(uci -q get "system.@system[0].hood")</hood>"                                            
+    fi  
     SYSTEM_DATA=$SYSTEM_DATA"<distname>$distname</distname>"
     SYSTEM_DATA=$SYSTEM_DATA"<distversion>$distversion</distversion>"
     SYSTEM_DATA=$SYSTEM_DATA"$cpu"
