@@ -54,10 +54,10 @@ if [ $VERSION -eq $FIRMWARE_VERSION ]; then
     echo -ne "Do you want to reinstall the current version? [y/N]\n"
     read DO_UPDATE
     case $DO_UPDATE in
-      [yY])
+      [yY]*|[Jj]*)
         break
         ;;
-      [nN] | "")
+      [nN]*|"")
         exit 1
         ;;
       *)
@@ -92,8 +92,8 @@ else
   while true; do
     read -p "sha256 sums correct. Should I start upgrading the firmware (y/N)? " yn
     case $yn in
-        [Yy] ) echo -ne "\nStarting firmware upgrade. Don't touch me until I reboot.\n\n\n"; sysupgrade ${FILE}; break;;
-        [Nn]|* ) echo -ne "\nAborting firmware upgrade.\n\n"; rm -f ${FILE}*; exit 0;;
+        [Yy]*|[Jj]*) echo -ne "\nStarting firmware upgrade. Don't touch me until I reboot.\n\n\n"; sysupgrade ${FILE}; break;;
+        *) echo -ne "\nAborting firmware upgrade.\n\n"; rm -f ${FILE}*; exit 0;;
     esac
   done
 fi
