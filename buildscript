@@ -135,6 +135,8 @@ prepare() {
     /bin/rm -rf "$target"
     cp -a src/openwrt "$target"
 
+    patch_target
+
     ## generate own feeds.conf
     #this local variable should be globally configure variable used in get_source and here
     local PACKAGEBASE=${PWD}/src/packages
@@ -165,8 +167,6 @@ prepare() {
             "$target"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
         fi
     done
-
-    patch_target
 
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
