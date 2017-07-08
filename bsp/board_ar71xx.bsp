@@ -31,4 +31,5 @@ images=("lede-ar71xx-generic-cpe210-220-squashfs-sysupgrade.bin"
         "lede-ar71xx-generic-tl-wdr4300-v1-squashfs-sysupgrade.bin"
         "lede-ar71xx-generic-tl-wdr4310-v1-squashfs-sysupgrade.bin"
         "lede-ar71xx-generic-archer-c7-v2-squashfs-sysupgrade.bin"
+        "lede-ar71xx-generic-archer-c25-v1-squashfs-sysupgrade.bin"
         )
