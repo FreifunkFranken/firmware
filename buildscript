@@ -122,7 +122,7 @@ get_source() {
 patch_target() {
     if [ "$(find "$PWD"/build_patches/openwrt/*.patch 2> /dev/null | wc -l)" -ge 1 ]; then
         for patch in "$PWD"/build_patches/openwrt/*.patch; do
-            patch --no-backup-if-mismatch -p0 -d "$target" -i "$patch"
+            patch --no-backup-if-mismatch -p1 -d "$target" -i "$patch"
         done
     fi
 }

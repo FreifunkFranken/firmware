@@ -1,5 +1,18 @@
---- target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch	1970-01-01 01:00:00.000000000 +0100
-+++ target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch	2016-03-12 18:41:32.818602442 +0100
+From f4724465e4cdbfecdd934893f6fc0c81f7038e1b Mon Sep 17 00:00:00 2001
+From: Tim Niemeyer <tim@tn-x.org>
+Date: Sat, 8 Jul 2017 10:48:53 +0200
+Subject: [PATCH 4/7] ar71xx-4.4-l2tp-stats
+
+---
+ ...-stats-counter-overflow-on-32-bit-systems.patch | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch
+
+diff --git a/target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch b/target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch
+new file mode 100644
+index 0000000..4348aea
+--- /dev/null
++++ b/target/linux/ar71xx/patches-4.4/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch
 @@ -0,0 +1,38 @@
 +From 19b1c8733b99f13005f2d8918bce588f0b2556f8 Mon Sep 17 00:00:00 2001
 +From: Dominik Heidler <dominik@heidler.eu>
@@ -39,3 +52,6 @@
 +-- 
 +2.7.2
 +
+-- 
+2.1.4
+
