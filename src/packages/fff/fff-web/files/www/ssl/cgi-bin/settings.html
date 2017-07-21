@@ -14,7 +14,7 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 	else
 		# Allgemeine Einstellungen
 		uci -q set "system.@system[0].hostname=${POST_hostname}"
-		uci -q get 'system.@system[0].hostname' > /proc/sys/kernel/hostname
+		echo "$(uci -q get "system.@system[0].hostname")" > /proc/sys/kernel/hostname
 		uci -q set "system.@system[0].description=${POST_description}"
 		uci -q set "system.@system[0].latitude=${POST_latitude}"
 		uci -q set "system.@system[0].longitude=${POST_longitude}"
