@@ -41,13 +41,13 @@ fi
 <%
 # read
 if [ "$(uci -q get 'simple-tc.example.enabled')" == "1" ] ; then
-	traffic_checked="checked"
+	traffic_checked='checked="checked" '
 else
 	traffic_checked=""
 fi
 %>
 <% show_msg %>
-<form method="POST">
+<form method="post">
 <table style="width: 100%;">
 <tr><td>
 <fieldset style="min-height: 13em;">
@@ -71,7 +71,7 @@ fi
 	<legend>Bitratenbegrenzung</legend>
 	<table>
 		<tr><th>Aktiviert:</th><td colspan="2">
-			<input type="checkbox" name="traffic_limit" <%= ${traffic_checked} %>>
+			<input type="checkbox" name="traffic_limit" <%= ${traffic_checked} %>/>
 		</td></tr>
 		<tr><th>Freifunk&nbsp;Download:</th><td><input type="text" name="limit_ingress" value="<%= $(uci -q get 'simple-tc.example.limit_ingress') %>" /></td><td>kbit/s</td></tr>
 		<tr><th>Freifunk&nbsp;Upload:</th><td><input type="text" name="limit_egress" value="<%= $(uci -q get 'simple-tc.example.limit_egress') %>" /></td><td>kbit/s</td></tr>
@@ -79,6 +79,6 @@ fi
 </fieldset>
 </td></tr>
 </table>
-<input type="submit" style="margin-top: 5px; margin-left: 3px;" />
+<p><input type="submit" style="margin-top: 5px; margin-left: 3px;" /></p>
 </form>
 <%in /www/ssl/cgi-bin/footer %>
