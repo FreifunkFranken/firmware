@@ -6,3 +6,6 @@ BATMAN_PORTS="3 4 0t"
 
 ETHMESHMAC=eth1
 ROUTERMAC=eth0
+
+uci -q set "wireless.radio0.disabled=1"
+uci -q commit wireless
