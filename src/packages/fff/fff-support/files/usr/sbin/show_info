@@ -1,0 +1,123 @@
+#!/bin/sh
+
+. /etc/community.cfg
+. /etc/firmware_release
+
+HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+
+human_bytes() {
+	while read B ; do
+		[ $B -lt 1024 ] && echo ${B} B && break
+		KB=$(((B+512)/1024))
+		[ $KB -lt 1024 ] && echo ${KB} KB && break
+		MB=$(((KB+512)/1024))
+		[ $MB -lt 1024 ] && echo ${MB} MB && break
+		GB=$(((MB+512)/1024))
+		[ $GB -lt 1024 ] && echo ${GB} GB && break
+		echo $(((GB+512)/1024)) TB
+	done
+}
+
+if pidof fastd >/dev/null ; then
+	vpn_active="aktiv"
+else
+	vpn_active="inaktiv"
+fi
+if grep -q '1' /sys/class/net/l2tp*/carrier 2> /dev/null ; then
+	l2tp_active="aktiv"
+else
+	l2tp_active="inaktiv"
+fi
+up="$(uptime)"
+load="${up##*:}"
+uptime="${up%%,*}"
+uptime="${uptime##*up}"
+
+#include OpenWrt version
+. /etc/openwrt_release
+. /etc/firmware_release
+
+addr() {
+	local addr="$(ip -$1 address show dev $2 2>/dev/null | tr '/' ' '| awk '/inet/{ printf("%s ", $2); }')"
+	echo "${addr:--}"
+}
+default_gw() {
+	ip -$1 route list 0/0 dev $2 2> /dev/null | awk '{print($3); exit(0)}'
+}
+wanif=$(uci -q get network.wan.ifname)
+if [ -n "$(default_gw 4 $wanif)" -o  -n "$(default_gw 6 $wanif)" ]; then
+	internet_active="Ja"
+else
+	internet_active="Nein"
+fi
+
+echo ""
+echo "Router configuration overview:"
+
+echo ""
+echo "-> SYSTEM"
+echo "Name: ${HOSTNAME}"
+echo "Modell: $(cat /tmp/sysinfo/model 2>/dev/null)"
+echo "MAC-Adresse: $(cat /sys/class/net/br-mesh/address)"
+echo "Bekannte Knoten: $((`cat /sys/kernel/debug/batman_adv/bat0/transtable_global | grep '^ [^ ]' | cut -b 39-55 | sort | uniq | wc -l 2>/dev/null`+1))"
+echo "Nachbarknoten: $(cat /sys/kernel/debug/batman_adv/bat0/originators | grep '^[0-9a-f]' | cut -b 37-53 | sort | uniq | wc -l 2>/dev/null)"
+echo "VPN via fastd: ${vpn_active}"
+echo "VPN via L2TP: ${l2tp_active}"
+echo "Laufzeit: ${uptime}"
+echo "Auslastung: ${load}"
+echo "Uhrzeit: $(date)"
+
+echo ""
+echo "-> SOFTWARE"
+echo "Firmware Version: ${FIRMWARE_VERSION}"
+echo "LEDE Version: ${DISTRIB_DESCRIPTION}"
+echo "Kernel Version: $(uname -s -m -r)"
+echo "Batman-Adv Version: $(cat /sys/module/batman_adv/version 2>/dev/null)"
+echo "Fastd Version: $(fastd --version 2> /dev/null | cut -d' ' -f 2)"
+
+echo ""
+echo "-> Netz: FREIFUNK"
+echo "Nutzer: $(cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W')"
+echo "Empfangen: $(cat /sys/class/net/br-mesh/statistics/rx_bytes | human_bytes)"
+echo "Gesendet: $(cat /sys/class/net/br-mesh/statistics/tx_bytes | human_bytes)"
+echo "IPv4 Adressen: $(addr 4 br-mesh)"
+echo "IPv6 Adressen: $(addr 6 br-mesh)"
+
+echo ""
+echo "-> Netz: WAN"
+echo "Internet vorhanden: ${internet_active}"
+echo "Empfangen: $(cat /sys/class/net/${wanif}/statistics/rx_bytes | human_bytes)"
+echo "Gesendet: $(cat /sys/class/net/${wanif}/statistics/tx_bytes | human_bytes)"
+echo "IPv4 Adressen: $(addr 4 $wanif)"
+echo "IPv6 Adressen: $(addr 6 $wanif)"
+
+echo ""
+echo "-> EINSTELLUNGEN"
+echo "Knotenname: ${HOSTNAME}"
+echo "Knotenbeschreibung: $(uci -q get 'system.@system[0].description')"
+echo "GPS Breitengrad: $(uci -q get 'system.@system[0].latitude')"
+echo "GPS Laengengrad: $(uci -q get 'system.@system[0].longitude')"
+echo "Standortbeschreibung: $(uci -q get 'system.@system[0].position_comment')"
+echo "E-Mail Adresse: $(uci -q get 'system.@system[0].contact')"
+
+echo ""
+echo "-> SWITCH"
+if swconfig list | grep -q switch0 ; then
+	swconfig dev switch0 show | grep "\t*link:" | while read line ; do
+		line=$(echo "$line" | tr -d '\n' | tr -d '\t')
+		port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+		link=$(echo "$line" | sed 's/.* link:\([^ ]*\).*/\1/')
+		if [ "$link" == "up" ] ; then
+			speed=$(echo "$line" | sed 's/.* speed:\([^ ]*\).*/\1/')
+			duplex=$(echo "$line" | sed 's/.* \([^ ]*-duplex\).*/\1/')
+		else
+			speed="no link"
+			duplex=""
+		fi
+		port="Port ${port}"
+		echo "${port}: ${link} @ $speed $duplex"
+	done
+fi
+
+echo ""
+echo "END"
