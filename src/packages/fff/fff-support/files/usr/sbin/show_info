@@ -3,6 +3,8 @@
 . /etc/community.cfg
 . /etc/firmware_release
 
+board_name=$(uci -q get board.model.name)
+
 HOSTNAME=$(uci -q get 'system.@system[0].hostname')
 
 human_bytes() {
@@ -16,6 +18,51 @@ human_bytes() {
 		[ $GB -lt 1024 ] && echo ${GB} GB && break
 		echo $(((GB+512)/1024)) TB
 	done
+}
+format_state() {
+	batmanports=$(swconfig dev switch0 vlan 3 show | grep 'ports:')
+	clientports=$(swconfig dev switch0 vlan 1 show | grep 'ports:')
+	wanports=$(swconfig dev switch0 vlan 2 show | grep 'ports:')
+	
+	if (echo "$clientports" | grep -q "${1}") && (echo "$batmanports" | grep -q "${1}") ; then
+		linkstate="Multi-Link"
+	elif echo "$clientports" | grep -q "${1}" ; then
+		linkstate="CLIENT"
+	elif echo "$batmanports" | grep -q "${1}" ; then
+		linkstate="BATMAN"
+	elif echo "$wanports" | grep -q "${1}" ; then
+		linkstate="WAN"
+	else
+		linkstate="Unknown"
+	fi
+	printf '%-11s' "$linkstate "
+}
+format_port() {
+	port=$(echo "$1" | sed 's/.* port:\([^ ]*\) .*/\1/')
+	link=$(echo "$1" | sed 's/.* link:\([^ ]*\).*/\1/')
+	if [ "$link" = "up" ] ; then
+		speed=$(echo "$1" | sed 's/.* speed:\([^ ]*\).*/\1/')
+		duplex=$(echo "$1" | sed 's/.* \([^ ]*-duplex\).*/\1/')
+	else
+		speed="no link"
+		duplex=""
+	fi
+	printf '%-5s%s' "${link} " "- "
+	format_state "${port}"
+	printf '%-26s' "@ $speed $duplex "
+	
+	swconfig dev switch0 show | grep "VLAN\s" | while read line ; do
+		vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
+		vports=$(swconfig dev switch0 vlan "$vid" show | grep 'ports:')
+		if echo "$vports" | grep -q "${port}t" ; then
+			printf '%-2s ' "t"
+		elif echo "$vports" | grep -q "${port}" ; then
+			printf '%-2s ' "u"
+		else
+			printf '%-2s ' "-"
+		fi
+	done
+	echo ""
 }
 
 if pidof fastd >/dev/null ; then
@@ -101,23 +148,63 @@ echo "Standortbeschreibung: $(uci -q get 'system.@system[0].position_comment')"
 echo "E-Mail Adresse: $(uci -q get 'system.@system[0].contact')"
 
 echo ""
-echo "-> SWITCH"
-if swconfig list | grep -q switch0 ; then
-	swconfig dev switch0 show | grep "\t*link:" | while read line ; do
-		line=$(echo "$line" | tr -d '\n' | tr -d '\t')
-		port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
-		link=$(echo "$line" | sed 's/.* link:\([^ ]*\).*/\1/')
-		if [ "$link" == "up" ] ; then
-			speed=$(echo "$line" | sed 's/.* speed:\([^ ]*\).*/\1/')
-			duplex=$(echo "$line" | sed 's/.* \([^ ]*-duplex\).*/\1/')
-		else
-			speed="no link"
-			duplex=""
-		fi
-		port="Port ${port}"
-		echo "${port}: ${link} @ $speed $duplex"
-	done
+echo "-> BITRATEN-BEGRENZUNG"
+if [ "$(uci -q get 'simple-tc.example.enabled')" == "1" ] ; then
+	echo "Aktiv: ja"
+else
+	echo "Aktiv: nein"
 fi
+echo "Download-Limit: $(uci -q get 'simple-tc.example.limit_ingress') kBit/s"
+echo "Upload-Limit: $(uci -q get 'simple-tc.example.limit_egress') kBit/s"
+
+if grep -q 'PORTORDER=' /etc/network.$board_name ; then
+	portorder=$(awk -F= '/PORTORDER=/ { print $2 }' /etc/network.$board_name | sed "s/\"//g")
+fi
+
+echo ""
+if [ -n "$portorder" ] ; then
+	echo "-> SWITCH (tatsaechliche Portreihenfolge)"
+else
+	echo "-> SWITCH (interne logische Portreihenfolge)"
+fi
+
+printf '%-54s' "VLAN-IDs:"
+swconfig dev switch0 show | grep "VLAN\s" | while read line ; do
+	vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
+	printf '%-2s ' "$vid"
+done
+echo ""
+echo ""
+
+if [ ! "$(awk -F= '/WANDEV=/ { print $2 }' /etc/network.$board_name)" = "$(awk -F= '/SWITCHDEV=/ { print $2 }' /etc/network.$board_name)" ] ; then
+	wanif=$(uci -q get network.wan.ifname)
+	link=$(cat /sys/class/net/${wanif}/operstate)
+	if [ "$link" = "up" ] ; then
+		speed="connected"
+	else
+		speed="no link"
+	fi
+	printf '%-10s%-5s%-13s%s\n' "WAN-Port: " "${link} " "- WAN " "@ $speed"
+fi
+
+for internalport in $portorder
+do
+	line=$(swconfig dev switch0 port "$internalport" show | tr -d '\n' | tr -d '\t')
+	port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+	printf '%-10s' "Port #${port}: "
+	format_port "${line}"
+done
+echo ""
+
+swconfig dev switch0 show | grep "\t*link:" | while read line ; do
+	line=$(echo "$line" | tr -d '\n' | tr -d '\t')
+	port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+	if echo "$portorder" | grep -q "$port" ; then
+		continue
+	fi
+	printf '%-10s' "Port #${port}: "
+	format_port "${line}"
+done
 
 echo ""
 echo "END"
