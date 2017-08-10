@@ -71,8 +71,8 @@ fi
 	<legend>Netz: Freifunk</legend>
 	<table>
 		<tr><th>Nutzer:</th><td><% cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W' %></td></tr>
-		<tr><th>Empfangen:</th><td><% cat /sys/class/net/br-mesh/statistics/rx_bytes | human_bytes %></td></tr>
-		<tr><th>Gesendet:</th><td><% cat /sys/class/net/br-mesh/statistics/tx_bytes | human_bytes %></td></tr>
+		<tr><th>Empfangen:</th><td><% cat /sys/class/net/br-mesh/statistics/rx_bytes 2> /dev/null | human_bytes %></td></tr>
+		<tr><th>Gesendet:</th><td><% cat /sys/class/net/br-mesh/statistics/tx_bytes 2> /dev/null | human_bytes %></td></tr>
 		<tr><th>IPv4 Adressen:</th><td><% addr 4 br-mesh %></td></tr>
 		<tr><th>IPv6 Adressen:</th><td><% addr 6 br-mesh %></td></tr>
 	</table>
@@ -82,8 +82,8 @@ fi
 	<legend>Netz: WAN</legend>
 	<table>
 		<tr><th>Internet vorhanden:</th><td><%= ${internet_active} %></td></tr>
-		<tr><th>Empfangen:</th><td><% cat /sys/class/net/${wanif}/statistics/rx_bytes | human_bytes %></td></tr>
-		<tr><th>Gesendet:</th><td><% cat /sys/class/net/${wanif}/statistics/tx_bytes | human_bytes %></td></tr>
+		<tr><th>Empfangen:</th><td><% cat /sys/class/net/${wanif}/statistics/rx_bytes 2> /dev/null | human_bytes %></td></tr>
+		<tr><th>Gesendet:</th><td><% cat /sys/class/net/${wanif}/statistics/tx_bytes 2> /dev/null | human_bytes %></td></tr>
 		<tr><th>IPv4 Adressen:</th><td><% addr 4 $wanif %></td></tr>
 		<tr><th>IPv6 Adressen:</th><td><% addr 6 $wanif %></td></tr>
 	</table>

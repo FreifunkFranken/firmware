@@ -3,15 +3,16 @@
 <%
 human_bytes() {
 	while read B ; do
-		[ $B -lt 1024 ] && echo ${B} B && break
+		[ $B -lt 1024 ] && echo ${B} B && return
 		KB=$(((B+512)/1024))
-		[ $KB -lt 1024 ] && echo ${KB} KB && break
+		[ $KB -lt 1024 ] && echo ${KB} KB && return
 		MB=$(((KB+512)/1024))
-		[ $MB -lt 1024 ] && echo ${MB} MB && break
+		[ $MB -lt 1024 ] && echo ${MB} MB && return
 		GB=$(((MB+512)/1024))
-		[ $GB -lt 1024 ] && echo ${GB} GB && break
-		echo $(((GB+512)/1024)) TB
+		[ $GB -lt 1024 ] && echo ${GB} GB && return
+		echo $(((GB+512)/1024)) TB && return
 	done
+	echo "-"
 }
 
 show_msg() {
