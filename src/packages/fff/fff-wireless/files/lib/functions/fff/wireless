@@ -37,8 +37,14 @@ wifiAddPhy() {
 		set wireless.${radio}.hwmode='${hwmode}'
 		set wireless.${radio}.htmode='HT20'
 		set wireless.${radio}.country='DE'
-		commit wireless
 	__EOF__
+	if [ "$hwmode" = "11g" ]; then
+		uci batch <<-__EOF__
+			set wireless.${radio}.supported_rates='6000 9000 12000 18000 24000 36000 48000 54000'
+			set wireless.${radio}.basic_rate='6000 9000 18000 36000 54000'
+		__EOF__
+	fi
+	uci commit wireless
 
 	echo "${radio}"
 	return 0
