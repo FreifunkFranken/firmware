@@ -373,6 +373,11 @@ buildall() {
     done
 }
 
+if [ "$(/usr/bin/id -u)" -eq 0 ]; then
+	echo "don't run buildscript as root"
+	exit 1
+fi
+
 if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
     if [ ! -h selected_bsp ]; then
         echo "Please select a Board-Support-Package using:"
