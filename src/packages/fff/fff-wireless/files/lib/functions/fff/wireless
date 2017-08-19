@@ -23,7 +23,7 @@ wifiAddPhy() {
 
 	local phy=$1
 	local channel=$2
-	local radio="radio$(echo $phy | tr -d -C [0-9])"
+	local radio="radio$(echo "$phy" | tr -d -C "0-9")"
 	local hwmode="11g"
 	if [ "$channel" -gt "14" ]; then
 		hwmode="11a"
