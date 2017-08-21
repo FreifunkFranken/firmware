@@ -2,7 +2,8 @@
 ## This file is used to configure the behavior of network interfaces
 ## if the routers interfaces differ from the standard WAN+4LAN-Ports
 ## +2Wireless APs.
-## If you want to change their behavior, you can do so below.
+## If you want to change their behavior, you should edit the file
+## /etc/network.config
 ## After that you have to reboot the router with following command.
 #reboot
 #

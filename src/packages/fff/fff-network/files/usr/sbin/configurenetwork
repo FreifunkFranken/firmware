@@ -12,6 +12,61 @@
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
+if [ -s /etc/network.config ] ; then
+    . /etc/network.config
+else
+    echo "CLIENT_PORTS='$CLIENT_PORTS'" > /etc/network.config
+    echo "BATMAN_PORTS='$BATMAN_PORTS'" >> /etc/network.config
+    if [ -n "$WAN_PORTS" ] ; then
+        echo "WAN_PORTS='$WAN_PORTS'" >> /etc/network.config
+    fi
+    if [ "$ONE_PORT" = "YES" ] || [ -n "$ETHPORT" ] ; then
+        echo "ETHMODE='$ETHMODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    if [ -n "$LAN0PORT" ] ; then
+        echo "LAN0MODE='$LAN0MODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    if [ -n "$LAN1PORT" ] ; then
+        echo "LAN1MODE='$LAN1MODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    echo "FORCEPARSE='0' # Parse at: 0=first boot only, 1=every reboot, 2=next reboot (once)" >> /etc/network.config
+fi
+
+if [ "$FORCEPARSE" = '2' ] ; then
+    sed -i '/^FORCEPARSE/d' /etc/network.config
+    echo "FORCEPARSE='0' # Parse at: 0=first boot only, 1=every reboot, 2=next reboot (once)" >> /etc/network.config
+    FORCEPARSE='1'
+fi
+
+if [ -n "$ETHPORT" ] ; then
+    #LAN@AR150: default: BATMAN
+    if [ "${ETHMODE}" = "BATMAN" ] ; then
+        BATMAN_PORTS="${BATMAN_PORTS} ${ETHPORT}"
+    else
+        CLIENT_PORTS="${CLIENT_PORTS} ${ETHPORT}"
+    fi
+fi
+if [ -n "$LAN0PORT" ] ; then
+    #LAN0@two-port: default: BATMAN
+    if [ "${LAN0MODE}" = "BATMAN" ] ; then
+        BATMAN_PORTS="${BATMAN_PORTS} ${LAN0PORT}"
+    elif [ "${LAN0MODE}" = "CLIENT" ] ; then
+        CLIENT_PORTS="${CLIENT_PORTS} ${LAN0PORT}"
+    else
+        WAN_PORTS="${WAN_PORTS} ${LAN0PORT}"
+    fi
+fi
+if [ -n "$LAN1PORT" ] ; then
+    #LAN1@two-port: default: BATMAN
+    if [ "${LAN1MODE}" = "WAN" ] ; then
+        WAN_PORTS="${WAN_PORTS} ${LAN1PORT}"
+    elif [ "${LAN1MODE}" = "CLIENT" ] ; then
+        CLIENT_PORTS="${CLIENT_PORTS} ${LAN1PORT}"
+    else
+        BATMAN_PORTS="${BATMAN_PORTS} ${LAN1PORT}"
+    fi
+fi
+
 if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
 
     SWITCHHW=$(swconfig list | awk '{ print $4 }')

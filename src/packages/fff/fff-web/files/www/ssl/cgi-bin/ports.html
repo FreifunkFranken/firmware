@@ -1,18 +1,32 @@
 #!/usr/bin/haserl
 
 <%                                                                                
+board_name=$(uci -q get board.model.name)
 # write
 if [ "$REQUEST_METHOD" == "POST" ] ; then
-	sed -i '/^.*# set via WebUI/d' /etc/network.mode
-	echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.mode
-	do_reboot=1
-	MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+	if [ "$POST_change_mode" != "" ] ; then
+		sed -i '/^.*# set via WebUI/d' /etc/network.config
+		echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.config
+		sed -i '/^FORCEPARSE/d' /etc/network.config
+		echo "FORCEPARSE='2'" >> /etc/network.config
+		do_reboot=1
+		MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+	fi
+	if [ "$POST_change_twoport" != "" ] ; then
+		sed -i '/^.*# set via WebUI/d' /etc/network.config
+		echo "LAN0MODE=\"${POST_mode0}\" # set via WebUI" >> /etc/network.config
+		echo "LAN1MODE=\"${POST_mode1}\" # set via WebUI" >> /etc/network.config
+		sed -i '/^FORCEPARSE/d' /etc/network.config
+		echo "FORCEPARSE='2'" >> /etc/network.config
+		do_reboot=1
+		MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+	fi
 fi
 %>
 <%in /www/ssl/cgi-bin/header %>
 <%in /www/ssl/cgi-bin/helpers %>
 <% show_msg %>
-<form method="POST">
+<form method="post">
 <table style="width: 100%;">
 <% if swconfig list | grep -q switch0 ; then %>
 	<%# Device has a switch %>
@@ -53,10 +67,11 @@ fi
 	</fieldset>
 	</td></tr>
 <% fi %>
-<% if grep -q network.mode /etc/network.$(uci -q get board.model.name) ; then %>
+<% if grep -q "ONE_PORT" "/etc/network.$board_name" || grep -q "ETHPORT" "/etc/network.$board_name" ; then %>
 	<%
-		# Device has only one or two ports and makes use of /etc/network.mode
+		# Device has a port set by $ETHMODE
 		. /etc/network.mode
+		. /etc/network.config
 	%>
 	<tr><td>
 	<fieldset>
@@ -66,15 +81,63 @@ fi
 				<th style="width: 1em;">Anschluss&nbsp;Modus:</th>
 				<td>
 					<select name="mode">
-						<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n selected %>>WAN</option>
-						<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n selected %>>Client</option>
-						<option value="BATMAN" <% [ "$ETHMODE" == "BATMAN" ] && echo -n selected %>>BATMAN</option>
+						<option value="BATMAN" <% [ "$ETHMODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<% if grep -q "ONE_PORT" "/etc/network.$board_name" ; then %>
+						<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+						<% fi %>
 					</select>
 				</td>
 			</tr>
 			<tr><td colspan="2"><input type="submit" name="change_mode" /></td></tr>
 			<tr><td colspan="2"></td></tr>
 			<tr><td colspan="2">
+				WAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zum Internet her.<br />
+				Client: Normale Clients stellen &uuml;ber Ethernet Anschluss des Knotens Verbindung zum Freifunk Netz her.<br />
+				BATMAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zu anderen MESH Knoten her.<br /><br />
+
+				Wenn diese Einstellung ver&auml;ndert wird, wird eine evtl. vorhandene manuelle Netzwerkkonfiguration in der
+				<tt>/etc/config/network</tt> &uuml;berschrieben.<br />
+				Anschlie&szlig;end wird der Router neugestartet.
+			</td></tr>
+		</table>
+	</fieldset>
+	</td></tr>
+<% fi %>
+<% if grep -q "LAN0PORT" "/etc/network.$board_name" || grep -q "LAN1PORT" "/etc/network.$board_name" ; then %>
+	<%
+		# Device has two ports
+		. /etc/network.mode
+		. /etc/network.config
+	%>
+	<tr><td>
+	<fieldset>
+		<legend>Ethernet Anschl&uuml;sse</legend>
+		<table>
+			<tr>
+				<th style="width: 15em;text-align:left">Modus&nbsp;Anschluss&nbsp;0:</th>
+				<th style="width: 15em;text-align:left">Modus&nbsp;Anschluss&nbsp;1:</th>
+				<th></th>
+			</tr>
+			<tr>
+				<td>
+					<select name="mode0">
+						<option value="BATMAN" <% [ "$LAN0MODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$LAN0MODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<option value="WAN" <% [ "$LAN0MODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+					</select>
+				</td>
+				<td>
+					<select name="mode1">
+						<option value="BATMAN" <% [ "$LAN1MODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$LAN1MODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<option value="WAN" <% [ "$LAN1MODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+					</select>
+				</td>
+				<td><input type="submit" name="change_twoport" /></td>
+			</tr>
+			<tr><td colspan="3"></td></tr>
+			<tr><td colspan="3">
 				WAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zum Internet her.<br />
 				Client: Normale Clients stellen &uuml;ber Ethernet Anschluss des Knotens Verbindung zum Freifunk Netz her.<br />
 				BATMAN: Knoten stellt &uuml;ber Ethernet Anschluss Verbindung zu anderen MESH Knoten her.<br /><br />
