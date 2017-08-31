@@ -79,10 +79,11 @@ if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
         /etc/init.d/fastd reload
 
         # fastd start/stop for various situations
+        pidfile="/tmp/run/fastd.${project}.pid"
         if [ "$(ls /etc/fastd/${project}/peers/* 2>/dev/null)" ]; then
-            [ -d /proc/$(cat /tmp/run/fastd.${project}.pid) ] || /etc/init.d/fastd start
+            ([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) || /etc/init.d/fastd start
         else
-            [ -d /proc/$(cat /tmp/run/fastd.${project}.pid) ] && /etc/init.d/fastd stop
+            ([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) && /etc/init.d/fastd stop
         fi
 
     fi
