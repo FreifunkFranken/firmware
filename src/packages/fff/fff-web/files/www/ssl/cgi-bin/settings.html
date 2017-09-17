@@ -23,7 +23,7 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 
 		# Bitratenbegrenzung
 		if [ "$POST_traffic_limit" == "on" ] ; then
-			uci -q set "simple-tc.example.ifname=$(uci -q get network.wan.ifname)"
+			uci -q set "simple-tc.example.ifname=wan"
 			uci -q set "simple-tc.example.enabled=1"
 		else
 			uci -q set "simple-tc.example.enabled=0"
@@ -32,6 +32,7 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 		uci -q set "simple-tc.example.limit_egress=${POST_limit_egress}"
 
 		uci commit
+
 		MSG='<span class="green">Daten gespeichert! - Bitte Router neustarten.</span>'
 	fi
 fi

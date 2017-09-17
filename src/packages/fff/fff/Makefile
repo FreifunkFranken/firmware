@@ -28,7 +28,8 @@ define Package/fff-base
              +fff-sysupgrade \
              +fff-wireless \
              +fff-timeserver \
-             +fff-vpn-select
+             +fff-vpn-select \
+             +simple-tc
 endef
 
 define Package/fff-base/description

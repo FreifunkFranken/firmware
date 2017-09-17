@@ -30,7 +30,8 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
-            8b65619f59c3bdce743c2f2fb2588fdd7079355a)
+            8b65619f59c3bdce743c2f2fb2588fdd7079355a
+            "0001-simple-tc-Use-hotplug.d-iface-instead-of-hotplug.d-n.patch")
 GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 
 #official openwrt routing packages
