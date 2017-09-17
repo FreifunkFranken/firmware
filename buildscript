@@ -103,7 +103,7 @@ get_source() {
             count=3
             while [ "x${FEED[count]}" != "x" ]
             do
-                local PATCH=${FEED[count]}
+                local PATCH="../../../build_patches/${NAME}/${FEED[count]}"
                 if [ ! -z "$PATCH" ] ; then
                     echo "Patching $PATCH"
                     git -C "$NAME" am --whitespace=nowarn "$PATCH"
