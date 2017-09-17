@@ -1,7 +1,7 @@
-From a5290bd7279f0aa4a7129ce103fec154239ddd86 Mon Sep 17 00:00:00 2001
+From 1b2536059c42ab9b9b2ca69a4ceb508c197f95aa Mon Sep 17 00:00:00 2001
 From: Ludwig Thomeczek <ledesrc@wxorx.net>
 Date: Sat, 22 Apr 2017 18:21:47 +0200
-Subject: [PATCH 6/7] ar71xx: add support for TP-Link Archer C25 v1
+Subject: [PATCH 2/3] ar71xx: add support for TP-Link Archer C25 v1
 
 The TP-Link Archer C25 is a low-cost dual-band router.
 
@@ -21,6 +21,8 @@ reworked commit message]
 Signed-off-by: Piotr Dymacz <pepe2k@gmail.com>
 [Rebased on v17.01.2]
 Signed-off-by: Tim Niemeyer <tim@tnx-x.org>
+[Rebased on 97ebdf9]
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 ---
  target/linux/ar71xx/base-files/etc/board.d/01_leds |   9 +
  .../linux/ar71xx/base-files/etc/board.d/02_network |   1 +
@@ -40,12 +42,12 @@ Signed-off-by: Tim Niemeyer <tim@tnx-x.org>
  create mode 100644 target/linux/ar71xx/files/arch/mips/ath79/mach-archer-c25-v1.c
 
 diff --git a/target/linux/ar71xx/base-files/etc/board.d/01_leds b/target/linux/ar71xx/base-files/etc/board.d/01_leds
-index 0279dfc..3aa2bfb 100755
+index 833522f..e1efb56 100755
 --- a/target/linux/ar71xx/base-files/etc/board.d/01_leds
 +++ b/target/linux/ar71xx/base-files/etc/board.d/01_leds
-@@ -49,6 +49,15 @@ antrouter-r1)
+@@ -53,6 +53,15 @@ ap121f)
+ 	ucidef_set_led_netdev "lan" "LAN" "$board:green:lan" "eth0"
  	ucidef_set_led_wlan "wlan" "WLAN" "$board:green:wlan" "phy0tpt"
- 	ucidef_set_led_default "btc" "BTC" "$board:green:btc" "0"
  	;;
 +archer-c25-v1)
 +	ucidef_set_led_netdev "wan" "WAN" "$board:green:wan" "eth0"
@@ -60,7 +62,7 @@ index 0279dfc..3aa2bfb 100755
  	ucidef_set_led_wlan "wlan" "WLAN" "arduino:blue:wlan" "phy0tpt"
  	ucidef_set_led_usbdev "usb" "USB" "arduino:white:usb" "1-1.1"
 diff --git a/target/linux/ar71xx/base-files/etc/board.d/02_network b/target/linux/ar71xx/base-files/etc/board.d/02_network
-index c8c7827..4404e80 100755
+index cb707f6..24ead87 100755
 --- a/target/linux/ar71xx/base-files/etc/board.d/02_network
 +++ b/target/linux/ar71xx/base-files/etc/board.d/02_network
 @@ -122,6 +122,7 @@ ar71xx_setup_interfaces()
@@ -72,10 +74,10 @@ index c8c7827..4404e80 100755
  	gl-ar150|\
  	gl-ar300m|\
 diff --git a/target/linux/ar71xx/base-files/etc/diag.sh b/target/linux/ar71xx/base-files/etc/diag.sh
-index 7b8aac8..cf6278c 100644
+index bc2fc2f..38cc5d7 100644
 --- a/target/linux/ar71xx/base-files/etc/diag.sh
 +++ b/target/linux/ar71xx/base-files/etc/diag.sh
-@@ -47,6 +47,7 @@ get_status_led() {
+@@ -50,6 +50,7 @@ get_status_led() {
  	ap135-020)
  		status_led="ap135:green:status"
  		;;
@@ -96,10 +98,10 @@ index b3e23c9..68f90de 100644
  		ath10kcal_extract "art" 20480 2116
  		ath10kcal_patch_mac $(macaddr_add $(cat /sys/class/net/eth1/address) -2)
 diff --git a/target/linux/ar71xx/base-files/lib/ar71xx.sh b/target/linux/ar71xx/base-files/lib/ar71xx.sh
-index b035535..0d01c5e 100755
+index bf36598..46711af 100755
 --- a/target/linux/ar71xx/base-files/lib/ar71xx.sh
 +++ b/target/linux/ar71xx/base-files/lib/ar71xx.sh
-@@ -457,6 +457,9 @@ ar71xx_board_detect() {
+@@ -460,6 +460,9 @@ ar71xx_board_detect() {
  	*AP90Q)
  		name="ap90q"
  		;;
@@ -110,11 +112,11 @@ index b035535..0d01c5e 100755
  		name="archer-c5"
  		;;
 diff --git a/target/linux/ar71xx/base-files/lib/upgrade/platform.sh b/target/linux/ar71xx/base-files/lib/upgrade/platform.sh
-index 580e09a..e2aaceb 100755
+index 21ad2a6..e65f6e2 100755
 --- a/target/linux/ar71xx/base-files/lib/upgrade/platform.sh
 +++ b/target/linux/ar71xx/base-files/lib/upgrade/platform.sh
-@@ -205,6 +205,7 @@ platform_check_image() {
- 	airrouter|\
+@@ -206,6 +206,7 @@ platform_check_image() {
+ 	ap121f|\
  	ap132|\
  	ap90q|\
 +	archer-c25-v1|\
@@ -122,10 +124,10 @@ index 580e09a..e2aaceb 100755
  	c-55|\
  	carambola2|\
 diff --git a/target/linux/ar71xx/config-4.4 b/target/linux/ar71xx/config-4.4
-index ff6bb13..79308e8 100644
+index a862245..0187775 100644
 --- a/target/linux/ar71xx/config-4.4
 +++ b/target/linux/ar71xx/config-4.4
-@@ -50,6 +50,7 @@ CONFIG_ATH79_MACH_AP152=y
+@@ -51,6 +51,7 @@ CONFIG_ATH79_MACH_AP152=y
  # CONFIG_ATH79_MACH_AP81 is not set
  CONFIG_ATH79_MACH_AP90Q=y
  CONFIG_ATH79_MACH_AP96=y
@@ -133,7 +135,7 @@ index ff6bb13..79308e8 100644
  CONFIG_ATH79_MACH_ARCHER_C7=y
  CONFIG_ATH79_MACH_ARDUINO_YUN=y
  CONFIG_ATH79_MACH_AW_NR580=y
-@@ -269,6 +270,7 @@ CONFIG_GENERIC_SMP_IDLE_THREAD=y
+@@ -270,6 +271,7 @@ CONFIG_GENERIC_SMP_IDLE_THREAD=y
  CONFIG_GENERIC_TIME_VSYSCALL=y
  CONFIG_GPIOLIB=y
  CONFIG_GPIOLIB_IRQCHIP=y
@@ -141,7 +143,7 @@ index ff6bb13..79308e8 100644
  CONFIG_GPIO_DEVRES=y
  # CONFIG_GPIO_LATCH is not set
  CONFIG_GPIO_NXP_74HC153=y
-@@ -335,6 +337,7 @@ CONFIG_LEDS_NU801=y
+@@ -336,6 +338,7 @@ CONFIG_LEDS_NU801=y
  CONFIG_LIBFDT=y
  CONFIG_MARVELL_PHY=y
  CONFIG_MDIO_BITBANG=y
@@ -150,10 +152,10 @@ index ff6bb13..79308e8 100644
  CONFIG_MDIO_GPIO=y
  CONFIG_MICREL_PHY=y
 diff --git a/target/linux/ar71xx/files/arch/mips/ath79/Kconfig.openwrt b/target/linux/ar71xx/files/arch/mips/ath79/Kconfig.openwrt
-index 76ba6fa..d49659c 100644
+index 58d7e43..4112fd3 100644
 --- a/target/linux/ar71xx/files/arch/mips/ath79/Kconfig.openwrt
 +++ b/target/linux/ar71xx/files/arch/mips/ath79/Kconfig.openwrt
-@@ -1224,6 +1224,17 @@ config ATH79_MACH_BSB
+@@ -1234,6 +1234,17 @@ config ATH79_MACH_BSB
  	select ATH79_DEV_USB
  	select ATH79_DEV_WMAC
  
@@ -172,10 +174,10 @@ index 76ba6fa..d49659c 100644
  	bool "TP-LINK Archer C5/C7/TL-WDR4900 v2 board support"
  	select SOC_QCA955X
 diff --git a/target/linux/ar71xx/files/arch/mips/ath79/Makefile b/target/linux/ar71xx/files/arch/mips/ath79/Makefile
-index c91d03f..fc28716 100644
+index 7aee760..3365a43 100644
 --- a/target/linux/ar71xx/files/arch/mips/ath79/Makefile
 +++ b/target/linux/ar71xx/files/arch/mips/ath79/Makefile
-@@ -55,6 +55,7 @@ obj-$(CONFIG_ATH79_MACH_AP147)			+= mach-ap147.o
+@@ -56,6 +56,7 @@ obj-$(CONFIG_ATH79_MACH_AP147)			+= mach-ap147.o
  obj-$(CONFIG_ATH79_MACH_AP152)			+= mach-ap152.o
  obj-$(CONFIG_ATH79_MACH_AP90Q)			+= mach-ap90q.o
  obj-$(CONFIG_ATH79_MACH_AP96)			+= mach-ap96.o
@@ -417,10 +419,10 @@ index 0000000..a0f001c
 +MIPS_MACHINE(ATH79_MACH_ARCHER_C25_V1, "ARCHER-C25-V1", "TP-LINK Archer C25 v1",
 +	     archer_c25_v1_setup);
 diff --git a/target/linux/ar71xx/files/arch/mips/ath79/machtypes.h b/target/linux/ar71xx/files/arch/mips/ath79/machtypes.h
-index b9a8e3e..53f0d1c 100644
+index a12685c..8864e0d 100644
 --- a/target/linux/ar71xx/files/arch/mips/ath79/machtypes.h
 +++ b/target/linux/ar71xx/files/arch/mips/ath79/machtypes.h
-@@ -39,6 +39,7 @@ enum ath79_mach_type {
+@@ -40,6 +40,7 @@ enum ath79_mach_type {
  	ATH79_MACH_AP152,			/* Atheros AP152 reference board */
  	ATH79_MACH_AP90Q,			/* YunCore AP90Q */
  	ATH79_MACH_AP96,			/* Atheros AP96 */
@@ -429,7 +431,7 @@ index b9a8e3e..53f0d1c 100644
  	ATH79_MACH_ARCHER_C7,			/* TP-LINK Archer C7 board */
  	ATH79_MACH_ARCHER_C7_V2,		/* TP-LINK Archer C7 V2 board */
 diff --git a/target/linux/ar71xx/image/tp-link.mk b/target/linux/ar71xx/image/tp-link.mk
-index 1c88f43..f70c12c 100644
+index 312152f..3e3780d 100644
 --- a/target/linux/ar71xx/image/tp-link.mk
 +++ b/target/linux/ar71xx/image/tp-link.mk
 @@ -45,6 +45,14 @@ define Build/mktplinkfw-kernel
@@ -471,10 +473,10 @@ index 1c88f43..f70c12c 100644
    DEVICE_TITLE := TP-LINK CPE510/520
    DEVICE_PACKAGES := rssileds
 diff --git a/target/linux/ar71xx/mikrotik/config-default b/target/linux/ar71xx/mikrotik/config-default
-index 44ea327..3f11c23 100644
+index f8d255f..376835a 100644
 --- a/target/linux/ar71xx/mikrotik/config-default
 +++ b/target/linux/ar71xx/mikrotik/config-default
-@@ -15,6 +15,7 @@
+@@ -16,6 +16,7 @@
  # CONFIG_ATH79_MACH_AP152 is not set
  # CONFIG_ATH79_MACH_AP90Q is not set
  # CONFIG_ATH79_MACH_AP96 is not set
@@ -483,10 +485,10 @@ index 44ea327..3f11c23 100644
  # CONFIG_ATH79_MACH_ARDUINO_YUN is not set
  # CONFIG_ATH79_MACH_AW_NR580 is not set
 diff --git a/target/linux/ar71xx/nand/config-default b/target/linux/ar71xx/nand/config-default
-index 515266b..6357531 100644
+index c1b5e61..62be218 100644
 --- a/target/linux/ar71xx/nand/config-default
 +++ b/target/linux/ar71xx/nand/config-default
-@@ -8,6 +8,7 @@
+@@ -9,6 +9,7 @@
  # CONFIG_ATH79_MACH_AP136 is not set
  # CONFIG_ATH79_MACH_AP147 is not set
  # CONFIG_ATH79_MACH_AP96 is not set
@@ -495,5 +497,5 @@ index 515266b..6357531 100644
  # CONFIG_ATH79_MACH_AW_NR580 is not set
  # CONFIG_ATH79_MACH_CAP324 is not set
 -- 
-2.1.4
+2.7.4
 

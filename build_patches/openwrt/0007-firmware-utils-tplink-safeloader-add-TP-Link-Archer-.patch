@@ -1,7 +1,7 @@
-From ae91fb7f8cef0fbd9b0ee707ce577ac9c5cdf2f2 Mon Sep 17 00:00:00 2001
+From 1186e1a8f31f7c86eeee3463f5e8469a3de36770 Mon Sep 17 00:00:00 2001
 From: Ludwig Thomeczek <ledesrc@wxorx.net>
 Date: Sat, 13 May 2017 11:40:48 +0200
-Subject: [PATCH 7/7] firmware-utils: tplink-safeloader: add TP-Link Archer C25
+Subject: [PATCH 3/3] firmware-utils: tplink-safeloader: add TP-Link Archer C25
  v1
 
 This adds the necessary firmware layout definitions for the Archer C25.
@@ -12,6 +12,8 @@ added.
 Signed-off-by: Ludwig Thomeczek <ledesrc@wxorx.net>
 [Rebased on v17.01.2]
 Signed-off-by: Tim Niemeyer <tim@tnx-x.org>
+[Rebased on 97ebdf9]
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 ---
  tools/firmware-utils/src/tplink-safeloader.c | 59 +++++++++++++++++++++++++++-
  1 file changed, 58 insertions(+), 1 deletion(-)
@@ -108,5 +110,5 @@ index 688cdac..2468426 100644
  	void *image;
  	if (sysupgrade)
 -- 
-2.1.4
+2.7.4
 
