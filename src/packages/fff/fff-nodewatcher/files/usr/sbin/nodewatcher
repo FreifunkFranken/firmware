@@ -56,6 +56,8 @@ crawl() {
     #Get system data from other locations
     err "$(date): Collecting basic system status data"
     hostname="$(cat /proc/sys/kernel/hostname)"
+    mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
+    [ "$hostname" = "LEDE" ] && hostname="$mac"
     description="$(uci get system.@system[0].description)"
     if [ -n "$description" ]; then
         description="<description><![CDATA[$description]]></description>"
