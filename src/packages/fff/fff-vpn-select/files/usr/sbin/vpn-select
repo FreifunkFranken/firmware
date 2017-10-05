@@ -1,71 +1,86 @@
 #!/bin/sh
 
+. /usr/share/libubox/jshn.sh
+
 make_config() {
 # remove old config
 >/etc/config/tunneldigger
 rm /tmp/fastd_fff_peers/*
 count=0
+Index=1
+json_load "$(cat /tmp/keyxchangev2data)"
+json_select vpn
 # get fastd peers
-filecounts=$(awk '/^####/ { gsub(/^####/, "", $0); gsub(/.conf/, "", $0); print $0; }' /tmp/fastd_fff_output)
-for file in $filecounts; do
-    awk "{ if(a) print }; /^####$file.conf$/{a=1}; /^$/{a=0};" /tmp/fastd_fff_output | sed 's/ float;/;/g' > /etc/fastd/fff/peers/$file
-    echo 'float yes;' >> /etc/fastd/fff/peers/$file
+while json_select "$Index" > /dev/null
+do
+	json_get_var protocol protocol
+	if [ "$protocol" == "fastd" ]; then
+		json_get_var servername name
+		filename="/etc/fastd/fff/peers/$servername"
+		echo "#name \"${servername}\";" > "$filename"
+		json_get_var key key
+		echo "key \"${key}\";" >> "$filename"
+		json_get_var address address
+		json_get_var port port
+		echo "remote ipv4 \"${address}\" port ${port};" >> "$filename"
+		echo "" >> "$filename"
+		echo "float yes;" >> "$filename"
+		
+		# ask for Broker and select the tunnel
+		if [ "l2tp" = "$(wget -T10 "${address}/vpn.txt" -O - 2>/dev/null)" ]; then
+			# Gateway offers l2tp
+			L2PORT=$((port + 10000))
+			UUID=$hostname
 
-    # ask for Broker and select the tunnel
-    IP=$(awk -F\" '/remote/ {print $2}' /etc/fastd/fff/peers/$file)
-    if [ "l2tp" = "$(wget -T10 $IP/vpn.txt -O - 2>/dev/null)" ]; then
-        # Gateway offers l2tp
-        FDPORT=$(awk '/remote/{gsub(";", ""); print $5}' /etc/fastd/fff/peers/$file)
-        L2PORT=$((FDPORT + 10000))
-        UUID=$hostname
-
-        uci set tunneldigger.$count=broker
-        uci set tunneldigger.$count.address="$IP:$L2PORT"
-        uci set tunneldigger.$count.uuid="$UUID"
-        uci set tunneldigger.$count.interface="l2tp$count"
-        uci set tunneldigger.$count.enabled="1"
-        uci set tunneldigger.$count.hook_script='/etc/tunneldigger/tunneldigger.hook'
-        uci -c /tmp commit tunneldigger
-        count=$((count + 1))
-        # remove this fastd-peer
-        rm /etc/fastd/fff/peers/$file
-    fi
+			uci set tunneldigger.$count=broker
+			uci set tunneldigger.$count.address="${address}:$L2PORT"
+			uci set tunneldigger.$count.uuid="$UUID"
+			uci set tunneldigger.$count.interface="l2tp$count"
+			uci set tunneldigger.$count.enabled="1"
+			uci set tunneldigger.$count.hook_script='/etc/tunneldigger/tunneldigger.hook'
+			uci -c /tmp commit tunneldigger
+			count=$((count + 1))
+			# remove this fastd-peer
+			rm "$filename"
+		fi
+	fi
+	json_select ".." # back to vpn
+	Index=$(( Index + 1 ))
 done
+json_select ".." # back to root
 }
 
 # main
 
 # Only do something when file is here and greater 0 byte
-if [ -s /tmp/fastd_fff_output ]; then
+if [ -s /tmp/keyxchangev2data ]; then
+	# set some vars
+	hostname=$(cat /proc/sys/kernel/hostname)
+	mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
+	[ "$hostname" = "LEDE" ] && hostname=""
+	[ "$hostname" = "" ] &&  hostname="$mac"
 
-    # set some vars
-    hostname=$(cat /proc/sys/kernel/hostname)
-    mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
-    [ "$hostname" = "OpenWrt" ] && hostname=""
-    [ "$hostname" = "" ] &&  hostname="$mac"
+	if [ ! -d /tmp/fastd_fff_peers ]; then
+		# first run after reboot
+		mkdir /tmp/fastd_fff_peers
+		make_config
+		# start fastd only if there are some peers left
+		[ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ] && /etc/init.d/fastd start
+		/etc/init.d/tunneldigger start
+	else
+		# check if new tunneldigger conf is different
+		sumold=$(sha256sum /etc/config/tunneldigger)
+		make_config
+		sumnew=$(sha256sum /etc/config/tunneldigger)
+		[ "$sumnew" != "$sumold" ] && /etc/init.d/tunneldigger restart
+		/etc/init.d/fastd reload
 
-    if [ ! -d /tmp/fastd_fff_peers ]; then
-        # first run after reboot
-        mkdir /tmp/fastd_fff_peers
-        make_config
-        # start fastd only if there are some peers left
-        [ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ] && /etc/init.d/fastd start
-        /etc/init.d/tunneldigger start
-    else
-        # check if new tunneldigger conf is different
-        sumold=$(sha256sum /etc/config/tunneldigger)
-        make_config
-        sumnew=$(sha256sum /etc/config/tunneldigger)
-        [ "$sumnew" != "$sumold" ] && /etc/init.d/tunneldigger restart
-        /etc/init.d/fastd reload
-
-        # fastd start/stop for various situations
-        pidfile="/tmp/run/fastd.fff.pid"
-        if [ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ]; then
-            ([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) || /etc/init.d/fastd start
-        else
-            ([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) && /etc/init.d/fastd stop
-        fi
-
-    fi
+		# fastd start/stop for various situations
+		pidfile="/tmp/run/fastd.fff.pid"
+		if [ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ]; then
+			([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) || /etc/init.d/fastd start
+		else
+			([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) && /etc/init.d/fastd stop
+		fi
+	fi
 fi

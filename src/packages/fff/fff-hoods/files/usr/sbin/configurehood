@@ -194,32 +194,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 		exit 0
 	fi
 	
-	# and now we read the VPN Data and give this data to fff-vpn
-	json_select vpn
-	Index=1
-	rm /tmp/fastd_fff_output
-	touch /tmp/fastd_fff_output
-	while json_select "$Index" > /dev/null
-	do
-		json_get_var protocol protocol
-		if [ "$protocol" == "fastd" ]; then
-			json_get_var servername name
-			echo "####${servername}.conf" >> /tmp/fastd_fff_output
-			echo "#name \"${servername}\";" >> /tmp/fastd_fff_output
-			json_get_var key key
-			echo "key \"${key}\";" >> /tmp/fastd_fff_output
-			json_get_var address address
-			json_get_var port port
-			echo "remote ipv4 \"${address}\" port $port float;" >> /tmp/fastd_fff_output
-		fi
-		echo "" >> /tmp/fastd_fff_output
-		json_select ".." # back to vpn
-		Index=$(( Index + 1 ))
-	done
-	echo "###" >> /tmp/fastd_fff_output
-	json_select ".." # back to root
-	#this we do every 5 minutes, because it can change the VPN Protocol
-	#and now we get to vpn-select Script and load VPNs
+	# and now we get to vpn-select script and load VPNs directly from /tmp/keyxchangev2data
 	
 	if hasInternet ; then
 		sh /usr/sbin/vpn-select
