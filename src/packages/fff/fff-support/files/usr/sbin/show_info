@@ -1,6 +1,5 @@
 #!/bin/sh
 
-. /etc/community.cfg
 . /etc/firmware_release
 
 board_name=$(uci -q get board.model.name)

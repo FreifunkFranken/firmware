@@ -1,28 +1,27 @@
-/etc/init.d/fastd disable
+#!/bin/sh
 
-. /etc/community.cfg
-project="$VPN_PROJECT"
+/etc/init.d/fastd disable
 
 >/etc/config/fastd
 
 uci batch <<EOF
-  set fastd.${project}='fastd'
-  set fastd.${project}.enabled='1'
-  set fastd.${project}.config_peer_dir="/etc/fastd/${project}/peers"
-  set fastd.${project}.syslog_level='warn'
-  set fastd.${project}.method='null'
-  set fastd.${project}.mode='tap'
-  set fastd.${project}.interface="${project}VPN"
-  set fastd.${project}.mtu='1426'
-  set fastd.${project}.on_up="/etc/fastd/${project}/up.sh"
-  set fastd.${project}.secure_handshakes='0'
-  set fastd.${project}.secret="generate"
+  set fastd.fff='fastd'
+  set fastd.fff.enabled='1'
+  set fastd.fff.config_peer_dir="/etc/fastd/fff/peers"
+  set fastd.fff.syslog_level='warn'
+  set fastd.fff.method='null'
+  set fastd.fff.mode='tap'
+  set fastd.fff.interface="fffVPN"
+  set fastd.fff.mtu='1426'
+  set fastd.fff.on_up="/etc/fastd/fff/up.sh"
+  set fastd.fff.secure_handshakes='0'
+  set fastd.fff.secret="generate"
 EOF
 
-[ ! -d /etc/fastd/${project} ] &&  mkdir -p /etc/fastd/${project}
-ln -s /tmp/fastd_${project}_peers /etc/fastd/${project}/peers
-echo "#!/bin/sh" > /etc/fastd/${project}/up.sh
-echo "ip link set up dev ${project}VPN" >> /etc/fastd/${project}/up.sh
-echo "echo enable > /sys/devices/virtual/net/${project}VPN/batman_adv/no_rebroadcast" >> /etc/fastd/${project}/up.sh
-echo "batctl if add ${project}VPN" >> /etc/fastd/${project}/up.sh
-chmod +x /etc/fastd/${project}/up.sh
+[ ! -d /etc/fastd/fff ] &&  mkdir -p /etc/fastd/fff
+ln -s /tmp/fastd_fff_peers /etc/fastd/fff/peers
+echo "#!/bin/sh" > /etc/fastd/fff/up.sh
+echo "ip link set up dev fffVPN" >> /etc/fastd/fff/up.sh
+echo "echo enable > /sys/devices/virtual/net/fffVPN/batman_adv/no_rebroadcast" >> /etc/fastd/fff/up.sh
+echo "batctl if add fffVPN" >> /etc/fastd/fff/up.sh
+chmod +x /etc/fastd/fff/up.sh

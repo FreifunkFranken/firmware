@@ -2,6 +2,7 @@
 
 . /usr/share/libubox/jshn.sh
 . /lib/functions/fff/wireless
+. /lib/functions/fff/timeserver
 
 rm -f /tmp/keyxchangev2data
 
@@ -121,6 +122,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 		json_get_var mesh_bssid mesh_bssid
 		json_get_var mesh_essid mesh_essid
 		json_get_var essid essid
+		json_get_var ntpip ntp_ip
 		# i think the next things we don't active this in the first version! we can do it later
 		#json_get_var channel2 channel2
 		#json_get_var mode2 mode2
@@ -161,6 +163,10 @@ if [ -s /tmp/keyxchangev2data ]; then
 
 		echo "Loading wifi"
 		wifi
+
+		oldntp="$(uci -q get system.ntp.server)"
+		newntp="${ntpip}" # requires routable address, no link-local
+		[ "$newntp" = "$oldntp" ] || setTimeserver "${newntp}" # only rewrite if changed
 
 		# copy the file to webroot so that other Meshrouter can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
