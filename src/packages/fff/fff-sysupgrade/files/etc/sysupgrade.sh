@@ -1,9 +1,16 @@
 #!/bin/sh
 cd /tmp/
 
+. /lib/functions/fff/keyxchange
 . /etc/firmware_release
 
-. /etc/community.cfg
+UPGRADE_PATH="$(getUpgradePath)"
+
+if [ -z "$UPGRADE_PATH" ]; then
+  echo "Upgrade path not set! Aborting."
+  echo ""
+  exit 1
+fi
 
 BOARD=$(uci get board.model.name)
 

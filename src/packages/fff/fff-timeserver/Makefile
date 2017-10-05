@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-timeserver
-PKG_VERSION:=0.0.1
+PKG_VERSION:=2
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-timeserver

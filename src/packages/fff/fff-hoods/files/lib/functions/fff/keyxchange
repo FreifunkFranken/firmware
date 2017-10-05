@@ -1,0 +1,15 @@
+#!/bin/sh
+# Copyright 2017 Adrian Schmutzler
+# License GPLv3
+
+getUpgradePath() {
+	if [ -s /tmp/keyxchangev2data ]; then
+		json_load "$(cat /tmp/keyxchangev2data)"
+		json_select hood
+		json_get_var upath upgrade_path
+		echo "$upath"
+	else
+		return 1
+	fi
+	return 0
+}
