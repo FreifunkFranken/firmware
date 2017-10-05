@@ -74,22 +74,10 @@ else
 		fi
 		#now we look for phy and add this
 		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-			if iw phy "$phy" info | grep -q -m1 "2... MHz"; then
-				echo "$phy is 2.4 GHz"
-				radio="$(wifiAddPhy "$phy" "$chan2ghz")"
-				if [ -z "$radio" ]; then
-					echo "Can't create radio for $phy"
-					exit 1
-				fi
-			fi
-			if iw phy "$phy" info | grep -q -m1 "5... MHz"; then
-				echo "$phy is 5 GHz"
-				radio="$(wifiAddPhy "$phy" "$chan5ghz")"
-				if [ -z "$radio" ]; then
-					echo "Can't create radio for $phy"
-					exit 1
-				fi
-			fi
+			radio="$(wifiAddPhyCond "$phy" "2" "$chan2ghz")"
+			radio5="$(wifiAddPhyCond "$phy" "5" "$chan5ghz")"
+			[ -n "$radio5" ] && radio="$radio5"
+
 			#and here we add the station
 			if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta"; then
 				echo "Can't add Sta interface on $radio."
@@ -155,22 +143,9 @@ if [ -s /tmp/keyxchangev2data ]; then
 		fi
 
 		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-			if iw phy "$phy" info | grep -q -m1 "2... MHz"; then
-				echo "$phy is 2.4 GHz"
-				radio="$(wifiAddPhy "$phy" "$chan2ghz")"
-				if [ -z "$radio" ]; then
-					echo "Can't create radio for $phy"
-					exit 1
-				fi
-			fi
-			if iw phy "$phy" info | grep -q -m1 "5... MHz"; then
-				echo "$phy is 5 GHz"
-				radio="$(wifiAddPhy "$phy" "$chan5ghz")"
-				if [ -z "$radio" ]; then
-					echo "Can't create radio for $phy"
-					exit 1
-				fi
-			fi
+			radio="$(wifiAddPhyCond "$phy" "2" "$chan2ghz")"
+			radio5="$(wifiAddPhyCond "$phy" "5" "$chan5ghz")"
+			[ -n "$radio5" ] && radio="$radio5"
 
 			if ! wifiAddAP "$radio" "$essid" "mesh" "ap" "0"; then
 				echo "Can't add AP interface on $radio."

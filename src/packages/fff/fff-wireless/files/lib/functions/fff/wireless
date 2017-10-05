@@ -50,6 +50,27 @@ wifiAddPhy() {
 	return 0
 }
 
+wifiAddPhyCond() {
+	if [ $# -ne "3" ]
+	then
+		return 1
+	fi
+
+	local phy=$1
+	local freq=$2
+	local channel=$3
+	
+	if iw phy "$phy" info | grep -q -m1 "${freq}... MHz"; then
+		radio="$(wifiAddPhy "$phy" "$channel")"
+		if [ -z "$radio" ]; then
+			return 1
+		fi
+	fi
+	
+	echo "$radio"
+	return 0 # also returns success if outermost if is false
+}
+
 wifiAddAdHocMesh() {
 	if [ $# -ne "3" ]
 	then
@@ -122,6 +143,7 @@ wifiAddAP() {
 	__EOF__
 
 	echo "${iface}"
+	return 0
 }
 
 wifiAddSta() {
@@ -152,6 +174,7 @@ wifiAddSta() {
 	__EOF__
 	
 	echo "${iface}"
+	return 0
 }
 
 # vim: set noexpandtab:tabstop=4
