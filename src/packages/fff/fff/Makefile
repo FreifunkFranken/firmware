@@ -21,7 +21,7 @@ define Package/fff-base
              +fff-nodewatcher \
              +fff-web \
              +fff-uradvd \
-             +fff-batman-adv-legacy \
+             +fff-batman-adv \
              +fff-firewall \
              +fff-support \
              +fff-network \
