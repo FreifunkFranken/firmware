@@ -91,32 +91,66 @@ wifiAddAdHocMesh() {
 }
 
 wifiAddAP() {
-	if [ $# -ne "2" ]
+	if [ $# -ne "5" ]
 	then
-		echo "Usage: wifiAddAP <radio> <essid>"
+		echo "Usage: wifiAddAP <radio> <essid> <network> <iface> <hidden>"
 		return 1
 	fi
 
 	local radio=$1
 	local essid=$2
+	local network=$3
+	local inface=$4
+	local hidden=$5
 
 	local channel=$(uci get "wireless.${radio}.channel")
-	local iface="w2ap"
+	local iface="w2${inface}"
 	if [ "$channel" -gt "14" ]; then
-		iface="w5ap"
+		iface="w5${inface}"
 	fi
 	uci batch <<-__EOF__
 		set wireless.${iface}='wifi-iface'
 		set wireless.${iface}.device='${radio}'
-		set wireless.${iface}.network='mesh'
+		set wireless.${iface}.network='${network}'
 		set wireless.${iface}.ifname='${iface}'
 		set wireless.${iface}.mode='ap'
 		set wireless.${iface}.ssid='${essid}'
 		set wireless.${iface}.encryption='none'
+		set wireless.${iface}.hidden='${hidden}'
 
 		commit wireless
 	__EOF__
 
+	echo "${iface}"
+}
+
+wifiAddSta() {
+	if [ $# -ne "3" ]
+	then
+		echo "Usage: wifiAddSta <radio> <essid> <network>"
+		return 1
+	fi
+
+	local radio=$1
+	local essid=$2
+	local network=$3
+
+	local channel=$(uci get "wireless.${radio}.channel")
+	local iface="w2sta"
+	if [ "$channel" -gt "14" ]; then
+		iface="w5sta"
+	fi
+	uci batch <<-__EOF__
+		set wireless.${iface}='wifi-iface'
+		set wireless.${iface}.device='${radio}'
+		set wireless.${iface}.network='${network}'
+		set wireless.${iface}.ifname='${iface}'
+		set wireless.${iface}.mode='sta'
+		set wireless.${iface}.ssid='${essid}'
+
+		commit wireless
+	__EOF__
+	
 	echo "${iface}"
 }
 
