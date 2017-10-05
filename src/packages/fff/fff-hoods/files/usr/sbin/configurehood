@@ -1,0 +1,230 @@
+#!/bin/sh
+
+. /usr/share/libubox/jshn.sh
+. /lib/functions/fff/wireless
+
+rm /tmp/keyxchangev2data
+
+# Gatewaycheck function
+isGatewayAvailable() {
+	if [ "$(batctl gwl | wc -l)" -gt 2 ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+# Ping test
+hasInternet() {
+	test_ipv4_host1="keyserver.freifunk-franken.de" # Freifunk-Franken keyserver
+	test_ipv4_host2="8.8.8.8"        # Google DNS
+	test_ipv6_host1="heise.de"       # heise Zeitschriftenverlag
+	if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
+		ping -w5 -c3 "$test_ipv4_host2" &>/dev/null ||
+		ping6 -w5 -c3 "$test_ipv6_host1" &>/dev/null ; then
+		return 0
+	fi
+	return 1
+}
+
+chan2ghz="1"
+chan5ghz="36"
+
+# Hidden AP check
+
+if [ -f /tmp/hiddenapflag ]; then
+	if isGatewayAvailable ; then
+
+		uci set network.configap=interface
+		uci set network.configap.proto='static'
+		uci set network.configap.ip6addr='fe80::1/64'
+		uci commit network
+
+		for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
+			if ! wifiAddAP "$radio" "config.franken.freifunk.net" "configap" "configap" "1"; then
+				echo "Can't add Config interface on $radio."
+				exit 1
+			fi
+		done
+
+		wifi
+	fi
+	rm /tmp/hiddenapflag
+fi
+
+lat=$(uci -q get system.@system[0].latitude)
+long=$(uci -q get system.@system[0].longitude)
+
+# if we have Internet, we download the Hoodfile from the keyxchangev2
+if hasInternet ; then
+	wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O /tmp/keyxchangev2data
+	#if no Internet, we connect to the hidden AP and download the file from another Node in range
+else
+	# connect to wireless hidden ap here and download the json File from the nearest router
+	# Only do that, when we have no gateway in range. If the Uplinkrouter changed the hood, we lost the GW and do this automatically again, I think! Nice idea?
+	if ! isGatewayAvailable ; then
+		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
+		#first we delete all wifi settings
+		if ! wifiDelAll; then
+			echo "Can't delete current wifi setup"
+			exit 1
+		fi
+		#now we look for phy and add this
+		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+			if iw phy "$phy" info | grep -q -m1 "2... MHz"; then
+				echo "$phy is 2.4 GHz"
+				radio="$(wifiAddPhy "$phy" "$chan2ghz")"
+				if [ -z "$radio" ]; then
+					echo "Can't create radio for $phy"
+					exit 1
+				fi
+			fi
+			if iw phy "$phy" info | grep -q -m1 "5... MHz"; then
+				echo "$phy is 5 GHz"
+				radio="$(wifiAddPhy "$phy" "$chan5ghz")"
+				if [ -z "$radio" ]; then
+					echo "Can't create radio for $phy"
+					exit 1
+				fi
+			fi
+			#and here we add the station
+			if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta"; then
+				echo "Can't add Sta interface on $radio."
+				exit 1
+			else
+				uci -q set network.configSta=interface
+				uci -q set network.configSta.proto='static'
+				uci -q commit network
+			fi
+		done
+		
+		wifi
+		# wait a moment to start the interface
+		sleep 10;
+		# and here we can download the Hoodfile from the other node
+		wget -T15 -t5 "http://[fe80::1%w2sta]/keyxchangev2data" -O /tmp/keyxchangev2data
+	else
+		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
+		wget -T15 -t5 "http://[fe80::1%br-mesh]/keyxchangev2data" -O /tmp/keyxchangev2data
+	fi
+fi
+
+if [ -s /tmp/keyxchangev2data ]; then
+
+	# we get a json file in this format: 
+	# https://pw.freifunk-franken.de/patch/205/
+	# but without signature, every hood file we get is valid!
+
+	catnew="$(cat /tmp/keyxchangev2data | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	catold="$(cat /www/public/keyxchangev2data 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	sumnew=$(echo "$catnew" | sha256sum | cut -f1 -d " ")
+	sumold=$(echo "$catold" | sha256sum | cut -f1 -d " ")
+
+	json_load "$(cat /tmp/keyxchangev2data)"
+
+	if [ "$sumnew" != "$sumold" ]; then
+		echo "New file detect, we reconfigure the Node";
+
+		json_select hood
+
+		json_get_var hood name
+		json_get_var mesh_bssid mesh_bssid
+		json_get_var mesh_essid mesh_essid
+		json_get_var essid essid
+		# i think the next things we don't active this in the first version! we can do it later
+		#json_get_var channel2 channel2
+		#json_get_var mode2 mode2
+		#json_get_var type2 type2
+		#json_get_var channel5 channel5
+		#json_get_var mode5 mode5
+		#json_get_var type5 type5
+		#json_get_var protocol protocol
+		
+		json_select ".." # back to root
+
+		echo "Setting hood name: $hood"
+		uci set "system.@system[0].hood=$hood"
+
+		if ! wifiDelAll; then
+			echo "Can't delete current wifi setup"
+			exit 1
+		fi
+
+		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+			if iw phy "$phy" info | grep -q -m1 "2... MHz"; then
+				echo "$phy is 2.4 GHz"
+				radio="$(wifiAddPhy "$phy" "$chan2ghz")"
+				if [ -z "$radio" ]; then
+					echo "Can't create radio for $phy"
+					exit 1
+				fi
+			fi
+			if iw phy "$phy" info | grep -q -m1 "5... MHz"; then
+				echo "$phy is 5 GHz"
+				radio="$(wifiAddPhy "$phy" "$chan5ghz")"
+				if [ -z "$radio" ]; then
+					echo "Can't create radio for $phy"
+					exit 1
+				fi
+			fi
+
+			if ! wifiAddAP "$radio" "$essid" "mesh" "ap" "0"; then
+				echo "Can't add AP interface on $radio."
+				exit 1
+			fi
+
+			# here we set a bit for add hidden AP
+			touch /tmp/hiddenapflag
+
+			if ! wifiAddAdHocMesh "$radio" "$mesh_essid" "$mesh_bssid"; then
+				echo "Can't add AP interface on $radio."
+				exit 1
+			fi
+		done
+
+		echo "Loading wifi"
+		wifi
+
+		# copy the file to webroot so that other Meshrouter can download it;
+		# copy only after all other steps so IF can be reentered if something goes wrong
+		cp /tmp/keyxchangev2data /www/public/
+
+	else
+		echo "We have no new file. We do nothing. We try it again in 5 minutes...";
+		exit 0
+	fi
+	
+	# and now we read the VPN Data and give this data to fff-vpn
+	json_select vpn
+	Index=1
+	rm /tmp/fastd_fff_output
+	touch /tmp/fastd_fff_output
+	while json_select "$Index" > /dev/null
+	do
+		json_get_var protocol protocol
+		if [ "$protocol" == "fastd" ]; then
+			json_get_var servername name
+			echo "####${servername}.conf" >> /tmp/fastd_fff_output
+			echo "#name \"${servername}\";" >> /tmp/fastd_fff_output
+			json_get_var key key
+			echo "key \"${key}\";" >> /tmp/fastd_fff_output
+			json_get_var address address
+			json_get_var port port
+			echo "remote ipv4 \"${address}\" port $port float;" >> /tmp/fastd_fff_output
+		fi
+		echo "" >> /tmp/fastd_fff_output
+		json_select ".." # back to vpn
+		Index=$(( Index + 1 ))
+	done
+	echo "###" >> /tmp/fastd_fff_output
+	json_select ".." # back to root
+	#this we do every 5 minutes, because it can change the VPN Protocol
+	#and now we get to vpn-select Script and load VPNs
+	
+	if hasInternet ; then
+		sh /usr/sbin/vpn-select
+	fi
+else
+	echo "We haven't got a file. We do nothing. We try it again in 5 minutes...";
+	exit 0
+fi

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-test -f /tmp/started || exit
-
 make_config() {
 # remove old config
 >/etc/config/tunneldigger

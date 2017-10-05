@@ -4,6 +4,10 @@
 
 /usr/sbin/configurenetwork
 
+sleep 3
+
+/usr/sbin/configurehood
+
 touch /tmp/started
 
 exit 0

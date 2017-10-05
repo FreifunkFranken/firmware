@@ -29,7 +29,8 @@ define Package/fff-base
              +fff-wireless \
              +fff-timeserver \
              +fff-vpn-select \
-             +simple-tc
+             +simple-tc \
+             +fff-hoods
 endef
 
 define Package/fff-base/description
