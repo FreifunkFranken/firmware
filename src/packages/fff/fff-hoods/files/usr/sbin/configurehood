@@ -66,6 +66,8 @@ else
 	if ! isGatewayAvailable ; then
 		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 		#first we delete all wifi settings
+		rm /www/public/keyxchangev2data # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+
 		if ! wifiDelAll; then
 			echo "Can't delete current wifi setup"
 			exit 1
