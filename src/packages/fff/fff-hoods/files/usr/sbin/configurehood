@@ -174,7 +174,6 @@ if [ -s /tmp/keyxchangev2data ]; then
 
 	else
 		echo "We have no new file. We do nothing. We try it again in 5 minutes...";
-		exit 0
 	fi
 	
 	# and now we get to vpn-select script and load VPNs directly from /tmp/keyxchangev2data
