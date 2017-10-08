@@ -13,6 +13,7 @@ nav_entry() {
 }
 
 HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+hood="$(uci -q get "system.@system[0].hood")"
 
 NOW=$(date +%s)
 #Check if new Firmware check older then 1 day
