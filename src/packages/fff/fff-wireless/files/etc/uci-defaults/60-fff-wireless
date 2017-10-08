@@ -1,0 +1,32 @@
+#!/bin/sh
+# Copyright 2016 Tim Niemeyer
+# License GPLv3
+
+. /lib/functions/fff/wireless
+
+if ! wifiDelAll; then
+	echo "Can't delete current wifi setup"
+	exit 1
+fi
+
+for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+	radio="$(wifiAddPhyCond "$phy" "2" "1")"
+	radio5="$(wifiAddPhyCond "$phy" "5" "36")"
+	[ -n "$radio5" ] && radio="$radio5"
+	if [ -z "$radio" ] ; then
+		echo "Can't create radio for $phy"
+		exit 1
+	fi
+
+	if ! wifiAddAP "$radio" "do.not.use" "mesh" "ap" "0" ; then
+		echo "Can't add AP interface on $radio."
+		exit 1
+	fi
+
+	if ! wifiAddMesh "$radio" "mesh.do.not.use" ; then
+		echo "Can't add Mesh interface on $radio."
+		exit 1
+	fi
+done
+
+# vim: set noexpandtab:tabstop=4
