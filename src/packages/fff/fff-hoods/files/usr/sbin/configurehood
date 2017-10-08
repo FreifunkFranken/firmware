@@ -193,6 +193,43 @@ if [ -s /tmp/keyxchangev2data ]; then
 	if hasInternet ; then
 		sh /usr/sbin/vpn-select
 	fi
+
+	# now we load the prefix from the hoodfile and set this to br-mesh
+	json_select network
+	json_get_var prefix ula_prefix
+	# Set $prefix::MAC as IP
+	if [ -n "$prefix" ] ; then
+		prefix="$(echo "$prefix" | sed -e 's,\\,,')"
+		suffix="$(awk -F: '{ print "0:"$1$2":"$3$4":"$5$6 }' /sys/class/net/br-mesh/address)"
+		suffix_eui="$(awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' /sys/class/net/br-mesh/address)"
+		addr="$(echo "$prefix" | sed -e 's,/,'$suffix'/,')"
+		echo $addr | grep -q "::" || addr="$(echo "$addr" | sed -e 's,:[0:]*:,::,')"
+		addr_eui="$(echo "$prefix" | sed -e 's,/,'$suffix_eui'/,')"
+		echo $addr_eui | grep -q "::" || addr_eui="$(echo "$addr_eui" | sed -e 's,:[0:]*:,::,')"
+		for ip in $(ip -6 addr show dev br-mesh | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
+			ip -6 addr del "$ip" dev br-mesh
+		done
+		if ! ( ip -6 addr show dev br-mesh | grep -q "$addr" ) ; then
+			ip -6 addr add "$addr" dev br-mesh
+			echo "Set ULA address to br-mesh: $addr"
+		else
+			echo "Address already set."
+		fi
+		# Set $prefix::link-local as IP
+		if ! ( ip -6 addr show dev br-mesh | grep -q "$addr_eui" ) ; then
+			ip -6 addr add "$addr_eui" dev br-mesh
+			echo "Set ULA EUI-64 address to br-mesh: $addr_eui"
+		else
+			echo "Address already set."
+		fi
+		if ! ( ip -6 route show dev br-mesh | grep -q "fc00::" ) ; then
+			ip -6 route add fc00::/7 via fe80::1 dev br-mesh
+			echo "Set ULA route to br-mesh."
+		else
+			echo "Route already set."
+		fi
+	fi
+	json_select ".." # back to root
 else
 	echo "We haven't got a file. We do nothing. We try it again in 5 minutes...";
 	exit 0
