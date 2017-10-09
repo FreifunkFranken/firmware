@@ -1,0 +1,35 @@
+#!/bin/sh
+
+uci batch <<EOF
+  delete uhttpd.main
+  delete uhttpd.public
+  delete uhttpd.ssl
+  delete uhttpd.px5g
+  set uhttpd.public=uhttpd
+  add_list uhttpd.public.listen_http='80'
+  set uhttpd.public.home='/www/public'
+  set uhttpd.public.rfc1918_filter='1'
+  set uhttpd.public.cgi_prefix='/cgi-bin'
+  set uhttpd.public.script_timeout='60'
+  set uhttpd.public.network_timeout='30'
+  set uhttpd.public.tcp_keepalive='1'
+  set uhttpd.public.config='_'
+  set uhttpd.ssl=uhttpd
+  add_list uhttpd.ssl.listen_https='443'
+  set uhttpd.ssl.home='/www/ssl'
+  set uhttpd.ssl.rfc1918_filter='1'
+  set uhttpd.ssl.cert='/etc/uhttpd.crt'
+  set uhttpd.ssl.key='/etc/uhttpd.key'
+  set uhttpd.ssl.cgi_prefix='/cgi-bin'
+  set uhttpd.ssl.script_timeout='60'
+  set uhttpd.ssl.network_timeout='30'
+  set uhttpd.ssl.tcp_keepalive='1'
+  set uhttpd.ssl.config='/etc/httpd.conf'
+  set uhttpd.px5g=cert
+  set uhttpd.px5g.days='1400'
+  set uhttpd.px5g.bits='2048'
+  set uhttpd.px5g.commonname='OpenWrt'
+EOF
+
+uci commit uhttpd
+exit 0

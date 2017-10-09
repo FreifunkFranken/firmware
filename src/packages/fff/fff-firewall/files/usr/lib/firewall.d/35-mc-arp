@@ -1,0 +1,8 @@
+# Verbiete ARP Antworten an alle
+ebtables -A MULTICAST_OUT -p ARP --arp-op Reply --arp-ip-src 0.0.0.0 -j DROP
+
+# Verbiete ARP Requests an alle
+ebtables -A MULTICAST_OUT -p ARP --arp-op Request --arp-ip-dst 0.0.0.0 -j DROP
+
+# Erlaube alle anderen ARP's
+ebtables -A MULTICAST_OUT -p ARP -j RETURN

@@ -13,9 +13,9 @@
 
 builddir=./build
 
-OPENWRTREV="1cd5709e5d9d6e73eb501f1f2840379aa8d171db"
-OPENWRTURL="git://git.openwrt.org/15.05/openwrt.git"
-PACKAGEREV="ee0bb7b9df86cec0f1d7c27046c50b1fc45b7c4f"
+OPENWRTREV="97ebdf93a330ef1d7ff1cf6989cfb92ac2f5a386" # LEDE 17.01.2
+OPENWRTURL="https://git.lede-project.org/source.git"
+PACKAGEREV="fa3a118de87d7600729dd07d2f24ca3138d9dd4d" # lede-17.01 from 2017-09-14
 PACKAGEURL="https://github.com/openwrt/packages.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
@@ -28,21 +28,25 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 
 ## Be careful: FFF uses COMPAT_VERSION 14 at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
-BATMAN_ADV=(batman_adv
+GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
-            bdb56bba02168a7fdd7c8bbf380ae59a4febac7c)
-BATMAN_ADV_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
+            8b65619f59c3bdce743c2f2fb2588fdd7079355a
+            "0001-simple-tc-Use-hotplug.d-iface-instead-of-hotplug.d-n.patch")
+GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
          https://github.com/openwrt-routing/packages.git
-         e870c3373eea80df852d42fac3f40aaffd7a0f58)
+         d11075cd40a88602bf4ba2b275f72100ddcb4767) # lede-17.01
 ROUTING_PKGS="alfred"
 
 FFF=(fff)
 FFF_PKGS="-a"
 
-FEEDS=(OPENWRT ROUTING BATMAN_ADV FFF)
+FEEDS=(OPENWRT ROUTING GLUON FFF)
+
+# Disable dnsmasq and other useless stuff
+export DEVICE_TYPE=
 
 checkout_git(){
     local DIRECTORY=$1
@@ -80,8 +84,6 @@ get_source() {
     #Get the OpenWrt Core Source for Firmware
     checkout_git openwrt $OPENWRTURL $OPENWRTREV
 
-    git -C openwrt am ../../build_patches/ar71xx-add-support-for-TP-Link-TL-WR1043ND-v3.patch
-
     test -d packages || mkdir packages
     cd packages
 
@@ -102,7 +104,7 @@ get_source() {
             count=3
             while [ "x${FEED[count]}" != "x" ]
             do
-                local PATCH=${FEED[count]}
+                local PATCH="../../../build_patches/${NAME}/${FEED[count]}"
                 if [ ! -z "$PATCH" ] ; then
                     echo "Patching $PATCH"
                     git -C "$NAME" am --whitespace=nowarn "$PATCH"
@@ -118,6 +120,14 @@ get_source() {
     cd .. # src
 }
 
+patch_target() {
+    if [ "$(find "$PWD"/build_patches/openwrt/*.patch 2> /dev/null | wc -l)" -ge 1 ]; then
+        for patch in "$PWD"/build_patches/openwrt/*.patch; do
+            patch --no-backup-if-mismatch -p1 -d "$target" -i "$patch"
+        done
+    fi
+}
+
 prepare() {
     get_source
 
@@ -125,6 +135,8 @@ prepare() {
 
     /bin/rm -rf "$target"
     cp -a src/openwrt "$target"
+
+    patch_target
 
     ## generate own feeds.conf
     #this local variable should be globally configure variable used in get_source and here
@@ -157,21 +169,9 @@ prepare() {
         fi
     done
 
-    # todo evaluate this with the new openwrt
-    # This changes the default behavior of sysupgrade to not save the config
-    patch -p0 -d "$target" -i "$PWD"/build_patches/sysupgrade_no_config_save.patch
-
-    # set default password to 'ffol'
-    patch -p0 -d "$target" -i "$PWD"/build_patches/set_root_password.patch
-
-    #add Support for GL-AR150 see also http://git.openwrt.org/?p=openwrt.git;a=commit;h=8211e81bce57392635fa3ad6572514387118e4a5
-    patch -p0 -d "$target" -i "$PWD"/build_patches/ar71xx-add-support-for-GL-AR150.patch
-
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
     ln -s ../../src/dl "$target"/dl
-
-    board_prepare
 }
 
 prebuild() {
@@ -180,10 +180,7 @@ prebuild() {
     mkdir "$target"/files
 
     cp -r ./bsp/default/root_file_system/* "$target"/files/
-    cp -r ./bsp/"$machine"/root_file_system/* "$target"/files/
     cp ./bsp/"$machine"/.config "$target"/.config
-
-    board_prebuild
 
     while IFS= read -r -d '' template
     do
@@ -194,6 +191,9 @@ prebuild() {
 
     #insert actual firware version informations into release file
     version=$(git describe --tags --dirty)
+    if [ 0 -ne $? ]; then
+        version=$(git log -1 --pretty=format:%h)
+    fi
     community=$(basename "$(realpath selected_community)" .cfg)
 
     {
@@ -203,6 +203,8 @@ prebuild() {
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
     } > "$target"/files/etc/firmware_release
+
+    cp selected_community "$target"/files/etc/community.cfg
 
     opath=$(pwd)
     cd "$target"
@@ -235,7 +237,7 @@ build() {
         mkdir bin
     fi
 
-    postbuild
+    cp_firmware
 }
 
 config() {
@@ -270,12 +272,58 @@ config() {
     cd "$opath"
 }
 
-postbuild() {
-    board_postbuild
+cp_firmware() {
+    if [ "$community" = "franken" ]; then
+        local community="fff"
+    fi
+
+    for image in ${images[@]}; do
+        filename_build=${image//lede/${community}-${version}}
+        filename_build=${filename_build//generic/g}
+        cp "$target/bin/targets/${chipset}/generic/$image" "./bin/$filename_build"
+
+        for region in "" "-eu" "-us"; do
+            image_factory=${image/sysupgrade/factory$region}
+            if [[ -f "$target/bin/targets/${chipset}/generic/$image_factory" ]]; then
+              filename_build_factory=${filename_build/sysupgrade/factory$region}
+              if [ ${#image_factory} -lt ${#filename_build_factory} ]; then
+                echo "Warning: The factory image file name (${filename_build_factory}) is longer than the OpenWrt one, which might be incompatibility with the stock firmware."
+              fi
+              cp "$target/bin/targets/${chipset}/generic/$image_factory" "./bin/$filename_build_factory"
+            fi
+        done
+    done
+}
+
+buildrelease() {
+    if [ "$1" = "all" ];then
+        all=true
+    elif [ "$1" = "fast" ];then
+        fast=fast
+    fi
+
+    if [ "$2" = "all" ];then
+        all=true
+    elif [ "$2" = "fast" ];then
+        fast=fast
+    fi
+
+    if [ $all ]; then
+        buildall $fast
+    else
+        build $fast
+    fi
+
+    cd bin
+    for binary in *.bin; do
+        md5sum "$binary" > ./"$binary".md5
+        sha256sum "$binary" > ./"$binary".sha256
+    done
+    cd ..
+    echo -e "VERSION:$version" > ./bin/release.nfo
 }
 
 clean() {
-    board_clean
     /bin/rm -rf bin $builddir src/openwrt
 
     # remove downloaded package feeds
@@ -293,16 +341,45 @@ clean() {
     done
 }
 
+loadBSP()
+{
+    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
+    . selected_bsp
+}
+
+loadCommunity()
+{
+    echo "Working with $(/bin/ls -l selected_community | awk '{ print $11 }')"
+    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+}
+
+setCommunity() {
+    /bin/rm -rf selected_community
+    /bin/ln -s "$1" selected_community
+    loadCommunity
+}
+
+setBSP()
+{
+    /bin/rm -rf selected_bsp
+    /bin/ln -s "$1" selected_bsp
+    loadBSP
+}
+
 buildall() {
     for bsp in $(/bin/ls bsp/*.bsp); do
-        ./buildscript selectcommunity "$1"
-        ./buildscript selectbsp "$bsp"
-        ./buildscript prepare
-        ./buildscript build "$2"
+        setBSP "$bsp"
+        prepare
+        build "$1"
     done
 }
 
-if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; then
+if [ "$(/usr/bin/id -u)" -eq 0 ]; then
+	echo "don't run buildscript as root"
+	exit 1
+fi
+
+if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
     if [ ! -h selected_bsp ]; then
         echo "Please select a Board-Support-Package using:"
         echo "$0 selectbsp"
@@ -313,10 +390,8 @@ if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" -a "$1" != "buildall" ]; t
         echo "$0 selectcommunity"
         exit
     fi
-    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }') and" \
-            "$(/bin/ls -l selected_community | awk '{ print $11 }')"
-    . selected_bsp
-    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
+    loadBSP
+    loadCommunity
     echo
 fi
 
@@ -333,8 +408,7 @@ case "$1" in
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
             else
-                /bin/rm -rf selected_bsp
-                /bin/ln -s "$2" selected_bsp
+                setBSP "$2"
             fi
         fi
         ;;
@@ -350,8 +424,7 @@ case "$1" in
             if [ ! -f "$2" ]; then
                 echo "Could not find $2"
             else
-                /bin/rm -rf selected_community
-                /bin/ln -s "$2" selected_community
+                setCommunity "$2"
             fi
         fi
         ;;
@@ -383,7 +456,7 @@ case "$1" in
                 config openwrt
                 ;;
             *)
-                echo "This open the OpenWRT menuconfig dialog"
+                echo "This open the OpenWrt menuconfig dialog"
                 echo
                 echo "Usage: $0 $1 openwrt"
                 echo
@@ -401,15 +474,23 @@ case "$1" in
         fi
         ;;
     "buildall")
-        if [ "$2" = "help" ] || [ "$2" = "" ]; then
+        if [ "$2" = "help" ]; then
             echo "This option builds the firmware for all routers of a given community."
             echo
-            echo "Usage: $0 $1 <community-file> [fast]"
-            echo "available community-files: "
-            /bin/ls community/*.cfg
+            echo "Usage: $0 $1 [fast]"
             echo
         else
-            buildall "$2" "$3"
+            buildall "$2"
+        fi
+        ;;
+    "release")
+        if [ "$2" = help ]; then
+            echo "This option builds the firmware for a given board. It also creates hash sums and a the file release.nfo"
+            echo
+            echo "Usage: $0 $1 [all] [fast]"
+            echo
+        else
+            buildrelease "$2" "$3"
         fi
         ;;
     *)
@@ -422,7 +503,8 @@ case "$1" in
         echo "  prepare"
         echo "  config openwrt"
         echo "  build [fast|debug]"
-        echo "  buildall <community-file> [fast]"
+        echo "  buildall [fast]"
+        echo "  release [all] [fast]"
         echo "  clean"
         echo ""
         echo "If you need help to one of these options just type: $0 <command> help"

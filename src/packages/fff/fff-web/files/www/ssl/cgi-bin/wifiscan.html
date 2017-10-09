@@ -1,0 +1,30 @@
+#!/usr/bin/haserl
+
+<%in /www/ssl/cgi-bin/header %>
+<table style="width: 100%">
+<tr><td>
+<fieldset>
+	<legend>Wifi Scan</legend>
+	<table class="wifitable">
+		<tr>
+			<th>Name</th>
+			<th>Kanal</th>
+			<th>Signal</th>
+			<th>Typ</th>
+			<th>MAC</th>
+			<th>Encryption</th>
+		</tr>
+
+<%
+iwinfo w2mesh scan |\
+	awk -v RS='' \
+	'{r = gensub(/.*Address: ([0-9A-F:]*)?.*ESSID: "?(unknown|[^"]*)"?.*Mode: ([^ ]*).*Channel: ([0-9]*).*Signal: (-[0-9]*) dBm.*Encryption: ([^"]*).*/, \
+	"<!-- \\5 --><tr><td>\\2</td><td>\\4</td><td>\\5 dBm</td><td>\\3</td><td>\\1</td><td>\\6</td></tr>", "g"); print r;}' | sort -n
+	# The HTML comment contains the signal quality to allow sorting
+%>
+	</table>
+</fieldset>
+</td></tr>
+</table>
+
+<%in /www/ssl/cgi-bin/footer %>

@@ -1,19 +1,7 @@
 machine=wdr4900
+chipset=mpc85xx
 target=$builddir/$machine
 
-board_prepare() {
-	echo "nothing todo" > /dev/null
-}
-
-board_prebuild() {
-	echo "nothing todo" > /dev/null
-}
-
-board_postbuild() {
-    cp $target/bin/mpc85xx/openwrt-mpc85xx-generic-tl-wdr4900-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/mpc85xx/openwrt-mpc85xx-generic-tl-wdr4900-v1-squashfs-sysupgrade.bin ./bin/
-}
-
-board_clean() {
-	/bin/rm -rf $target bin/*$machine*
-}
+images=(
+        "lede-mpc85xx-generic-tl-wdr4900-v1-squashfs-sysupgrade.bin"
+       )

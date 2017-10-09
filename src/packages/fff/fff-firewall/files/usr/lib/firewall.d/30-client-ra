@@ -1,0 +1,5 @@
+# Erlaube nur Router-Solicitation von CLIENT -> BATMAN
+ebtables -A FORWARD -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j OUT_ONLY
+
+# Erlaube nur Router-Advertisment von BATMAN -> CLIENT
+ebtables -A FORWARD -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j IN_ONLY

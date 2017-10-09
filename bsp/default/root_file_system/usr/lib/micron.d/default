@@ -1,2 +1,0 @@
-*/5 * * * * sleep $(/usr/bin/random 0 29); sh /etc/fastdstart.sh
-*/1 * * * * /usr/sbin/batctl gw off; sleep 1; /usr/sbin/batctl gw client

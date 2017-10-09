@@ -1,0 +1,5 @@
+# Erlaube nur DHCPv6 Antworten von BATMAN -> KNOTEN
+ebtables -A INPUT -p IPv6 --ip6-proto udp --ip6-dport 546 -j IN_ONLY
+
+# Erlaube nur DHCPv6 Request von KNOTEN -> BATMAN
+ebtables -A OUTPUT -p IPv6 --ip6-proto udp --ip6-dport 547 -j OUT_ONLY

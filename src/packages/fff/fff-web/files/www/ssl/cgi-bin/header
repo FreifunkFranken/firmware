@@ -1,0 +1,75 @@
+#!/usr/bin/haserl
+
+<%
+. /etc/community.cfg
+. /etc/firmware_release
+echo -en "Content-Type: text/html\r\n\r\n"
+nav_entry() {
+	script_file="/cgi-bin/$1"
+	if [ "$script_file" == "$REQUEST_URI" ] ; then
+		local class_active=' class="active"'
+	fi
+	echo -ne "\t<li${class_active}><a href=\"${script_file}\">$2</a></li>\n\t\t"
+}
+
+HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+
+NOW=$(date +%s)
+#Check if new Firmware check older then 1 day
+if [ ! -s /tmp/fwcheck ] || [ "$(cat /tmp/fwcheck)" -lt "$NOW" ] ; then
+        rm -f /tmp/isupdate
+        NEXTUPDATE=$(($(date +%s)+86400))
+        echo $NEXTUPDATE > /tmp/fwcheck
+        /usr/bin/wget "${UPGRADE_PATH}/release.nfo" -P /tmp -T 2
+        VERSION=$(cat /tmp/release.nfo|awk -F: '/VERSION:/ { print $2 }')
+        rm -f /tmp/release.nfo
+        if [ "$VERSION" != "$FIRMWARE_VERSION" -a -n "$VERSION" ]; then
+                echo $VERSION > /tmp/isupdate
+        fi
+fi
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title><%= ${HOSTNAME} %></title>
+	<link href="/style.css" rel="stylesheet" type="text/css" media="screen" />
+       <meta http-equiv="cache-control" content="no-cache" />
+       <meta http-equiv="pragma" content="no-cache" />
+       <meta http-equiv="expires" content="0" />
+</head>
+<body>
+	<div id="header" style="position: relative;">
+		<h1><%= ${HOSTNAME} %></h1>
+		<h2>Freifunk Franken Router</h2>
+		<img src="/freifunk.svg" style="position: absolute; top: 1px; right: 42px;" alt="" />
+	</div>
+	<div style="height: 30px; background-color: #ffb400;"></div>
+	<div id="menu">
+		<ul>
+		<%
+			nav_entry home.html		"Home"
+			nav_entry settings.html		"Einstellungen"
+			nav_entry ports.html		"Anschl&uuml;sse"
+			nav_entry wifiscan.html		"Wifi Scan"
+			nav_entry upgrade.html		"Upgrade"
+			nav_entry password.html		"Password"
+			nav_entry reboot.html		"Neustart"
+			nav_entry logout.html		"Logout"
+		%>
+		</ul>
+		<div></div>
+	</div>
+	<div id="container">
+		<div id="primarycontainer">
+			<div id="primarycontent">
+			<%
+			if [ -s /tmp/isupdate ] ; then
+				VERSION=$(cat /tmp/isupdate)
+			%>
+				<table style="width: 100%;">
+					<tr>
+						<td><span style="font-size: 16pt; color:#FF0000">Es ist eine neue Firmware für deinen Freifunkrouter verfügbar.<br />Alte Version: <%= ${FIRMWARE_VERSION} %> - Neue Version: <%= ${VERSION} %> <br /><a href="upgrade.html">Firmware jetzt updaten</a></span></td>
+					</tr>
+				</table>
+			<% fi %>

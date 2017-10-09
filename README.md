@@ -8,7 +8,7 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 
 ## Benutzung des Buildscripts
 ### Prerequisites
-* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWRT selbst)
+* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
 * `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
@@ -41,12 +41,12 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
 
 ### `./buildscript prepare`
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
-  * OpenWRT
+  * OpenWrt
   * Sämtliche Packages (ggfs werden Patches angewandt)
 
 * Ein ggfs altes Target wird gelöscht
-* OpenWRT wird ins Target exportiert (kopiert)
-* Eine OpenWRT Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
+* OpenWrt wird ins Target exportiert (kopiert)
+* Eine OpenWrt Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
 * Die Feeds werden geladen
 * Spezielle Auswahl an Paketen wird geladen
 * Patches werden angewandt
@@ -57,18 +57,18 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
   * $target/files aufräumen
     * (In $target/files liegen Dateien, die später direkt im Ziel-Image landen)
   * Files aus default-bsp und bsp kopieren
-  * OpenWRT- und Kernel-Config kopieren
+  * OpenWrt- und Kernel-Config kopieren
   * board_prebuild() aus dem BSP wird aufgerufen
 * Templates transformieren
 * GIT Versionen speichern: $target/files/etc/firmware_release
-* OpenWRT: make
+* OpenWrt: make
 * postbuild
   * board_postbuild() wird aufgerufen
 
 ### `./buildscript config`
-Um das Arbeiten mit den OpenWRT .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWRT menuconfig und die OpenWRT kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
+Um das Arbeiten mit den OpenWrt .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWrt menuconfig und die OpenWrt kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
 * prebuild
-* OpenWRT: `make menuconfig ; make kernel_menuconfig`
+* OpenWrt: `make menuconfig ; make kernel_menuconfig`
 * Speichern, y/n?
 * Config-Format vereinfachen
 * Config ins BSP zurück speichern
@@ -110,7 +110,7 @@ Jetzt gehst du n Kaffee trinken.
 
 ### Netzwerkeinstellungen korrekt setzen
 Am Ende sollte im bin/ Verzeichnis das Image für v1 und v2 liegen. Das v2 Image wird auf den Router geflasht. Achtung: Eventuell ist das Netzwerk jetzt so falsch eingestellt, dass man nicht mehr über Netzwerk auf den Router zugreifen kann. Am einfachsten ist es den Router dann über eine serielle Konsole zu verwenden. Theoretisch kann man an den unterschiedlichen LAN-Ports mit der IPv6 Link-Local aus der MAC Adresse des Geräts versuchen drauf zu kommen. Es kann auch sein, dass die IPv6 +/- 1 am Ende hat. Letztlich kann das funktionieren, ist aber aufwändig und da am LAN Einstellungen verändert werden sollen, ist die serielle Konsole das Mittel der Wahl!
-Wenn man dann auf dem Router drauf ist, muss als erstes festgestellt werden, welches Ethernet-Device für den WAN Port zuständig ist. Mir sind da folgende Möglichkeiten bekannt. a) WAN ist eth0, b) WAN ist eth1, c) WAN ist teil vom Switch eth0. Dementsprechend wird das WANDEV auf dem Router in der /etc/network.tl-wr1043nd-v2 konfiguriert. Wenn WAN ein eigenes ethX hat, dann muss WAN_PORTS="" sein. Dann muss eingestellt werden welches Ethernet-Device an dem internen Switch angeschlossen ist (swconfig list). Dieses wird als SWITCHDEV konfiguriert. Ich glaub CLIENTIF musst nicht angepasst werden. Aber es muss noch eingestellt werden, welches Ethernet oder Wifi Device die MAC Adresse hat, die auch unter dem Gerät steht. Dieses Device wird als ROUTERMAC eingetragen. Nun ist es an der Zeit die Einstellungen zu testen, dafür muss die falsche Netzwerk-Config zurück gesetzt werden:
+Wenn man dann auf dem Router drauf ist, muss als erstes festgestellt werden, welches Ethernet-Device für den WAN Port zuständig ist. Mir sind da folgende Möglichkeiten bekannt. a) WAN ist eth0, b) WAN ist eth1, c) WAN ist teil vom Switch eth0. Dementsprechend wird das WANDEV auf dem Router in der /etc/network.tl-wr1043nd-v2 konfiguriert. Wenn WAN ein eigenes ethX hat, dann muss WAN_PORTS="" sein. Dann muss eingestellt werden welches Ethernet-Device an dem internen Switch angeschlossen ist (swconfig list). Dieses wird als SWITCHDEV konfiguriert. Es muss noch eingestellt werden, welches Ethernet oder Wifi Device die MAC Adresse hat, die auch unter dem Gerät steht. Dieses Device wird als ROUTERMAC eingetragen. Nun ist es an der Zeit die Einstellungen zu testen, dafür muss die falsche Netzwerk-Config zurück gesetzt werden:
 ```
 cp /rom/etc/config/network /etc/config/network
 reboot

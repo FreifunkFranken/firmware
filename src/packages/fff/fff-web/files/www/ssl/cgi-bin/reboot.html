@@ -1,0 +1,35 @@
+#!/usr/bin/haserl
+
+<%
+# prepare
+if [ "$REQUEST_METHOD" == "POST" ] ; then
+	if [ "$POST_reboot" != "" ] ; then
+		do_reboot=1
+		MSG='<span class="green">Router wird neugestartet...</span>'
+	fi
+fi
+%>
+<%in /www/ssl/cgi-bin/header %>
+<%in /www/ssl/cgi-bin/helpers %>
+<% show_msg %>
+<form method="POST">
+<table style="width: 100%;">
+<tr><td>
+<fieldset>
+	<legend>Router neustarten</legend>
+	<table>
+		<tr><td colspan="2"><input type="submit" name="reboot" value="Router neustarten" /></td></tr>
+		<tr><td colspan="2"></td></tr>
+		<tr><td colspan="2">Der Neustart dauert etwa 2 Minuten.</td></tr>
+	</table>
+</fieldset>
+</td></tr>
+</table>
+</form>
+<%in /www/ssl/cgi-bin/footer %>
+<%
+# write
+if [ "$do_reboot" == "1" ] ; then
+	reboot
+fi
+%>

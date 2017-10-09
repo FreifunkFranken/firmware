@@ -1,0 +1,12 @@
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS="0t"
+WAN_PORTS="0t"
+BATMAN_PORTS="0t"
+
+ETHMESHMAC="w2ap"
+
+. /etc/network.mode
+
+LAN0PORT=5
+LAN1PORT=4

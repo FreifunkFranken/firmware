@@ -1,0 +1,25 @@
+From 1115262b144c9fbdb9101a29681cf3d0f332f167 Mon Sep 17 00:00:00 2001
+From: Tim Niemeyer <tim@tn-x.org>
+Date: Sat, 8 Jul 2017 10:46:59 +0200
+Subject: [PATCH 1/7] sysupgrade no config save
+
+---
+ package/base-files/files/sbin/sysupgrade | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
+index c095ca8..4a97d36 100755
+--- a/package/base-files/files/sbin/sysupgrade
++++ b/package/base-files/files/sbin/sysupgrade
+@@ -104,7 +104,7 @@ EOF
+ add_uci_conffiles() {
+ 	local file="$1"
+ 	( find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
+-		/etc/sysupgrade.conf /lib/upgrade/keep.d/* 2>/dev/null) \
++		/etc/sysupgrade.conf 2>/dev/null) \
+ 		-type f -o -type l 2>/dev/null;
+ 	  opkg list-changed-conffiles ) | sort -u > "$file"
+ 	return 0
+-- 
+2.1.4
+

@@ -1,0 +1,74 @@
+#!/usr/bin/haserl
+
+<%
+echo -en "Content-Type: text/html\r\n\r\n"
+HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+
+MAC="$(uci -q get network.mesh.macaddr)"
+lat="$(uci -q get system.@system[0].latitude)"
+lon="$(uci -q get system.@system[0].longitude)"
+contact="$(uci -q get system.@system[0].contact)"
+
+. /etc/firmware_release
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title><%= ${HOSTNAME} %></title>
+	<link href="/style.css" rel="stylesheet" type="text/css" media="screen" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+</head>
+<body>
+	<div id="header" style="position: relative;">
+		<h1><%= ${HOSTNAME} %></h1>
+		<h2>Freifunk Franken Router</h2>
+		<img src="/freifunk.svg" style="position: absolute; top: 1px; right: 42px;" alt="" />
+	</div>
+	<div style="height: 30px; background-color: #ffb400; position: relative;">
+		<div style="position: absolute; top: 20%; bottom: 20%; left: 40px; width: 20em; text-align: left;">
+			<a style="color: #d22755; text-decoration: none; font-weight: bold;" href="http://www.freifunk-franken.de/">www.freifunk-franken.de</a>
+		</div>
+		<div style="background-color: #d22755; position: absolute; top: 20%; bottom: 20%; right: 42px; width: 3.4em; text-align: center; border-radius: 2px;">
+			<a style="color: #ffffff; text-decoration: none;" href="https://<%= ${HTTP_HOST} %>/">Login</a>
+		</div>
+	</div>
+	<div id="container" style="margin-top: 15px;">
+		<div id="primarycontainer">
+			<div id="primarycontent">
+				<table style="width: 100%;">
+					<tr><td>
+						<fieldset style="min-height: 15em;">
+							<legend>System</legend>
+							<table>
+								<tr><th>Name:</th><td><%= $HOSTNAME %></td></tr>
+								<tr><th>MAC-Adresse:</th><td style="text-transform: uppercase;"><a href="https://monitoring.freifunk-franken.de/api/get_router_by_mac/<%= $MAC %>"><%= $MAC %></a></td></tr>
+								<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
+								<tr><th>Firmware:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
+								<tr><th>Beschreibung:</th><td><% uci -q get 'system.@system[0].description' %></td></tr>
+								<tr><th>Position:</th><td><% if [ -n "$lat" -a -n "$lon" ]; then
+									echo "<a href=\"https://monitoring.freifunk-franken.de/map?mapcenter=$lat,$lon,16\">${lat:0:8}N, ${lon:0:8}E</a>"
+								fi %></td></tr>
+								<tr><th>Standort:</th><td><% uci -q get 'system.@system[0].position_comment' %></td></tr>
+								<tr><th>E-Mail Adresse:</th><td><a href="mailto:<%= $contact %>"><%= $contact %></a></td></tr>
+							</table>
+						</fieldset>
+					</td><td>
+						<fieldset style="min-height: 15em;">
+							<legend>Status</legend>
+							<table>
+								<tr><th>Nachbarknoten:</th><td><% echo -n $(cat /sys/kernel/debug/batman_adv/bat0/originators | grep '^[0-9a-f]' | cut -b 37-53 | sort | uniq | wc -l 2> /dev/null) %></td></tr>
+								<tr><th>Bekannte Knoten:</th><td><% echo -n $((`cat /sys/kernel/debug/batman_adv/bat0/transtable_global | grep '^ [^ ]' | cut -b 39-55 | sort | uniq | wc -l 2> /dev/null`+1)) %></td></tr>
+								<tr><th>Lokale Clients:</th><td><% echo -n $(cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W') %></td></tr>
+							</table>
+						</fieldset>
+					</td></tr>
+				</table>
+			</div>
+		</div>
+		<div class="clearit"></div>
+	</div>
+</body>
+</html>

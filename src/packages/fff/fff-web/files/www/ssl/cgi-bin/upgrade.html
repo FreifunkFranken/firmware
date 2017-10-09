@@ -1,0 +1,77 @@
+#!/usr/bin/haserl --upload-dir=/tmp --upload-limit=12000
+
+<%
+# prepare
+if [ "$REQUEST_METHOD" == "POST" ] ; then
+	if [ "$POST_reset" != "" ] ; then
+		# reset
+		if [ "$FORM_really_reset" == "on" ] ; then
+			do_reset=1
+			MSG='<span class="green">Router wird zur&uuml;ckgesetzt und anschlie&szlig;end neugestartet...</span>'
+		fi
+	elif [ "$POST_upgrade" != "" ] ; then
+		# upgrade
+		if [ ! -f "$HASERL_firmware_path" ] ; then
+			MSG='<span class="red">Firmware Datei nicht gefunden!</span>'
+		elif [ "$(du -k "$HASERL_firmware_path" | cut -f1)" == "0" ] ; then
+			MSG='<span class="red">Firmware Datei ist leer!</span>'
+		elif ! error=$(sysupgrade -T "$HASERL_firmware_path") ; then
+			MSG="<span class=\"red\">Firmware Datei ung&uuml;ltig: <tt>${error}</tt></span>"
+		else
+			if [ "$POST_keep_config" == "on" ] ; then
+				args=""
+			else
+				args="-n"
+			fi
+			do_sysupgrade=1
+			MSG='<span class="green">Firmware Upgrade wird gestartet...</span>'
+		fi
+	fi
+fi
+%>
+<%in /www/ssl/cgi-bin/header %>
+<%in /www/ssl/cgi-bin/helpers %>
+<% show_msg %>
+<form method="POST" enctype="multipart/form-data">
+<table style="width: 100%;">
+<tr><td>
+<fieldset style="min-height: 9em;">
+	<legend>Manuelles Upgrade</legend>
+	<table>
+		<tr><th style="width: 1em;">Firmware&nbsp;Image:</th><td><input type="file" name="firmware" /></td></tr>
+		<tr><th>Konfiguration&nbsp;erhalten:</th><td><input type="checkbox" name="keep_config" checked /></td></tr>
+		<tr><td colspan="2"><input type="submit" name="upgrade" value="Upgrade" /></td></tr>
+		<tr><td colspan="2"></td></tr>
+		<tr><td colspan="2">Hier kann ein Freifunk- oder OpenWrt-Image verwendet werden (*-sysupgrade.bin).</td></tr>
+	</table>
+</fieldset>
+</td><td>
+<fieldset style="min-height: 9em;">
+	<legend>Router zur&uuml;cksetzen</legend>
+	<table>
+		<tr><th style="width: 1em;">Wirklich&nbsp;zur&uuml;cksetzen:</th><td>
+			<input type="checkbox" name="really_reset">
+		</td></tr>
+		<tr><td colspan="2"><input type="submit" name="reset" value="Zur&uuml;cksetzen" /></td></tr>
+		<tr><td colspan="2"></td></tr>
+		<tr><td colspan="2">Alle Einstellungen werden zur&uuml;ckgesetzt und der Router startet neu.</td></tr>
+	</table>
+</fieldset>
+</td></tr>
+</table>
+</form>
+<%in /www/ssl/cgi-bin/footer %>
+<%
+# write
+if [ "$do_reset" == "1" ] ; then
+	echo "<pre>"
+	echo y | firstboot
+	reboot
+	echo "</pre>"
+elif [ "$do_sysupgrade" == "1" ] ; then
+	echo "<pre>"
+	echo "# sysupgrade $args $HASERL_firmware_path"
+	sysupgrade $args $HASERL_firmware_path
+	echo "</pre>"
+fi
+%>

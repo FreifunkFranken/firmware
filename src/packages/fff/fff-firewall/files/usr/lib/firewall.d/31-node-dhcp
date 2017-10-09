@@ -1,0 +1,5 @@
+# Erlaube nur DHCP Antworten von BATMAN -> KNOTEN
+ebtables -A INPUT -p IPv4 --ip-proto udp --ip-dport 68 -j IN_ONLY
+
+# Erlaube nur DHCP Request von KNOTEN -> BATMAN
+ebtables -A OUTPUT -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY

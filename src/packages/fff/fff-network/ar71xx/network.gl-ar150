@@ -1,0 +1,12 @@
+WANDEV=eth0
+SWITCHDEV=eth1
+WAN_PORTS=
+BATMAN_PORTS="0t"
+CLIENT_PORTS="0t"
+
+ETHMESHMAC=eth1
+ROUTERMAC=eth0
+
+. /etc/network.mode
+
+ETHPORT=1

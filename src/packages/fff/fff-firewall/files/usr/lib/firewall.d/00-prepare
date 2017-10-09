@@ -1,0 +1,6 @@
+######## CLEAN UP ############
+ebtables -F
+ebtables -X
+
+iptables -F
+iptables -X

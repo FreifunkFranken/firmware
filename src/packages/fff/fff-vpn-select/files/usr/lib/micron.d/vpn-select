@@ -1,0 +1,1 @@
+*/5 * * * * sleep $(/usr/bin/random 0 29); sh /usr/sbin/vpn-select

@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff
-PKG_VERSION:=0.0.1
-PKG_RELEASE:=5
+PKG_VERSION:=0.0.2
+PKG_RELEASE:=4
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff
 
@@ -14,7 +14,22 @@ define Package/fff-base
     DEFAULT:=y
     TITLE:= Freifunk-Franken Base
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+micrond +fff-nodewatcher +fff-web +fff-uradvd
+    DEPENDS:=+iptables \
+             +ip6tables \
+             +odhcp6c \
+             +micrond \
+             +fff-nodewatcher \
+             +fff-web \
+             +fff-uradvd \
+             +fff-batman-adv-legacy \
+             +fff-firewall \
+             +fff-support \
+             +fff-network \
+             +fff-sysupgrade \
+             +fff-wireless \
+             +fff-timeserver \
+             +fff-vpn-select \
+             +simple-tc
 endef
 
 define Package/fff-base/description
@@ -34,7 +49,7 @@ define Build/Compile
 endef
 
 define Package/fff-base/install
-    $(CP) ./files/* $(1)/
+    # nothing
 endef
 
 $(eval $(call BuildPackage,fff-base))

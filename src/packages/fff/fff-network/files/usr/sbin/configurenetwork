@@ -1,0 +1,246 @@
+#!/bin/sh
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+if [ -s /etc/network.config ] ; then
+    . /etc/network.config
+else
+    echo "CLIENT_PORTS='$CLIENT_PORTS'" > /etc/network.config
+    echo "BATMAN_PORTS='$BATMAN_PORTS'" >> /etc/network.config
+    if [ -n "$WAN_PORTS" ] ; then
+        echo "WAN_PORTS='$WAN_PORTS'" >> /etc/network.config
+    fi
+    if [ "$ONE_PORT" = "YES" ] || [ -n "$ETHPORT" ] ; then
+        echo "ETHMODE='$ETHMODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    if [ -n "$LAN0PORT" ] ; then
+        echo "LAN0MODE='$LAN0MODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    if [ -n "$LAN1PORT" ] ; then
+        echo "LAN1MODE='$LAN1MODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+    fi
+    echo "FORCEPARSE='0' # Parse at: 0=first boot only, 1=every reboot, 2=next reboot (once)" >> /etc/network.config
+fi
+
+if [ "$FORCEPARSE" = '2' ] ; then
+    sed -i '/^FORCEPARSE/d' /etc/network.config
+    echo "FORCEPARSE='0' # Parse at: 0=first boot only, 1=every reboot, 2=next reboot (once)" >> /etc/network.config
+    FORCEPARSE='1'
+fi
+
+if [ -n "$ETHPORT" ] ; then
+    #LAN@AR150: default: BATMAN
+    if [ "${ETHMODE}" = "BATMAN" ] ; then
+        BATMAN_PORTS="${BATMAN_PORTS} ${ETHPORT}"
+    else
+        CLIENT_PORTS="${CLIENT_PORTS} ${ETHPORT}"
+    fi
+fi
+if [ -n "$LAN0PORT" ] ; then
+    #LAN0@two-port: default: BATMAN
+    if [ "${LAN0MODE}" = "BATMAN" ] ; then
+        BATMAN_PORTS="${BATMAN_PORTS} ${LAN0PORT}"
+    elif [ "${LAN0MODE}" = "CLIENT" ] ; then
+        CLIENT_PORTS="${CLIENT_PORTS} ${LAN0PORT}"
+    else
+        WAN_PORTS="${WAN_PORTS} ${LAN0PORT}"
+    fi
+fi
+if [ -n "$LAN1PORT" ] ; then
+    #LAN1@two-port: default: BATMAN
+    if [ "${LAN1MODE}" = "WAN" ] ; then
+        WAN_PORTS="${WAN_PORTS} ${LAN1PORT}"
+    elif [ "${LAN1MODE}" = "CLIENT" ] ; then
+        CLIENT_PORTS="${CLIENT_PORTS} ${LAN1PORT}"
+    else
+        BATMAN_PORTS="${BATMAN_PORTS} ${LAN1PORT}"
+    fi
+fi
+
+if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
+
+    SWITCHHW=$(swconfig list | awk '{ print $4 }')
+
+    uci set network.$SWITCHDEV=switch
+    uci set network.$SWITCHDEV.name=$SWITCHHW
+    uci set network.$SWITCHDEV.enable=1
+    uci set network.$SWITCHDEV.reset=1
+    uci set network.$SWITCHDEV.enable_vlan=1
+
+    uci set network.${SWITCHDEV}_1=switch_vlan
+    uci set network.${SWITCHDEV}_1.device=$SWITCHHW
+    uci set network.${SWITCHDEV}_1.vlan=1
+    uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
+
+    echo "# Allow IPv6 RAs on WAN Port" >> /etc/sysctl.conf
+
+    if [[ "$WANDEV" = "$SWITCHDEV" ]] || ! [[ -z "$WAN_PORTS" ]]; then
+        uci set network.${SWITCHDEV}_2=switch_vlan
+        uci set network.${SWITCHDEV}_2.device=$SWITCHHW
+        uci set network.${SWITCHDEV}_2.vlan=2
+        uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
+
+        echo "net.ipv6.conf.$WANDEV.2.accept_ra_defrtr = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.2.accept_ra_pinfo = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.2.autoconf = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.2.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+    else
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+    fi
+    
+    uci set network.${SWITCHDEV}_3=switch_vlan
+    uci set network.${SWITCHDEV}_3.device=$SWITCHHW
+    uci set network.${SWITCHDEV}_3.vlan=3
+    uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
+
+    uci set network.mesh.ifname="$SWITCHDEV.1 bat0"
+
+    uci set network.ethmesh.ifname="$SWITCHDEV.3"
+
+    if [[ "$WANDEV" = "$SWITCHDEV" ]]; then
+        uci set network.wan.ifname=$WANDEV.2
+    else
+        uci set network.wan.ifname=$WANDEV
+    fi
+
+    uci commit
+fi
+
+if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FORCEPARSE" = '1' ] ) ; then
+    uci set network.$SWITCHDEV=interface
+    uci set network.$SWITCHDEV.ifname=$SWITCHDEV
+    if [ "$ETHMODE" = "WAN" ]; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0"
+        uci set network.wan.ifname="$WANDEV"
+        uci del uci set network.ethmesh.ifname
+        uci del network.eth0.macaddr
+    elif [ "$ETHMODE" = "CLIENT" ] ; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0 $SWITCHDEV"
+        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci del network.ethmesh.ifname
+        uci del network.eth0.macaddr
+    elif [ "$ETHMODE" = "BATMAN" ] ; then
+        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        uci set network.mesh.ifname="bat0"
+        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci set network.ethmesh.ifname="$SWITCHDEV"
+        ETH0MAC="w2ap"
+    fi
+    uci commit
+fi
+
+/etc/init.d/network restart
+
+if [[ -n "$ETHMESHMAC" ]]; then
+    if uci get network.ethmesh.macaddr
+    then
+        echo "MAC for ethmesh is set already"
+    else
+        echo "Fixing MAC on eth0.3 (ethmesh)"
+        sleep 10
+        NEW_MACADDR=$(cat /sys/class/net/$ETHMESHMAC/address)
+        # We need this to set the second MAC for the wr1043 v4 from a variable and not from an Interface
+        if [[ -n "$NEWMAC" ]]; then
+                NEW_MACADDR=$NEWMAC
+        fi
+        uci set network.ethmesh.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig eth0.3 down
+        ifconfig eth0.3 hw ether $NEW_MACADDR
+        ifconfig eth0.3 up
+        /etc/init.d/network restart
+    fi
+fi
+
+if [[ -n "$ROUTERMAC" ]]; then
+    if uci get network.mesh.macaddr
+    then
+        echo "MAC for mesh is set already"
+    else
+        echo "Fixing MAC on br-mesh (mesh)"
+        sleep 10
+        NEW_MACADDR=$(cat /sys/class/net/$ROUTERMAC/address)
+        uci set network.mesh.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig br-mesh down
+        ifconfig br-mesh hw ether $NEW_MACADDR
+        ifconfig br-mesh up
+        /etc/init.d/network restart
+    fi
+fi
+
+if [[ -n "$ETH0MAC" ]]; then
+        echo "Fixing MAC on eth0"
+        sleep 10
+        NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
+        uci set network.eth0.macaddr=$NEW_MACADDR
+        uci commit
+        ifconfig eth0 down
+        ifconfig eth0 hw ether $NEW_MACADDR
+        ifconfig eth0 up
+        /etc/init.d/network restart
+fi
+
+if uci get network.mesh.ip6addr
+then
+    echo "IPv6 for mesh is set already"
+else
+    # Some time needed :(
+    sleep 5
+
+    for ip in $(ip -6 addr show br-mesh | awk '/fdff/{ print $2 }'); do
+        ip -6 addr del $ip dev br-mesh
+    done
+
+    prefix="fdff:0::/64"
+    # Set $prefix::MAC as IP
+    suffix=$(awk -F: '{ print $1$2":"$3$4":"$5$6 }' /sys/class/net/br-mesh/address)
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+
+    uci -q del network.globals
+    uci -q set network.globals=globals
+    uci -q set network.globals.ula_prefix=$prefix
+    uci -q add_list network.mesh.ip6addr=$addr
+    uci -q set network.mesh.proto=static
+
+    # Set $prefix::1 as IP
+    suffix="1"
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+    uci -q add_list network.mesh.ip6addr=$addr
+
+    # Set $prefix::link-local as IP
+    suffix=$(awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' /sys/class/net/br-mesh/address)
+    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    ip -6 addr add $addr dev br-mesh
+    uci -q add_list network.mesh.ip6addr=$addr
+
+    uci -q commit network
+
+    /etc/init.d/fff-uradvd restart
+fi

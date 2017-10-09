@@ -1,0 +1,34 @@
+######## IN_ONLY ############
+ebtables -N IN_ONLY -P RETURN
+
+# Daten aus dem BATMAN werden erlaubt
+# Alles ausser Daten von BATMAN werden DROP'ed
+ebtables -A IN_ONLY -i ! bat0 --logical-in br-mesh -j DROP
+
+######## OUT_ONLY ############
+ebtables -N OUT_ONLY -P RETURN
+
+# Daten ins BATMAN werden erlaubt
+# Alles ausser Daten ins BATMAN werden DROP'ed
+ebtables -A OUT_ONLY --logical-out br-mesh -o ! bat0 -j DROP
+
+######## MULTICAST_OUT ############
+ebtables -N MULTICAST_OUT -P DROP
+
+######## INPUT ############
+ebtables -P INPUT ACCEPT
+
+# Regelt alles was an Multicast/Broadcast von CLIENT -> KNOTEN geht bei MULTICAST_OUT
+ebtables -A INPUT -d Multicast --logical-in br-mesh -i ! bat0 -j ACCEPT
+
+######## FORWARD ############
+ebtables -P FORWARD ACCEPT
+
+# Regelt alles was an Multicast/Broadcast von CLIENT -> BATMAN geht bei MULTICAST_OUT
+ebtables -A FORWARD -d Multicast --logical-out br-mesh -o bat0 -j MULTICAST_OUT
+
+######## OUTPUT ############
+ebtables -P OUTPUT ACCEPT
+
+# Regelt alles was an Multicast/Broadcast von KNOTEN -> BATMAN geht bei MULTICAST_OUT
+ebtables -A OUTPUT -d Multicast --logical-out br-mesh -o bat0 -j MULTICAST_OUT

@@ -1,226 +1,220 @@
-
-/* common */
-
-* { margin:0; padding:0; }
-
-a { text-decoration: none; }
-
-li { list-style-type: none; }
-
-html {
-	font: 90%/1.3 arial,sans-serif;
-	padding:1em;
-	background:#fafafa;
+* {
+	margin: 0px;
 }
 
 body {
-	font: normal 16px verdana,arial,'Bitstream Vera Sans',helvetica,sans-serif;
+	font-family: verdana, helvetica, sans-serif;
+	font-size: 13px;
+	padding: 0px;
+	background-color: #ffffff;
+	color: #222222;
 }
 
-
-/* specific */
-
-.mac {
-	color: #0033CC;
-	cursor: help;
+a {
+	background-color: inherit;
+	color: #007ee0;
 }
 
-#nds_files label {
-	width: 18em;
+a:hover {
+	text-decoration: none;
 }
 
-#nds_macs {
-	margin-bottom: 2em;
+p {
+	text-align: justify;
+	margin-bottom: 15px;
+	line-height: 22px;
 }
 
-#wifiscan table {
-	text-align: center;
+ul {
+	list-style: disc;
+	padding-left: 15px;
+	margin-bottom: 15px;
 }
 
-#wifiscan td:nth-of-type(1) {
-	text-align: left;
+h3 {
+	font-size: 20px;
+	margin-bottom: 30px;
 }
 
-#help {
-	padding: 5px;
-	height: 0px;
-	position: absolute;
-	min-height: 50px;
-	background-color: #f2f2f2;
-	display:none;
-	border: 2px dotted grey;
+h4 {
+	font-size: 13px;
+	margin-bottom: 5px;
 }
 
-#switches label {
-	width: 6em;
+#header {
+	color: #222;
+	padding: 5px 40px;
 }
 
-/* forms */
-
-legend {
-	color: #0b77b7;
-	font-size: 1.2em;
+#header h1 {
+	font-size: 30px;
 }
 
-label {
-	float: left;
-	width: 12em;
-	text-align: right;
-	margin-right: 1em;
-	white-space: nowrap;
+#header h2 {
+	font-size: 14px;
 }
 
-fieldset {
-	border: 1px solid #ddd;
-	padding: 0.5em;
-	margin: 0.5em;
-	width: 36em;
+#menu {
+	padding: 5px 40px 0px 40px;
+	margin-bottom: 30px;
+	color: #222222;
+	background-color: #f5f5f5;
+	border-bottom: solid 1px #DADADA;
 }
 
-fieldset fieldset {
-	width: auto;
-}
-
-fieldset > * {
-	margin: 0.3em 0;
+#menu div {
 	clear: both;
 }
 
-fieldset div > * {
-	display: inline-block;
-	vertical-align: middle;
-}
-
-input {
-	padding: 0.15em;
-	width: 15em;
-	border: 1px solid #ddd;
-	background: #fafafa;
-	font: bold 0.95em arial, sans-serif;
-	-moz-border-radius: 0.4em;
-	-khtml-border-radius: 0.4em;
-}
-
-input:hover, input:focus {
-	border-color: #c5c5c5;
-	background: #f6f6f6;
-}
-
-select {
-	min-width: 4em;
-}
-
-option {
-	padding-right: 1em;
-}
-
-.radio_option div {
-	float: left;
-	white-space: nowrap;
-	clear: none;
-}
-
-.radio_option div label, .radio_option div input {
-	vertical-align: middle;
-	display: inline;
-	float: none;
-	width: auto;
-	background: none;
-	border: none;
-}
-
-.select_option label {
-	font-size: 1em;
-	color: #000;
-}
-
-.list_option div {
-	clear: left;
-	margin: 0;
-	padding: 0;
-	float: left;
-	list-style: none;
-}
-
-
-/* navigation */
-
-#globalnav {
-	position: relative;
-	float: auto;
-	width: 98%;
-	padding: 0 0 1.75em 1em;
-	margin: 0;
-	margin-bottom: 2%;
-	list-style: none;
-	line-height: 1em;
-}
-
-#globalnav li {
-	float: left;
-	margin: 0;
-	padding: 0;
-}
-
-#globalnav a {
+#menu ul {
 	display: block;
-	color: #444;
+	position: relative;
+	top: 1px;
+	list-style: none;
+	padding: 0px;
+	margin-bottom: 0px;
+}
+	
+#menu ul li {
+	position: relative;
+	float: left;
+	border: solid 1px #dadada;
+	border-bottom: 0px;
+	margin-right: 5px;
+}
+
+#menu ul li a {
+	display: block;
+	padding: 5px 10px 8px 10px;
 	text-decoration: none;
-	font-weight: bold;
-	background: #ddd;
-	margin: 0;
-	padding: 0.25em 1em;
-	border-left: 1px solid #fff;
-	border-top: 1px solid #fff;
-	border-right: 1px solid #aaa;
+	background-color: inherit;
+	color: #333333;
 }
 
-#globalnav a:hover,
-#globalnav a:active,
-#globalnav a.here:link,
-#globalnav a.here:visited {
-	background: #bbb;
-}
-
-#globalnav a.here:link,
-#globalnav a.here:visited {
-	position: relative;
-	z-index: 102;
-}
-
-/* sub-navigation */
-
-#globalnav ul {
-	position: absolute;
-	left: 0;
-	top: 1.5em;
-	float: left;
-	background: #bbb;
-	width: 100%;
-	margin: 0;
-	padding: 0.25em 0.25em 0.25em 1em;
-	list-style: none;
-	border-top: 1px solid #fff;
-}
-
-#globalnav ul li {
-	float: left;
-	display: block;
-	margin-top: 1px;
-}
-
-#globalnav ul a {
-	background: #bbb;
+#menu ul li a:hover {
+	background-color: #d22755;
 	color: #fff;
-	display: inline;
-	margin: 0;
-	padding: 0 1em;
-	border: 0;
 }
 
-#globalnav ul a:hover,
-#globalnav ul a:active,
-#globalnav ul a.here:link,
-#globalnav ul a.here:visited {
-	color: #444;
+#menu ul li.active, #menu ul li.active a, #menu ul li.active a:hover {
+	background-color: #ffffff;
+	color: #333333;
+}
+
+#container {
+	margin: 0px 40px 0px 40px;
+}
+
+#primarycontainer {
+	float: left;
+	margin-right: -200px;
+	width: 100%;
+}
+
+#primarycontent p {
+	margin-bottom: 20px;
+}
+
+#secondarycontent {
+	float: right;
+	width: 200px;
+}
+
+#footer {
+	text-align: center;
+	margin: 20px 0px 0px 0px;
+	padding-top: 15px;
+	border-top: solid 1px #DADADA;
+	clear: both;
+	color: #DADADA;
+	font-size: 8px;
+}
+
+#footer a {
+	color: #DADADA;
+	text-decoration: none;
+}
+
+.clearit {
+	clear: both;
+	height: 1px;
+}
+
+/* my */
+fieldset th {
+	text-align: right;
+	vertical-align: top;
+}
+
+.wifitable th {
+	text-align: center;
+}
+
+.wifitable td, .wifitable th {
+	padding-right: 10px;
+}
+
+td {
+	vertical-align: top;
+}
+
+form fieldset th, form fieldset td {
+	vertical-align: middle;
+}
+
+fieldset input[type=text], fieldset input[type=email], fieldset input[type=password], fieldset input[type=file] {
+	width: 20em;
+}
+
+fieldset.smallinput input[type=text], fieldset.smallinput input[type=email], fieldset.smallinput input[type=password], fieldset.smallinput input[type=file] {
+	width: 10em;
+}
+
+input, button, select {
+	font-size: 13px;
+}
+
+input[type=text], input[type=email], input[type=password], input[type=number] {
+	border: 1px solid #DADADA;
+}
+
+.msg {
+	border: 1px solid #DADADA;
+	font-weight: bold;
+	margin: -10px 3px 10px;
+	padding: 5px 10px;
+}	
+
+tt {
+	font-weight: normal;
+}
+
+.msg .red {
+	color: red;
+}
+
+.msg .green {
+	color: green;
+}
+
+pre {
+	margin: 0 43px;
+}
+
+.swport {
+	width: 80px;
+	text-align: center;
+	vertical-align: top;
+}
+
+.swport .port {
+	font-weight: bold;
+}
+
+.swport img {
+	margin-top: 8px;
+}
+
+.swport .stat {
+	font-size: 10px;
 }

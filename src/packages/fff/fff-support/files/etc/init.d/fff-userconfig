@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=96
+boot() {
+  LOCALCONFIGSCRIPT="/etc/rc.local.fff_userconfig"
+  #add LOCALCONFIGSCRIPT to sysupgrade regardless if it already exists or not to prevent data loss
+  grep -q ^"${LOCALCONFIGSCRIPT}"$ /etc/sysupgrade.conf || echo "$LOCALCONFIGSCRIPT" >> /etc/sysupgrade.conf
+
+  # process user commands
+  [ -f "${LOCALCONFIGSCRIPT}" ] && {
+    sh /etc/rc.local.fff_userconfig
+  }
+}

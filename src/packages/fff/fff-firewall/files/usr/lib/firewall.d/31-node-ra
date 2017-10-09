@@ -1,0 +1,11 @@
+# Erlaube nur Router-Advertisment von BATMAN -> KNOTEN
+ebtables -A INPUT -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j IN_ONLY
+
+# Verbiete Router-Solicitation von BATMAN -> KNOTEN
+ebtables -A INPUT -p IPv6 -i bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j DROP
+
+# Erlaube nur Router-Solicitation von KNOTEN -> BATMAN
+ebtables -A OUTPUT -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j OUT_ONLY
+
+# Verbiete Router-Advertisment von KNOTEN -> BATMAN
+ebtables -A OUTPUT -p IPv6 -o bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j DROP

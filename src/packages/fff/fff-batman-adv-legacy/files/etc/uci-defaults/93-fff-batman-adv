@@ -1,0 +1,22 @@
+#!/bin/sh
+
+uci batch <<EOF
+  delete batman-adv.bat0
+  set batman-adv.bat0=mesh
+  set batman-adv.bat0.gw_mode='client'
+  set batman-adv.bat0.gw_sel_class='1'
+  set batman-adv.bat0.bridge_loop_avoidance='0'
+  set batman-adv.bat0.network_coding='0'
+  set batman-adv.bat0.aggregated_ogms='1'
+  set batman-adv.bat0.ap_isolation='0'
+  set batman-adv.bat0.bonding='0'
+  set batman-adv.bat0.fragmentation='1'
+  set batman-adv.bat0.orig_interval='1000'
+  set batman-adv.bat0.vis_mode='0'
+  set batman-adv.bat0.distributed_arp_table='1'
+  set batman-adv.bat0.hop_penalty='30'
+EOF
+
+uci commit
+
+exit 0

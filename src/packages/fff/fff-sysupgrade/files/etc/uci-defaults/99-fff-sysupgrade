@@ -1,0 +1,12 @@
+#!/bin/sh
+# Copyright 2017 Tim Niemeyer
+# License GPLv3
+
+cat > /etc/sysupgrade.conf <<-__EOF__
+/etc/shadow
+/etc/dropbear/dropbear_dss_host_key
+/etc/dropbear/dropbear_rsa_host_key
+/etc/dropbear/authorized_keys
+/etc/network.config
+/etc/config/system
+__EOF__

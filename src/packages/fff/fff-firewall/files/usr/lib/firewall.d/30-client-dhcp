@@ -1,0 +1,8 @@
+# Erlaube DHCP Requests
+ebtables -A MULTICAST_OUT -p IPv4 --ip-proto udp --ip-dport 67 -j RETURN
+
+# Erlaube nur DHCP Request von CLIENT -> BATMAN
+ebtables -A FORWARD -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY
+
+# Erlaube nur DHCP Antworten von BATMAN -> CLIENT
+ebtables -A FORWARD -p IPv4 --ip-proto udp --ip-dport 68 -j IN_ONLY

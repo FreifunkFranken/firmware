@@ -1,0 +1,7 @@
+# If an router has a direct internet connection simple attack act as DOS attack
+iptables -A INPUT -i $IF_WAN -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -i $IF_WAN -j REJECT
+
+# Limit ssh to 6 new connections per 60 seconds
+/usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --set --name dropbear
+/usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 6 --rttl --name dropbear -j DROP

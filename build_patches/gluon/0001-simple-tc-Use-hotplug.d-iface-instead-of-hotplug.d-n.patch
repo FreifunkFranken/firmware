@@ -1,0 +1,79 @@
+From 4ba8dbb8e8815ae3988d5844a29f4503e5ccacdb Mon Sep 17 00:00:00 2001
+From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+Date: Sun, 17 Sep 2017 21:03:09 +0200
+Subject: [PATCH] simple-tc: Use hotplug.d/iface instead of hotplug.d/net
+
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+---
+ .../files/etc/hotplug.d/iface/50-fff-simple-tc     | 25 +++++++++++++++++++++
+ net/simple-tc/files/etc/hotplug.d/net/50-simple-tc | 26 ----------------------
+ 2 files changed, 25 insertions(+), 26 deletions(-)
+ create mode 100644 net/simple-tc/files/etc/hotplug.d/iface/50-fff-simple-tc
+ delete mode 100644 net/simple-tc/files/etc/hotplug.d/net/50-simple-tc
+
+diff --git a/net/simple-tc/files/etc/hotplug.d/iface/50-fff-simple-tc b/net/simple-tc/files/etc/hotplug.d/iface/50-fff-simple-tc
+new file mode 100644
+index 0000000..ef8bd17
+--- /dev/null
++++ b/net/simple-tc/files/etc/hotplug.d/iface/50-fff-simple-tc
+@@ -0,0 +1,25 @@
++[ "$ACTION" = 'ifup' ] || exit 0
++
++config_load simple-tc
++
++tc_interface() {
++	local iface="$1"
++
++	config_get ifname "$iface" ifname
++
++	[ "$INTERFACE" = "$ifname" ] || return
++
++	config_get_bool enabled "$iface" enabled 0
++
++	[ "$enabled" -eq 1 ] || return
++
++	config_get limit_ingress "$iface" limit_ingress
++	config_get limit_egress "$iface" limit_egress
++
++	[ "$limit_ingress" ] || limit_ingress=-
++	[ "$limit_egress" ] || limit_egress=-
++
++	simple-tc "$DEVICE" "$limit_ingress" "$limit_egress"
++}
++
++config_foreach tc_interface 'interface'
+diff --git a/net/simple-tc/files/etc/hotplug.d/net/50-simple-tc b/net/simple-tc/files/etc/hotplug.d/net/50-simple-tc
+deleted file mode 100644
+index f089f54..0000000
+--- a/net/simple-tc/files/etc/hotplug.d/net/50-simple-tc
++++ /dev/null
+@@ -1,26 +0,0 @@
+-[ "$ACTION" = 'add' ] || exit 0
+-
+-config_load simple-tc
+-
+-
+-tc_interface() {
+-	local iface="$1"
+-
+-	config_get ifname "$iface" ifname
+-
+-	[ "$INTERFACE" = "$ifname" ] || return
+-
+-	config_get_bool enabled "$iface" enabled 0
+-
+-	[ "$enabled" -eq 1 ] || return
+-
+-	config_get limit_ingress "$iface" limit_ingress
+-	config_get limit_egress "$iface" limit_egress
+-
+-	[ "$limit_ingress" ] || limit_ingress=-
+-	[ "$limit_egress" ] || limit_egress=-
+-
+-	simple-tc "$INTERFACE" "$limit_ingress" "$limit_egress"
+-}
+-
+-config_foreach tc_interface 'interface'
+-- 
+2.7.4
+
