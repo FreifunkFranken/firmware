@@ -74,8 +74,8 @@ else
 		fi
 		#now we look for phy and add this
 		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-			radio="$(wifiAddPhyCond "$phy" "2" "$chan2ghz")"
-			radio5="$(wifiAddPhyCond "$phy" "5" "$chan5ghz")"
+			radio="$(wifiAddPhyCond "$phy" "2" "auto")"
+			radio5="$(wifiAddPhyCond "$phy" "5" "auto")"
 			[ -n "$radio5" ] && radio="$radio5"
 
 			#and here we add the station
@@ -125,10 +125,10 @@ if [ -s /tmp/keyxchangev2data ]; then
 		json_get_var essid essid
 		json_get_var ntpip ntp_ip
 		# i think the next things we don't active this in the first version! we can do it later
-		#json_get_var channel2 channel2
+		json_get_var channel2 channel2
 		#json_get_var mode2 mode2
 		json_get_var mesh_type2 mesh_type2
-		#json_get_var channel5 channel5
+		json_get_var channel5 channel5
 		#json_get_var mode5 mode5
 		json_get_var mesh_type5 mesh_type5
 		#json_get_var protocol protocol
