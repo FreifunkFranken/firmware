@@ -56,7 +56,7 @@ json_select ".." # back to root
 if [ -s /tmp/keyxchangev2data ]; then
 	# check if symlink to /tmp exists
 	if [ "$(readlink -n /etc/config/tunneldigger)" != "/tmp/tunneldigger" ]; then
-		ln -s /tmp/tunneldigger /etc/config/
+		ln -sf /tmp/tunneldigger /etc/config/
 	fi
 
 	# set some vars
