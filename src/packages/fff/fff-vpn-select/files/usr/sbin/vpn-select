@@ -54,6 +54,11 @@ json_select ".." # back to root
 
 # Only do something when file is here and greater 0 byte
 if [ -s /tmp/keyxchangev2data ]; then
+	# check if symlink to /tmp exists
+	if [ "$(readlink -n /etc/config/tunneldigger)" != "/tmp/tunneldigger" ]; then
+		ln -s /tmp/tunneldigger /etc/config/
+	fi
+
 	# set some vars
 	hostname=$(cat /proc/sys/kernel/hostname)
 	mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
