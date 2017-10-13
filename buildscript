@@ -13,10 +13,10 @@
 
 builddir=./build
 
-OPENWRTREV="97ebdf93a330ef1d7ff1cf6989cfb92ac2f5a386" # LEDE 17.01.2
+OPENWRTREV="8ad1b09c6dcff814eb04084ef349f975025b7dc1" # LEDE from 2017-10-13
 OPENWRTURL="https://git.lede-project.org/source.git"
-PACKAGEREV="fa3a118de87d7600729dd07d2f24ca3138d9dd4d" # lede-17.01 from 2017-09-14
-PACKAGEURL="https://github.com/openwrt/packages.git"
+PACKAGEREV="21b2e3eb761ea79bf3a8d2b6368435887960f5c2" # lede-17.01.3
+PACKAGEURL="https://git.lede-project.org/feed/packages.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
 
@@ -36,7 +36,7 @@ GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
-         https://github.com/openwrt-routing/packages.git
+         https://git.lede-project.org/feed/routing.git
          d11075cd40a88602bf4ba2b275f72100ddcb4767) # lede-17.01
 ROUTING_PKGS="alfred"
 
