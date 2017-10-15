@@ -4,11 +4,11 @@ PKG_NAME:=fff-network
 PKG_VERSION:=8
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-network
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-network
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken network configuration
@@ -16,7 +16,7 @@ define Package/fff-network
     DEPENDS:=+fff-uradvd +fff-boardname
 endef
 
-define Package/fff-network/description
+define Package/$(PKG_NAME)/description
     This package configures the network interfaces
 endef
 
@@ -32,9 +32,9 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-network/install
+define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
 	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/etc/
 endef
 
-$(eval $(call BuildPackage,fff-network))
+$(eval $(call BuildPackage,$(PKG_NAME)))

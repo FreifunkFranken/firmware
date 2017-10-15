@@ -4,11 +4,11 @@ PKG_NAME:=fff-uradvd
 PKG_VERSION:=1
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-uradvd
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-uradvd
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken uradvd
@@ -16,7 +16,7 @@ define Package/fff-uradvd
     DEPENDS:=+uradvd
 endef
 
-define Package/fff-uradvd/description
+define Package/$(PKG_NAME)/description
     This is the uradvd wrapper for the Freifunk Franken Firmware
     It is used to configure and start the uradvd daemon.
 endef
@@ -33,8 +33,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-uradvd/install
+define Package/$(PKG_NAME)/install
     $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-uradvd))
+$(eval $(call BuildPackage,$(PKG_NAME)))

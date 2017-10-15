@@ -4,11 +4,11 @@ PKG_NAME:=fff-sysupgrade
 PKG_VERSION:=5
 PKG_RELEASE:=4
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-sysupgrade
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-sysupgrade
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken sysupgrade
@@ -16,7 +16,7 @@ define Package/fff-sysupgrade
     DEPENDS:=+fff-boardname +fff-hoods +@BUSYBOX_CONFIG_WGET
 endef
 
-define Package/fff-sysupgrade/description
+define Package/$(PKG_NAME)/description
     This is the Freifunk Franken Firmware sysupgrade package.
     This packages provides an semi automated sysupgrade script.
 endef
@@ -33,8 +33,8 @@ define Build/Compile
     # nothing
 endef
 
-define Package/fff-sysupgrade/install
+define Package/$(PKG_NAME)/install
     $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-sysupgrade))
+$(eval $(call BuildPackage,$(PKG_NAME)))

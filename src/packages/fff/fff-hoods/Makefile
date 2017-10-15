@@ -4,11 +4,11 @@ PKG_NAME:=fff-hoods
 PKG_VERSION:=0.0.1
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-hoods
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-hoods
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken hoods
@@ -16,7 +16,7 @@ define Package/fff-hoods
     DEPENDS:=+fff-network
 endef
 
-define Package/fff-hoods/description
+define Package/$(PKG_NAME)/description
     This package load and configures the current hood
 endef
 
@@ -32,8 +32,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-hoods/install
+define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-hoods))
+$(eval $(call BuildPackage,$(PKG_NAME)))

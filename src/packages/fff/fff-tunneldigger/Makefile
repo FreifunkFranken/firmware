@@ -4,11 +4,11 @@ PKG_NAME:=fff-tunneldigger
 PKG_VERSION:=1
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-tunneldigger
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-tunneldigger
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken tunneldigger
@@ -16,7 +16,7 @@ define Package/fff-tunneldigger
     DEPENDS:=+tunneldigger
 endef
 
-define Package/fff-tunneldigger/description
+define Package/$(PKG_NAME)/description
     This is tunneldigger for the Freifunk Franken Firmware
 endef
 
@@ -32,8 +32,8 @@ define Build/Compile
        # nothing
 endef
 
-define Package/fff-tunneldigger/install
+define Package/$(PKG_NAME)/install
         $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-tunneldigger))
+$(eval $(call BuildPackage,$(PKG_NAME)))

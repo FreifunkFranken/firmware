@@ -8,14 +8,14 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-random
+define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Random
 	URL:=http://www.freifunk-franken.de
 endef
 
-define Package/fff-random/description
+define Package/$(PKG_NAME)/description
 	This is the Freifunk Franken Firmware Random package
 	This packages provides a random function.
 endef
@@ -33,9 +33,9 @@ define Build/Compile
 	CFLAGS="$(TARGET_CFLAGS)" CPPFLAGS="$(TARGET_CPPFLAGS)" $(MAKE) -C $(PKG_BUILD_DIR) $(TARGET_CONFIGURE_OPTS)
 endef
 
-define Package/fff-random/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/random $(1)/usr/bin/
 endef
 
-$(eval $(call BuildPackage,fff-random))
+$(eval $(call BuildPackage,$(PKG_NAME)))

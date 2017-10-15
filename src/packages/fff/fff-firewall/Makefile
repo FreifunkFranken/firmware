@@ -4,11 +4,11 @@ PKG_NAME:=fff-firewall
 PKG_VERSION:=2
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-firewall
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-firewall
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken firewall
@@ -19,7 +19,7 @@ define Package/fff-firewall
              +iptables-mod-filter +iptables-mod-ipopt +iptables-mod-conntrack-extra
 endef
 
-define Package/fff-firewall/description
+define Package/$(PKG_NAME)/description
     This is the firewall for the Freifunk Franken Firmware
     It is used to configure firewall.
 endef
@@ -36,8 +36,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-firewall/install
+define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-firewall))
+$(eval $(call BuildPackage,$(PKG_NAME)))

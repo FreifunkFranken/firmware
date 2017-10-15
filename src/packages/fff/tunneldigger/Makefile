@@ -13,7 +13,7 @@ PKG_SOURCE_VERSION:=$(PKG_REV)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/tunneldigger
+define Package/$(PKG_NAME)
   SECTION:=net
   CATEGORY:=Network
   DEPENDS:=+libnl-tiny +kmod-l2tp +kmod-l2tp-ip +kmod-l2tp-eth +librt +libpthread
@@ -31,7 +31,7 @@ define Build/Prepare
 	sed -i s/-lnl/-lnl-tiny/g $(PKG_BUILD_DIR)/Makefile
 endef
 
-define Package/tunneldigger/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/l2tp_client $(1)/usr/bin/tunneldigger
 	$(INSTALL_DIR) $(1)/etc/init.d
@@ -40,8 +40,8 @@ define Package/tunneldigger/install
 	$(INSTALL_DATA) ./files/config.default $(1)/etc/config/tunneldigger
 endef
 
-define Package/tunneldigger/conffiles
+define Package/$(PKG_NAME)/conffiles
 /etc/config/tunneldigger
 endef
 
-$(eval $(call BuildPackage,tunneldigger))
+$(eval $(call BuildPackage,$(PKG_NAME)))

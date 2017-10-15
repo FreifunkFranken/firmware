@@ -4,11 +4,11 @@ PKG_NAME:=fff-fastd
 PKG_VERSION:=1
 PKG_RELEASE:=2
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-fastd
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-fastd
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken fastd configuration script
@@ -21,7 +21,7 @@ define Package/fff-fastd
              +fff-random
 endef
 
-define Package/fff-fastd/description
+define Package/$(PKG_NAME)/description
     This is the fastd for the Freifunk Franken Firmware
     It is used to configure fastd.
 endef
@@ -38,8 +38,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-fastd/install
+define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-fastd))
+$(eval $(call BuildPackage,$(PKG_NAME)))

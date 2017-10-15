@@ -4,18 +4,18 @@ PKG_NAME:=fff-timeserver
 PKG_VERSION:=2
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-timeserver
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-timeserver
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken timeserver
     URL:=http://www.freifunk-franken.de
 endef
 
-define Package/fff-timeserver/description
+define Package/$(PKG_NAME)/description
     This is the Freifunk Franken Firmware timeserver package.
     This packages configures the timeserver on the device.
 endef
@@ -32,8 +32,8 @@ define Build/Compile
     # nothing
 endef
 
-define Package/fff-timeserver/install
+define Package/$(PKG_NAME)/install
     $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-timeserver))
+$(eval $(call BuildPackage,$(PKG_NAME)))

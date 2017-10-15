@@ -4,11 +4,11 @@ PKG_NAME:=fff-nodewatcher
 PKG_VERSION:=41
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-nodewatcher
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-nodewatcher
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken Nodewatcher
@@ -16,7 +16,7 @@ define Package/fff-nodewatcher
     DEPENDS:=+alfred +micrond +fff-random +ip +ip-bridge
 endef
 
-define Package/fff-nodewatcher/description
+define Package/$(PKG_NAME)/description
     This is the Nodewatcher for the Freifunk Franken Firmware
     It is used to send node status information to
     monitoring.freifunk-franken.de and
@@ -35,8 +35,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-nodewatcher/install
+define Package/$(PKG_NAME)/install
     $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-nodewatcher))
+$(eval $(call BuildPackage,$(PKG_NAME)))

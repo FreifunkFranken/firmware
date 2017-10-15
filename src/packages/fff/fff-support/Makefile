@@ -4,11 +4,11 @@ PKG_NAME:=fff-support
 PKG_VERSION:=0.0.1
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-support
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-support
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken Support Scripts
@@ -16,7 +16,7 @@ define Package/fff-support
     DEPENDS:=+@BUSYBOX_CONFIG_ASH
 endef
 
-define Package/fff-support/description
+define Package/$(PKG_NAME)/description
     This is the Freifunk Franken Firmware support package.
     This packages provides smaller convenience scripts,
     not essential to the operation of the Firmware
@@ -34,9 +34,9 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-support/install
+define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
 	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/ || true
 endef
 
-$(eval $(call BuildPackage,fff-support))
+$(eval $(call BuildPackage,$(PKG_NAME)))

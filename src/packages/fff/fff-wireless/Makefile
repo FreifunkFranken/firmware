@@ -4,11 +4,11 @@ PKG_NAME:=fff-wireless
 PKG_VERSION:=0.0.2
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-wireless
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-wireless
+define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken wireless configuration
@@ -16,7 +16,7 @@ define Package/fff-wireless
     DEPENDS:=+@ATH_USER_REGD +wireless-tools
 endef
 
-define Package/fff-wireless/description
+define Package/$(PKG_NAME)/description
     This package configures the wireless interfaces.
 endef
 
@@ -32,8 +32,8 @@ define Build/Compile
     # nothing
 endef
 
-define Package/fff-wireless/install
+define Package/$(PKG_NAME)/install
     $(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-wireless))
+$(eval $(call BuildPackage,$(PKG_NAME)))
