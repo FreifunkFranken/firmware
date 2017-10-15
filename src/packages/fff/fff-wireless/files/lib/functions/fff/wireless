@@ -84,9 +84,9 @@ wifiAddAdHocMesh() {
 	local bssid=$3
 
 	local channel=$(uci get "wireless.${radio}.channel")
-	local iface="w2mesh"
+	local iface="w2ibss"
 	if [ "$channel" -gt "14" ]; then
-		iface="w5mesh"
+		iface="w5ibss"
 	fi
 
 	uci batch <<-__EOF__
@@ -178,4 +178,40 @@ wifiAddSta() {
 	return 0
 }
 
+wifiAddMesh() {
+	if [ $# -ne "2" ]
+	then
+		echo "Usage: wifiAddMesh <radio> <mesh-id>"
+		return 1
+	fi
+
+	local radio=$1
+	local mesh_id=$2
+
+	local channel=$(uci get "wireless.${radio}.channel")
+	local iface="w2mesh"
+	if [ "$channel" -gt "14" ]; then
+		iface="w5mesh"
+	fi
+	uci batch <<-__EOF__
+		set wireless.${iface}='wifi-iface'
+		set wireless.${iface}.device='${radio}'
+		set wireless.${iface}.network='${iface}'
+		set wireless.${iface}.ifname='${iface}'
+		set wireless.${iface}.mode='mesh'
+		set wireless.${iface}.mesh_id='${mesh_id}'
+		set wireless.${iface}.encryption='none'
+		set wireless.${iface}.mesh_fwding=0
+		commit wireless
+
+		set network.${iface}='interface'
+		set network.${iface}.mtu='1528'
+		set network.${iface}.proto='batadv'
+		set network.${iface}.mesh='bat0'
+		commit network
+	__EOF__
+
+	echo "${iface}"
+	return 0
+}
 # vim: set noexpandtab:tabstop=4

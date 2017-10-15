@@ -119,6 +119,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 		json_select hood
 
 		json_get_var hood name
+		json_get_var mesh_id mesh_id
 		json_get_var mesh_bssid mesh_bssid
 		json_get_var mesh_essid mesh_essid
 		json_get_var essid essid
@@ -126,10 +127,10 @@ if [ -s /tmp/keyxchangev2data ]; then
 		# i think the next things we don't active this in the first version! we can do it later
 		#json_get_var channel2 channel2
 		#json_get_var mode2 mode2
-		#json_get_var type2 type2
+		json_get_var mesh_type2 mesh_type2
 		#json_get_var channel5 channel5
 		#json_get_var mode5 mode5
-		#json_get_var type5 type5
+		json_get_var mesh_type5 mesh_type5
 		#json_get_var protocol protocol
 		
 		json_select ".." # back to root
@@ -155,9 +156,20 @@ if [ -s /tmp/keyxchangev2data ]; then
 			# here we set a bit for add hidden AP
 			touch /tmp/hiddenapflag
 
-			if ! wifiAddAdHocMesh "$radio" "$mesh_essid" "$mesh_bssid"; then
-				echo "Can't add AP interface on $radio."
-				exit 1
+			# add 802.11s mesh if type == "802.11s"
+			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "802.11s" ] ) || [ "$mesh_type2" == "802.11s" ]; then
+				if ! wifiAddMesh "$radio" "$mesh_id"; then
+					echo "Can't add Mesh interface on $radio."
+					exit 1
+				fi
+			fi
+
+			# add IBSS mesh if type == "ibss"
+			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "ibss" ] ) || [ "$mesh_type2" == "ibss" ]; then
+				if ! wifiAddAdHocMesh "$radio" "$mesh_essid" "$mesh_bssid"; then
+					echo "Can't add AdHocMesh interface on $radio."
+					exit 1
+				fi
 			fi
 		done
 
