@@ -36,17 +36,21 @@ chan5ghz="36"
 if [ -f /tmp/hiddenapflag ]; then
 	if isGatewayAvailable ; then
 
-		uci set network.configap=interface
-		uci set network.configap.proto='static'
-		uci set network.configap.ip6addr='fe80::1/64'
-		uci commit network
-
 		for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
-			if ! wifiAddAP "$radio" "config.franken.freifunk.net" "configap" "configap" "1"; then
+			channel=$(uci get "wireless.${radio}.channel")
+			iface="configap2"
+			if [ "$channel" -gt "14" ]; then
+				iface="configap5"
+			fi
+			uci set network.${iface}=interface
+			uci set network.${iface}.proto='static'
+			uci set network.${iface}.ip6addr='fe80::1/64'
+			if ! wifiAddAP "$radio" "config.franken.freifunk.net" "$iface" "configap" "1"; then
 				echo "Can't add Config interface on $radio."
 				exit 1
 			fi
 		done
+		uci commit network
 
 		wifi
 	fi
