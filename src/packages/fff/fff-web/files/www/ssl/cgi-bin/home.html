@@ -48,9 +48,10 @@ else
 fi
 
 # read from keyxchangev2data
-. /usr/share/libubox/jshn.sh
-if [ -s /tmp/keyxchangev2data ] ; then
-	json_load "$(cat /tmp/keyxchangev2data)"
+. /lib/functions/fff/keyxchange
+jsonfile="$(getJsonPath)"
+if [ -n "$jsonfile" ] ; then
+	json_load "$(cat "$jsonfile")"
 	json_select hood
 	json_get_var mesh_type2 mesh_type2
 	json_get_var mesh_type5 mesh_type5

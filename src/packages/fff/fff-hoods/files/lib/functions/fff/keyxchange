@@ -4,9 +4,21 @@
 
 . /usr/share/libubox/jshn.sh
 
+getJsonPath() {
+	jsonfile=""
+	if [ -s /www/public/keyxchangev2data ] ; then
+		jsonfile="/www/public/keyxchangev2data"
+	elif [ -s /tmp/keyxchangev2data ] ; then
+		jsonfile="/tmp/keyxchangev2data"
+	fi
+	echo "$jsonfile"
+}
+
 getUpgradePath() {
-	if [ -s /tmp/keyxchangev2data ]; then
-		json_load "$(cat /tmp/keyxchangev2data)"
+	jsonfile="$(getJsonPath)"
+
+	if [ -n "$jsonfile" ] ; then
+		json_load "$(cat "$jsonfile")"
 		json_select hood
 		json_get_var upath upgrade_path
 		echo "$upath"
