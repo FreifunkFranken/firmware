@@ -1,6 +1,6 @@
 #!/usr/bin/haserl
 
-<%                                                                                
+<%
 board_name=$(uci -q get board.model.name)
 # write
 if [ "$REQUEST_METHOD" == "POST" ] ; then
@@ -22,6 +22,54 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 		MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
 	fi
 fi
+
+#helpers
+format_state() {
+	batmanports=$(swconfig dev switch0 vlan 3 show | grep 'ports:')
+	clientports=$(swconfig dev switch0 vlan 1 show | grep 'ports:')
+	wanports=$(swconfig dev switch0 vlan 2 show | grep 'ports:')
+	
+	if (echo "$clientports" | grep -q "${1}") && (echo "$batmanports" | grep -q "${1}") ; then
+		echo -n "<span class=\"assign\" style=\"color:black\">Multi-Link"
+	elif echo "$clientports" | grep -q "${1}" ; then
+		echo -n "<span class=\"assign\" style=\"color:orange\">CLIENT"
+	elif echo "$batmanports" | grep -q "${1}" ; then
+		echo -n "<span class=\"assign\" style=\"color:green\">BATMAN"
+	elif echo "$wanports" | grep -q "${1}" ; then
+		echo -n "<span class=\"assign\" style=\"color:blue\">WAN"
+	else
+		echo -n "<span class=\"assign\" style=\"color:red\">Unknown"
+	fi
+	echo "</span><br />"
+}
+format_port() {
+	port=$(echo "$1" | sed 's/.* port:\([^ ]*\) .*/\1/')
+	link=$(echo "$1" | sed 's/.* link:\([^ ]*\).*/\1/')
+	if [ "$link" == "up" ] ; then
+		speed=$(echo "$1" | sed 's/.* speed:\([^ ]*\).*/\1/')
+		duplex=$(echo "$1" | sed 's/.* \([^ ]*-duplex\).*/\1/')
+	else
+		speed="no link"
+		duplex=""
+	fi
+	echo "<img src=\"/port_${link}.png\" alt=\"${link}\" /><br /><br />"
+	format_state "${port}"
+	echo "<span class=\"stat\">$speed<br />$duplex</span><br /><br />"
+	
+	swconfig dev switch0 show | grep -E "VLAN\s[0-9]+:[ \t]*$" | while read line ; do
+		vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
+		vports=$(swconfig dev switch0 vlan "$vid" show | grep 'ports:')
+		if echo "$vports" | grep -q "${port}t" ; then
+			echo "<span class=\"vassign\">tagged</span><br />"
+		elif echo "$vports" | grep -q "${port}" ; then
+			echo "<span class=\"vassign\">untagged</span><br />"
+		else
+			echo "<span class=\"vassign\">-</span><br />"
+		fi
+	done
+}
+
+
 %>
 <%in /www/ssl/cgi-bin/header %>
 <%in /www/ssl/cgi-bin/helpers %>
@@ -36,22 +84,55 @@ fi
 		<table>
 			<tr>
 				<%
+				echo "<td class=\"swport\" style=\"vertical-align:bottom\">"
+				swconfig dev switch0 show | grep -E "VLAN\s[0-9]+:[ \t]*$" | while read line ; do
+					vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
+					echo "<span class=\"vassign\" style=\"font-weight:bold;font-style:italic\">VLAN $vid </span><br />"
+				done
+				echo "</td>"
+				echo "<td class=\"swport\" style=\"width:2em\"></td>"
+				
+				if [ ! "$(awk -F= '/WANDEV=/ { print $2 }' /etc/network.$board_name)" = "$(awk -F= '/SWITCHDEV=/ { print $2 }' /etc/network.$board_name)" ] ; then
+					wanif=$(uci -q get network.wan.ifname)
+					link=$(cat /sys/class/net/${wanif}/operstate)
+					if [ "$link" == "up" ] ; then
+						speed="connected"
+					else
+						speed="no link"
+					fi
+					echo "<td class=\"swport\">"
+					echo "<span class=\"port\" style=\"color:blue\">WAN-Port</span><br />"
+					echo "<img src=\"/port_${link}.png\" alt=\"${link}\" /><br /><br />"
+					echo "<span class=\"assign\" style=\"color:blue\">WAN</span><br />"
+					echo "<span class=\"stat\">$speed</span>"
+					echo "</td>"
+				fi
+				
+				if grep -q 'PORTORDER=' /etc/network.$board_name ; then
+					portorder=$(awk -F= '/PORTORDER=/ { print $2 }' /etc/network.$board_name | sed "s/\"//g")
+				fi
+				for internalport in $portorder
+				do
+					line=$(swconfig dev switch0 port "$internalport" show | tr -d '\n' | tr -d '\t')
+					port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+					echo "<td class=\"swport\">"
+					echo "<span class=\"port\">Port #${port}</span><br />"
+					format_port "${line}"
+					echo "</td>"
+				done
+				if [ -n "$portorder" ] ; then
+					echo "<td class=\"swport\" style=\"width:4em\"></td>"
+				fi
+				
 				swconfig dev switch0 show | grep "\t*link:" | while read line ; do
 					line=$(echo "$line" | tr -d '\n' | tr -d '\t')
 					port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
-					link=$(echo "$line" | sed 's/.* link:\([^ ]*\).*/\1/')
-					if [ "$link" == "up" ] ; then
-						speed=$(echo "$line" | sed 's/.* speed:\([^ ]*\).*/\1/')
-						duplex=$(echo "$line" | sed 's/.* \([^ ]*-duplex\).*/\1/')
-					else
-						speed="no link"
-						duplex=""
+					if echo "$portorder" | grep -q "$port" ; then
+						continue
 					fi
-					port="Port ${port}"
 					echo "<td class=\"swport\">"
-					echo "<span class=\"port\">${port}</span><br />"
-					echo "<img src=\"/port_${link}.png\" alt=\"${link}\" /><br />"
-					echo "<span class=\"stat\">$speed<br />$duplex</span>"
+					echo "<span class=\"port\">Port #${port}</span><br />"
+					format_port "${line}"
 					echo "</td>"
 				done
 				%>
@@ -60,7 +141,11 @@ fi
 		<table>
 			<tr><td></td></tr>
 			<tr><td>
+				<% if [ -n "$portorder" ] ; then %>
+				Dies zeigt die tats&auml;chliche Zuordnung der Ports, wobei der WAN Port auf der linken Seite liegt. Die Nummerierung entspricht der internen Zuordnung!<br />
+				<% else %>
 				Die Nummerierung und Reihenfolge der Ports entspricht nicht notwendigerweise der der Netzwerkanschl&uuml;sse am Router!<br />
+				<% fi %>
 				Einer (oder mehrere) der Ports sind keine Netzwerkanschl&uuml;sse am Router sondern binden die Router CPU an den internen Switch an.
 			</td></tr>
 		</table>
