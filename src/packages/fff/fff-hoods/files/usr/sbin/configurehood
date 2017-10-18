@@ -176,7 +176,8 @@ if [ -s "$hoodfile" ]; then
 		fi
 
 		echo "Setting hood name: $hood"
-		uci set "system.@system[0].hood=$hood"
+		uci -q set "system.@system[0].hood=$hood"
+		uci -q commit system
 
 		if ! wifiDelAll; then
 			echo "Can't delete current wifi setup"
