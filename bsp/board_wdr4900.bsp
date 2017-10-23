@@ -1,5 +1,6 @@
 machine=wdr4900
 chipset=mpc85xx
+subtarget=generic
 target=$builddir/$machine
 
 images=(

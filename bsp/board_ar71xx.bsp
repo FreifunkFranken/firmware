@@ -1,5 +1,6 @@
 machine=ar71xx
 chipset=ar71xx
+subtarget=generic
 target=$builddir/$machine
 images=("lede-ar71xx-generic-cpe210-220-squashfs-sysupgrade.bin"
         "lede-ar71xx-generic-cpe510-520-squashfs-sysupgrade.bin"
