@@ -50,7 +50,7 @@ format_port() {
 	format_state "${port}"
 	printf '%-26s' "@ $speed $duplex "
 	
-	swconfig dev switch0 show | grep "VLAN\s" | while read line ; do
+	swconfig dev switch0 show | grep -E "VLAN\s[0-9]+:[ \t]*$" | while read line ; do
 		vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
 		vports=$(swconfig dev switch0 vlan "$vid" show | grep 'ports:')
 		if echo "$vports" | grep -q "${port}t" ; then
@@ -124,16 +124,16 @@ echo "Fastd Version: $(fastd --version 2> /dev/null | cut -d' ' -f 2)"
 echo ""
 echo "-> Netz: FREIFUNK"
 echo "Nutzer: $(cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W')"
-echo "Empfangen: $(cat /sys/class/net/br-mesh/statistics/rx_bytes | human_bytes)"
-echo "Gesendet: $(cat /sys/class/net/br-mesh/statistics/tx_bytes | human_bytes)"
+echo "Empfangen: $(cat /sys/class/net/br-mesh/statistics/rx_bytes 2> /dev/null | human_bytes)"
+echo "Gesendet: $(cat /sys/class/net/br-mesh/statistics/tx_bytes 2> /dev/null | human_bytes)"
 echo "IPv4 Adressen: $(addr 4 br-mesh)"
 echo "IPv6 Adressen: $(addr 6 br-mesh)"
 
 echo ""
 echo "-> Netz: WAN"
 echo "Internet vorhanden: ${internet_active}"
-echo "Empfangen: $(cat /sys/class/net/${wanif}/statistics/rx_bytes | human_bytes)"
-echo "Gesendet: $(cat /sys/class/net/${wanif}/statistics/tx_bytes | human_bytes)"
+echo "Empfangen: $(cat /sys/class/net/${wanif}/statistics/rx_bytes 2> /dev/null | human_bytes)"
+echo "Gesendet: $(cat /sys/class/net/${wanif}/statistics/tx_bytes 2> /dev/null | human_bytes)"
 echo "IPv4 Adressen: $(addr 4 $wanif)"
 echo "IPv6 Adressen: $(addr 6 $wanif)"
 
@@ -148,7 +148,7 @@ echo "E-Mail Adresse: $(uci -q get 'system.@system[0].contact')"
 
 echo ""
 echo "-> BITRATEN-BEGRENZUNG"
-if [ "$(uci -q get 'simple-tc.example.enabled')" == "1" ] ; then
+if [ "$(uci -q get 'simple-tc.example.enabled')" = "1" ] ; then
 	echo "Aktiv: ja"
 else
 	echo "Aktiv: nein"
@@ -161,49 +161,59 @@ if grep -q 'PORTORDER=' /etc/network.$board_name ; then
 fi
 
 echo ""
-if [ -n "$portorder" ] ; then
-	echo "-> SWITCH (tatsaechliche Portreihenfolge)"
-else
-	echo "-> SWITCH (interne logische Portreihenfolge)"
-fi
-
-printf '%-54s' "VLAN-IDs:"
-swconfig dev switch0 show | grep "VLAN\s" | while read line ; do
-	vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
-	printf '%-2s ' "$vid"
-done
-echo ""
-echo ""
-
-if [ ! "$(awk -F= '/WANDEV=/ { print $2 }' /etc/network.$board_name)" = "$(awk -F= '/SWITCHDEV=/ { print $2 }' /etc/network.$board_name)" ] ; then
-	wanif=$(uci -q get network.wan.ifname)
-	link=$(cat /sys/class/net/${wanif}/operstate)
-	if [ "$link" = "up" ] ; then
-		speed="connected"
+if swconfig list | grep -q switch0 ; then
+	if [ -n "$portorder" ] ; then
+		echo "-> SWITCH (tatsaechliche Portreihenfolge)"
 	else
-		speed="no link"
+		echo "-> SWITCH (interne logische Portreihenfolge)"
 	fi
-	printf '%-10s%-5s%-13s%s\n' "WAN-Port: " "${link} " "- WAN " "@ $speed"
+
+	printf '%-54s' "VLAN-IDs:"
+	swconfig dev switch0 show | grep -E "VLAN\s[0-9]+:[ \t]*$" | while read line ; do
+		vid=$(echo "$line" | sed 's/.*VLAN \([^:]*\).*/\1/')
+		printf '%-2s ' "$vid"
+	done
+	echo ""
+	echo ""
+
+	if [ ! "$(awk -F= '/WANDEV=/ { print $2 }' /etc/network.$board_name)" = "$(awk -F= '/SWITCHDEV=/ { print $2 }' /etc/network.$board_name)" ] ; then
+		wanif=$(uci -q get network.wan.ifname)
+		link=$(cat /sys/class/net/${wanif}/operstate)
+		if [ "$link" = "up" ] ; then
+			speed="connected"
+		else
+			speed="no link"
+		fi
+		printf '%-10s%-5s%-13s%s\n' "WAN-Port: " "${link} " "- WAN " "@ $speed"
+	fi
+
+	for internalport in $portorder
+	do
+		line=$(swconfig dev switch0 port "$internalport" show | tr -d '\n' | tr -d '\t')
+		port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+		printf '%-10s' "Port #${port}: "
+		format_port "${line}"
+	done
+	echo ""
+
+	swconfig dev switch0 show | grep "\t*link:" | while read line ; do
+		line=$(echo "$line" | tr -d '\n' | tr -d '\t')
+		port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
+		if echo "$portorder" | grep -q "$port" ; then
+			continue
+		fi
+		printf '%-10s' "Port #${port}: "
+		format_port "${line}"
+	done
+else
+	echo "-> PORT ASSIGNMENT"
+	if grep -q "ONE_PORT" "/etc/network.$board_name" || grep -q "ETHPORT" "/etc/network.$board_name" ; then
+		# Device has a port set by $ETHMODE
+		. /etc/network.mode
+		. /etc/network.config
+		echo "Port Modus: $ETHMODE"
+	fi
 fi
-
-for internalport in $portorder
-do
-	line=$(swconfig dev switch0 port "$internalport" show | tr -d '\n' | tr -d '\t')
-	port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
-	printf '%-10s' "Port #${port}: "
-	format_port "${line}"
-done
-echo ""
-
-swconfig dev switch0 show | grep "\t*link:" | while read line ; do
-	line=$(echo "$line" | tr -d '\n' | tr -d '\t')
-	port=$(echo "$line" | sed 's/.* port:\([^ ]*\) .*/\1/')
-	if echo "$portorder" | grep -q "$port" ; then
-		continue
-	fi
-	printf '%-10s' "Port #${port}: "
-	format_port "${line}"
-done
 
 echo ""
 echo "END"
