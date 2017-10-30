@@ -109,10 +109,10 @@ else
 		# wait a moment to start the interface
 		sleep 10;
 		# and here we can download the Hoodfile from the other node
-		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile"
+		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/keyxchangev2data" -O "$hoodfile"
 		#UPLINK: Set up uplink data on first contact:
 		if [ -s /tmp/keyxchangev2data ]; then
-			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp"
+			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/sectorfile" -O "$sectortmp"
 		fi
 	else
 		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
