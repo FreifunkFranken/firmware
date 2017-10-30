@@ -5,6 +5,7 @@ uci batch <<EOF
   delete uhttpd.public
   delete uhttpd.ssl
   delete uhttpd.px5g
+
   set uhttpd.public=uhttpd
   add_list uhttpd.public.listen_http='80'
   set uhttpd.public.home='/www/public'
@@ -14,6 +15,7 @@ uci batch <<EOF
   set uhttpd.public.network_timeout='30'
   set uhttpd.public.tcp_keepalive='1'
   set uhttpd.public.config='_'
+
   set uhttpd.ssl=uhttpd
   add_list uhttpd.ssl.listen_https='443'
   set uhttpd.ssl.home='/www/ssl'
@@ -29,6 +31,14 @@ uci batch <<EOF
   set uhttpd.px5g.days='1400'
   set uhttpd.px5g.bits='2048'
   set uhttpd.px5g.commonname='OpenWrt'
+
+  set uhttpd.hood=uhttpd
+  add_list uhttpd.hood.listen_http='2342'
+  set uhttpd.hood.home='/www/hood'
+  set uhttpd.hood.rfc1918_filter='1'
+  set uhttpd.hood.network_timeout='30'
+  set uhttpd.hood.tcp_keepalive='1'
+  set uhttpd.hood.config='_'
 EOF
 
 uci commit uhttpd

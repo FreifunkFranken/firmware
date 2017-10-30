@@ -6,7 +6,7 @@
 
 sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
-sectorcopy=/www/public/sectorfile
+sectorcopy=/www/hood/sectorfile
 
 rm -f /tmp/keyxchangev2data
 
@@ -74,7 +74,7 @@ else
 	if ! isGatewayAvailable ; then
 		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 		#first we delete all wifi settings
-		rm -f /www/public/keyxchangev2data # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+		rm -f /www/hood/keyxchangev2data # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
 		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
 		rm -f "$sectortmp"
 
@@ -108,10 +108,10 @@ else
 		# wait a moment to start the interface
 		sleep 10;
 		# and here we can download the Hoodfile from the other node
-		wget -T15 -t5 "http://[fe80::1%w2sta]/keyxchangev2data" -O /tmp/keyxchangev2data
+		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O /tmp/keyxchangev2data
 		#UPLINK: Set up uplink data on first contact:
 		if [ -s /tmp/keyxchangev2data ]; then
-			wget -T15 -t5 "http://[fe80::1%w2sta]/sectorfile" -O "$sectortmp"
+			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp"
 		fi
 	else
 		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
@@ -141,7 +141,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 	fi
 
 	catnew="$(cat /tmp/keyxchangev2data | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
-	catold="$(cat /www/public/keyxchangev2data 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	catold="$(cat /www/hood/keyxchangev2data 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
 	sumnew=$(echo "$catnew" | sha256sum | cut -f1 -d " ")
 	sumold=$(echo "$catold" | sha256sum | cut -f1 -d " ")
 
@@ -221,7 +221,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
-		cp /tmp/keyxchangev2data /www/public/
+		cp /tmp/keyxchangev2data /www/hood/
 		cp "$sectortmp" "$sectorcopy"
 
 	else

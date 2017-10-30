@@ -6,8 +6,8 @@
 
 getJsonPath() {
 	jsonfile=""
-	if [ -s /www/public/keyxchangev2data ] ; then
-		jsonfile="/www/public/keyxchangev2data"
+	if [ -s /www/hood/keyxchangev2data ] ; then
+		jsonfile="/www/hood/keyxchangev2data"
 	elif [ -s /tmp/keyxchangev2data ] ; then
 		jsonfile="/tmp/keyxchangev2data"
 	fi
