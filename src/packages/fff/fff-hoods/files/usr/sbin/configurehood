@@ -4,6 +4,10 @@
 . /lib/functions/fff/wireless
 . /lib/functions/fff/timeserver
 
+sectorlocal=/etc/sectorfile
+sectortmp=/tmp/sectorfile
+sectorcopy=/www/public/sectorfile
+
 rm -f /tmp/keyxchangev2data
 
 # Gatewaycheck function
@@ -60,6 +64,9 @@ long=$(uci -q get system.@system[0].longitude)
 # if we have Internet, we download the Hoodfile from the keyxchangev2
 if hasInternet ; then
 	wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O /tmp/keyxchangev2data
+	rm -f "$sectortmp"
+	[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
+	#UPLINK: No uplink download if internet present
 	#if no Internet, we connect to the hidden AP and download the file from another Node in range
 else
 	# connect to wireless hidden ap here and download the json File from the nearest router
@@ -68,6 +75,8 @@ else
 		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 		#first we delete all wifi settings
 		rm -f /www/public/keyxchangev2data # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
+		rm -f "$sectortmp"
 
 		if ! wifiDelAll; then
 			echo "Can't delete current wifi setup"
@@ -100,9 +109,14 @@ else
 		sleep 10;
 		# and here we can download the Hoodfile from the other node
 		wget -T15 -t5 "http://[fe80::1%w2sta]/keyxchangev2data" -O /tmp/keyxchangev2data
+		#UPLINK: Set up uplink data on first contact:
+		if [ -s /tmp/keyxchangev2data ]; then
+			wget -T15 -t5 "http://[fe80::1%w2sta]/sectorfile" -O "$sectortmp"
+		fi
 	else
 		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
 		wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O /tmp/keyxchangev2data
+		#UPLINK: Do nothing
 	fi
 fi
 
@@ -111,6 +125,20 @@ if [ -s /tmp/keyxchangev2data ]; then
 	# we get a json file in this format: 
 	# https://pw.freifunk-franken.de/patch/205/
 	# but without signature, every hood file we get is valid!
+	
+	[ -s "$sectorlocal" ] && sectortmp="$sectorlocal" # Use local file if present (configuration set by user)
+	if [ -s "$sectortmp" ] ; then
+		json_load "$(cat "$sectortmp")"
+		json_select hood
+		json_get_var mesh_id mesh_id
+		json_get_var mesh_bssid mesh_bssid
+		json_get_var mesh_essid mesh_essid
+		json_get_var essid essid
+		json_get_var chan2ghz channel2
+		json_get_var mesh_type2 mesh_type2
+		json_get_var chan5ghz channel5
+		json_get_var mesh_type5 mesh_type5
+	fi
 
 	catnew="$(cat /tmp/keyxchangev2data | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
 	catold="$(cat /www/public/keyxchangev2data 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
@@ -119,28 +147,28 @@ if [ -s /tmp/keyxchangev2data ]; then
 
 	json_load "$(cat /tmp/keyxchangev2data)"
 
-	if [ "$sumnew" != "$sumold" ]; then
-		echo "New file detect, we reconfigure the Node";
+	if [ "$sumnew" != "$sumold" ] ; then
+		echo "New file detected, we reconfigure the Node";
 
 		json_select hood
 
 		json_get_var hood name
-		json_get_var mesh_id mesh_id
-		json_get_var mesh_bssid mesh_bssid
-		json_get_var mesh_essid mesh_essid
-		json_get_var essid essid
+		[ -n "$mesh_id" ] || json_get_var mesh_id mesh_id
+		[ -n "$mesh_bssid" ] || json_get_var mesh_bssid mesh_bssid
+		[ -n "$mesh_essid" ] || json_get_var mesh_essid mesh_essid
+		[ -n "$essid" ] || json_get_var essid essid
 		json_get_var ntpip ntp_ip
+		[ -n "$chan2ghz" ] || json_get_var chan2ghz channel2
+		[ -n "$mesh_type2" ] || json_get_var mesh_type2 mesh_type2
+		[ -n "$chan5ghz" ] || json_get_var chan5ghz channel5
+		[ -n "$mesh_type5" ] || json_get_var mesh_type5 mesh_type5
 		# Additional parameters may be activated in future versions
-		json_get_var chan2ghz channel2
 		#json_get_var mode2 mode2
-		json_get_var mesh_type2 mesh_type2
-		json_get_var chan5ghz channel5
 		#json_get_var mode5 mode5
-		json_get_var mesh_type5 mesh_type5
 		#json_get_var protocol protocol
 		
 		json_select ".." # back to root
-
+		
 		if ! ([ -n "$chan2ghz" ] && [ -n "$chan5ghz" ]) ; then
 			# If channel is missing, do nothing
 			exit 0
@@ -191,9 +219,10 @@ if [ -s /tmp/keyxchangev2data ]; then
 		newntp="${ntpip}" # requires routable address, no link-local
 		[ "$newntp" = "$oldntp" ] || setTimeserver "${newntp}" # only rewrite if changed
 
-		# copy the file to webroot so that other Meshrouter can download it;
+		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
 		cp /tmp/keyxchangev2data /www/public/
+		cp "$sectortmp" "$sectorcopy"
 
 	else
 		echo "We have no new file. We do nothing. We try it again in 5 minutes...";
