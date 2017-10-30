@@ -1,11 +1,13 @@
 #!/usr/bin/haserl
 
 <%
+. /lib/functions/fff/keyxchange
+
 # prepare
 if [ "$REQUEST_METHOD" == "POST" ] ; then
 	if [ "$POST_resethood" != "" ] ; then
 		# reset hood
-		rm /www/hood/keyxchangev2data 2> /dev/null
+		rm "$hoodfilecopy" 2> /dev/null
 		MSG='<span class="green">Hood-Daten werden innerhalb von 5 Minuten neu prozessiert.</span>'
 	fi
 fi

@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . /usr/share/libubox/jshn.sh
+. /lib/functions/fff/keyxchange
 . /lib/functions/fff/wireless
 . /lib/functions/fff/timeserver
 
@@ -8,7 +9,7 @@ sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
 sectorcopy=/www/hood/sectorfile
 
-rm -f /tmp/keyxchangev2data
+rm -f "$hoodfile"
 
 # Gatewaycheck function
 isGatewayAvailable() {
@@ -34,7 +35,7 @@ hasInternet() {
 
 # Hidden AP check
 
-if [ -f /tmp/hiddenapflag ]; then
+if [ -f "$hiddenapfile" ]; then
 	if isGatewayAvailable ; then
 
 		for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
@@ -55,7 +56,7 @@ if [ -f /tmp/hiddenapflag ]; then
 
 		wifi
 	fi
-	rm /tmp/hiddenapflag
+	rm "$hiddenapfile"
 fi
 
 lat=$(uci -q get system.@system[0].latitude)
@@ -63,7 +64,7 @@ long=$(uci -q get system.@system[0].longitude)
 
 # if we have Internet, we download the Hoodfile from the keyxchangev2
 if hasInternet ; then
-	wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O /tmp/keyxchangev2data
+	wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O "$hoodfile"
 	rm -f "$sectortmp"
 	[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
 	#UPLINK: No uplink download if internet present
@@ -74,7 +75,7 @@ else
 	if ! isGatewayAvailable ; then
 		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 		#first we delete all wifi settings
-		rm -f /www/hood/keyxchangev2data # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+		rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
 		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
 		rm -f "$sectortmp"
 
@@ -108,19 +109,19 @@ else
 		# wait a moment to start the interface
 		sleep 10;
 		# and here we can download the Hoodfile from the other node
-		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O /tmp/keyxchangev2data
+		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile"
 		#UPLINK: Set up uplink data on first contact:
 		if [ -s /tmp/keyxchangev2data ]; then
 			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp"
 		fi
 	else
 		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-		wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O /tmp/keyxchangev2data
+		wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
 		#UPLINK: Do nothing
 	fi
 fi
 
-if [ -s /tmp/keyxchangev2data ]; then
+if [ -s "$hoodfile" ]; then
 
 	# we get a json file in this format: 
 	# https://pw.freifunk-franken.de/patch/205/
@@ -140,12 +141,12 @@ if [ -s /tmp/keyxchangev2data ]; then
 		json_get_var mesh_type5 mesh_type5
 	fi
 
-	catnew="$(cat /tmp/keyxchangev2data | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
-	catold="$(cat /www/hood/keyxchangev2data 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	catnew="$(cat "$hoodfile" | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	catold="$(cat "$hoodfilecopy" 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
 	sumnew=$(echo "$catnew" | sha256sum | cut -f1 -d " ")
 	sumold=$(echo "$catold" | sha256sum | cut -f1 -d " ")
 
-	json_load "$(cat /tmp/keyxchangev2data)"
+	json_load "$(cat "$hoodfile")"
 
 	if [ "$sumnew" != "$sumold" ] ; then
 		echo "New file detected, we reconfigure the Node";
@@ -193,7 +194,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 			fi
 
 			# here we set a bit for add hidden AP
-			touch /tmp/hiddenapflag
+			touch "$hiddenapfile"
 
 			# add 802.11s mesh if type == "802.11s"
 			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "802.11s" ] ) || [ "$mesh_type2" == "802.11s" ]; then
@@ -221,7 +222,7 @@ if [ -s /tmp/keyxchangev2data ]; then
 
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
-		cp /tmp/keyxchangev2data /www/hood/
+		cp "$hoodfile" "$hoodfilecopy"
 		cp "$sectortmp" "$sectorcopy"
 
 	else
