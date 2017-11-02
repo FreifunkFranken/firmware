@@ -141,8 +141,8 @@ if [ -s "$hoodfile" ]; then
 		json_get_var mesh_type5 mesh_type5
 	fi
 
-	catnew="$(cat "$hoodfile" | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
-	catold="$(cat "$hoodfilecopy" 2>/dev/null | sed 's/"timestamp":[0-9]*/"timestamp":0/')"
+	catnew="$(cat "$hoodfile" | sed 's/"timestamp":"[0-9]*"/"timestamp":0/')"
+	catold="$(cat "$hoodfilecopy" 2>/dev/null | sed 's/"timestamp":"[0-9]*"/"timestamp":0/')"
 	sumnew=$(echo "$catnew" | sha256sum | cut -f1 -d " ")
 	sumold=$(echo "$catold" | sha256sum | cut -f1 -d " ")
 
