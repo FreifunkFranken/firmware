@@ -81,7 +81,7 @@ else
 		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
 		rm -f "$sectortmp"
 
-		if ! wifiDelAll; then
+		if ! wifiDelIface; then
 			echo "Can't delete current wifi setup"
 			exit 1
 		fi
@@ -181,7 +181,7 @@ if [ -s "$hoodfile" ]; then
 		uci -q set "system.@system[0].hood=$hood"
 		uci -q commit system
 
-		if ! wifiDelAll; then
+		if ! wifiDelIface; then
 			echo "Can't delete current wifi setup"
 			exit 1
 		fi

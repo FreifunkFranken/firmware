@@ -14,6 +14,21 @@ wifiDelAll() {
 	return 0
 }
 
+wifiDelIface() {
+	if [ $# -ne "0" ]
+	then
+		echo "Usage: wifiDelIface"
+		return 1
+	fi
+
+	grep 'config wifi-iface' /etc/config/wireless | sed -n -e "s/.*'\([^']*\)'.*/\1/p" | while read -r line ; do
+		uci -q delete "wireless.$line"
+	done
+	uci -q commit wireless
+
+	return 0
+}
+
 wifiAddPhy() {
 	if [ $# -ne "2" ]
 	then
