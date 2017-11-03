@@ -6,7 +6,6 @@
 
 hoodfile="/tmp/keyxchangev2data"
 hoodfilecopy="/www/hood/keyxchangev2data"
-hiddenapfile="/tmp/hiddenapflag"
 
 getJsonPath() {
 	jsonfile=""

@@ -9,6 +9,7 @@
 sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
 sectorcopy=/www/hood/sectorfile
+hiddenapfile=/tmp/hiddenapflag
 
 rm -f "$hoodfile"
 
