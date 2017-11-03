@@ -4,5 +4,5 @@ CLIENT_PORTS="3 4 5t"
 WAN_PORTS="0 5t"
 BATMAN_PORTS="1 2 5t"
 
-ETHMESHMAC=w2ap
-ROUTERMAC=eth0
+ETHMESHMAC=$(cat /sys/class/net/w2ap/address)
+ROUTERMAC=$(cat /sys/class/net/eth0/address)

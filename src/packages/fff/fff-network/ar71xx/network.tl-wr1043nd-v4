@@ -11,6 +11,5 @@ BATMAN_PORTS="3 4 0t"
 # Load second MAC from Flash because we haven't any Interface with this MAC where we can copy the MAC from
 # https://github.com/lede-project/source/pull/613/files#diff-abd6f42f54204372151e73eac0556db1
 
-NEWMAC=$(mtd_get_mac_binary config 0x1017c)
-ETHMESHMAC=1
-ROUTERMAC=eth0
+ETHMESHMAC=$(mtd_get_mac_binary config 0x1017c)
+ROUTERMAC=$(cat /sys/class/net/eth0/address)

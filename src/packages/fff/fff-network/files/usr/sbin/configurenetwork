@@ -164,13 +164,10 @@ if [[ -n "$ETHMESHMAC" ]]; then
     else
         echo "Fixing MAC on eth0.3 (ethmesh)"
         sleep 10
-        NEW_MACADDR=$(cat /sys/class/net/$ETHMESHMAC/address)
-        # We need this to set the second MAC for the wr1043 v4 from a variable and not from an Interface
-        if [[ -n "$NEWMAC" ]]; then
-                NEW_MACADDR=$NEWMAC
-        fi
-        uci set network.ethmesh.macaddr=$NEW_MACADDR
+
+        uci set network.ethmesh.macaddr=$ETHMESHMAC
         uci commit
+
         ifconfig eth0.3 down
         ifconfig eth0.3 hw ether $NEW_MACADDR
         ifconfig eth0.3 up
@@ -185,9 +182,10 @@ if [[ -n "$ROUTERMAC" ]]; then
     else
         echo "Fixing MAC on br-mesh (mesh)"
         sleep 10
-        NEW_MACADDR=$(cat /sys/class/net/$ROUTERMAC/address)
-        uci set network.mesh.macaddr=$NEW_MACADDR
+
+        uci set network.mesh.macaddr=$ROUTERMAC
         uci commit
+
         ifconfig br-mesh down
         ifconfig br-mesh hw ether $NEW_MACADDR
         ifconfig br-mesh up

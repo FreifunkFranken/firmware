@@ -7,5 +7,5 @@ ONE_PORT="YES"
 
 . /etc/network.mode
 
-ETHMESHMAC=eth0
-ROUTERMAC=eth0
+ETHMESHMAC=$(cat /sys/class/net/eth0/address)
+ROUTERMAC=$(cat /sys/class/net/eth0/address)

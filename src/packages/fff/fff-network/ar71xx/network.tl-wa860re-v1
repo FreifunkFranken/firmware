@@ -7,5 +7,4 @@ ONE_PORT="YES"
 
 . /etc/network.mode
 
-ETHMESHMAC=
-ROUTERMAC=w2mesh
+ROUTERMAC=$(cat /sys/class/net/w2mesh/address)
