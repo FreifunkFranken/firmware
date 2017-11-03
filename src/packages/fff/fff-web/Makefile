@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web
-PKG_VERSION:=0.0.4
+PKG_VERSION:=5
 PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken Webinterface
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +simple-tc +fff-boardname +fff-network
+    DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +simple-tc +fff-boardname +fff-config +fff-network
 endef
 
 define Package/$(PKG_NAME)/description

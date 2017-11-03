@@ -1,21 +1,27 @@
 #!/bin/sh
 
-UPGRADE_hostname=$(uci -q get "system.@system[0].hostname")
-UPGRADE_description=$(uci -q get "system.@system[0].description")
-UPGRADE_latitude=$(uci -q get "system.@system[0].latitude")
-UPGRADE_longitude=$(uci -q get "system.@system[0].longitude")
-UPGRADE_position_comment=$(uci -q get "system.@system[0].position_comment")
-UPGRADE_contact=$(uci -q get "system.@system[0].contact")
+if [ ! -s /etc/config/fff ] ; then
 
-/bin/rm -rf /etc/config/system
+	UPGRADE_hostname=$(uci -q get "system.@system[0].hostname")
+	UPGRADE_description=$(uci -q get "system.@system[0].description")
+	UPGRADE_latitude=$(uci -q get "system.@system[0].latitude")
+	UPGRADE_longitude=$(uci -q get "system.@system[0].longitude")
+	UPGRADE_position_comment=$(uci -q get "system.@system[0].position_comment")
+	UPGRADE_contact=$(uci -q get "system.@system[0].contact")
 
-/bin/config_generate
+	/bin/rm -rf /etc/config/system
+	
+	/bin/config_generate
 
-test -n "${UPGRADE_hostname}" && uci -q set "system.@system[0].hostname=${UPGRADE_hostname}"
-test -n "${UPGRADE_description}" && uci -q set "system.@system[0].description=${UPGRADE_description}"
-test -n "${UPGRADE_latitude}" && uci -q set "system.@system[0].latitude=${UPGRADE_latitude}"
-test -n "${UPGRADE_longitude}" && uci -q set "system.@system[0].longitude=${UPGRADE_longitude}"
-test -n "${UPGRADE_position_comment}" && uci -q set "system.@system[0].position_comment=${UPGRADE_position_comment}"
-test -n "${UPGRADE_contact}" && uci -q set "system.@system[0].contact=${UPGRADE_contact}"
+	touch /etc/config/fff
 
-uci -q commit system
+	uci -q set fff.system=fff
+	test -n "${UPGRADE_hostname}" && uci -q set "fff.system.hostname=${UPGRADE_hostname}"
+	test -n "${UPGRADE_description}" && uci -q set "fff.system.description=${UPGRADE_description}"
+	test -n "${UPGRADE_latitude}" && uci -q set "fff.system.latitude=${UPGRADE_latitude}"
+	test -n "${UPGRADE_longitude}" && uci -q set "fff.system.longitude=${UPGRADE_longitude}"
+	test -n "${UPGRADE_position_comment}" && uci -q set "fff.system.position_comment=${UPGRADE_position_comment}"
+	test -n "${UPGRADE_contact}" && uci -q set "fff.system.contact=${UPGRADE_contact}"
+
+	uci -q commit fff
+fi

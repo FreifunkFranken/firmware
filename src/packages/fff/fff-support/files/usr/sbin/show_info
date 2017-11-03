@@ -5,7 +5,7 @@
 
 board_name=$(uci -q get board.model.name)
 
-HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+HOSTNAME=$(uci -q get 'fff.system.hostname')
 hood="$(uci -q get "system.@system[0].hood")"
 
 human_bytes() {
@@ -154,11 +154,11 @@ echo "IPv6 Adressen: $(addr 6 $wanif)"
 echo ""
 echo "-> EINSTELLUNGEN"
 echo "Knotenname: ${HOSTNAME}"
-echo "Knotenbeschreibung: $(uci -q get 'system.@system[0].description')"
-echo "GPS Breitengrad: $(uci -q get 'system.@system[0].latitude')"
-echo "GPS Laengengrad: $(uci -q get 'system.@system[0].longitude')"
-echo "Standortbeschreibung: $(uci -q get 'system.@system[0].position_comment')"
-echo "E-Mail Adresse: $(uci -q get 'system.@system[0].contact')"
+echo "Knotenbeschreibung: $(uci -q get 'fff.system.description')"
+echo "GPS Breitengrad: $(uci -q get 'fff.system.latitude')"
+echo "GPS Laengengrad: $(uci -q get 'fff.system.longitude')"
+echo "Standortbeschreibung: $(uci -q get 'fff.system.position_comment')"
+echo "E-Mail Adresse: $(uci -q get 'fff.system.contact')"
 
 echo ""
 echo "-> BITRATEN-BEGRENZUNG"

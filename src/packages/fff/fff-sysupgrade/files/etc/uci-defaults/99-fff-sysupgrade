@@ -8,5 +8,5 @@ cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/dropbear/dropbear_rsa_host_key
 /etc/dropbear/authorized_keys
 /etc/network.config
-/etc/config/system
+/etc/config/fff
 __EOF__

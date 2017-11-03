@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=fff-nodewatcher
-PKG_VERSION:=43
+PKG_NAME:=fff-config
+PKG_VERSION:=1
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -11,28 +11,26 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken Nodewatcher
+    TITLE:=Freifunk-Franken Config
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-alfred +micrond +fff-config +fff-random +ip +ip-bridge
+    DEPENDS:=+fff-boardname +@BUSYBOX_CONFIG_WGET
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the Nodewatcher for the Freifunk Franken Firmware
-    It is used to send node status information to
-    monitoring.freifunk-franken.de and
-    netmon.freifunk-franken.de
+    This is the Freifunk Franken Firmware Config package.
+    This packages provides utilities for a central FFF config file.
 endef
 
 define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
+    echo "all: " > $(PKG_BUILD_DIR)/Makefile
 endef
 
 define Build/Configure
-	# nothing
+    # nothing
 endef
 
 define Build/Compile
-	# nothing
+    # nothing
 endef
 
 define Package/$(PKG_NAME)/install

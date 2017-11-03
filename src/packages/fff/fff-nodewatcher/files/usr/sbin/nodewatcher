@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="41"
+SCRIPT_VERSION="43"
 
 test -f /tmp/started || exit
 
@@ -58,20 +58,21 @@ crawl() {
     hostname="$(cat /proc/sys/kernel/hostname)"
     mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
     [ "$hostname" = "LEDE" ] && hostname="$mac"
-    description="$(uci get system.@system[0].description)"
+    [ "$hostname" = "FFF" ] && hostname="$mac"
+    description="$(uci -q get fff.system.description)"
     if [ -n "$description" ]; then
         description="<description><![CDATA[$description]]></description>"
     fi
-    latitude="$(uci get system.@system[0].latitude)"
-    longitude="$(uci get system.@system[0].longitude)"
+    latitude="$(uci -q get fff.system.latitude)"
+    longitude="$(uci -q get fff.system.longitude)"
     if [ -n "$longitude" -a -n "$latitude" ]; then
         geo="<geo><lat>$latitude</lat><lng>$longitude</lng></geo>";
     fi
-    position_comment="$(uci get system.@system[0].position_comment)"
+    position_comment="$(uci -q get fff.system.position_comment)"
     if [ -n "$position_comment" ]; then
         position_comment="<position_comment><![CDATA[$position_comment]]></position_comment>"
     fi
-    contact="$(uci get system.@system[0].contact)"
+    contact="$(uci -q get fff.system.contact)"
     if [ -n "$contact" ]; then
         contact="<contact>$contact</contact>"
     fi
@@ -137,10 +138,10 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"${geo}"
     SYSTEM_DATA=$SYSTEM_DATA"${position_comment}"
     SYSTEM_DATA=$SYSTEM_DATA"${contact}"
-    if [ "$(uci -q get "system.@system[0].hood")" ] 
-    then                                                                                                                         
-        SYSTEM_DATA=$SYSTEM_DATA"<hood>$(uci -q get "system.@system[0].hood")</hood>"                                            
-    fi  
+    if [ "$(uci -q get "system.@system[0].hood")" ]
+    then
+        SYSTEM_DATA=$SYSTEM_DATA"<hood>$(uci -q get "system.@system[0].hood")</hood>"
+    fi
     SYSTEM_DATA=$SYSTEM_DATA"<distname>$distname</distname>"
     SYSTEM_DATA=$SYSTEM_DATA"<distversion>$distversion</distversion>"
     SYSTEM_DATA=$SYSTEM_DATA"$cpu"

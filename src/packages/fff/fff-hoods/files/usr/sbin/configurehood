@@ -62,8 +62,8 @@ if [ -f "$hiddenapfile" ]; then
 	fi
 fi
 
-lat=$(uci -q get system.@system[0].latitude)
-long=$(uci -q get system.@system[0].longitude)
+lat=$(uci -q get fff.system.latitude)
+long=$(uci -q get fff.system.longitude)
 
 # if we have Internet, we download the Hoodfile from the keyxchangev2
 if hasInternet ; then
