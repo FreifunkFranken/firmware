@@ -9,7 +9,7 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 	regex=$regex'(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$'
 	if [ "${#POST_hostname}" -ge "255" ] ; then
 		MSG='<span class="red">Knotenname ist l&auml;nger als 255 Zeichen!</span>'
-        elif ! echo -n "$POST_hostname" | egrep -q "$regex"; then   
+		elif ! echo -n "$POST_hostname" | egrep -q "$regex"; then
 		MSG='<span class="red">Knotenname enth&auml;lt ung&uuml;ltige Zeichen!</span>'
 	else
 		# Allgemeine Einstellungen
@@ -33,10 +33,31 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 		fi
 		uci -q set "fff.trafficcontrol.limit_in=${POST_limit_ingress}"
 		uci -q set "fff.trafficcontrol.limit_out=${POST_limit_egress}"
-		
+
 		uci -q set "simple-tc.example.ifname=wan"
 		uci -q set "simple-tc.example.limit_ingress=${POST_limit_ingress}"
 		uci -q set "simple-tc.example.limit_egress=${POST_limit_egress}"
+
+		# Restliche Einstellungen
+		uci -q set "fff.notifyupdate=webui"
+		if [ "$POST_upgrade_notification" == "on" ] ; then
+			uci -q set "fff.notifyupdate.value=1"
+		else
+			uci -q set "fff.notifyupdate.value=0"
+			rm -f /tmp/fwcheck
+			rm -f /tmp/isupdate
+		fi
+
+		if uci -q get system.poe_passthrough > /dev/null ; then
+			uci -q set "fff.poe_passthrough=fff"
+			if [ "$POST_poe_passthrough" == "on" ] ; then
+				uci -q set "fff.poe_passthrough.active=1"
+				uci -q set "system.poe_passthrough.value=1"
+			else
+				uci -q set "fff.poe_passthrough.active=0"
+				uci -q set "system.poe_passthrough.value=0"
+			fi
+		fi
 
 		uci -q commit
 
@@ -48,10 +69,16 @@ fi
 <%in /www/ssl/cgi-bin/helpers %>
 <%
 # read
-if [ "$(uci -q get 'fff.trafficcontrol.enabled')" == "1" ] ; then
-	traffic_checked='checked="checked" '
+chkd='checked="checked" '
+if [ "$(uci -q get 'fff.trafficcontrol.enabled')" == "1" ] ; then # not set=0
+	traffic_checked="$chkd"
 else
 	traffic_checked=""
+fi
+if [ "$(uci -q get 'fff.notifyupdate.value')" == "0" ] ; then # not set=1
+	upgrade_checked=""
+else
+	upgrade_checked="$chkd"
 fi
 %>
 <% show_msg %>
@@ -74,8 +101,9 @@ fi
 		<tr><th>E-Mail Adresse:</th><td><input type="email" name="contact" value="<%= $(uci -q get 'fff.system.contact') %>" /></td></tr>
 	</table>
 </fieldset>
+<p><input type="submit" style="margin-top: 5px; margin-left: 3px;" /></p>
 </td><td>
-<fieldset style="min-height: 13em;" class="smallinput">
+<fieldset style="min-height: 7em;" class="smallinput">
 	<legend>Bitratenbegrenzung</legend>
 	<table>
 		<tr><th>Aktiviert:</th><td colspan="2">
@@ -85,8 +113,29 @@ fi
 		<tr><th>Freifunk&nbsp;Upload:</th><td><input type="text" name="limit_egress" value="<%= $(uci -q get 'fff.trafficcontrol.limit_out') %>" /></td><td>kbit/s</td></tr>
 	</table>
 </fieldset>
+<fieldset style="min-height: 8em;" class="smallinput">
+	<legend>Weitere Einstellungen</legend>
+	<table>
+		<tr><th>Show upgrade notification:</th><td colspan="2">
+			<input type="checkbox" name="upgrade_notification" <%= ${upgrade_checked} %>/>
+		</td></tr>
+		
+		<%
+		if uci -q get system.poe_passthrough > /dev/null ; then
+			if [ "$(uci -q get 'fff.poe_passthrough.active')" == "1" ] ; then # not set=0
+				poe_pt_checked="$chkd"
+			else
+				poe_pt_checked=""
+			fi
+		%>
+		<tr><th>Enable PoE passthrough:</th><td colspan="2">
+			<input type="checkbox" name="poe_passthrough" <%= ${poe_pt_checked} %>/>
+		</td></tr>
+		<% fi %>
+		
+	</table>
+</fieldset>
 </td></tr>
 </table>
-<p><input type="submit" style="margin-top: 5px; margin-left: 3px;" /></p>
 </form>
 <%in /www/ssl/cgi-bin/footer %>
