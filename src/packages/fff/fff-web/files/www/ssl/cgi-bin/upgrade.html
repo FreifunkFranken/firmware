@@ -32,17 +32,17 @@ fi
 <%in /www/ssl/cgi-bin/header %>
 <%in /www/ssl/cgi-bin/helpers %>
 <% show_msg %>
-<form method="POST" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
 <table style="width: 100%;">
 <tr><td>
 <fieldset style="min-height: 9em;">
 	<legend>Manuelles Upgrade</legend>
 	<table>
 		<tr><th style="width: 1em;">Firmware&nbsp;Image:</th><td><input type="file" name="firmware" /></td></tr>
-		<tr><th>Konfiguration&nbsp;erhalten:</th><td><input type="checkbox" name="keep_config" checked /></td></tr>
+		<tr><th>Konfiguration&nbsp;erhalten:</th><td><input type="checkbox" name="keep_config" checked="checked" /></td></tr>
 		<tr><td colspan="2"><input type="submit" name="upgrade" value="Upgrade" /></td></tr>
 		<tr><td colspan="2"></td></tr>
-		<tr><td colspan="2">Hier kann ein Freifunk- oder OpenWrt-Image verwendet werden (*-sysupgrade.bin).</td></tr>
+		<tr><td colspan="2" style="font-style:italic">Hier kann ein Freifunk- oder OpenWrt-/LEDE-Image verwendet werden (*-sysupgrade.bin).</td></tr>
 	</table>
 </fieldset>
 </td><td>
@@ -50,7 +50,7 @@ fi
 	<legend>Router zur&uuml;cksetzen</legend>
 	<table>
 		<tr><th style="width: 1em;">Wirklich&nbsp;zur&uuml;cksetzen:</th><td>
-			<input type="checkbox" name="really_reset">
+			<input type="checkbox" name="really_reset" />
 		</td></tr>
 		<tr><td colspan="2"><input type="submit" name="reset" value="Zur&uuml;cksetzen" /></td></tr>
 		<tr><td colspan="2"></td></tr>
