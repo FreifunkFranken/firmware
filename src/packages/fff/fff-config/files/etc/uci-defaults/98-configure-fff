@@ -23,3 +23,8 @@ uci -q set "simple-tc.example.limit_ingress=${traffic_in}"
 uci -q set "simple-tc.example.limit_egress=${traffic_out}"
 
 uci -q commit
+
+poe_passthrough=$(uci -q get "fff.poe_passthrough.active")
+if [ "$poe_passthrough" = "1" ] && [ -s /usr/lib/fff-support/activate_poe_passthrough.sh ] ; then
+	/usr/lib/fff-support/activate_poe_passthrough.sh
+fi

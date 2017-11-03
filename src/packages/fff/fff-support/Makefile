@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken Support Scripts
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+@BUSYBOX_CONFIG_ASH
+    DEPENDS:=+@BUSYBOX_CONFIG_ASH +fff-config
 endef
 
 define Package/$(PKG_NAME)/description
