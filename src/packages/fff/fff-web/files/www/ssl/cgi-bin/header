@@ -17,16 +17,16 @@ hood="$(uci -q get "system.@system[0].hood")"
 
 NOW=$(date +%s)
 #Check if new Firmware check older then 1 day
-if [ ! -s /tmp/fwcheck ] || [ "$(cat /tmp/fwcheck)" -lt "$NOW" ] ; then
-        rm -f /tmp/isupdate
-        NEXTUPDATE=$(($(date +%s)+86400))
-        echo $NEXTUPDATE > /tmp/fwcheck
-        /usr/bin/wget "${UPGRADE_PATH}/release.nfo" -P /tmp -T 2
-        VERSION=$(cat /tmp/release.nfo|awk -F: '/VERSION:/ { print $2 }')
-        rm -f /tmp/release.nfo
-        if [ "$VERSION" != "$FIRMWARE_VERSION" -a -n "$VERSION" ]; then
-                echo $VERSION > /tmp/isupdate
-        fi
+if ( [ ! -s /tmp/fwcheck ] || [ "$(cat /tmp/fwcheck)" -lt "$NOW" ] ) && [ ! "$(uci -q get fff.notifyupdate.value)" = "0" ] ; then
+	rm -f /tmp/isupdate
+	NEXTUPDATE=$(($(date +%s)+86400))
+	echo $NEXTUPDATE > /tmp/fwcheck
+	/usr/bin/wget "${UPGRADE_PATH}/release.nfo" -P /tmp -T 2
+	VERSION=$(cat /tmp/release.nfo|awk -F: '/VERSION:/ { print $2 }')
+	rm -f /tmp/release.nfo
+	if [ "$VERSION" != "$FIRMWARE_VERSION" -a -n "$VERSION" ]; then
+		echo $VERSION > /tmp/isupdate
+	fi
 fi
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -35,9 +35,9 @@ fi
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<title><%= ${HOSTNAME} %></title>
 	<link href="/style.css" rel="stylesheet" type="text/css" media="screen" />
-       <meta http-equiv="cache-control" content="no-cache" />
-       <meta http-equiv="pragma" content="no-cache" />
-       <meta http-equiv="expires" content="0" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
 </head>
 <body>
 	<div id="header" style="position: relative;">
