@@ -9,6 +9,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+. /lib/functions/fff/network
+
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
@@ -218,8 +220,7 @@ else
 
     prefix="fdff:0::/64"
     # Set $prefix::MAC as IP
-    suffix=$(awk -F: '{ print $1$2":"$3$4":"$5$6 }' /sys/class/net/br-mesh/address)
-    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    addr="$(ipMacAssemble "$prefix" "br-mesh")"
     ip -6 addr add $addr dev br-mesh
 
     uci -q del network.globals
@@ -229,14 +230,12 @@ else
     uci -q set network.mesh.proto=static
 
     # Set $prefix::1 as IP
-    suffix="1"
-    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    addr="$(ipAssemble "$prefix" "1")"
     ip -6 addr add $addr dev br-mesh
     uci -q add_list network.mesh.ip6addr=$addr
 
     # Set $prefix::link-local as IP
-    suffix=$(awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' /sys/class/net/br-mesh/address)
-    addr=$(echo $prefix | sed -e 's/\//'$suffix'\//')
+    addr="$(ipEUIAssemble "$prefix" "br-mesh")"
     ip -6 addr add $addr dev br-mesh
     uci -q add_list network.mesh.ip6addr=$addr
 

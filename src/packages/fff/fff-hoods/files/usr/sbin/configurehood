@@ -2,6 +2,7 @@
 
 . /usr/share/libubox/jshn.sh
 . /lib/functions/fff/keyxchange
+. /lib/functions/fff/network
 . /lib/functions/fff/wireless
 . /lib/functions/fff/timeserver
 
@@ -242,12 +243,10 @@ if [ -s "$hoodfile" ]; then
 	# Set $prefix::MAC as IP
 	if [ -n "$prefix" ] ; then
 		prefix="$(echo "$prefix" | sed -e 's,\\,,')"
-		suffix="$(awk -F: '{ print "0:"$1$2":"$3$4":"$5$6 }' /sys/class/net/br-mesh/address)"
-		suffix_eui="$(awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' /sys/class/net/br-mesh/address)"
-		addr="$(echo "$prefix" | sed -e 's,/,'$suffix'/,')"
-		echo $addr | grep -q "::" || addr="$(echo "$addr" | sed -e 's,:[0:]*:,::,')"
-		addr_eui="$(echo "$prefix" | sed -e 's,/,'$suffix_eui'/,')"
-		echo $addr_eui | grep -q "::" || addr_eui="$(echo "$addr_eui" | sed -e 's,:[0:]*:,::,')"
+		addr="$(ipMacAssemble "$prefix" "br-mesh")"
+		addr="$(ipTidyColon "$addr")"
+		addr_eui="$(ipEUIAssemble "$prefix" "br-mesh")"
+		addr_eui="$(ipTidyColon "$addr_eui")"
 		for ip in $(ip -6 addr show dev br-mesh | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
 			ip -6 addr del "$ip" dev br-mesh
 		done
