@@ -162,15 +162,15 @@ if [[ -n "$ETHMESHMAC" ]]; then
     then
         echo "MAC for ethmesh is set already"
     else
-        echo "Fixing MAC on eth0.3 (ethmesh)"
+        echo "Fixing MAC on $SWITCHDEV.3 (ethmesh)"
         sleep 10
 
         uci set network.ethmesh.macaddr=$ETHMESHMAC
         uci commit
 
-        ifconfig eth0.3 down
-        ifconfig eth0.3 hw ether $NEW_MACADDR
-        ifconfig eth0.3 up
+        ifconfig $SWITCHDEV.3 down
+        ifconfig $SWITCHDEV.3 hw ether $NEW_MACADDR
+        ifconfig $SWITCHDEV.3 up
         /etc/init.d/network restart
     fi
 fi
