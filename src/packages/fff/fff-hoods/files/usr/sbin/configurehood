@@ -227,7 +227,7 @@ if [ -s "$hoodfile" ]; then
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
 		cp "$hoodfile" "$hoodfilecopy"
-		cp "$sectortmp" "$sectorcopy"
+		[ -s "$sectortmp" ] && cp "$sectortmp" "$sectorcopy"
 
 	else
 		echo "We have no new file. We do nothing. We try it again in 5 minutes...";
