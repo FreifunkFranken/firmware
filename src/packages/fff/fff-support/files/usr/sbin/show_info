@@ -1,10 +1,12 @@
 #!/bin/sh
 
 . /etc/firmware_release
+. /lib/functions/fff/evalhoodinfo
 
 board_name=$(uci -q get board.model.name)
 
 HOSTNAME=$(uci -q get 'system.@system[0].hostname')
+hood="$(uci -q get "system.@system[0].hood")"
 
 human_bytes() {
 	while read B ; do
@@ -112,6 +114,18 @@ echo "VPN via L2TP: ${l2tp_active}"
 echo "Laufzeit: ${uptime}"
 echo "Auslastung: ${load}"
 echo "Uhrzeit: $(date)"
+
+echo ""
+echo "-> HOOD"
+echo "Hood: ${hood}"
+echo "Mesh-Type (2.4/5 GHz): ${mesh_type2} / ${mesh_type5}"
+echo "Channel (2.4/5 GHz): ${real_chan2ghz} / ${real_chan5ghz} (real) | ${chan2ghz} / ${chan5ghz} (Hood)"
+echo "SSID (Client-AP): ${real_essid} (real) | ${essid} (Hood)"
+if uci -q get wireless.w2configap > /dev/null ; then
+	echo "Config-AP: up"
+else
+	echo "Config-AP: down"
+fi
 
 echo ""
 echo "-> SOFTWARE"
