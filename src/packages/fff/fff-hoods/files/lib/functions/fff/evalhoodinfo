@@ -1,0 +1,36 @@
+#!/bin/sh
+# Copyright 2017 Adrian Schmutzler
+# License GPLv3
+
+. /lib/functions/fff/keyxchange
+
+jsonfile="$(getJsonPath)"
+if [ -n "$jsonfile" ] ; then
+	json_load "$(cat "$jsonfile")"
+	json_select hood
+	json_get_var mesh_type2 mesh_type2
+	json_get_var mesh_type5 mesh_type5
+	json_get_var chan2ghz channel2
+	json_get_var chan5ghz channel5
+	json_get_var essid essid
+else
+	mesh_type2="-"
+	mesh_type5="-"
+	chan2ghz="-"
+	chan5ghz="-"
+	essid="-"
+fi
+
+real_chan2ghz="--"
+real_chan5ghz="--"
+real_essid="-"
+if uci -q get wireless.w2ap > /dev/null ; then
+	radio2="$(uci -q get wireless.w2ap.device)"
+	real_chan2ghz="$(uci -q get "wireless.${radio2}.channel")"
+	real_essid="$(uci -q get wireless.w2ap.ssid)"
+fi
+if uci -q get wireless.w5ap > /dev/null ; then
+	radio5="$(uci -q get wireless.w5ap.device)"
+	real_chan5ghz="$(uci -q get "wireless.${radio5}.channel")"
+	real_essid="$(uci -q get wireless.w5ap.ssid)"
+fi

@@ -1,7 +1,8 @@
 #!/usr/bin/haserl
 
 <%
-. /lib/functions/fff/keyxchange
+# read from keyxchangev2data
+. /lib/functions/fff/evalhoodinfo
 
 # prepare
 if [ "$REQUEST_METHOD" == "POST" ] ; then
@@ -49,23 +50,10 @@ else
 	internet_active="Nein"
 fi
 
-# read from keyxchangev2data
-. /lib/functions/fff/keyxchange
-jsonfile="$(getJsonPath)"
-if [ -n "$jsonfile" ] ; then
-	json_load "$(cat "$jsonfile")"
-	json_select hood
-	json_get_var mesh_type2 mesh_type2
-	json_get_var mesh_type5 mesh_type5
-else
-	mesh_type2="-"
-	mesh_type5="-"
-fi
-
 %>
 <table style="width: 100%;">
 <tr><td>
-<fieldset style="min-height: 15.05em;">
+<fieldset style="padding-bottom:12px">
 	<legend>System</legend>
 	<table>
 		<tr><th>Name:</th><td><%= ${HOSTNAME} %></td></tr>
@@ -80,32 +68,7 @@ fi
 		<tr><th>Uhrzeit:</th><td><% date %></td></tr>
 	</table>
 </fieldset>
-</td><td>
-<fieldset style="min-height: 10em;">
-	<legend>Software</legend>
-	<table>
-		<tr><th>Firmware Version:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
-		<tr><th>OpenWrt Version:</th><td><%= ${DISTRIB_DESCRIPTION} %></td></tr>
-		<tr><th>Kernel Version:</th><td><% uname -s -m -r %></td></tr>
-		<tr><th>Batman-Adv Version:</th><td><% cat /sys/module/batman_adv/version 2>/dev/null %></td></tr>
-		<tr><th>Fastd Version:</th><td><% fastd --version 2> /dev/null | cut -d' ' -f 2 %></td></tr>
-	</table>
-</fieldset>
-<form method="post">
-<fieldset style="min-height: 5em;">
-	<legend>Hood</legend>
-	<table>
-		<tr><th style="width:200px">Hood:</th><td><% echo "$hood" %></td></tr>
-		<tr><th style="width:200px">Mesh-Type (2.4/5 GHz):</th><td><% echo "${mesh_type2} / ${mesh_type5}" %></td></tr>
-		<tr><td colspan="2">&nbsp;</td></tr>
-		<tr><td colspan="2">Beim Klicken werden die Hood-Daten innerhalb von 5 Minuten neu abgerufen und angewandt:</td></tr>
-		<tr><td colspan="2"><input type="submit" name="resethood" value="Reset hood data" /></td></tr>
-	</table>
-</fieldset>
-</form>
-</td></tr>
-<tr><td>
-<fieldset style="min-height: 12.65em;">
+<fieldset style="padding-bottom:12px">
 	<legend>Netz: Freifunk</legend>
 	<table>
 		<tr><th>Nutzer:</th><td><% cat /sys/kernel/debug/batman_adv/bat0/transtable_local 2> /dev/null | grep -c 'W' %></td></tr>
@@ -116,7 +79,31 @@ fi
 	</table>
 </fieldset>
 </td><td>
-<fieldset style="min-height: 12.65em;">
+<fieldset style="padding-bottom:12px">
+	<legend>Software</legend>
+	<table>
+		<tr><th>Firmware Version:</th><td><%= ${FIRMWARE_VERSION} %></td></tr>
+		<tr><th>OpenWrt Version:</th><td><%= ${DISTRIB_DESCRIPTION} %></td></tr>
+		<tr><th>Kernel Version:</th><td><% uname -s -m -r %></td></tr>
+		<tr><th>Batman-Adv Version:</th><td><% cat /sys/module/batman_adv/version 2>/dev/null %></td></tr>
+		<tr><th>Fastd Version:</th><td><% fastd --version 2> /dev/null | cut -d' ' -f 2 %></td></tr>
+	</table>
+</fieldset>
+<form method="post">
+<fieldset style="padding-bottom:12px">
+	<legend>Hood</legend>
+	<table>
+		<tr><th style="width:200px">Hood:</th><td><% echo "$hood" %></td></tr>
+		<tr><th style="width:200px">Mesh-Type (2.4/5 GHz):</th><td><% echo "${mesh_type2} / ${mesh_type5}" %></td></tr>
+		<tr><th style="width:200px">Channel (2.4/5 GHz):</th><td>Ger&auml;t: <% echo "${real_chan2ghz} / ${real_chan5ghz}" %> | Hood:  <% echo "${chan2ghz} / ${chan5ghz}" %></td></tr>
+		<tr><th style="width:200px">SSID (Client-AP):</th><td>Ger&auml;t: <% echo "${real_essid}" %> | Hood:  <% echo "${essid}" %></td></tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
+		<tr><td colspan="2">Beim Klicken werden die Hood-Daten innerhalb von 5 Minuten neu abgerufen und angewandt:</td></tr>
+		<tr><td colspan="2"><input type="submit" name="resethood" value="Reset hood data" /></td></tr>
+	</table>
+</fieldset>
+</form>
+<fieldset style="padding-bottom:12px">
 	<legend>Netz: WAN</legend>
 	<table>
 		<tr><th>Internet vorhanden:</th><td><%= ${internet_active} %></td></tr>
