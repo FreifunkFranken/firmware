@@ -4,4 +4,4 @@ CLIENT_PORTS="0t 1 2"
 WAN_PORTS=
 BATMAN_PORTS="0t 3 4"
 
-ROUTERMAC=$(cat /sys/class/net/w2mesh/address)
+ROUTERMAC=$(cat /sys/class/ieee80211/phy0/macaddress)

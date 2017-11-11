@@ -7,4 +7,4 @@ ONE_PORT="YES"
 
 . /etc/network.mode
 
-ROUTERMAC=$(cat /sys/class/net/w2mesh/address)
+ROUTERMAC=$(cat /sys/class/ieee80211/phy0/macaddress)

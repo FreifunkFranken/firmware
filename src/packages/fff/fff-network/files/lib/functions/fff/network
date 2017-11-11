@@ -85,3 +85,14 @@ ipTidyColon() {
 	echo "$addr"
 	return 0
 }
+
+macFlipLocalBit() {
+	# Returns given MAC-address with locally administered bit flipped
+	#
+	# Argument: MAC-address
+
+	local mac=$1
+
+	echo "$mac" | awk -F: '{ printf("%02x:%s:%s:%s:%s:%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }'
+	return 0
+}
