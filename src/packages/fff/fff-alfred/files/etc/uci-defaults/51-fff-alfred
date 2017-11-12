@@ -1,0 +1,12 @@
+#!/bin/sh
+
+>/etc/config/alfred
+
+uci batch <<EOF
+  set alfred.alfred=alfred
+  set alfred.alfred.interface='br-mesh'
+  set alfred.alfred.mode='slave'
+  set alfred.alfred.batmanif='bat0'
+  set alfred.alfred.start_vis='0'
+  set alfred.alfred.run_facters='0'
+EOF

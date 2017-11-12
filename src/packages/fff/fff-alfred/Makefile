@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=fff-nodewatcher
-PKG_VERSION:=41
-PKG_RELEASE:=2
+PKG_NAME:=fff-alfred
+PKG_VERSION:=1
+PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -11,28 +11,26 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken Nodewatcher
+    TITLE:=Freifunk-Franken Alfred
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-alfred +micrond +fff-random +ip +ip-bridge
+    DEPENDS:=+alfred
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the Nodewatcher for the Freifunk Franken Firmware
-    It is used to send node status information to
-    monitoring.freifunk-franken.de and
-    netmon.freifunk-franken.de
+    This is the Freifunk Franken Firmware Alfred package.
+    This packages configures the Alfred on the device.
 endef
 
 define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
+    echo "all: " > $(PKG_BUILD_DIR)/Makefile
 endef
 
 define Build/Configure
-	# nothing
+    # nothing
 endef
 
 define Build/Compile
-	# nothing
+    # nothing
 endef
 
 define Package/$(PKG_NAME)/install
