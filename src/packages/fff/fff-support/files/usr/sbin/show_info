@@ -2,24 +2,13 @@
 
 . /etc/firmware_release
 . /lib/functions/fff/evalhoodinfo
+. /lib/functions/fff/evalbytes
 
 board_name=$(uci -q get board.model.name)
 
 HOSTNAME=$(uci -q get 'fff.system.hostname')
 hood="$(uci -q get "system.@system[0].hood")"
 
-human_bytes() {
-	while read B ; do
-		[ $B -lt 1024 ] && echo ${B} B && break
-		KB=$(((B+512)/1024))
-		[ $KB -lt 1024 ] && echo ${KB} KB && break
-		MB=$(((KB+512)/1024))
-		[ $MB -lt 1024 ] && echo ${MB} MB && break
-		GB=$(((MB+512)/1024))
-		[ $GB -lt 1024 ] && echo ${GB} GB && break
-		echo $(((GB+512)/1024)) TB
-	done
-}
 format_state() {
 	batmanports=$(swconfig dev switch0 vlan 3 show | grep 'ports:')
 	clientports=$(swconfig dev switch0 vlan 1 show | grep 'ports:')
