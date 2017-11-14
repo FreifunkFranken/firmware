@@ -1,0 +1,33 @@
+From 4a451ac5b17b1a7e8ce3d094067df7e21e61927d Mon Sep 17 00:00:00 2001
+From: Robert Langhammer <rlanghammer@web.de>
+Date: Mon, 13 Nov 2017 21:04:55 +0100
+Subject: [PATCH] fastd_generate_key_from_urandom
+
+---
+ net/fastd/patches/001-generate_key_from_urandom.patch | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+ create mode 100644 net/fastd/patches/001-generate_key_from_urandom.patch
+
+diff --git a/net/fastd/patches/001-generate_key_from_urandom.patch b/net/fastd/patches/001-generate_key_from_urandom.patch
+new file mode 100644
+index 00000000..47280e52
+--- /dev/null
++++ b/net/fastd/patches/001-generate_key_from_urandom.patch
+@@ -0,0 +1,14 @@
++--- a/src/protocols/ec25519_fhmqvc/util.c
+++++ b/src/protocols/ec25519_fhmqvc/util.c
++@@ -47,9 +47,9 @@ void fastd_protocol_ec25519_fhmqvc_gener
++ 	ecc_int256_t public_key;
++
++ 	if (!conf.machine_readable)
++-		pr_info("Reading 32 bytes from /dev/random...");
+++		pr_info("Reading 32 bytes from /dev/urandom...");
++
++-	fastd_random_bytes(secret_key.p, SECRETKEYBYTES, true);
+++	fastd_random_bytes(secret_key.p, SECRETKEYBYTES, false);
++ 	ecc_25519_gf_sanitize_secret(&secret_key, &secret_key);
++
++ 	ecc_25519_work_t work;
+--
+2.11.0
+

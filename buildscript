@@ -23,7 +23,8 @@ PACKAGEURL="https://git.lede-project.org/feed/packages.git"
 #official openwrt packages
 OPENWRT=(openwrt
          $PACKAGEURL
-         $PACKAGEREV)
+         $PACKAGEREV
+         fastd/0020-fastd_generate_key_from_urandom.patch)
 OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 
 ## Be careful: FFF uses COMPAT_VERSION 15 as default at the moment.
