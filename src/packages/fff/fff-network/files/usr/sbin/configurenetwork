@@ -169,7 +169,7 @@ if [[ -n "$ETHMESHMAC" ]]; then
         uci commit
 
         ifconfig $SWITCHDEV.3 down
-        ifconfig $SWITCHDEV.3 hw ether $NEW_MACADDR
+        ifconfig $SWITCHDEV.3 hw ether $ETHMESHMAC
         ifconfig $SWITCHDEV.3 up
         /etc/init.d/network restart
     fi
@@ -187,7 +187,7 @@ if [[ -n "$ROUTERMAC" ]]; then
         uci commit
 
         ifconfig br-mesh down
-        ifconfig br-mesh hw ether $NEW_MACADDR
+        ifconfig br-mesh hw ether $ROUTERMAC
         ifconfig br-mesh up
         /etc/init.d/network restart
     fi
