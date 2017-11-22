@@ -41,6 +41,9 @@ case "$BOARD" in
     loco-m-xw)
         BOARD=ubnt-loco-m-xw
         ;;
+    unifiac-lite)
+        BOARD=ubnt-unifiac-lite
+        ;;
     tl-wa850re)
         BOARD=tl-wa850re-v1
         ;;

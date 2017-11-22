@@ -1,0 +1,13 @@
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS=""
+WAN_PORTS=""
+BATMAN_PORTS=""
+ONE_PORT="YES"
+
+. /etc/network.mode
+. /lib/functions/system.sh
+. /lib/functions/uci-defaults.sh
+. /lib/ar71xx.sh
+
+ROUTERMAC=$(mtd_get_mac_binary EEPROM 0x0)
