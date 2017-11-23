@@ -118,7 +118,7 @@ if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
         uci set network.wan.ifname=$WANDEV
     fi
 
-    uci commit
+    uci commit network
 fi
 
 if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FORCEPARSE" = '1' ] ) ; then
@@ -152,7 +152,7 @@ if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FO
         uci set network.ethmesh.ifname="$SWITCHDEV"
         ETH0MAC="w2ap"
     fi
-    uci commit
+    uci commit network
 fi
 
 /etc/init.d/network restart
@@ -166,7 +166,7 @@ if [[ -n "$ETHMESHMAC" ]]; then
         sleep 10
 
         uci set network.ethmesh.macaddr=$ETHMESHMAC
-        uci commit
+        uci commit network
 
         ifconfig $SWITCHDEV.3 down
         ifconfig $SWITCHDEV.3 hw ether $ETHMESHMAC
@@ -184,7 +184,7 @@ if [[ -n "$ROUTERMAC" ]]; then
         sleep 10
 
         uci set network.mesh.macaddr=$ROUTERMAC
-        uci commit
+        uci commit network
 
         ifconfig br-mesh down
         ifconfig br-mesh hw ether $ROUTERMAC
@@ -198,7 +198,7 @@ if [[ -n "$ETH0MAC" ]]; then
         sleep 10
         NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
         uci set network.eth0.macaddr=$NEW_MACADDR
-        uci commit
+        uci commit network
         ifconfig eth0 down
         ifconfig eth0 hw ether $NEW_MACADDR
         ifconfig eth0 up
