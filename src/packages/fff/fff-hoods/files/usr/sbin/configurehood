@@ -81,6 +81,8 @@ else
 		rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
 		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
 		rm -f "$sectortmp"
+		
+		sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
 		if ! wifiDelIface; then
 			echo "Can't delete current wifi setup"
