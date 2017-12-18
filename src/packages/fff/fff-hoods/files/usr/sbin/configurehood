@@ -10,6 +10,7 @@ sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
 sectorcopy=/www/hood/sectorfile
 hiddenapfile=/tmp/hiddenapflag
+resetnetworkfile=/tmp/resetnetwork
 
 rm -f "$hoodfile"
 
@@ -64,6 +65,12 @@ fi
 
 lat=$(uci -q get fff.system.latitude)
 long=$(uci -q get fff.system.longitude)
+
+# reenable network interfaces in case we disabled them earlier
+if [ -f "$resetnetworkfile" ]; then
+	/etc/init.d/network restart
+	rm "$resetnetworkfile"
+fi
 
 # if we have Internet, we download the Hoodfile from the keyxchangev2
 if hasInternet ; then
@@ -121,7 +128,35 @@ else
 		fi
 	else
 		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-		wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
+		# check eth first
+		oldhood=""
+		ethfile="${hoodfile}eth"
+		for eth in $(batctl if | grep "eth" | sed -nE 's/.*(eth[^:]+):.*/\1/p'); do
+			for mac in $(batctl n | grep "$eth" | sed -nE 's/.*eth[0-9.]+\s+([^\s]+)\s.*/\1/p'); do
+				EUI="$(echo "$mac" | awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }')"
+				wget -T2 -t3 "http://[fe80::${EUI}%${eth}]:2342/keyxchangev2data" -O "$ethfile"
+				if [ -s "$ethfile" ]; then
+					json_load "$(cat "$ethfile")"
+					json_select hood
+					json_get_var newhood name
+					if [ -n "$oldhood" ] && [ -n "$newhood" ] && ( ! [ "$newhood" = "$oldhood" ] ) ; then
+						# 2nd hood found, kill interface and go on (next try in 5 min.)
+						echo "Two hoods detected. Remove cables to stay in just one."
+						ifconfig "$eth" down
+						touch "$resetnetworkfile"
+						continue 2 # go to the next interface
+					fi
+					mv "$ethfile" "$hoodfile" # Only use hoodfile if sane
+					[ -n "$oldhood" ] || oldhood="$newhood" # only set oldhood once
+				fi
+			done
+		done
+		if [ ! -s "$hoodfile" ]; then
+			# Only load hoodfile from gateway if not already present from local network
+			# - This gives local network a precedence (take the hood from local network)
+			# - This prevents file insertion from a third person, as I will only connect via LAN to who I trust
+			wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
+		fi
 		#UPLINK: Do nothing
 	fi
 fi
