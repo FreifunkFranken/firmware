@@ -266,6 +266,8 @@ if [ -s "$hoodfile" ]; then
 		cp "$hoodfile" "$hoodfilecopy"
 		[ -s "$sectortmp" ] && cp "$sectortmp" "$sectorcopy"
 
+		# This is a workaround to enable alfred on devices which do not see a configap during initial setup
+		/etc/init.d/alfred restart
 	else
 		echo "We have no new file. We do nothing. We try it again in 5 minutes...";
 	fi
