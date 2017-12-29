@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="43"
+SCRIPT_VERSION="44"
 
 test -f /tmp/started || exit
 
@@ -30,7 +30,7 @@ else
     }
 fi
 
-#this method checks id the logfile has bekome too big and deletes the first X lines
+#This method checks if the log file has become too big and deletes the first X lines
 delete_log() {
     if [ -f "$SCRIPT_LOGFILE" ]; then
         if [ "$(find "$SCRIPT_LOGFILE" -printf "%s")" -gt "6000" ]; then
@@ -50,7 +50,7 @@ inArray() {
     return 1
 }
 
-#this method generates the crawl data xml file that is beeing fetched by netmon
+#This method generates the crawl data XML file that is being fetched by netmon
 #and provided by a small local httpd
 crawl() {
     #Get system data from other locations
@@ -199,7 +199,16 @@ crawl() {
             /ESSID/ { split($0, e, "\""); printf "<wlan_essid>"e[2]"</wlan_essid>" }
             /Freq/{ split($3, f, " "); printf "<wlan_frequency>"f[1]f[2]"</wlan_frequency>" }
             /Tx-Power/{ split($0, p, "="); sub(/[[:space:]]*$/, "", p[2]); printf "<wlan_tx_power>"p[2]"</wlan_tx_power>" }
-        ')"</$iface>"
+        ')
+
+        interface_data=$interface_data$(iw dev "${iface}" info 2>/dev/null | awk '
+            /ssid/{ split($0, s, " "); printf "<wlan_ssid>"s[2]"</wlan_ssid>" }
+            /type/ { split($0, t, " "); printf "<wlan_type>"t[2]"</wlan_type>" }
+            /channel/{ split($0, c, " "); printf "<wlan_channel>"c[2]"</wlan_channel>" }
+            /width/{ split($0, w, ": "); sub(/ .*/, "", w[2]); printf "<wlan_width>"w[2]"</wlan_width>" }
+        ')
+
+        interface_data=$interface_data"</$iface>"
     done
 
     err "$(date): Collecting information from batman advanced and its interfaces"
