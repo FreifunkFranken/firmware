@@ -288,9 +288,10 @@ if [ -s "$hoodfile" ]; then
 	# Set $prefix::MAC as IP
 	if [ -n "$prefix" ] ; then
 		prefix="$(echo "$prefix" | sed -e 's,\\,,')"
-		addr="$(ipMacAssemble "$prefix" "br-mesh")"
+		mac="$(cat "/sys/class/net/br-mesh/address")"
+		addr="$(ipMacAssemble "$prefix" "$mac")"
 		addr="$(ipTidyColon "$addr")"
-		addr_eui="$(ipEUIAssemble "$prefix" "br-mesh")"
+		addr_eui="$(ipEUIAssemble "$prefix" "$mac")"
 		addr_eui="$(ipTidyColon "$addr_eui")"
 		for ip in $(ip -6 addr show dev br-mesh | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
 			ip -6 addr del "$ip" dev br-mesh

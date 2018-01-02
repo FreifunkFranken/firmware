@@ -4,29 +4,29 @@
 
 ipMacSuffix() {
 	# Returns the lower 64 bits of an IPv6 address (0:aabb:ccdd:eeff)
-	# based on the mac address (aa:bb:cc:bb:ee:ff) of a specified interface
+	# based on the provided MAC address (aa:bb:cc:bb:ee:ff)
 	#
-	# Argument: name of interface (e.g. br-mesh)
+	# Argument: MAC address (with colons)
 
 	[ $# -ne "1" ] && return 1
 
-	local iface=$1
+	local mac=$1
 
-	awk -F: '{ print "0:"$1$2":"$3$4":"$5$6 }' "/sys/class/net/${iface}/address"
+	echo "$mac" | awk -F: '{ print "0:"$1$2":"$3$4":"$5$6 }'
 	return 0
 }
 
 ipEUISuffix() {
 	# Returns the EUI (interface ID, a8bb:ccff:fedd:eeff)
-	# based on the mac address (aa:bb:cc:bb:ee:ff) of a specified interface
+	# based on the provided MAC address (aa:bb:cc:bb:ee:ff)
 	#
-	# Argument: name of interface (e.g. br-mesh)
+	# Argument: MAC address (with colons)
 
 	[ $# -ne "1" ] && return 1
 
-	local iface=$1
+	local mac=$1
 
-	awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }' "/sys/class/net/${iface}/address"
+	echo "$mac" | awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }'
 	return 0
 }
 
@@ -45,29 +45,29 @@ ipAssemble() {
 }
 
 ipMacAssemble() {
-	# Concatenates a prefix (1st argument) and a MAC-based suffix (interface as 2nd argument) to a merged IPv6 address
+	# Concatenates a prefix (1st argument) and a MAC-based suffix (MAC address as 2nd argument) to a merged IPv6 address
 	# (Details on prefix: Check ipAssemble(), details on suffix: Check ipMacSuffix())
 
 	[ $# -ne "2" ] && return 1
 
 	local prefix=$1
-	local iface=$2
+	local mac=$2
 
-	suffix="$(ipMacSuffix "$iface")"
+	suffix="$(ipMacSuffix "$mac")"
 	ipAssemble "$prefix" "$suffix"
 	return 0
 }
 
 ipEUIAssemble() {
-	# Concatenates a prefix (1st argument) and an EUI-based suffix (interface as 2nd argument) to a merged IPv6 address
+	# Concatenates a prefix (1st argument) and an EUI-based suffix (MAC address as 2nd argument) to a merged IPv6 address
 	# (Details on prefix: Check ipAssemble(), details on suffix: Check ipEUISuffix())
 
 	[ $# -ne "2" ] && return 1
 
 	local prefix=$1
-	local iface=$2
+	local mac=$2
 
-	suffix="$(ipEUISuffix "$iface")"
+	suffix="$(ipEUISuffix "$mac")"
 	ipAssemble "$prefix" "$suffix"
 	return 0
 }
