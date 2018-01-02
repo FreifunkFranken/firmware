@@ -9,4 +9,5 @@ cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/dropbear/authorized_keys
 /etc/network.config
 /etc/config/fff
+/etc/hoodfile
 __EOF__

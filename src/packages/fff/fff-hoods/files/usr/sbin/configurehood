@@ -11,6 +11,7 @@ sectortmp=/tmp/sectorfile
 sectorcopy=/www/hood/sectorfile
 hiddenapfile=/tmp/hiddenapflag
 resetnetworkfile=/tmp/resetnetwork
+hoodlocal=/etc/hoodfile
 
 rm -f "$hoodfile"
 
@@ -72,92 +73,97 @@ if [ -f "$resetnetworkfile" ]; then
 	rm "$resetnetworkfile"
 fi
 
-# if we have Internet, we download the Hoodfile from the keyxchangev2
-if hasInternet ; then
-	wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O "$hoodfile"
-	rm -f "$sectortmp"
-	[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
-	#UPLINK: No uplink download if internet present
-	#if no Internet, we connect to the hidden AP and download the file from another Node in range
+if [ -s "$hoodlocal" ]; then
+	hoodfile="$hoodlocal"
+	echo "Use local hood file"
 else
-	# connect to wireless hidden ap here and download the json File from the nearest router
-	# Only do that, when we have no gateway in range. If the Uplinkrouter changed the hood, we lost the GW and do this automatically again, I think! Nice idea?
-	if ! isGatewayAvailable ; then
-		#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
-		#first we delete all wifi settings
-		rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
-		rm -f "$sectorcopy" # always delete: no broadcast for isolated device
+	# if we have Internet, we download the Hoodfile from the keyxchangev2
+	if hasInternet ; then
+		wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O "$hoodfile"
 		rm -f "$sectortmp"
-		
-		sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
-
-		if ! wifiDelIface; then
-			echo "Can't delete current wifi setup"
-			exit 1
-		fi
-		#now we look for phy and add this
-		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-			radio="$(wifiAddPhyCond "$phy" "2" "auto")"
-			radio5="$(wifiAddPhyCond "$phy" "5" "auto5")"
-			if [ -n "$radio5" ] ; then
-				radio="$radio5"
-				staiface="w5sta"
-			else
-				staiface="w2sta"
-			fi
-
-			#and here we add the station
-			if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta" "$staiface" ; then
-				echo "Can't add Sta interface on $radio."
-				exit 1
-			else
-				uci -q set network.configSta=interface
-				uci -q set network.configSta.proto='static'
-				uci -q commit network
-			fi
-		done
-		
-		wifi
-		# wait a moment to start the interface
-		sleep 10;
-		# and here we can download the Hoodfile from the other node
-		wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/keyxchangev2data" -O "$hoodfile"
-		#UPLINK: Set up uplink data on first contact:
-		if [ -s /tmp/keyxchangev2data ]; then
-			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/sectorfile" -O "$sectortmp"
-		fi
+		[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
+		#UPLINK: No uplink download if internet present
+		#if no Internet, we connect to the hidden AP and download the file from another Node in range
 	else
-		echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-		# check eth first
-		oldhood=""
-		ethfile="${hoodfile}eth"
-		for eth in $(batctl if | grep "eth" | sed -nE 's/.*(eth[^:]+):.*/\1/p'); do
-			for mac in $(batctl n | grep "$eth" | sed -nE 's/.*eth[0-9.]+\s+([^\s]+)\s.*/\1/p'); do
-				EUI="$(echo "$mac" | awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }')"
-				wget -T2 -t3 "http://[fe80::${EUI}%${eth}]:2342/keyxchangev2data" -O "$ethfile"
-				if [ -s "$ethfile" ]; then
-					json_load "$(cat "$ethfile")"
-					json_select hood
-					json_get_var newhood name
-					if [ -n "$oldhood" ] && [ -n "$newhood" ] && ( ! [ "$newhood" = "$oldhood" ] ) ; then
-						# 2nd hood found, kill interface and go on (next try in 5 min.)
-						echo "Two hoods detected. Remove cables to stay in just one."
-						ifconfig "$eth" down
-						touch "$resetnetworkfile"
-						continue 2 # go to the next interface
-					fi
-					mv "$ethfile" "$hoodfile" # Only use hoodfile if sane
-					[ -n "$oldhood" ] || oldhood="$newhood" # only set oldhood once
+		# connect to wireless hidden ap here and download the json File from the nearest router
+		# Only do that, when we have no gateway in range. If the Uplinkrouter changed the hood, we lost the GW and do this automatically again, I think! Nice idea?
+		if ! isGatewayAvailable ; then
+			#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
+			#first we delete all wifi settings
+			rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+			rm -f "$sectorcopy" # always delete: no broadcast for isolated device
+			rm -f "$sectortmp"
+		
+			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
+
+			if ! wifiDelIface; then
+				echo "Can't delete current wifi setup"
+				exit 1
+			fi
+			#now we look for phy and add this
+			for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+				radio="$(wifiAddPhyCond "$phy" "2" "auto")"
+				radio5="$(wifiAddPhyCond "$phy" "5" "auto5")"
+				if [ -n "$radio5" ] ; then
+					radio="$radio5"
+					staiface="w5sta"
+				else
+					staiface="w2sta"
+				fi
+
+				#and here we add the station
+				if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta" "$staiface" ; then
+					echo "Can't add Sta interface on $radio."
+					exit 1
+				else
+					uci -q set network.configSta=interface
+					uci -q set network.configSta.proto='static'
+					uci -q commit network
 				fi
 			done
-		done
-		if [ ! -s "$hoodfile" ]; then
-			# Only load hoodfile from gateway if not already present from local network
-			# - This gives local network a precedence (take the hood from local network)
-			# - This prevents file insertion from a third person, as I will only connect via LAN to who I trust
-			wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
+		
+			wifi
+			# wait a moment to start the interface
+			sleep 10;
+			# and here we can download the Hoodfile from the other node
+			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/keyxchangev2data" -O "$hoodfile"
+			#UPLINK: Set up uplink data on first contact:
+			if [ -s /tmp/keyxchangev2data ]; then
+				wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/sectorfile" -O "$sectortmp"
+			fi
+		else
+			echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
+			# check eth first
+			oldhood=""
+			ethfile="${hoodfile}eth"
+			for eth in $(batctl if | grep "eth" | sed -nE 's/.*(eth[^:]+):.*/\1/p'); do
+				for mac in $(batctl n | grep "$eth" | sed -nE 's/.*eth[0-9.]+\s+([^\s]+)\s.*/\1/p'); do
+					EUI="$(echo "$mac" | awk -F: '{ printf("%02x%s:%sff:fe%s:%s%s\n", xor(("0x"$1),2), $2, $3, $4, $5, $6) }')"
+					wget -T2 -t3 "http://[fe80::${EUI}%${eth}]:2342/keyxchangev2data" -O "$ethfile"
+					if [ -s "$ethfile" ]; then
+						json_load "$(cat "$ethfile")"
+						json_select hood
+						json_get_var newhood name
+						if [ -n "$oldhood" ] && [ -n "$newhood" ] && ( ! [ "$newhood" = "$oldhood" ] ) ; then
+							# 2nd hood found, kill interface and go on (next try in 5 min.)
+							echo "Two hoods detected. Remove cables to stay in just one."
+							ifconfig "$eth" down
+							touch "$resetnetworkfile"
+							continue 2 # go to the next interface
+						fi
+						mv "$ethfile" "$hoodfile" # Only use hoodfile if sane
+						[ -n "$oldhood" ] || oldhood="$newhood" # only set oldhood once
+					fi
+				done
+			done
+			if [ ! -s "$hoodfile" ]; then
+				# Only load hoodfile from gateway if not already present from local network
+				# - This gives local network a precedence (take the hood from local network)
+				# - This prevents file insertion from a third person, as I will only connect via LAN to who I trust
+				wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
+			fi
+			#UPLINK: Do nothing
 		fi
-		#UPLINK: Do nothing
 	fi
 fi
 
