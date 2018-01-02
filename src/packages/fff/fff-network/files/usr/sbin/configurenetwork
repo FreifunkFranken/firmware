@@ -11,12 +11,30 @@
 
 . /lib/functions/fff/network
 
+setupPorts() {
+    # Add a single port to the *_PORTS config
+    # Usage: setupPorts <port id> <port mode>
+
+    local port=$1
+    local mode=$2
+
+    #default: BATMAN
+    if [ "$mode" = "WAN" ] ; then
+        WAN_PORTS="${WAN_PORTS} $port"
+    elif [ "$mode" = "CLIENT" ] ; then
+        CLIENT_PORTS="${CLIENT_PORTS} $port"
+    else
+        BATMAN_PORTS="${BATMAN_PORTS} $port"
+    fi
+}
+
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
 if [ -s /etc/network.config ] ; then
     . /etc/network.config
 else
+    # Write network.config
     echo "CLIENT_PORTS='$CLIENT_PORTS'" > /etc/network.config
     echo "BATMAN_PORTS='$BATMAN_PORTS'" >> /etc/network.config
     if [ -n "$WAN_PORTS" ] ; then
@@ -42,31 +60,15 @@ fi
 
 if [ -n "$ETHPORT" ] ; then
     #LAN@AR150: default: BATMAN
-    if [ "${ETHMODE}" = "BATMAN" ] ; then
-        BATMAN_PORTS="${BATMAN_PORTS} ${ETHPORT}"
-    else
-        CLIENT_PORTS="${CLIENT_PORTS} ${ETHPORT}"
-    fi
+    setupPorts "$ETHPORT" "${ETHMODE}"
 fi
 if [ -n "$LAN0PORT" ] ; then
     #LAN0@two-port: default: BATMAN
-    if [ "${LAN0MODE}" = "BATMAN" ] ; then
-        BATMAN_PORTS="${BATMAN_PORTS} ${LAN0PORT}"
-    elif [ "${LAN0MODE}" = "CLIENT" ] ; then
-        CLIENT_PORTS="${CLIENT_PORTS} ${LAN0PORT}"
-    else
-        WAN_PORTS="${WAN_PORTS} ${LAN0PORT}"
-    fi
+    setupPorts "$LAN0PORT" "${LAN0MODE}"
 fi
 if [ -n "$LAN1PORT" ] ; then
     #LAN1@two-port: default: BATMAN
-    if [ "${LAN1MODE}" = "WAN" ] ; then
-        WAN_PORTS="${WAN_PORTS} ${LAN1PORT}"
-    elif [ "${LAN1MODE}" = "CLIENT" ] ; then
-        CLIENT_PORTS="${CLIENT_PORTS} ${LAN1PORT}"
-    else
-        BATMAN_PORTS="${BATMAN_PORTS} ${LAN1PORT}"
-    fi
+    setupPorts "$LAN1PORT" "${LAN1MODE}"
 fi
 
 if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
