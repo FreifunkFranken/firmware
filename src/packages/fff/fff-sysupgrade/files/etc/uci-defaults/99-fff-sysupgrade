@@ -10,4 +10,5 @@ cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/network.config
 /etc/config/fff
 /etc/hoodfile
+/etc/sectorfile
 __EOF__
