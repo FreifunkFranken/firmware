@@ -9,7 +9,6 @@
 sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
 sectorcopy=/www/hood/sectorfile
-hiddenapfile=/tmp/hiddenapflag
 resetnetworkfile=/tmp/resetnetwork
 hoodlocal=/etc/hoodfile
 
@@ -39,7 +38,7 @@ hasInternet() {
 
 # Hidden AP check
 
-if [ -f "$hiddenapfile" ]; then
+if [ -s "$hoodfilecopy" ] && ! uci -q get wireless.w2configap > /dev/null ; then
 	if isGatewayAvailable ; then
 
 		for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
@@ -59,8 +58,6 @@ if [ -f "$hiddenapfile" ]; then
 		uci commit network
 
 		wifi
-
-		rm "$hiddenapfile"
 	fi
 fi
 
@@ -239,9 +236,6 @@ if [ -s "$hoodfile" ]; then
 				echo "Can't add AP interface on $radio."
 				exit 1
 			fi
-
-			# here we set a bit for add hidden AP
-			touch "$hiddenapfile"
 
 			# add 802.11s mesh if type == "802.11s"
 			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "802.11s" ] ) || [ "$mesh_type2" == "802.11s" ]; then
