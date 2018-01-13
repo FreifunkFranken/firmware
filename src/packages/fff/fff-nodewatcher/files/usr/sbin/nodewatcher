@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="44"
+SCRIPT_VERSION="45"
 
 test -f /tmp/started || exit
 
@@ -243,15 +243,15 @@ crawl() {
 
         batman_adv_gateway_list=$(awk \
             'BEGIN { FS=" "; i=0 }
+            /B.A.T.M.A.N./ { next }
             /Gateway/ { next }
             /No gateways/ { next }
-            {   sub("=>", "true", $0)
-                sub("  ", "false", $0)
-                sub("\\(", "", $0)
+            {   sub("\\(", "", $0)
                 sub("\\)", "", $0)
-                sub("\\[", "", $0)
+                sub("\\[ *", "", $0)
                 sub("\\]:", "", $0)
-                sub("  ", " ", $0)
+                sub("=> ", "true ", $0)
+                sub("   ", "false ", $0)
                 printf "<gateway_"i"><selected>"$1"</selected><gateway>"$2"</gateway><link_quality>"$3"</link_quality><nexthop>"$4"</nexthop><outgoing_interface>"$5"</outgoing_interface><gw_class>"$6" "$7" "$8"</gw_class></gateway_"i">"
                 i++
             }' /sys/kernel/debug/batman_adv/bat0/gateways)
