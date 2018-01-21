@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="45"
+SCRIPT_VERSION="46"
 
 test -f /tmp/started || exit
 
@@ -259,10 +259,12 @@ crawl() {
     err "$(date): Collecting information about conected clients"
     #CLIENTS
     client_count=0
+    dataclient=""
     CLIENT_INTERFACES=$(bridge link | awk '$2 !~/^bat/{ printf $2" " }')
     for clientif in ${CLIENT_INTERFACES}; do
         local cc=$(bridge fdb show br "$MESH_INTERFACE" brport "$clientif" | grep -v self | grep -v permanent -c)
         client_count=$((client_count + cc))
+        dataclient="$dataclient<$clientif>$cc</$clientif>"
     done
 
     err "$(date): Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
@@ -275,6 +277,7 @@ crawl() {
     DATA=$DATA"<batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode>"
     DATA=$DATA"<batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list>"
     DATA=$DATA"<client_count>$client_count</client_count>"
+    DATA=$DATA"<clients>$dataclient</clients>"
     DATA=$DATA"</data>"
 
     #write data to xml file that provides the data on httpd
