@@ -18,8 +18,8 @@
 <%
 iwinfo w2mesh scan |\
 	awk -v RS='' \
-	'{r = gensub(/.*Address: ([0-9A-F:]*)?.*ESSID: "?(unknown|[^"]*)"?.*Mode: ([^ ]*).*Channel: ([0-9]*).*Signal: (-[0-9]*) dBm.*Encryption: ([^"]*).*/, \
-	"<!-- \\5 --><tr><td>\\2</td><td>\\4</td><td>\\5 dBm</td><td>\\3</td><td>\\1</td><td>\\6</td></tr>", "g"); print r;}' | sort -n
+	'{r = gensub(/.*Address: ([0-9A-F:]*)?.*ESSID: "?([^"\n]*)"?.*Mode: ([^ ]*).*Channel: ([0-9]*).*Signal: (-[0-9]*) dBm.*Encryption: ([^"]*).*/, \
+	"<!-- \\5 --><tr><td>\\2</td><td>\\4</td><td>\\5 dBm</td><td>\\3</td><td>\\1</td><td>\\6</td></tr>", "g"); print r;}' | sort -n | sed 's#&#\&amp;#'
 	# The HTML comment contains the signal quality to allow sorting
 %>
 	</table>
