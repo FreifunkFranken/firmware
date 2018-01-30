@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=fff-support
-PKG_VERSION:=0.0.1
+PKG_NAME:=fff-hoodutils
+PKG_VERSION:=1
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -11,15 +11,14 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
     SECTION:=base
     CATEGORY:=Freifunk
-    TITLE:=Freifunk-Franken Support Scripts
+    TITLE:= Freifunk-Franken hoodutils
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+@BUSYBOX_CONFIG_ASH +fff-config +fff-hoodutils
+    DEPENDS:=+fff-network +fff-config
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the Freifunk Franken Firmware support package.
-    This packages provides smaller convenience scripts,
-    not essential to the operation of the Firmware
+    This package contains hood-related code that may
+    may be used outside of configurehood
 endef
 
 define Build/Prepare
@@ -36,7 +35,6 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
-	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/ || true
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
