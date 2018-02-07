@@ -38,27 +38,30 @@ hasInternet() {
 
 # Hidden AP check
 
-if [ -s "$hoodfilecopy" ] && ! uci -q get wireless.w2configap > /dev/null ; then
-	if isGatewayAvailable ; then
-
-		for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
-			channel=$(uci get "wireless.${radio}.channel")
-			iface="configap2"
-			if [ "$channel" -gt "14" ]; then
-				iface="configap5"
-			fi
-			uci set network.${iface}=interface
-			uci set network.${iface}.proto='static'
-			uci set network.${iface}.ip6addr='fe80::1/64'
-			if ! wifiAddAP "$radio" "config.franken.freifunk.net" "$iface" "configap" "1"; then
-				echo "Can't add Config interface on $radio."
-				exit 1
-			fi
-		done
+if [ -s "$hoodfilecopy" ] && isGatewayAvailable ; then
+	for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
+		freq="2"
+		if [ "$(uci get "wireless.${radio}.channel")" -gt "14" ]; then
+			freq="5"
+		fi
+		# Break: wXconfig is up
+		uci -q get "wireless.w${freq}configap" > /dev/null && continue
+		# Break: No mesh interface
+		(uci -q get "wireless.w${freq}mesh" > /dev/null || uci -q get "wireless.w${freq}ibss" > /dev/null) || continue
+		
+		# Create configap
+		iface="configap$freq"
+		uci set network.${iface}=interface
+		uci set network.${iface}.proto='static'
+		uci set network.${iface}.ip6addr='fe80::1/64'
 		uci commit network
+		if ! wifiAddAP "$radio" "config.franken.freifunk.net" "$iface" "configap" "1"; then
+			echo "Can't add Config interface on $radio."
+			exit 1
+		fi
+	done
 
-		wifi
-	fi
+	wifi
 fi
 
 lat=$(uci -q get fff.system.latitude)
