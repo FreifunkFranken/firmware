@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken hoods
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-hoodutils +fff-macnock
+    DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select
 endef
 
 define Package/$(PKG_NAME)/description
