@@ -1,0 +1,38 @@
+#!/bin/sh
+
+uci batch <<EOF
+  delete dhcp.@dnsmasq[0]
+  delete dhcp.lan
+  delete dhcp.wan
+  add dhcp dnsmasq
+  set dhcp.@dnsmasq[0].domainneeded='0'
+  set dhcp.@dnsmasq[0].boguspriv='0'
+  set dhcp.@dnsmasq[0].filterwin2k='0'
+  set dhcp.@dnsmasq[0].localise_queries='0'
+  set dhcp.@dnsmasq[0].rebind_protection='0'
+  set dhcp.@dnsmasq[0].rebind_localhost='1'
+  set dhcp.@dnsmasq[0].domain='fff.community'
+  set dhcp.@dnsmasq[0].expandhosts='0'
+  set dhcp.@dnsmasq[0].nonegcache='0'
+  set dhcp.@dnsmasq[0].authoritative='1'
+  set dhcp.@dnsmasq[0].readethers='1'
+  set dhcp.@dnsmasq[0].leasefile='/tmp/dhcp.leases'
+  set dhcp.@dnsmasq[0].noresolv='1'
+  set dhcp.@dnsmasq[0].localservice='1'
+  add_list dhcp.@dnsmasq[0].server='10.50.252.11'
+  add_list dhcp.@dnsmasq[0].server='10.50.252.0'
+  add_list dhcp.@dnsmasq[0].server='/in-addr.arpa/10.50.252.11'
+  add_list dhcp.@dnsmasq[0].server='/in-addr.arpa/10.50.252.0'
+  add_list dhcp.@dnsmasq[0].server='/ip6.arpa/10.50.252.11'
+  add_list dhcp.@dnsmasq[0].server='/ip6.arpa/10.50.252.0'
+
+  set dhcp.mesh=dhcp
+  set dhcp.mesh.interface='mesh'
+  set dhcp.mesh.ra='server'
+  set dhcp.mesh.ra_management='0'
+  set dhcp.mesh.leasetime='1h'
+EOF
+
+uci commit dhcp
+
+exit 0
