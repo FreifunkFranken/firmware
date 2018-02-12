@@ -1,8 +1,11 @@
 #!/usr/bin/haserl
 
 <%
-. /etc/community.cfg
+. /lib/functions/fff/keyxchange
 . /etc/firmware_release
+
+UPGRADE_PATH="$(getUpgradePath)"
+
 echo -en "Content-Type: text/html\r\n\r\n"
 nav_entry() {
 	script_file="/cgi-bin/$1"
