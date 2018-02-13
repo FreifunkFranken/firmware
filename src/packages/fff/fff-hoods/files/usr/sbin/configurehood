@@ -39,6 +39,7 @@ hasInternet() {
 # Hidden AP check
 
 if [ -s "$hoodfilecopy" ] && isGatewayAvailable ; then
+	needwifi="0"
 	for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
 		freq="2"
 		if [ "$(uci get "wireless.${radio}.channel")" -gt "14" ]; then
@@ -59,9 +60,13 @@ if [ -s "$hoodfilecopy" ] && isGatewayAvailable ; then
 			echo "Can't add Config interface on $radio."
 			exit 1
 		fi
+		needwifi="1"
 	done
 
-	wifi
+	if [ "$needwifi" = "1" ] ; then
+		wifi
+		sleep 10
+	fi
 fi
 
 lat=$(uci -q get fff.system.latitude)
