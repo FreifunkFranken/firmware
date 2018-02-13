@@ -279,6 +279,8 @@ if [ -s "$hoodfile" ]; then
 	
 	if hasInternet ; then
 		sh /usr/sbin/vpn-select
+	else
+		sh /usr/sbin/vpn-stop
 	fi
 
 	# now we load the prefix from the hoodfile and set this to br-mesh

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+>/etc/config/tunneldigger
+rm /tmp/fastd_fff_peers/*
+/etc/init.d/fastd stop
+/etc/init.d/tunneldigger stop
+
