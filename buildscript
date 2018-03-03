@@ -197,17 +197,13 @@ prebuild() {
     if [ 0 -ne $? ]; then
         version=$(git log -1 --pretty=format:%h)
     fi
-    community=$(basename "$(realpath selected_community)" .cfg)
 
     {
         echo "FIRMWARE_VERSION=\"$version\""
-        echo "FIRMWARE_COMMUNITY=\"$community\""
         echo "BUILD_DATE=\"build date: $(date)\""
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
     } > "$target"/files/etc/firmware_release
-
-    cp selected_community "$target"/files/etc/community.cfg
 
     opath=$(pwd)
     cd "$target"
@@ -276,14 +272,10 @@ config() {
 }
 
 cp_firmware() {
-    if [ "$community" = "franken" ]; then
-        local community="fff"
-    fi
-
     [ -n "$subtarget" ] || subtarget="generic"
 
     for image in ${images[@]}; do
-        filename_build=${image//lede/${community}-${version}}
+        filename_build=${image//lede/fff-${version}}
         filename_build=${filename_build//generic/g}
         cp "$target/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
 
@@ -352,18 +344,6 @@ loadBSP()
     . selected_bsp
 }
 
-loadCommunity()
-{
-    echo "Working with $(/bin/ls -l selected_community | awk '{ print $11 }')"
-    tpl_translate=$(awk -F= 'BEGIN{printf("sed")} /^.+$/{gsub("/", "\\/", $0); printf(" -es/\\${%s}/%s/g",$1,$2)}' selected_community)
-}
-
-setCommunity() {
-    /bin/rm -rf selected_community
-    /bin/ln -s "$1" selected_community
-    loadCommunity
-}
-
 setBSP()
 {
     /bin/rm -rf selected_bsp
@@ -384,19 +364,13 @@ if [ "$(/usr/bin/id -u)" -eq 0 ]; then
 	exit 1
 fi
 
-if [ "$1" != "selectbsp" -a "$1" != "selectcommunity" ]; then
+if [ "$1" != "selectbsp" ]; then
     if [ ! -h selected_bsp ]; then
         echo "Please select a Board-Support-Package using:"
         echo "$0 selectbsp"
         exit
     fi
-    if [ ! -h selected_community ]; then
-        echo "Please select a community file using:"
-        echo "$0 selectcommunity"
-        exit
-    fi
     loadBSP
-    loadCommunity
     echo
 fi
 
@@ -414,22 +388,6 @@ case "$1" in
                 echo "Could not find $2"
             else
                 setBSP "$2"
-            fi
-        fi
-        ;;
-    "selectcommunity")
-        if [ "$2" = "help" ] || [ "$2" = "" ]; then
-            echo "Select a Community-File:"
-            echo
-            echo "Usage: $0 $1 <community-file>"
-            echo "available community-files: "
-            /bin/ls community/*.cfg
-            echo
-        else
-            if [ ! -f "$2" ]; then
-                echo "Could not find $2"
-            else
-                setCommunity "$2"
             fi
         fi
         ;;
@@ -480,7 +438,7 @@ case "$1" in
         ;;
     "buildall")
         if [ "$2" = "help" ]; then
-            echo "This option builds the firmware for all routers of a given community."
+            echo "This option builds the firmware for all routers."
             echo
             echo "Usage: $0 $1 [fast]"
             echo
@@ -503,7 +461,6 @@ case "$1" in
         echo
         echo "Usage: $0 command"
         echo "command:"
-        echo "  selectcommunity <community-file>"
         echo "  selectbsp <bsp-file>"
         echo "  prepare"
         echo "  config openwrt"

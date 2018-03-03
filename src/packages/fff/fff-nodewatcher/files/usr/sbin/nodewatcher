@@ -155,7 +155,6 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"$fastd_version"
     SYSTEM_DATA=$SYSTEM_DATA"<nodewatcher_version>$nodewatcher_version</nodewatcher_version>"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_version>$FIRMWARE_VERSION</firmware_version>"
-    SYSTEM_DATA=$SYSTEM_DATA"<firmware_community>$FIRMWARE_COMMUNITY</firmware_community>"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_revision>$BUILD_DATE</firmware_revision>"
     SYSTEM_DATA=$SYSTEM_DATA"<openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision>"
     SYSTEM_DATA=$SYSTEM_DATA"<openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
