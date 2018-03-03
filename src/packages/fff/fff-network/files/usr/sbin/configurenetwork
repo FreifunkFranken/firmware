@@ -35,6 +35,7 @@ setAutoConf() {
     local on=$2
 
     echo "# Generated from configurenetwork" > "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.accept_ra = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
     echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
     echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
     echo "net.ipv6.conf.$iface.autoconf = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
