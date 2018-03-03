@@ -34,12 +34,15 @@ case "$BOARD" in
         ;;
     bullet-m)
         BOARD=ubnt-bullet-m
+        grep -i "Pico" /var/sysinfo/model && BOARD=ubnt-pico-m
+        grep -i "Loco" /var/sysinfo/model && BOARD=ubnt-loco-m
         ;;
     unifi)
         BOARD=ubnt-unifi
         ;;
     loco-m-xw)
         BOARD=ubnt-loco-m-xw
+        grep -i "Power" /var/sysinfo/model && BOARD=ubnt-power-m-xw
         ;;
     unifiac-lite)
         BOARD=ubnt-unifiac-lite
