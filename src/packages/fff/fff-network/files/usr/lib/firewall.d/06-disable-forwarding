@@ -1,0 +1,2 @@
+/sbin/iptables -P FORWARD DROP
+/sbin/ip6tables -P FORWARD DROP

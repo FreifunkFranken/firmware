@@ -40,6 +40,7 @@ setAutoConf() {
     echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
     echo "net.ipv6.conf.$iface.autoconf = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
     echo "net.ipv6.conf.$iface.accept_ra_rtr_pref = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.forwarding = 0" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
 
     /sbin/sysctl -p "/etc/sysctl.d/51-fff-network-$iface.conf"
 }
