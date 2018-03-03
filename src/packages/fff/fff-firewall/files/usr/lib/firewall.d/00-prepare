@@ -4,3 +4,6 @@ ebtables -X
 
 iptables -F
 iptables -X
+
+ip6tables -F
+ip6tables -X
