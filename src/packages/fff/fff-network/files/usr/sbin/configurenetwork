@@ -28,6 +28,37 @@ setupPorts() {
     fi
 }
 
+setAutoConf() {
+    # Sets ipv6 auto configuration on an interface to on/off
+    # Usage: enableAutoConf <interface> <[0|1]>
+    local iface=$1
+    local on=$2
+
+    echo "# Generated from configurenetwork" > "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.autoconf = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "net.ipv6.conf.$iface.accept_ra_rtr_pref = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+
+    /sbin/sysctl -p "/etc/sysctl.d/51-fff-network-$iface.conf"
+}
+
+enableAutoConf() {
+    # Enables ipv6 auto configuration on an interface
+    # Usage: enableAutoConf <interface>
+    local iface=$1
+
+    setAutoConf "$iface" "1"
+}
+
+disableAutoConf() {
+    # Disables ipv6 auto configuration on an interface
+    # Usage: disableAutoConf <interface>
+    local iface=$1
+
+    setAutoConf "$iface" "0"
+}
+
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
@@ -86,23 +117,15 @@ if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
     uci set network.${SWITCHDEV}_1.vlan=1
     uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
 
-    echo "# Allow IPv6 RAs on WAN Port" >> /etc/sysctl.conf
-
     if [[ "$WANDEV" = "$SWITCHDEV" ]] || ! [[ -z "$WAN_PORTS" ]]; then
         uci set network.${SWITCHDEV}_2=switch_vlan
         uci set network.${SWITCHDEV}_2.device=$SWITCHHW
         uci set network.${SWITCHDEV}_2.vlan=2
         uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
 
-        echo "net.ipv6.conf.$WANDEV.2.accept_ra_defrtr = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.2.accept_ra_pinfo = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.2.autoconf = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.2.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+        enableAutoConf "$WANDEV.2"
     else
-        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.autoconf = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+        enableAutoConf "$WANDEV"
     fi
     
     uci set network.${SWITCHDEV}_3=switch_vlan
@@ -127,28 +150,19 @@ if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FO
     uci set network.$SWITCHDEV=interface
     uci set network.$SWITCHDEV.ifname=$SWITCHDEV
     if [ "$ETHMODE" = "WAN" ]; then
-        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.autoconf = 1" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 1" >> /etc/sysctl.conf
+        enableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0"
         uci set network.wan.ifname="$WANDEV"
         uci del uci set network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "CLIENT" ] ; then
-        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        disableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0 $SWITCHDEV"
         uci set network.wan.ifname="eth1" #eth1 because it is default in config file
         uci del network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "BATMAN" ] ; then
-        echo "net.ipv6.conf.$WANDEV.accept_ra_defrtr = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_pinfo = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.autoconf = 0" >> /etc/sysctl.conf
-        echo "net.ipv6.conf.$WANDEV.accept_ra_rtr_pref = 0" >> /etc/sysctl.conf
+        disableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0"
         uci set network.wan.ifname="eth1" #eth1 because it is default in config file
         uci set network.ethmesh.ifname="$SWITCHDEV"
