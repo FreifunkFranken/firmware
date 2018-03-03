@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-wireless
-PKG_VERSION:=0.0.2
+PKG_VERSION:=6
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -13,7 +13,7 @@ define Package/$(PKG_NAME)
     CATEGORY:=Freifunk
     TITLE:= Freifunk-Franken wireless configuration
     URL:=http://www.freifunk-franken.de
-    DEPENDS:=+@ATH_USER_REGD +wireless-tools
+    DEPENDS:=+@ATH_USER_REGD +wireless-tools +fff-boardname
 endef
 
 define Package/$(PKG_NAME)/description

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Copyright 2018 Adrian Schmutzler
+# License GPLv3
+
+BOARD="$(uci get board.model.name)"
+
+if [ -s "/etc/wifi.$BOARD" ] ; then
+	. "/etc/wifi.$BOARD"
+fi
