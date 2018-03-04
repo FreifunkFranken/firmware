@@ -1,2 +1,2 @@
-/sbin/iptables -P FORWARD DROP
-/sbin/ip6tables -P FORWARD DROP
+/usr/sbin/iptables -P FORWARD DROP
+/usr/sbin/ip6tables -P FORWARD DROP
