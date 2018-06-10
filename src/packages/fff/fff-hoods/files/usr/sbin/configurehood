@@ -56,6 +56,7 @@ if [ -s "$hoodfilecopy" ] && isGatewayAvailable ; then
 		uci set network.${iface}.proto='static'
 		uci set network.${iface}.ip6addr='fe80::1/64'
 		uci commit network
+		reload_config
 		if ! wifiAddAP "$radio" "config.franken.freifunk.net" "$iface" "configap" "1"; then
 			echo "Can't add Config interface on $radio."
 			exit 1
@@ -101,6 +102,7 @@ else
 
 			uci -q del "system.@system[0].hood"
 			uci -q commit system
+			reload_config
 		
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
@@ -127,6 +129,7 @@ else
 					uci -q set network.configSta=interface
 					uci -q set network.configSta.proto='static'
 					uci -q commit network
+					reload_config
 				fi
 			done
 		
@@ -232,6 +235,7 @@ if [ -s "$hoodfile" ]; then
 		echo "Setting hood name: $hood"
 		uci -q set "system.@system[0].hood=$hood"
 		uci -q commit system
+		reload_config
 
 		if ! wifiDelIface; then
 			echo "Can't delete current wifi setup"
