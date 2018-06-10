@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if ! grep -q u32 /etc/iproute2/ematch_map;
+then
+    echo "3 u32" > /etc/iproute2/ematch_map
+fi
