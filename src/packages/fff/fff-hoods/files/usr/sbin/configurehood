@@ -98,6 +98,9 @@ else
 			rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
 			rm -f "$sectorcopy" # always delete: no broadcast for isolated device
 			rm -f "$sectortmp"
+
+			uci -q del "system.@system[0].hood"
+			uci -q commit system
 		
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
