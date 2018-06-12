@@ -1,0 +1,92 @@
+. /usr/share/libubox/jshn.sh
+. /lib/functions/fff/wireless
+
+getWirelessHoodfile() {
+	if [ $# != 1 ]; then
+		echo "Usage: getWirelessHoodfile <target-file>"
+		return 1
+	fi
+	file=$1
+
+	echo "Trying to get hoodfile from wireless neighbor..."
+	echo "All wireless interfaces will be disabled temporarily!"
+
+	# only change temporarily
+
+	if ! wifiDelIface; then
+		echo "Can't delete current wifi setup"
+		exit 1
+	fi
+	#now we look for phy and add this
+	for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
+		radio="$(wifiAddPhyCond "$phy" "2" "auto")"
+		radio5="$(wifiAddPhyCond "$phy" "5" "auto5")"
+		if [ -n "$radio5" ] ; then
+			radio="$radio5"
+			staiface="w5sta"
+		else
+			staiface="w2sta"
+		fi
+
+		#and here we add the station
+		if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta" "$staiface" ; then
+			echo "Can't add Sta interface on $radio."
+			exit 1
+		else
+			uci -q set network.configSta=interface
+			uci -q set network.configSta.proto='static'
+			uci -q commit network
+			reload_config
+		fi
+	done
+
+	wifi
+	# wait a moment to start the interface
+	sleep 10;
+
+	if wget -T15 -t5 -O "$file" "http://[fe80::1%w2sta]:2342/keyxchangev2data"; then
+		return 0
+	elif wget -T15 -t5 -O "$file" "http://[fe80::1%w5sta]:2342/keyxchangev2data"; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+getGatewayHoodfile() {
+	if [ $# != 1 ]; then
+		echo "Usage: getGatewayHoodfile <target-file>"
+		return 1
+	fi
+	file=$1
+
+	echo "Trying to get hoodfile from gateway..."
+
+	if wget -T15 -t5 -O "$file" "http://[fe80::1%br-mesh]:2342/keyxchangev2data"; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+getKeyserverHoodfile() {
+	if [ $# == 1 ]; then
+		lat=$(uci -q get fff.system.latitude)
+		long=$(uci -q get fff.system.longitude)
+	elif [ $# == 3 ]; then
+		lat=$2
+		long=$3
+	else
+		echo "Usage: getKeyserverHoodfile <target-file> [<latitude> <longitude>]"
+		return 1
+	fi
+	file=$1
+
+	echo "Getting hoodfile from Keyserver"
+
+	if wget -T15 -t5 -O "$file" "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long"; then
+		return 0
+	else
+		return 1
+	fi
+}

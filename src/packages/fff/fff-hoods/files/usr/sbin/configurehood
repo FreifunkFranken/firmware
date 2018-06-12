@@ -5,6 +5,7 @@
 . /lib/functions/fff/network
 . /lib/functions/fff/wireless
 . /lib/functions/fff/timeserver
+. /usr/lib/functions/fff/hoodfile
 
 sectorlocal=/etc/sectorfile
 sectortmp=/tmp/sectorfile
@@ -69,16 +70,14 @@ if [ -s "$hoodfilecopy" ] && isGatewayAvailable ; then
 	fi
 fi
 
-lat=$(uci -q get fff.system.latitude)
-long=$(uci -q get fff.system.longitude)
-
 if [ -s "$hoodlocal" ]; then
 	hoodfile="$hoodlocal"
 	echo "Use local hood file"
 else
 	# if we have Internet, we download the Hoodfile from the keyxchangev2
 	if hasInternet ; then
-		wget -T15 -t5 "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long" -O "$hoodfile"
+		getKeyserverHoodfile "$hoodfile"
+
 		rm -f "$sectortmp"
 		[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
 		#UPLINK: No uplink download if internet present
@@ -99,45 +98,15 @@ else
 		
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
-			if ! wifiDelIface; then
-				echo "Can't delete current wifi setup"
-				exit 1
-			fi
-			#now we look for phy and add this
-			for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-				radio="$(wifiAddPhyCond "$phy" "2" "auto")"
-				radio5="$(wifiAddPhyCond "$phy" "5" "auto5")"
-				if [ -n "$radio5" ] ; then
-					radio="$radio5"
-					staiface="w5sta"
-				else
-					staiface="w2sta"
-				fi
+			getWirelessHoodfile "$hoodfile"
 
-				#and here we add the station
-				if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta" "$staiface" ; then
-					echo "Can't add Sta interface on $radio."
-					exit 1
-				else
-					uci -q set network.configSta=interface
-					uci -q set network.configSta.proto='static'
-					uci -q commit network
-					reload_config
-				fi
-			done
-		
-			wifi
-			# wait a moment to start the interface
-			sleep 10;
-			# and here we can download the Hoodfile from the other node
-			wget -T15 -t5 "http://[fe80::1%w2sta]:2342/keyxchangev2data" -O "$hoodfile" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/keyxchangev2data" -O "$hoodfile"
 			#UPLINK: Set up uplink data on first contact:
 			if [ -s /tmp/keyxchangev2data ]; then
 				wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/sectorfile" -O "$sectortmp"
 			fi
 		else
 			echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-			wget -T15 -t5 "http://[fe80::1%br-mesh]:2342/keyxchangev2data" -O "$hoodfile"
+			getGatewayHoodfile "$hoodfile"
 			#UPLINK: Do nothing
 		fi
 	fi
