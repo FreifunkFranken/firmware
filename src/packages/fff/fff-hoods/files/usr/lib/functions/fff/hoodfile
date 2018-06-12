@@ -53,6 +53,30 @@ getWirelessHoodfile() {
 	fi
 }
 
+getEthernetHoodfile() {
+	if [ $# != 1 ]; then
+		echo "Usage: getEthernetHoodfile <target-file>"
+		return 1
+	fi
+	file=$1
+
+	echo "Trying to get hoodfile from ethernet neighbor..."
+
+	if ! ethmesh_dev=$(uci -q get network.ethmesh.ifname); then
+		# no ethmesh interface
+		return 1
+	fi
+
+	neighbor_addrs=$(ping6 -c2 ff02::1%"${ethmesh_dev}" | grep seq | grep DUP | cut -d " " -f4 | sed s/:$//g | sort -u)
+
+	for addr in $neighbor_addrs; do
+		wget -T2 -t1 -qO "$file" "http://[${addr}%${ethmesh_dev}]:2342/keyxchangev2data" && return 0
+	done
+
+	# got no hoodfile
+	return 1
+}
+
 getGatewayHoodfile() {
 	if [ $# != 1 ]; then
 		echo "Usage: getGatewayHoodfile <target-file>"

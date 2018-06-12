@@ -98,7 +98,7 @@ else
 		
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
-			getWirelessHoodfile "$hoodfile"
+			getEthernetHoodfile "$hoodfile" || getWirelessHoodfile "$hoodfile"
 
 			#UPLINK: Set up uplink data on first contact:
 			if [ -s /tmp/keyxchangev2data ]; then
