@@ -7,9 +7,6 @@
 . /lib/functions/fff/timeserver
 . /usr/lib/functions/fff/hoodfile
 
-sectorlocal=/etc/sectorfile
-sectortmp=/tmp/sectorfile
-sectorcopy=/www/hood/sectorfile
 hoodlocal=/etc/hoodfile
 
 rm -f "$hoodfile"
@@ -78,9 +75,6 @@ else
 	if hasInternet ; then
 		getKeyserverHoodfile "$hoodfile"
 
-		rm -f "$sectortmp"
-		[ -s "$sectorlocal" ] || rm -f "$sectorcopy" # If internet present, no custom config should be distributed, except when local file is present
-		#UPLINK: No uplink download if internet present
 		#if no Internet, we connect to the hidden AP and download the file from another Node in range
 	else
 		# connect to wireless hidden ap here and download the json File from the nearest router
@@ -89,8 +83,6 @@ else
 			#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 			#first we delete all wifi settings
 			rm -f "$hoodfilecopy" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
-			rm -f "$sectorcopy" # always delete: no broadcast for isolated device
-			rm -f "$sectortmp"
 
 			uci -q del "system.@system[0].hood"
 			uci -q commit system
@@ -99,15 +91,9 @@ else
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
 
 			getEthernetHoodfile "$hoodfile" || getWirelessHoodfile "$hoodfile"
-
-			#UPLINK: Set up uplink data on first contact:
-			if [ -s /tmp/keyxchangev2data ]; then
-				wget -T15 -t5 "http://[fe80::1%w2sta]:2342/sectorfile" -O "$sectortmp" || wget -T15 -t5 "http://[fe80::1%w5sta]:2342/sectorfile" -O "$sectortmp"
-			fi
 		else
 			echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
 			getGatewayHoodfile "$hoodfile"
-			#UPLINK: Do nothing
 		fi
 	fi
 fi
@@ -117,20 +103,6 @@ if [ -s "$hoodfile" ]; then
 	# we get a json file in this format: 
 	# https://pw.freifunk-franken.de/patch/205/
 	# but without signature, every hood file we get is valid!
-	
-	[ -s "$sectorlocal" ] && sectortmp="$sectorlocal" # Use local file if present (configuration set by user)
-	if [ -s "$sectortmp" ] ; then
-		json_load "$(cat "$sectortmp")"
-		json_select hood
-		json_get_var mesh_id mesh_id
-		json_get_var mesh_bssid mesh_bssid
-		json_get_var mesh_essid mesh_essid
-		json_get_var essid essid
-		json_get_var chan2ghz channel2
-		json_get_var mesh_type2 mesh_type2
-		json_get_var chan5ghz channel5
-		json_get_var mesh_type5 mesh_type5
-	fi
 
 	catnew="$(cat "$hoodfile" | sed 's/"timestamp”: *"[0-9]*"/"timestamp":0/')"
 	catold="$(cat "$hoodfilecopy" 2>/dev/null | sed 's/"timestamp”: *"[0-9]*"/"timestamp":0/')"
@@ -213,7 +185,6 @@ if [ -s "$hoodfile" ]; then
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
 		cp "$hoodfile" "$hoodfilecopy"
-		[ -s "$sectortmp" ] && cp "$sectortmp" "$sectorcopy"
 
 		# This is a workaround to enable alfred on devices which do not see a configap during initial setup
 		/etc/init.d/alfred restart
