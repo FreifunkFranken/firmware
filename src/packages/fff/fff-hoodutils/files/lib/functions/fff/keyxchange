@@ -6,7 +6,7 @@
 
 hoodfiletmp="/tmp/hoodfile"
 hoodfileref="/tmp/hoodfileref"
-hoodfilewww="/www/hood/keyxchangev2data"
+hoodfilewww="/tmp/hoodfilewww"
 
 getJsonPath() {
 	jsonfile=""
