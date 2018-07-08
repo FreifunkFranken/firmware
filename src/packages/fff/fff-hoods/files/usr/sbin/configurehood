@@ -74,7 +74,7 @@ if [ -s "$hoodfilelocal" ]; then
 else
 	# if we have Internet, we download the Hoodfile from the keyxchangev2
 	if hasInternet ; then
-		getKeyserverHoodfile "$hoodfiletmp"
+		getKeyserverHoodfile "$hoodfiletmp" && cp "$hoodfiletmp" "$hoodfilewww"
 
 		#if no Internet, we connect to the hidden AP and download the file from another Node in range
 	else
@@ -95,7 +95,7 @@ else
 			getEthernetHoodfile "$hoodfiletmp" || getWirelessHoodfile "$hoodfiletmp"
 		else
 			echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-			getGatewayHoodfile "$hoodfiletmp"
+			getGatewayHoodfile "$hoodfiletmp" && cp "$hoodfiletmp" "$hoodfilewww"
 		fi
 	fi
 fi
@@ -187,7 +187,6 @@ if [ -s "$hoodfiletmp" ]; then
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
 		cp "$hoodfiletmp" "$hoodfileref"
-		cp "$hoodfiletmp" "$hoodfilewww"
 
 		# This is a workaround to enable alfred on devices which do not see a configap during initial setup
 		/etc/init.d/alfred restart
