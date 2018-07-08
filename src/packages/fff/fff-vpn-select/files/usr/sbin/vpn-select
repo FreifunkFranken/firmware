@@ -9,7 +9,7 @@ make_config() {
 rm /tmp/fastd_fff_peers/*
 count=0
 Index=1
-json_load "$(cat "$hoodfile")"
+json_load "$(cat "$hoodfiletmp")"
 json_select vpn
 # get fastd peers
 while json_select "$Index" > /dev/null
@@ -54,7 +54,7 @@ json_select ".." # back to root
 # main
 
 # Only do something when file is here and greater 0 byte
-if [ -s "$hoodfile" ]; then
+if [ -s "$hoodfiletmp" ]; then
 	# set some vars
 	hostname=$(cat /proc/sys/kernel/hostname)
 	mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)

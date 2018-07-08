@@ -4,15 +4,15 @@
 
 . /usr/share/libubox/jshn.sh
 
-hoodfile="/tmp/keyxchangev2data"
-hoodfilecopy="/www/hood/keyxchangev2data"
+hoodfiletmp="/tmp/hoodfile"
+hoodfilewww="/www/hood/keyxchangev2data"
 
 getJsonPath() {
 	jsonfile=""
-	if [ -s "$hoodfilecopy" ] ; then
-		jsonfile="$hoodfilecopy"
-	elif [ -s "$hoodfile" ] ; then
-		jsonfile="$hoodfile"
+	if [ -s "$hoodfilewww" ] ; then
+		jsonfile="$hoodfilewww"
+	elif [ -s "$hoodfiletmp" ] ; then
+		jsonfile="$hoodfiletmp"
 	fi
 	echo "$jsonfile"
 }
