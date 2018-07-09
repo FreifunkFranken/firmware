@@ -12,7 +12,6 @@ uci batch <<EOF
   set batman-adv.bat0.bonding='0'
   set batman-adv.bat0.fragmentation='1'
   set batman-adv.bat0.orig_interval='1000'
-  set batman-adv.bat0.vis_mode='0'
   set batman-adv.bat0.distributed_arp_table='1'
   set batman-adv.bat0.hop_penalty='30'
 EOF
