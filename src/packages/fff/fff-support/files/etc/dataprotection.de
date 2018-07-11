@@ -1,0 +1,20 @@
+Freifunk Franken Firmware
+Mehr Informationen unter http://franken.freifunk.net
+
+DATENSCHUTZHINWEISE
+
+Das Freifunk-Netzwerk benötigt bestimmte Information um einen stabilen und sicheren Betrieb zu gewährleisten.
+
+Es bestehen bestimmte Einstellungen (in /etc/config/fff), die vom Benutzer gesetzt werden sollen und die von Diensten im Netzwerk und/oder Menschen verarbeitet werden:
+
+1. Die Angaben zur POSITION sind für die Funktion des Netzwerkes erforderlich, sodass Router einer bestimmten Netzuntereinheit ("Hood") zugeordnet werden können.
+
+2. Die KONTAKT-DATEN sind erforderlich, damit im Falle einer Funktionsstörung eine verantwortliche Person kontaktiert werden kann.
+
+3. OHNE ANGABE VON POSITION UND KONTAKTADRESSE KANN DER ROUTER NICHT BETRIEBEN WERDEN. Alle weiteren Angaben sind freiwillig.
+
+4. Alle eingegebenen (verpflichtenden und freiwilligen) Daten sind sowohl im Netzwerk als auch öffentlich zugänglich.
+   Zu Zwecken der Diagnose und zur Kontaktaufnahme im Störfall können diese von verschiedenen Instanzen im Netz sowie von Dritten gespeichert und verarbeitet werden.
+
+Für Fragen besteht die Möglichkeit zur Kontaktaufnahme über franken@freifunk.net
+

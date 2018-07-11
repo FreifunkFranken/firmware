@@ -1,0 +1,20 @@
+Freifunk Franken Firmware
+More information at http://franken.freifunk.net
+
+DATA PROTECTION NOTES
+
+The Freifunk network requires information to ensure a stable and safe operation.
+
+There are specific config options (in /etc/config/fff) which are meant to be set by the user and are processed and evaluated by network services and/or human beings:
+
+1. The COORDINATES are required for the network operation, so routers can be assigned to a particular network sub unit ("hood").
+
+2. CONTACT INFORMATION is necessary to be able to contact a responsible person in case of malfunction.
+
+3. WITHOUT PROVIDING COORDINATES AND CONTACT INFORMATION THE ROUTER MUST NOT OPERATE. Any additional data is optional.
+
+4. Every piece of information entered (mandatory and optional) will be accessible both inside the network and publicly.
+   For diagnosis and for establishing contact in case of an incident data may be saved and processed from various instances inside the network as well from third parties.
+
+In case of questions, please contact franken@freifunk.net
+
