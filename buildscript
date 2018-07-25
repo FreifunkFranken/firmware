@@ -39,7 +39,8 @@ GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 ROUTING=(routing
          https://git.openwrt.org/feed/routing.git
          d11075cd40a88602bf4ba2b275f72100ddcb4767
-         "0001-alfred-Support-interface-IDs-with-more-than-two-digi.patch") # lede-17.01
+         "0001-alfred-Support-interface-IDs-with-more-than-two-digi.patch"
+         "0002-Add-batman-adv-patch-to-remove-gw-mode-switch-messag.patch") # lede-17.01
 ROUTING_PKGS="kmod-batman-adv batctl alfred"
 
 FFF=(fff)
