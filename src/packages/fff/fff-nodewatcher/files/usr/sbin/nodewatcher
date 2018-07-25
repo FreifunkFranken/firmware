@@ -2,7 +2,7 @@
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 # License; GPL v3
 
-SCRIPT_VERSION="47"
+SCRIPT_VERSION="48"
 
 test -f /tmp/started || exit
 
@@ -260,7 +260,7 @@ crawl() {
     #CLIENTS
     client_count=0
     dataclient=""
-    CLIENT_INTERFACES=$(bridge link | awk '$2 !~/^bat/{ printf $2" " }')
+    CLIENT_INTERFACES=$(ls "/sys/class/net/$MESH_INTERFACE/brif" | grep -v '^bat')
     for clientif in ${CLIENT_INTERFACES}; do
         local cc=$(bridge fdb show br "$MESH_INTERFACE" brport "$clientif" | grep -v self | grep -v permanent -c)
         client_count=$((client_count + cc))
