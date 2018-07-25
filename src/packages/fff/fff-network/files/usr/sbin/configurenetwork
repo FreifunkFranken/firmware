@@ -119,7 +119,7 @@ if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
     uci set network.${SWITCHDEV}_1.vlan=1
     uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
 
-    if [[ "$WANDEV" = "$SWITCHDEV" ]] || ! [[ -z "$WAN_PORTS" ]]; then
+    if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
         uci set network.${SWITCHDEV}_2=switch_vlan
         uci set network.${SWITCHDEV}_2.device=$SWITCHHW
         uci set network.${SWITCHDEV}_2.vlan=2
@@ -139,7 +139,7 @@ if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
 
     uci set network.ethmesh.ifname="$SWITCHDEV.3"
 
-    if [[ "$WANDEV" = "$SWITCHDEV" ]]; then
+    if [ "$WANDEV" = "$SWITCHDEV" ]; then
         uci set network.wan.ifname=$WANDEV.2
     else
         uci set network.wan.ifname=$WANDEV
@@ -175,7 +175,7 @@ fi
 
 /etc/init.d/network restart
 
-if [[ -n "$ETHMESHMAC" ]]; then
+if [ -n "$ETHMESHMAC" ]; then
     if uci get network.ethmesh.macaddr
     then
         echo "MAC for ethmesh is set already"
@@ -193,7 +193,7 @@ if [[ -n "$ETHMESHMAC" ]]; then
     fi
 fi
 
-if [[ -n "$ROUTERMAC" ]]; then
+if [ -n "$ROUTERMAC" ]; then
     if uci get network.mesh.macaddr
     then
         echo "MAC for mesh is set already"
@@ -211,7 +211,7 @@ if [[ -n "$ROUTERMAC" ]]; then
     fi
 fi
 
-if [[ -n "$ETH0MAC" ]]; then
+if [ -n "$ETH0MAC" ]; then
         echo "Fixing MAC on eth0"
         sleep 10
         NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
