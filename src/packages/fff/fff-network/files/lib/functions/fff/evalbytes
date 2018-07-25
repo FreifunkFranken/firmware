@@ -1,4 +1,3 @@
-#!/bin/sh
 
 human_bytes() {
 	while read B ; do
