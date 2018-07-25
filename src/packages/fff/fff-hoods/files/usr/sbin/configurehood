@@ -83,7 +83,8 @@ else
 		if ! isGatewayAvailable ; then
 			#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
 			#first we delete all wifi settings
-			rm -f "$hoodfilewww" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+			rm -f "$hoodfileref" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+			rm -f "$hoodfilewww" # delete this, so wrong hood file is not broadcasted anymore
 
 			uci -q del "system.@system[0].hood"
 			uci -q commit system
@@ -106,7 +107,7 @@ if [ -s "$hoodfiletmp" ]; then
 	# but without signature, every hood file we get is valid!
 
 	catnew="$(cat "$hoodfiletmp" | sed 's/"timestamp”: *"[0-9]*"/"timestamp":0/')"
-	catold="$(cat "$hoodfilewww" 2>/dev/null | sed 's/"timestamp”: *"[0-9]*"/"timestamp":0/')"
+	catold="$(cat "$hoodfileref" 2>/dev/null | sed 's/"timestamp”: *"[0-9]*"/"timestamp":0/')"
 	sumnew=$(echo "$catnew" | sha256sum | cut -f1 -d " ")
 	sumold=$(echo "$catold" | sha256sum | cut -f1 -d " ")
 
@@ -185,6 +186,7 @@ if [ -s "$hoodfiletmp" ]; then
 
 		# copy the file to webroot so that other mesh routers can download it;
 		# copy only after all other steps so IF can be reentered if something goes wrong
+		cp "$hoodfiletmp" "$hoodfileref"
 		cp "$hoodfiletmp" "$hoodfilewww"
 
 		# This is a workaround to enable alfred on devices which do not see a configap during initial setup

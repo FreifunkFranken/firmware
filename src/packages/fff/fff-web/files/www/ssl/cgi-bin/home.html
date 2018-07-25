@@ -8,7 +8,7 @@
 if [ "$REQUEST_METHOD" == "POST" ] ; then
 	if [ "$POST_resethood" != "" ] ; then
 		# reset hood
-		rm "$hoodfilewww" 2> /dev/null
+		rm "$hoodfileref" 2> /dev/null
 		MSG='<span class="green">Hood-Daten werden innerhalb von 5 Minuten neu prozessiert.</span>'
 	fi
 fi

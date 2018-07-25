@@ -5,12 +5,15 @@
 . /usr/share/libubox/jshn.sh
 
 hoodfiletmp="/tmp/hoodfile"
+hoodfileref="/tmp/hoodfileref"
 hoodfilewww="/www/hood/keyxchangev2data"
 
 getJsonPath() {
 	jsonfile=""
 	if [ -s "$hoodfilewww" ] ; then
 		jsonfile="$hoodfilewww"
+	elif [ -s "$hoodfileref" ] ; then
+		jsonfile="$hoodfileref"
 	elif [ -s "$hoodfiletmp" ] ; then
 		jsonfile="$hoodfiletmp"
 	fi
