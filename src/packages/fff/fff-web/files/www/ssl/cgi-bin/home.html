@@ -5,7 +5,7 @@
 . /lib/functions/fff/evalhoodinfo
 
 # prepare
-if [ "$REQUEST_METHOD" == "POST" ] ; then
+if [ "$REQUEST_METHOD" = "POST" ] ; then
 	if [ "$POST_resethood" != "" ] ; then
 		# reset hood
 		rm "$hoodfileref" 2> /dev/null

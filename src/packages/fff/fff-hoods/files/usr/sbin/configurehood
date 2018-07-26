@@ -158,16 +158,16 @@ if [ -s "$hoodfiletmp" ]; then
 				exit 1
 			fi
 
-			# add 802.11s mesh if type == "802.11s"
-			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "802.11s" ] ) || [ "$mesh_type2" == "802.11s" ]; then
+			# add 802.11s mesh if type = "802.11s"
+			if ( [ -n "$radio5" ] && [ "$mesh_type5" = "802.11s" ] ) || [ "$mesh_type2" = "802.11s" ]; then
 				if ! wifiAddMesh "$radio" "$mesh_id"; then
 					echo "Can't add Mesh interface on $radio."
 					exit 1
 				fi
 			fi
 
-			# add IBSS mesh if type == "ibss"
-			if ( [ -n "$radio5" ] && [ "$mesh_type5" == "ibss" ] ) || [ "$mesh_type2" == "ibss" ]; then
+			# add IBSS mesh if type = "ibss"
+			if ( [ -n "$radio5" ] && [ "$mesh_type5" = "ibss" ] ) || [ "$mesh_type2" = "ibss" ]; then
 				if ! wifiAddAdHocMesh "$radio" "$mesh_essid" "$mesh_bssid"; then
 					echo "Can't add AdHocMesh interface on $radio."
 					exit 1

@@ -2,10 +2,10 @@
 
 <%
 # prepare
-if [ "$REQUEST_METHOD" == "POST" ] ; then
+if [ "$REQUEST_METHOD" = "POST" ] ; then
 	if [ "$POST_reset" != "" ] ; then
 		# reset
-		if [ "$FORM_really_reset" == "on" ] ; then
+		if [ "$FORM_really_reset" = "on" ] ; then
 			do_reset=1
 			MSG='<span class="green">Router wird zur&uuml;ckgesetzt und anschlie&szlig;end neugestartet...</span>'
 		fi
@@ -13,12 +13,12 @@ if [ "$REQUEST_METHOD" == "POST" ] ; then
 		# upgrade
 		if [ ! -f "$HASERL_firmware_path" ] ; then
 			MSG='<span class="red">Firmware Datei nicht gefunden!</span>'
-		elif [ "$(du -k "$HASERL_firmware_path" | cut -f1)" == "0" ] ; then
+		elif [ "$(du -k "$HASERL_firmware_path" | cut -f1)" = "0" ] ; then
 			MSG='<span class="red">Firmware Datei ist leer!</span>'
 		elif ! error=$(sysupgrade -T "$HASERL_firmware_path") ; then
 			MSG="<span class=\"red\">Firmware Datei ung&uuml;ltig: <tt>${error}</tt></span>"
 		else
-			if [ "$POST_keep_config" == "on" ] ; then
+			if [ "$POST_keep_config" = "on" ] ; then
 				args=""
 			else
 				args="-n"
@@ -63,12 +63,12 @@ fi
 <%in /www/ssl/cgi-bin/footer %>
 <%
 # write
-if [ "$do_reset" == "1" ] ; then
+if [ "$do_reset" = "1" ] ; then
 	echo "<pre>"
 	echo y | firstboot
 	reboot
 	echo "</pre>"
-elif [ "$do_sysupgrade" == "1" ] ; then
+elif [ "$do_sysupgrade" = "1" ] ; then
 	echo "<pre>"
 	echo "# sysupgrade $args $HASERL_firmware_path"
 	sysupgrade $args $HASERL_firmware_path

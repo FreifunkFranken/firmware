@@ -94,10 +94,10 @@ getGatewayHoodfile() {
 }
 
 getKeyserverHoodfile() {
-	if [ $# == 1 ]; then
+	if [ $# = 1 ]; then
 		lat=$(uci -q get fff.system.latitude)
 		long=$(uci -q get fff.system.longitude)
-	elif [ $# == 3 ]; then
+	elif [ $# = 3 ]; then
 		lat=$2
 		long=$3
 	else

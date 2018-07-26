@@ -2,7 +2,7 @@
 
 <%
 # prepare
-if [ "$REQUEST_METHOD" == "POST" ] ; then
+if [ "$REQUEST_METHOD" = "POST" ] ; then
 	if [ "$POST_reboot" != "" ] ; then
 		do_reboot=1
 		MSG='<span class="green">Router wird neugestartet...</span>'
@@ -29,7 +29,7 @@ fi
 <%in /www/ssl/cgi-bin/footer %>
 <%
 # write
-if [ "$do_reboot" == "1" ] ; then
+if [ "$do_reboot" = "1" ] ; then
 	reboot
 fi
 %>

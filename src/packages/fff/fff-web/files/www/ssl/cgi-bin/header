@@ -9,7 +9,7 @@ UPGRADE_PATH="$(getUpgradePath)"
 echo -en "Content-Type: text/html\r\n\r\n"
 nav_entry() {
 	script_file="/cgi-bin/$1"
-	if [ "$script_file" == "$REQUEST_URI" ] ; then
+	if [ "$script_file" = "$REQUEST_URI" ] ; then
 		local class_active=' class="active"'
 	fi
 	echo -ne "\t<li${class_active}><a href=\"${script_file}\">$2</a></li>\n\t\t"

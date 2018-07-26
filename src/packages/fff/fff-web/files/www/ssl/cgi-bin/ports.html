@@ -3,7 +3,7 @@
 <%
 board_name=$(uci -q get board.model.name)
 # write
-if [ "$REQUEST_METHOD" == "POST" ] ; then
+if [ "$REQUEST_METHOD" = "POST" ] ; then
 	if [ "$POST_change_mode" != "" ] ; then
 		sed -i '/^.*# set via WebUI/d' /etc/network.config
 		echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.config
@@ -45,7 +45,7 @@ format_state() {
 format_port() {
 	port=$(echo "$1" | sed 's/.* port:\([^ ]*\) .*/\1/')
 	link=$(echo "$1" | sed 's/.* link:\([^ ]*\).*/\1/')
-	if [ "$link" == "up" ] ; then
+	if [ "$link" = "up" ] ; then
 		speed=$(echo "$1" | sed 's/.* speed:\([^ ]*\).*/\1/')
 		duplex=$(echo "$1" | sed 's/.* \([^ ]*-duplex\).*/\1/')
 	else
@@ -95,7 +95,7 @@ format_port() {
 				if [ ! "$(awk -F= '/WANDEV=/ { print $2 }' /etc/network.$board_name)" = "$(awk -F= '/SWITCHDEV=/ { print $2 }' /etc/network.$board_name)" ] ; then
 					wanif=$(uci -q get network.wan.ifname)
 					link=$(cat /sys/class/net/${wanif}/operstate)
-					if [ "$link" == "up" ] ; then
+					if [ "$link" = "up" ] ; then
 						speed="connected"
 					else
 						speed="no link"
@@ -166,10 +166,10 @@ format_port() {
 				<th style="width: 1em;">Anschluss&nbsp;Modus:</th>
 				<td>
 					<select name="mode">
-						<option value="BATMAN" <% [ "$ETHMODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
-						<option value="CLIENT" <% [ "$ETHMODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<option value="BATMAN" <% [ "$ETHMODE" = "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$ETHMODE" = "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
 						<% if grep -q "ONE_PORT" "/etc/network.$board_name" ; then %>
-						<option value="WAN" <% [ "$ETHMODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+						<option value="WAN" <% [ "$ETHMODE" = "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
 						<% fi %>
 					</select>
 				</td>
@@ -207,16 +207,16 @@ format_port() {
 			<tr>
 				<td>
 					<select name="mode0">
-						<option value="BATMAN" <% [ "$LAN0MODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
-						<option value="CLIENT" <% [ "$LAN0MODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
-						<option value="WAN" <% [ "$LAN0MODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+						<option value="BATMAN" <% [ "$LAN0MODE" = "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$LAN0MODE" = "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<option value="WAN" <% [ "$LAN0MODE" = "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
 					</select>
 				</td>
 				<td>
 					<select name="mode1">
-						<option value="BATMAN" <% [ "$LAN1MODE" == "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
-						<option value="CLIENT" <% [ "$LAN1MODE" == "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
-						<option value="WAN" <% [ "$LAN1MODE" == "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
+						<option value="BATMAN" <% [ "$LAN1MODE" = "BATMAN" ] && echo -n 'selected="selected" ' %>>BATMAN</option>
+						<option value="CLIENT" <% [ "$LAN1MODE" = "CLIENT" ] && echo -n 'selected="selected" ' %>>CLIENT</option>
+						<option value="WAN" <% [ "$LAN1MODE" = "WAN" ] && echo -n 'selected="selected" ' %>>WAN</option>
 					</select>
 				</td>
 				<td><input type="submit" name="change_twoport" /></td>
@@ -240,7 +240,7 @@ format_port() {
 <%in /www/ssl/cgi-bin/footer %>
 <%
 # write
-if [ "$do_reboot" == "1" ] ; then
+if [ "$do_reboot" = "1" ] ; then
 	reboot
 fi
 %>

@@ -15,7 +15,7 @@ json_select vpn
 while json_select "$Index" > /dev/null
 do
 	json_get_var protocol protocol
-	if [ "$protocol" == "fastd" ]; then
+	if [ "$protocol" = "fastd" ]; then
 		json_get_var servername name
 		filename="/etc/fastd/fff/peers/$servername"
 		echo "#name \"${servername}\";" > "$filename"
