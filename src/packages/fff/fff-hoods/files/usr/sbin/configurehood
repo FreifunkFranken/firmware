@@ -195,9 +195,9 @@ if [ -s "$hoodfiletmp" ]; then
 	# and now we get to vpn-select script and load VPNs directly from /tmp/keyxchangev2data
 	
 	if hasInternet ; then
-		sh /usr/sbin/vpn-select
+		/usr/sbin/vpn-select "$hoodfiletmp"
 	else
-		sh /usr/sbin/vpn-stop
+		/usr/sbin/vpn-stop
 	fi
 
 	# now we load the prefix from the hoodfile and set this to br-mesh
