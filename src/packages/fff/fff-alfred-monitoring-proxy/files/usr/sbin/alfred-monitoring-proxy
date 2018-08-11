@@ -1,0 +1,7 @@
+#!/bin/ash
+
+api_url="https://monitoring.freifunk-franken.de/api/alfred"
+fetch_id="64"
+
+(echo -n "{\"$fetch_id\": "; alfred-json -r "$fetch_id"; echo -n "}") | \
+    curl -k -v -H "Content-type: application/json; charset=UTF-8" -X POST --data "@-" $api_url

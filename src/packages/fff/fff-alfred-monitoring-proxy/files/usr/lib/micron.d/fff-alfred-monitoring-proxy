@@ -1,0 +1,1 @@
+*/5 * * * * sleep $(/usr/bin/random 70 85); /usr/sbin/alfred-monitoring-proxy

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+uci -q set "alfred.alfred.mode=master"
+
+uci -q commit alfred
+
