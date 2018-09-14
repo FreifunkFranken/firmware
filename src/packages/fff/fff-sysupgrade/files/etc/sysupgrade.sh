@@ -46,7 +46,7 @@ VERSION=$(awk -F: '/VERSION:/ { print $2 }' release.nfo)
 rm -f release.nfo
 echo "Firmware found on server: $VERSION"
 
-if [ "$VERSION" -eq "$FIRMWARE_VERSION" ]; then
+if [ "$VERSION" = "$FIRMWARE_VERSION" ]; then
   echo "The installed firmware version is already the current version."
   echo ""
 
