@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-sysupgrade
-PKG_VERSION:=7
-PKG_RELEASE:=4
+PKG_VERSION:=8
+PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
