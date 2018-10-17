@@ -1,7 +1,7 @@
-From 90e6f265608037301cd0b865b172a642dd2a254a Mon Sep 17 00:00:00 2001
+From 5957781393de24387301ffb1d49ee115bb713928 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Sat, 8 Jul 2017 10:47:56 +0200
-Subject: [PATCH 3/7] ntpd host as string
+Subject: [PATCH 3/4] ntpd host as string
 
 ---
  package/utils/busybox/files/sysntpd | 2 +-
@@ -21,5 +21,5 @@ index e693e40..12383a4 100755
  
  start_service() {
 -- 
-2.1.4
+2.7.4
 
