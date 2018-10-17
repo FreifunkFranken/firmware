@@ -4,5 +4,5 @@ subtarget=generic
 target=$builddir/$machine
 
 images=(
-        "lede-mpc85xx-generic-tl-wdr4900-v1-squashfs-sysupgrade.bin"
+        "openwrt-${chipset}-${subtarget}-tl-wdr4900-v1-squashfs-sysupgrade.bin"
        )

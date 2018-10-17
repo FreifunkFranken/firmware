@@ -1,0 +1,51 @@
+From a90784d1eb5eff968d6d2ced5c33b980dcfe40d0 Mon Sep 17 00:00:00 2001
+From: Tim Niemeyer <tim@tn-x.org>
+Date: Mon, 6 Aug 2018 18:39:04 +0200
+Subject: [PATCH] allow building all devives as tiny
+
+---
+ target/linux/ar71xx/image/Makefile      |  5 +++++
+ target/linux/ar71xx/tiny/config-default | 14 ++++++++++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/target/linux/ar71xx/image/Makefile b/target/linux/ar71xx/image/Makefile
+index 1eaf1e457c..602323bba2 100644
+--- a/target/linux/ar71xx/image/Makefile
++++ b/target/linux/ar71xx/image/Makefile
+@@ -22,6 +22,11 @@ endif
+ ifeq ($(SUBTARGET),tiny)
+ include ./tiny-tp-link.mk
+ include ./tiny-legacy-devices.mk
++include ./generic.mk
++include ./generic-legacy-devices.mk
++include ./generic-senao.mk
++include ./generic-tp-link.mk
++include ./generic-ubnt.mk
+ endif
+ ifeq ($(SUBTARGET),nand)
+ include ./nand.mk
+diff --git a/target/linux/ar71xx/tiny/config-default b/target/linux/ar71xx/tiny/config-default
+index 2e9031a24c..fa62b41047 100644
+--- a/target/linux/ar71xx/tiny/config-default
++++ b/target/linux/ar71xx/tiny/config-default
+@@ -70,3 +70,17 @@ CONFIG_SOC_AR933X=y
+ CONFIG_SOC_AR934X=y
+ CONFIG_SOC_QCA953X=y
+ CONFIG_SOC_QCA956X=y
++# FFF
++CONFIG_ATH79_MACH_ARCHER_C25_V1=y
++CONFIG_ATH79_MACH_ARCHER_C7=y
++CONFIG_ATH79_MACH_CPE510=y
++CONFIG_ATH79_MACH_GL_AR150=y
++CONFIG_ATH79_MACH_TL_WDR3500=y
++CONFIG_ATH79_MACH_TL_WDR4300=y
++CONFIG_ATH79_MACH_TL_WR1043ND=y
++CONFIG_ATH79_MACH_TL_WR1043ND_V2=y
++CONFIG_ATH79_MACH_TL_WR1043ND_V4=y
++CONFIG_ATH79_MACH_TL_WR1043N_V5=y
++CONFIG_ATH79_MACH_UBNT=y
++CONFIG_ATH79_MACH_UBNT_UNIFIAC=y
++CONFIG_ATH79_MACH_UBNT_XM=y
+-- 
+2.11.0
+

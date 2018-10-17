@@ -274,8 +274,9 @@ cp_firmware() {
     [ -n "$subtarget" ] || subtarget="generic"
 
     for image in ${images[@]}; do
-        filename_build=${image//lede/fff-${version}}
+        filename_build=${image//openwrt/fff-${version}}
         filename_build=${filename_build//generic/g}
+        filename_build=${filename_build//tiny/t}
         cp "$target/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
 
         for region in "" "-eu" "-us"; do
