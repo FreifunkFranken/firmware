@@ -61,6 +61,9 @@ case "$BOARD" in
         grep "4300" /var/sysinfo/model && BOARD=tl-wdr4300-v1
         grep "4310" /var/sysinfo/model && BOARD=tl-wdr4310-v1
         ;;
+    tplink,tl-wdr4900-v1)
+        BOARD=tl-wdr4900-v1
+        ;;
     tl-mr3020)
         BOARD=tl-mr3020-v1
         ;;
