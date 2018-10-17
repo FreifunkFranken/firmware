@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-firewall
-PKG_VERSION:=2
+PKG_VERSION:=3
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -16,7 +16,8 @@ define Package/$(PKG_NAME)
     DEPENDS:=+arptables \
              +ebtables +ebtables-utils \
              +kmod-ebtables-ipv4 +kmod-ebtables-ipv6 \
-             +iptables-mod-filter +iptables-mod-ipopt +iptables-mod-conntrack-extra
+             +iptables-mod-filter +iptables-mod-ipopt +iptables-mod-conntrack-extra \
+             +kmod-nf-conntrack6
 endef
 
 define Package/$(PKG_NAME)/description
