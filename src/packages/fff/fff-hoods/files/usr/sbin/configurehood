@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# Allow only one instance
+lockfile="/var/lock/${0##*/}.lock"
+if ! lock -n "$lockfile"; then
+	echo "Only one instance of $0 allowed."
+	exit 1
+fi
+trap "lock -u \"$lockfile\"" INT TERM EXIT
+
 . /usr/share/libubox/jshn.sh
 . /lib/functions/fff/keyxchange
 . /lib/functions/fff/network
