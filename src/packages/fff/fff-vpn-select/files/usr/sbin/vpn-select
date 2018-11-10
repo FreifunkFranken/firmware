@@ -26,7 +26,7 @@ do
 		echo "key \"${key}\";" >> "$filename"
 		json_get_var address address
 		json_get_var port port
-		echo "remote ipv4 \"${address}\" port ${port};" >> "$filename"
+		echo "remote \"${address}\" port ${port};" >> "$filename"
 		echo "" >> "$filename"
 		echo "float yes;" >> "$filename"
 		
