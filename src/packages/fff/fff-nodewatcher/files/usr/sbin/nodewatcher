@@ -65,7 +65,7 @@ crawl() {
     err "$(date): Collecting basic system status data"
     hostname="$(cat /proc/sys/kernel/hostname)"
     mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
-    [ "$hostname" = "LEDE" ] && hostname="$mac"
+    [ "$hostname" = "OpenWrt" ] && hostname="$mac"
     [ "$hostname" = "FFF" ] && hostname="$mac"
     description="$(uci -q get fff.system.description)"
     if [ -n "$description" ]; then
