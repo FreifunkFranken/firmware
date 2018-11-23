@@ -12,7 +12,7 @@ if ! lock -n "$lockfile"; then
 fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
-SCRIPT_VERSION="50"
+SCRIPT_VERSION="51"
 
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
@@ -147,6 +147,7 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"${position_comment}"
     SYSTEM_DATA=$SYSTEM_DATA"${contact}"
     SYSTEM_DATA=$SYSTEM_DATA"<hood>$(uci -q get "system.@system[0].hood")</hood>"
+    SYSTEM_DATA=$SYSTEM_DATA"<hoodid>$(uci -q get "system.@system[0].hoodid")</hoodid>"
     SYSTEM_DATA=$SYSTEM_DATA"<distname>$distname</distname>"
     SYSTEM_DATA=$SYSTEM_DATA"<distversion>$distversion</distversion>"
     SYSTEM_DATA=$SYSTEM_DATA"$cpu"

@@ -95,6 +95,7 @@ else
 			rm -f "$hoodfilewww" # delete this, so wrong hood file is not broadcasted anymore
 
 			uci -q del "system.@system[0].hood"
+			uci -q del "system.@system[0].hoodid"
 			uci -q commit system
 			reload_config
 		
@@ -125,6 +126,7 @@ if [ -s "$hoodfiletmp" ]; then
 		json_select hood
 
 		json_get_var hood name
+		json_get_var hoodid id
 		[ -n "$mesh_id" ] || json_get_var mesh_id mesh_id
 		[ -n "$mesh_bssid" ] || json_get_var mesh_bssid mesh_bssid
 		[ -n "$mesh_essid" ] || json_get_var mesh_essid mesh_essid
@@ -146,8 +148,9 @@ if [ -s "$hoodfiletmp" ]; then
 			exit 0
 		fi
 
-		echo "Setting hood name: $hood"
+		echo "Setting hood name: $hood (ID $hoodid)"
 		uci -q set "system.@system[0].hood=$hood"
+		uci -q set "system.@system[0].hoodid=$hoodid"
 		uci -q commit system
 		reload_config
 
