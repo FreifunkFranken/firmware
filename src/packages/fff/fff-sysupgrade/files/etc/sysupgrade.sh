@@ -17,12 +17,10 @@ BOARD=$(uci get board.model.name)
 #decide SOC
 case $BOARD in
     tl-wdr4900-v1 )
-        SOC="mpc85xx"
-        SUBTARGET="g"
+        SOC="mpc85xx-g"
         ;;
     * )
-        SOC="ar71xx"
-        SUBTARGET="t"
+        SOC="ar71xx-t"
         ;;
 esac
 echo ""
@@ -71,7 +69,7 @@ if [ "$VERSION" = "$FIRMWARE_VERSION" ]; then
   done
 fi
 
-FILE="fff-${VERSION}-${SOC}-${SUBTARGET}-${BOARD}-squashfs-sysupgrade.bin"
+FILE="fff-${VERSION}-${SOC}-${BOARD}-squashfs-sysupgrade.bin"
 echo "Downloading $FILE"
 echo ""
 wget "${UPGRADE_PATH}/${FILE}"
