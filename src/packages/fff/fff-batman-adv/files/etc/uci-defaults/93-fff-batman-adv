@@ -5,7 +5,6 @@ uci batch <<EOF
   set batman-adv.bat0=mesh
   set batman-adv.bat0.gw_mode='client'
   set batman-adv.bat0.gw_sel_class='1'
-  set batman-adv.bat0.bridge_loop_avoidance='0'
   set batman-adv.bat0.network_coding='0'
   set batman-adv.bat0.aggregated_ogms='1'
   set batman-adv.bat0.ap_isolation='0'
