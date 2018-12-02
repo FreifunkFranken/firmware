@@ -3,6 +3,7 @@
 . /etc/firmware_release
 . /lib/functions/fff/evalhoodinfo
 . /lib/functions/fff/evalbytes
+. /lib/functions.sh # required for config_load and config_foreach
 
 board_name=$(uci -q get board.model.name)
 
@@ -132,6 +133,32 @@ echo "Empfangen: $(cat /sys/class/net/br-mesh/statistics/rx_bytes 2> /dev/null |
 echo "Gesendet: $(cat /sys/class/net/br-mesh/statistics/tx_bytes 2> /dev/null | human_bytes)"
 echo "IPv4 Adressen: $(addr 4 br-mesh)"
 echo "IPv6 Adressen: $(addr 6 br-mesh)"
+
+echo ""
+if [ -d /etc/fastd/fff/peers ]; then
+	echo "-> FASTD: Peer list"
+	for fastdpeer in $(ls /etc/fastd/fff/peers); do
+		echo "${fastdpeer}: $(grep "remote" "/etc/fastd/fff/peers/$fastdpeer" | sed "s/remote //")"
+	done
+else
+	echo "-> FASTD"
+	echo "No FASTD peers available"
+fi
+
+function printL2TP() {
+	local broker="$1"
+	echo "${broker}: $(uci -q get "tunneldigger.$broker.address")"
+}
+
+echo ""
+if [ -s /etc/config/tunneldigger ]; then
+	echo "-> L2TP: Peer list"
+	config_load tunneldigger
+	config_foreach printL2TP broker
+else
+	echo "-> L2TP"
+	echo "No L2TP peers available"
+fi
 
 echo ""
 echo "-> Netz: WAN"
