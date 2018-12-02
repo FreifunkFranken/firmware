@@ -8,6 +8,7 @@ board_name=$(uci -q get board.model.name)
 
 HOSTNAME=$(uci -q get 'fff.system.hostname')
 hood="$(uci -q get "system.@system[0].hood")"
+hoodid="$(uci -q get "system.@system[0].hoodid")"
 
 format_state() {
 	batmanports=$(swconfig dev switch0 vlan 3 show | grep 'ports:')
@@ -106,7 +107,7 @@ echo "Uhrzeit: $(date)"
 
 echo ""
 echo "-> HOOD"
-echo "Hood: ${hood}"
+echo "Hood: ${hood} / ID: ${hoodid}"
 echo "Mesh-Type (2.4/5 GHz): ${mesh_type2} / ${mesh_type5}"
 echo "Channel (2.4/5 GHz): ${real_chan2ghz} / ${real_chan5ghz} (real) | ${chan2ghz} / ${chan5ghz} (Hood)"
 echo "SSID (Client-AP): ${real_essid} (real) | ${essid} (Hood)"
