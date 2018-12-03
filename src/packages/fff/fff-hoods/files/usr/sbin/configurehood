@@ -77,6 +77,9 @@ if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
 fi
 
 if [ -s "$hoodfilelocal" ]; then
+	# remove webroot hoodfile to prevent offering local hoodfiles to neighbours
+	rm -f "$hoodfilewww"
+
 	cp "$hoodfilelocal" "$hoodfiletmp"
 	echo "Use local hood file"
 else
