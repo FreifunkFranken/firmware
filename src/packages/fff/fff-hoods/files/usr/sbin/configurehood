@@ -77,7 +77,7 @@ if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
 fi
 
 if [ -s "$hoodfilelocal" ]; then
-	hoodfiletmp="$hoodfilelocal"
+	cp "$hoodfilelocal" "$hoodfiletmp"
 	echo "Use local hood file"
 else
 	# if we have Internet, we download the Hoodfile from the keyxchangev2
