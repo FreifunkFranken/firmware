@@ -98,6 +98,10 @@ else
     case $yn in
         [Yy]*|[Jj]*)
             echo ""
+            echo "Freeing caches ..."
+            echo 3 > /proc/sys/vm/drop_caches
+
+            echo ""
             echo "Starting firmware upgrade. Don't touch me until I reboot."
             echo ""
             echo ""

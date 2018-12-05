@@ -70,6 +70,8 @@ if [ "$do_reset" = "1" ] ; then
 	echo "</pre>"
 elif [ "$do_sysupgrade" = "1" ] ; then
 	echo "<pre>"
+	echo "# Freeing caches ..."
+	echo 3 > /proc/sys/vm/drop_caches
 	echo "# sysupgrade $args $HASERL_firmware_path"
 	sysupgrade $args $HASERL_firmware_path
 	echo "</pre>"
