@@ -1,0 +1,5 @@
+# Erlaube nur fe80::1 von BATMAN -> CLIENT
+ebtables -A FORWARD -p IPv6 --ip6-source fe80::1 -j IN_ONLY
+
+# Erlaube nur fe80::1 von KNOTEN -> CLIENT
+ebtables -A INPUT -p IPv6 --ip6-source fe80::1 -j IN_ONLY
