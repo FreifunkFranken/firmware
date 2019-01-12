@@ -135,3 +135,9 @@ Nun kann man mit `git status` die Änderungen sehen. Mit `git add` staged man di
 
 ### Patch schicken
 Auf der Mailingliste franken-dev@freifunk.net kannst du natürlich jederzeit Fragen stellen, falls etwas nicht klar sein sollte.
+
+## Hinzufügen von Paketen zum Image
+
+Das Hinzufügen von Paketen sollte mit Bedacht erfolgen, da dies (bei unvorsichtiger Konfiguration( den Betrieb des Routers und eventuell des Freifunk-Netzes beeinträchtigen könnte.  
+Mit dem Firmware-Verzeichnis als Arbeitsverzeichnis kann mittels des Befehls `./build/<target>/scripts/feeds install <paket>` ein Paket zur menuconfig hinzugefügt werden.
+Mittels des schon bekannten `./buildscript config openwrt` kann das Paket dann ausgewählt werden. Es wird beim anschließenden Build zum Image hinzugefügt.
