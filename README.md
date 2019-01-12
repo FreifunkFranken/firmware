@@ -13,11 +13,11 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 * `cd firmware`
 
 ### Erste Schritte
-Mit Hilfe der Community-Files werden Parameter, wie die ESSID, der Kanal sowie z.B. die Netmon-IP gesetzt. Diese Einstellungen sind Community weit einheitlich und müssen i.d.R. nicht geändert werden.
-* `./buildscript selectcommunity community/franken.cfg`
+
 Je nach dem, für welche Hardware die Firmware gebaut werden soll muss das BSP gewählt werden:
-* `./buildscript selectbsp bsp/board wr1043nd.bsp`
-* `./buildscript`
+
+* `./buildscript selectbsp bsp/board_ar71xx.bsp`
+* Um die vorhandenen BSPs zu sehen, kann `./buildscript selectbsp help` ausgeführt werden.
 
 ## Was ist ein BSP?
 Ein BSP (Board-Support-Package) beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
@@ -65,10 +65,11 @@ Das Buildscript lädt ebenfalls automatisch das Community file und generiert ein
 * postbuild
   * board_postbuild() wird aufgerufen
 
-### `./buildscript config`
-Um das Arbeiten mit den OpenWrt .config's zu vereinfachen bietet das Buildscript die Möglichkeit die OpenWrt menuconfig und die OpenWrt kernel_menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Configs in das BSP zu übernehmen.
+### `./buildscript config openwrt`
+Um das Arbeiten mit den OpenWrt .config's zu vereinfachen bietet das Buildscript die Möglichkeit OpenWrt's menuconfig aufzurufen. Im Anschluss hat man die Möglichkeit die frisch editierten Config in das BSP zu übernehmen.  
+Dieses Kommando arbeitet folgendermaßen:
 * prebuild
-* OpenWrt: `make menuconfig ; make kernel_menuconfig`
+* OpenWrt: `make menuconfig`
 * Speichern, y/n?
 * Config-Format vereinfachen
 * Config ins BSP zurück speichern
@@ -82,7 +83,7 @@ git clone https://github.com/FreifunkFranken/firmware.git
 cd firmware
 ```
 
-### Erstes Images erzeugen
+### Erste Images erzeugen
 Du fügst im board_postbuild ein, dass auch die Images für den wr1043v2 kopiert werden:
 ```
 vim bsp/board_wr1043nd.bsp
@@ -101,7 +102,6 @@ cp bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v1 bsp/wr1043nd/root_fi
 Anschließend kann ein erstes Image erzeugt werden:
 ```
 ./buildscript selectbsp bsp/board_wr1043nd.bsp
-./buildscript selectcommunity community/franken.cfg
 
 ./buildscript prepare
 ./buildscript build
