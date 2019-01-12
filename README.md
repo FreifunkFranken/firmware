@@ -84,15 +84,16 @@ cd firmware
 ```
 
 ### Erste Images erzeugen
-Du fügst im board_postbuild ein, dass auch die Images für den wr1043v2 kopiert werden:
+Du fügst die Dateinamen der Images, die zusätzlich kopiert werden sollen, in das `images`-Array ein:
+
 ```
-vim bsp/board_wr1043nd.bsp
-board_postbuild() {
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v1-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v1-squashfs-sysupgrade.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v2-squashfs-factory.bin ./bin/
-    cp $target/bin/ar71xx/openwrt-ar71xx-generic-tl-wr1043nd-v2-squashfs-sysupgrade.bin ./bin/
-}
+vim bsp/board_ar71xx.bsp
+images=(
+    // ...
+    openwrt-${chipset}-${subtarget}-tl-wr1043nd-v2-squashfs-sysupgrade.bin"
+    openwrt-${chipset}-${subtarget}-tl-wr1043nd-v2-squashfs-factpry.bin"
+    // ...
+)
 ```
 
 Dann muss auf jeden Fall noch das Netzwerk richtig konfiguriert werden. Dazu muss man den Router sehr gut kennen, i.d.R. lernt man den erst beim Verwenden kennen, daher ist ein guter Startpunkt die Config vom v1 zu kopieren und erstmal zu gucken was passiert:
