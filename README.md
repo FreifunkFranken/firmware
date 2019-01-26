@@ -7,14 +7,12 @@ Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder 
 Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.freifunk-franken.de/w/Hauptseite>.
 
 # Firmware selbst kompilieren
-
-## Benutzung des Buildscripts
-### Voraussetzungen
+## Voraussetzungen
 * `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten installiert werden, diese Liste wird sich hoffentlich nach und nach füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
 * `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
-### Erste Schritte
+## Erste Schritte
 Je nachdem, für welche Hardware die Firmware gebaut werden soll, muss das BSP gewählt werden:
 
 * `./buildscript selectbsp bsp/board_ar71xx.bsp`
