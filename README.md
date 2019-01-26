@@ -4,6 +4,8 @@ firmware
 # Was ist Freifunk?
 Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke. Jeder Nutzer im Freifunk-Netz stellt einen günstigen WLAN-Router für sich selbst und den Datentransfer der anderen Teilnehmer zur Verfügung. Dieses Netzwerk kann von jedem genutzt werden.
 
+Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.freifunk-franken.de/w/Hauptseite>.
+
 # Firmware selbst kompilieren
 
 ## Benutzung des Buildscripts
