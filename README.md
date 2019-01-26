@@ -51,6 +51,15 @@ Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die 
 * Patches werden angewandt
 * board_prepare() aus dem BSP wird aufgerufen (wird. z.B. fur Patches für eine bestimmte HW verwendet)
 
+### `./buildscript config openwrt`
+Um das Arbeiten mit den .config-Dateien von OpenWrt zu vereinfachen, bietet das Buildscript die Möglichkeit das `menuconfig` von OpenWrt aufzurufen. Nachdem man die gewünschten Einstellungen vorgenommen hat, hat man die Möglichkeit, die frisch editierte Konfiguration in das BSP zu übernehmen.
+Dieses Kommando arbeitet folgendermaßen:
+* prebuild
+* OpenWrt: `make menuconfig`
+* Speichern, y/n?
+* Config-Format vereinfachen
+* Config ins BSP zurück speichern
+
 ### `./buildscript build`
 * prebuild
   * $target/files aufräumen
@@ -63,15 +72,6 @@ Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die 
 * OpenWrt: make
 * postbuild
   * board_postbuild() wird aufgerufen
-
-### `./buildscript config openwrt`
-Um das Arbeiten mit den .config-Dateien von OpenWrt zu vereinfachen, bietet das Buildscript die Möglichkeit das `menuconfig` von OpenWrt aufzurufen. Nachdem man die gewünschten Einstellungen vorgenommen hat, hat man die Möglichkeit, die frisch editierte Konfiguration in das BSP zu übernehmen.
-Dieses Kommando arbeitet folgendermaßen:
-* prebuild
-* OpenWrt: `make menuconfig`
-* Speichern, y/n?
-* Config-Format vereinfachen
-* Config ins BSP zurück speichern
 
 ## Erweiterung eines BSPs
 Beispielhaftes Vorgehen um den WR1043V2 zu unterstützen.
