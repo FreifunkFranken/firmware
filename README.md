@@ -9,20 +9,20 @@ Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.
 # Firmware selbst kompilieren
 
 ## Benutzung des Buildscripts
-### Prerequisites
-* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten Installiert werden, diese Liste wird sich hoffentlich nach und nach Füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
+### Voraussetzungen
+* `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten installiert werden, diese Liste wird sich hoffentlich nach und nach füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
 * `git clone https://github.com/FreifunkFranken/firmware.git`
 * `cd firmware`
 
 ### Erste Schritte
-Je nach dem, für welche Hardware die Firmware gebaut werden soll muss das BSP gewählt werden:
+Je nachdem, für welche Hardware die Firmware gebaut werden soll, muss das BSP gewählt werden:
 
 * `./buildscript selectbsp bsp/board_ar71xx.bsp`
 * Um die vorhandenen BSPs zu sehen, kann `./buildscript selectbsp help` ausgeführt werden.
 
 ## Was ist ein BSP?
 Ein BSP (Board-Support-Package) beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
-Typischerweise ist eine folgene Ordner-Struktur vorhanden:
+Typischerweise ist eine Ordner-Struktur wie folgt vorhanden:
 * .config
 * root_file_system/
   * etc/
@@ -34,7 +34,7 @@ Typischerweise ist eine folgene Ordner-Struktur vorhanden:
     * crontabs/
       * root
 
-Die Daten des BSP werden nie alleine verwendet. Zu erst werden immer die Daten aus dem "default"-BSP zum Ziel kopiert, erst danach werden die Daten des eigentlichen BSPs dazu kopiert. Durch diesen Effekt kann ein BSP die "default" Daten überschreiben.
+Die Daten des BSP werden nie alleine verwendet. Zuerst werden immer die Daten aus dem "default"-BSP zum Ziel kopiert, erst danach werden die Daten des eigentlichen BSPs dazu kopiert. Durch diesen Effekt kann ein BSP die "default" Daten überschreiben.
 
 ## Die Verwendung des Buildscripts
 Die BSP-Datei wird durch das Buildscript automatisch als dot-Script geladen, somit stehen dort alle Funktionen zur Verfügung.
@@ -43,15 +43,15 @@ Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die 
 ### `./buildscript prepare`
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
   * OpenWrt
-  * Sämtliche Packages (ggfs werden Patches angewandt)
+  * Sämtliche Packages (ggf. werden Patches angewandt)
 
-* Ein ggfs altes Target wird gelöscht
+* Ein ggf. altes Target wird gelöscht
 * OpenWrt wird ins Target exportiert (kopiert)
 * Eine OpenWrt Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
 * Die Feeds werden geladen
 * Spezielle Auswahl an Paketen wird geladen
 * Patches werden angewandt
-* board_prepare() aus dem BSP wird aufgerufen (wird. z.B. fur Patches für eine bestimmte HW verwendet)
+* board_prepare() aus dem BSP wird aufgerufen (wird z.B. für Patches für eine bestimmte Hardware verwendet)
 
 ### `./buildscript config openwrt`
 Um das Arbeiten mit den .config-Dateien von OpenWrt zu vereinfachen, bietet das Buildscript die Möglichkeit das `menuconfig` von OpenWrt aufzurufen. Nachdem man die gewünschten Einstellungen vorgenommen hat, hat man die Möglichkeit, die frisch editierte Konfiguration in das BSP zu übernehmen.
@@ -126,7 +126,7 @@ reboot
 ```
 
 ### Einstellungen testen und ins BSP übernehmen
-Wenn jetzt die Ports immer noch alle korrekt funktionieren kann man die datei auf den eigenen PC kopieren:
+Wenn jetzt die Ports immer noch alle korrekt funktionieren kann man die Datei auf den eigenen PC kopieren:
 ```
 scp root@[ipv6ll%scope]:/etc/network.tl-wr1043nd-v2 /path/to/git/firmware/bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v2
 ```
