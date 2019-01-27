@@ -13,7 +13,7 @@ define Package/fff-alfred-monitoring-proxy
     CATEGORY:=Freifunk
     TITLE:=Freifunk-Franken Alfred-Monitoring-Proxy
     URL:=https://www.freifunk-franken.de/
-    DEPENDS:=+micrond +fff-random +curl +alfred-json +fff-nodewatcher
+    DEPENDS:=+micrond +fff-random +curl +alfred-json
 endef
 
 define Package/fff-alfred-monitoring-proxy/description
