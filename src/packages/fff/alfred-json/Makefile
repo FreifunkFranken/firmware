@@ -6,8 +6,6 @@ PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=e4cacfc791092389f63c36a435d3f1d069f8a13e
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/FreifunkFranken/alfred-json.git
 
 include $(INCLUDE_DIR)/package.mk
