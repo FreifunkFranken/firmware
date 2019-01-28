@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci batch <<EOF
+	set dhcp.mesh=dhcp
+	set dhcp.mesh.interface='mesh'
+	set dhcp.mesh.ra='server'
+	set dhcp.mesh.ra_default='2'
+	set dhcp.mesh.ra_management='0'
+EOF
+
+exit 0
