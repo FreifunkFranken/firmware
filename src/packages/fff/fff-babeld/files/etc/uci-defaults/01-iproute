@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "10 fff" >> /etc/iproute2/rt_tables

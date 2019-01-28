@@ -40,7 +40,7 @@ ROUTING=(routing
          https://git.openwrt.org/feed/routing.git
          1b9d1c419f0ecefda51922a7845ab2183d6acd76
          "0002-Add-batman-adv-patch-to-remove-gw-mode-switch-messag.patch") # openwrt-18.06 from 2018-06-13
-ROUTING_PKGS="kmod-batman-adv batctl alfred"
+ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
 
 FFF=(fff)
 FFF_PKGS="-a"

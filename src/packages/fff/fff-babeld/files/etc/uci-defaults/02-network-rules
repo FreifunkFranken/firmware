@@ -1,0 +1,46 @@
+#!/bin/sh
+
+uci batch <<EOF
+  add network rule
+  set network.@rule[0].src='10.50.0.0/16'
+  set network.@rule[0].lookup='10'
+  set network.@rule[0].priority='20'
+  add network rule
+  set network.@rule[1]=rule
+  set network.@rule[1].dest='10.50.0.0/16'
+  set network.@rule[1].lookup='10'
+  set network.@rule[1].priority='20'
+  add network rule
+  set network.@rule[2].src='10.83.0.0/16'
+  set network.@rule[2].lookup='10'
+  set network.@rule[2].priority='20'
+  add network rule
+  set network.@rule[3]=rule
+  set network.@rule[3].dest='10.83.0.0/16'
+  set network.@rule[3].lookup='10'
+  set network.@rule[3].priority='20'
+  add network rule
+  set network.@rule[4]=rule
+  set network.@rule[4].in='mesh'
+  set network.@rule[4].lookup='10'
+  set network.@rule[4].priority='31'
+  add network rule6
+  set network.@rule6[0]=rule6
+  set network.@rule6[0].src='fc00::/7'
+  set network.@rule6[0].lookup='10'
+  set network.@rule6[0].priority='20'
+  add network rule6
+  set network.@rule6[1]=rule6
+  set network.@rule6[1].dest='fc00::/7'
+  set network.@rule6[1].lookup='10'
+  set network.@rule6[1].priority='20'
+  add network rule6
+  set network.@rule6[2]=rule6
+  set network.@rule6[2].in='mesh'
+  set network.@rule6[2].lookup='10'
+  set network.@rule6[2].priority='31'
+EOF
+
+uci commit
+
+exit 0
