@@ -1,0 +1,42 @@
+From 76c420d218b666e7b4415ca2186e3c2ce9d5d358 Mon Sep 17 00:00:00 2001
+From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+Date: Wed, 10 Oct 2018 20:05:53 +0200
+Subject: [PATCH 1/2] firmware-utils: tplink-safeloader: Add CPE210 v3
+
+Add TP-Link CPE210 v3 to the support list.
+It's identical to the v2.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ tools/firmware-utils/src/tplink-safeloader.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/tools/firmware-utils/src/tplink-safeloader.c b/tools/firmware-utils/src/tplink-safeloader.c
+index b2cc96b..8164c1c 100644
+--- a/tools/firmware-utils/src/tplink-safeloader.c
++++ b/tools/firmware-utils/src/tplink-safeloader.c
+@@ -155,7 +155,7 @@ static struct device_info boards[] = {
+ 		.last_sysupgrade_partition = "support-list",
+ 	},
+ 
+-	/** Firmware layout for the CPE210 V2 */
++	/** Firmware layout for the CPE210 V2 and V3 */
+ 	{
+ 		.id     = "CPE210V2",
+ 		.vendor = "CPE210(TP-LINK|UN|N300-2|00000000):2.0\r\n",
+@@ -170,7 +170,11 @@ static struct device_info boards[] = {
+ 			"CPE210(TP-LINK|US|N300-2|55530000):2.0\r\n"
+ 			"CPE210(TP-LINK|UN|N300-2):2.0\r\n"
+ 			"CPE210(TP-LINK|EU|N300-2):2.0\r\n"
+-			"CPE210(TP-LINK|US|N300-2):2.0\r\n",
++			"CPE210(TP-LINK|US|N300-2):2.0\r\n"
++			"CPE210(TP-LINK|EU|N300-2|45550000):3.0\r\n"
++			"CPE210(TP-LINK|UN|N300-2|00000000):3.0\r\n"
++			"CPE210(TP-LINK|UN|N300-2):3.0\r\n"
++			"CPE210(TP-LINK|EU|N300-2):3.0\r\n",
+ 		.support_trail = '\xff',
+ 		.soft_ver = NULL,
+ 
+-- 
+2.7.4
+

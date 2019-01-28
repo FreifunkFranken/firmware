@@ -1,0 +1,2 @@
+uci -q set system.rssid_wlan0.dev=radio0
+uci -q commit system
