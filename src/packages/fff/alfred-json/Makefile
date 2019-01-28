@@ -16,7 +16,7 @@ define Package/alfred-json
     CATEGORY:=Utilities
     TITLE:=A.L.F.R.E.D - JSON Client
     URL:=https://github.com/FreifunkFranken/alfred-json
-    DEPENDS:=+jansson +zlib
+    DEPENDS:=+jansson +zlib +alfred
 endef
 
 define Package/alfred-json/install
