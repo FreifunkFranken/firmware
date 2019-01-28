@@ -1,15 +1,9 @@
-From e602e72f7e67db86264c7daf70c8cf2c32913139 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Mon, 6 Aug 2018 18:39:04 +0200
-Subject: [PATCH] allow building all devives as tiny
-
----
- target/linux/ar71xx/image/Makefile      |  5 +++++
- target/linux/ar71xx/tiny/config-default | 15 +++++++++++++++
- 2 files changed, 20 insertions(+)
+Subject: allow building all devives as tiny
 
 diff --git a/target/linux/ar71xx/image/Makefile b/target/linux/ar71xx/image/Makefile
-index 1eaf1e457c..602323bba2 100644
+index 1eaf1e457c8862b603cc2477af1638a05aa5a599..602323bba27ee1e401a3e99bb47b9327e9db2e6a 100644
 --- a/target/linux/ar71xx/image/Makefile
 +++ b/target/linux/ar71xx/image/Makefile
 @@ -22,6 +22,11 @@ endif
@@ -25,16 +19,17 @@ index 1eaf1e457c..602323bba2 100644
  ifeq ($(SUBTARGET),nand)
  include ./nand.mk
 diff --git a/target/linux/ar71xx/tiny/config-default b/target/linux/ar71xx/tiny/config-default
-index 2e9031a24c..4549c4a472 100644
+index 2e9031a24cb23cc6b9a5fffc5223d93a5229fabb..02836de067f3bd2e175c9028596a896b26e2d332 100644
 --- a/target/linux/ar71xx/tiny/config-default
 +++ b/target/linux/ar71xx/tiny/config-default
-@@ -70,3 +70,18 @@ CONFIG_SOC_AR933X=y
+@@ -70,3 +70,19 @@ CONFIG_SOC_AR933X=y
  CONFIG_SOC_AR934X=y
  CONFIG_SOC_QCA953X=y
  CONFIG_SOC_QCA956X=y
 +# FFF
 +CONFIG_ATH79_MACH_ARCHER_C25_V1=y
 +CONFIG_ATH79_MACH_ARCHER_C60_V1=y
++CONFIG_ATH79_MACH_ARCHER_C60_V2=y
 +CONFIG_ATH79_MACH_ARCHER_C7=y
 +CONFIG_ATH79_MACH_CPE510=y
 +CONFIG_ATH79_MACH_GL_AR150=y
@@ -47,6 +42,3 @@ index 2e9031a24c..4549c4a472 100644
 +CONFIG_ATH79_MACH_UBNT=y
 +CONFIG_ATH79_MACH_UBNT_UNIFIAC=y
 +CONFIG_ATH79_MACH_UBNT_XM=y
--- 
-2.11.0
-

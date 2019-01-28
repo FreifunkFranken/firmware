@@ -3,6 +3,7 @@ chipset=ar71xx
 subtarget=tiny
 images=("openwrt-${chipset}-${subtarget}-archer-c25-v1-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-archer-c60-v1-squashfs-sysupgrade.bin"
+        "openwrt-${chipset}-${subtarget}-archer-c60-v2-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-archer-c7-v2-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-archer-c7-v5-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-cpe210-220-v1-squashfs-sysupgrade.bin"
