@@ -108,6 +108,10 @@ Anschließend kann ein erstes Image erzeugt werden:
 ```
 Jetzt gehst du n Kaffee trinken.
 
+**Vorsicht:** Für das ar71xx BSP wurde das tiny-Subtarget so erweitert, so dass auch die Geräte aus dem OpenWRT generic Subtarget damit gebaut werden können. (vgl. [Patch](build_patches/openwrt/0005-allow-building-all-devives-as-tiny.patch))
+
+Soll das ar71xx BSP um ein Gerät erweitert werden, das bei OpenWRT unter generic geführt wird, muss die Kernel Konfiguration entsprechend um die passende MIPS MACH erweitert werden. Ansonsten führt das resultierende Image zu einem Bootloop, wenn es installiert wird.
+
 ### Netzwerkeinstellungen korrekt setzen
 Am Ende sollte im bin/ Verzeichnis das Image für v1 und v2 liegen. Das v2 Image wird auf den Router geflasht. Achtung: Eventuell ist das Netzwerk jetzt so falsch eingestellt, dass man nicht mehr über Netzwerk auf den Router zugreifen kann. Am einfachsten ist es den Router dann über eine serielle Konsole zu verwenden. Theoretisch kann man an den unterschiedlichen LAN-Ports mit der IPv6 Link-Local aus der MAC Adresse des Geräts versuchen drauf zu kommen. Es kann auch sein, dass die IPv6 +/- 1 am Ende hat. Letztlich kann das funktionieren, ist aber aufwändig und da am LAN Einstellungen verändert werden sollen, ist die serielle Konsole das Mittel der Wahl!
 Wenn man dann auf dem Router drauf ist, muss als erstes festgestellt werden, welches Ethernet-Device für den WAN Port zuständig ist. Mir sind da folgende Möglichkeiten bekannt. a) WAN ist eth0, b) WAN ist eth1, c) WAN ist teil vom Switch eth0. Dementsprechend wird das WANDEV auf dem Router in der /etc/network.tl-wr1043nd-v2 konfiguriert. Wenn WAN ein eigenes ethX hat, dann muss WAN_PORTS="" sein. Dann muss eingestellt werden welches Ethernet-Device an dem internen Switch angeschlossen ist (swconfig list). Dieses wird als SWITCHDEV konfiguriert. Es muss noch eingestellt werden, welches Ethernet oder Wifi Device die MAC Adresse hat, die auch unter dem Gerät steht. Dieses Device wird als ROUTERMAC eingetragen. Nun ist es an der Zeit die Einstellungen zu testen, dafür muss die falsche Netzwerk-Config zurück gesetzt werden:
