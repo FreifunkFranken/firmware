@@ -1,4 +1,4 @@
-From 3280eb51202a8b6b4af55165b1b795fbd3c7318c Mon Sep 17 00:00:00 2001
+From 924934df6ca9696888f1b520560c8bc4df1d59eb Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Sat, 8 Jul 2017 10:48:53 +0200
 Subject: [PATCH 4/4] ar71xx-4.9-l2tp-stats
@@ -10,7 +10,7 @@ Subject: [PATCH 4/4] ar71xx-4.9-l2tp-stats
 
 diff --git a/target/linux/ar71xx/patches-4.9/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch b/target/linux/ar71xx/patches-4.9/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch
 new file mode 100644
-index 0000000..4348aea
+index 0000000000..4348aea31c
 --- /dev/null
 +++ b/target/linux/ar71xx/patches-4.9/fix-l2tp-stats-counter-overflow-on-32-bit-systems.patch
 @@ -0,0 +1,38 @@
@@ -53,5 +53,5 @@ index 0000000..4348aea
 +2.7.2
 +
 -- 
-2.7.4
+2.11.0
 

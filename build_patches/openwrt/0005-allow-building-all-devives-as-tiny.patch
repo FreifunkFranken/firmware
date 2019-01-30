@@ -1,4 +1,4 @@
-From 7b0cf3e8670a1cb67f96d53b4aaf34f1a9774c6b Mon Sep 17 00:00:00 2001
+From e602e72f7e67db86264c7daf70c8cf2c32913139 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Mon, 6 Aug 2018 18:39:04 +0200
 Subject: [PATCH] allow building all devives as tiny
@@ -9,7 +9,7 @@ Subject: [PATCH] allow building all devives as tiny
  2 files changed, 20 insertions(+)
 
 diff --git a/target/linux/ar71xx/image/Makefile b/target/linux/ar71xx/image/Makefile
-index 1eaf1e4..602323b 100644
+index 1eaf1e457c..602323bba2 100644
 --- a/target/linux/ar71xx/image/Makefile
 +++ b/target/linux/ar71xx/image/Makefile
 @@ -22,6 +22,11 @@ endif
@@ -25,7 +25,7 @@ index 1eaf1e4..602323b 100644
  ifeq ($(SUBTARGET),nand)
  include ./nand.mk
 diff --git a/target/linux/ar71xx/tiny/config-default b/target/linux/ar71xx/tiny/config-default
-index 2e9031a..4549c4a 100644
+index 2e9031a24c..4549c4a472 100644
 --- a/target/linux/ar71xx/tiny/config-default
 +++ b/target/linux/ar71xx/tiny/config-default
 @@ -70,3 +70,18 @@ CONFIG_SOC_AR933X=y
@@ -48,5 +48,5 @@ index 2e9031a..4549c4a 100644
 +CONFIG_ATH79_MACH_UBNT_UNIFIAC=y
 +CONFIG_ATH79_MACH_UBNT_XM=y
 -- 
-2.7.4
+2.11.0
 

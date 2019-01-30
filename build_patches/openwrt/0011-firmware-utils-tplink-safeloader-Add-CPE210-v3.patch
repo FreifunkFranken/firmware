@@ -1,4 +1,4 @@
-From 76c420d218b666e7b4415ca2186e3c2ce9d5d358 Mon Sep 17 00:00:00 2001
+From dc634e3bbd66089ea9d92f19983182bfdf2de13c Mon Sep 17 00:00:00 2001
 From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 Date: Wed, 10 Oct 2018 20:05:53 +0200
 Subject: [PATCH 1/2] firmware-utils: tplink-safeloader: Add CPE210 v3
@@ -12,7 +12,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/tools/firmware-utils/src/tplink-safeloader.c b/tools/firmware-utils/src/tplink-safeloader.c
-index b2cc96b..8164c1c 100644
+index 4b227e1c97..01885683c3 100644
 --- a/tools/firmware-utils/src/tplink-safeloader.c
 +++ b/tools/firmware-utils/src/tplink-safeloader.c
 @@ -155,7 +155,7 @@ static struct device_info boards[] = {
@@ -38,5 +38,5 @@ index b2cc96b..8164c1c 100644
  		.soft_ver = NULL,
  
 -- 
-2.7.4
+2.11.0
 

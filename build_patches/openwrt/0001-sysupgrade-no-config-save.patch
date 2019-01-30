@@ -1,4 +1,4 @@
-From 758b72379e994960ee1dcb0bf4f6db37140f59f0 Mon Sep 17 00:00:00 2001
+From e4ad344db97df356e178963cad6e517e2df92709 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Sat, 8 Jul 2017 10:46:59 +0200
 Subject: [PATCH 1/4] sysupgrade no config save
@@ -8,7 +8,7 @@ Subject: [PATCH 1/4] sysupgrade no config save
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
-index bf5428a..e7d6f90 100755
+index b75bd097f3..ddcfcd74e4 100755
 --- a/package/base-files/files/sbin/sysupgrade
 +++ b/package/base-files/files/sbin/sysupgrade
 @@ -118,7 +118,7 @@ list_changed_conffiles() {
@@ -21,5 +21,5 @@ index bf5428a..e7d6f90 100755
  	  list_changed_conffiles ) | sort -u > "$file"
  	return 0
 -- 
-2.7.4
+2.11.0
 
