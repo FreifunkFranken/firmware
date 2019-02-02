@@ -20,8 +20,8 @@ define Package/alfred-json
 endef
 
 define Package/alfred-json/install
-    $(INSTALL_DIR) $(1)/bin/
-    $(CP) $(PKG_INSTALL_DIR)/usr/bin/alfred-json $(1)/bin/
+	$(INSTALL_DIR) $(1)/bin/
+	$(CP) $(PKG_INSTALL_DIR)/usr/bin/alfred-json $(1)/bin/
 endef
 
 $(eval $(call BuildPackage,alfred-json))
