@@ -38,7 +38,6 @@ define Package/fff-node
     TITLE+=(Home node)
     DEPENDS+=+fff-fastd \
              +fff-firewall \
-             +fff-vpn-select \
              +fff-uradvd \
              +fff-hoods
     VARIANT:=homenode
