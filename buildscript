@@ -378,8 +378,8 @@ buildall() {
 }
 
 if [ "$(/usr/bin/id -u)" -eq 0 ]; then
-	echo "don't run buildscript as root"
-	exit 1
+    echo "don't run buildscript as root"
+    exit 1
 fi
 
 if [ "$1" != "selectbsp" -a "$1" != "selectvariant" ]; then
