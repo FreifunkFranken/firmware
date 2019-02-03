@@ -17,18 +17,18 @@ include $(INCLUDE_DIR)/cmake.mk
 CMAKE_OPTIONS:=-DMACNOCK_DEBUG=ON
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken mac nocker
-    URL:=http://www.freifunk-franken.de
-    KCONFIG:= \
-        CONFIG_NET_EMATCH=y \
-        CONFIG_NET_EMATCH_U32=y \
-        CONFIG_NET_CLS_BASIC=y \
-        CONFIG_NET_CLS_ACT=y \
-        CONFIG_NET_ACT_GACT=y \
-        CONFIG_NET_CLS_U32=y
-    DEPENDS:=+fff-network
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:= Freifunk-Franken mac nocker
+	URL:=http://www.freifunk-franken.de
+	KCONFIG:= \
+		CONFIG_NET_EMATCH=y \
+		CONFIG_NET_EMATCH_U32=y \
+		CONFIG_NET_CLS_BASIC=y \
+		CONFIG_NET_CLS_ACT=y \
+		CONFIG_NET_ACT_GACT=y \
+		CONFIG_NET_CLS_U32=y
+	DEPENDS:=+fff-network
 endef
 
 define Package/$(PKG_NAME)/install

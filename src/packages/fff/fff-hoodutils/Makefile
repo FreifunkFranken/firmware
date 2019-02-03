@@ -9,16 +9,16 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken hoodutils
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-network +fff-config
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:= Freifunk-Franken hoodutils
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+fff-network +fff-config
 endef
 
 define Package/$(PKG_NAME)/description
-    This package contains hood-related code that may
-    may be used outside of configurehood
+	This package contains hood-related code that may
+	may be used outside of configurehood
 endef
 
 define Build/Prepare

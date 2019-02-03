@@ -15,10 +15,10 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
-  SECTION:=net
-  CATEGORY:=Network
-  DEPENDS:=+libnl-tiny +kmod-l2tp +kmod-l2tp-ip +kmod-l2tp-eth +librt +libpthread
-  TITLE:=tunneldigger
+	SECTION:=net
+	CATEGORY:=Network
+	DEPENDS:=+libnl-tiny +kmod-l2tp +kmod-l2tp-ip +kmod-l2tp-eth +librt +libpthread
+	TITLE:=tunneldigger
 endef
 
 TARGET_CFLAGS += \

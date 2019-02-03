@@ -9,16 +9,16 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken uradvd
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+uradvd
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:= Freifunk-Franken uradvd
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+uradvd
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the uradvd wrapper for the Freifunk Franken Firmware
-    It is used to configure and start the uradvd daemon.
+	This is the uradvd wrapper for the Freifunk Franken Firmware
+	It is used to configure and start the uradvd daemon.
 endef
 
 define Build/Prepare
@@ -34,7 +34,7 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-    $(CP) ./files/* $(1)/
+	$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

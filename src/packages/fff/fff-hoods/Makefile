@@ -9,15 +9,15 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken hoods
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:= Freifunk-Franken hoods
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall
 endef
 
 define Package/$(PKG_NAME)/description
-    This package load and configures the current hood
+	This package load and configures the current hood
 endef
 
 define Build/Prepare

@@ -9,15 +9,15 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:= Freifunk-Franken Webinterface
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +simple-tc +fff-boardname +fff-config +fff-network +fff-hoodutils
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:= Freifunk-Franken Webinterface
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +simple-tc +fff-boardname +fff-config +fff-network +fff-hoodutils
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the Webinterface for the Freifunk Franken Firmware
+	This is the Webinterface for the Freifunk Franken Firmware
 endef
 
 define Build/Prepare

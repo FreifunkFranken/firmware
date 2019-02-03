@@ -9,17 +9,17 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:=Freifunk-Franken Support Scripts
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+@BUSYBOX_CONFIG_ASH +fff-config +fff-hoodutils
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:=Freifunk-Franken Support Scripts
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+@BUSYBOX_CONFIG_ASH +fff-config +fff-hoodutils
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the Freifunk Franken Firmware support package.
-    This packages provides smaller convenience scripts,
-    not essential to the operation of the Firmware
+	This is the Freifunk Franken Firmware support package.
+	This packages provides smaller convenience scripts,
+	not essential to the operation of the Firmware
 endef
 
 define Build/Prepare

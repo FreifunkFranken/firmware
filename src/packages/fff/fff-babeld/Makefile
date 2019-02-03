@@ -9,32 +9,32 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/fff-babeld
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-babeld
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:=Freifunk-Franken babeld configuration example
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+babeld
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:=Freifunk-Franken babeld configuration example
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+babeld
 endef
 
 define Package/fff-babeld/description
-    This is the Freifunk Franken Firmware babeld package.
-    This package provides an example babeld configuration.
+	This is the Freifunk Franken Firmware babeld package.
+	This package provides an example babeld configuration.
 endef
 
 define Build/Prepare
-    echo "all: " > $(PKG_BUILD_DIR)/Makefile
+	echo "all: " > $(PKG_BUILD_DIR)/Makefile
 endef
 
 define Build/Configure
-    # nothing
+	# nothing
 endef
 
 define Build/Compile
-    # nothing
+	# nothing
 endef
 
 define Package/fff-babeld/install
-    $(CP) ./files/* $(1)/
+	$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call BuildPackage,fff-babeld))

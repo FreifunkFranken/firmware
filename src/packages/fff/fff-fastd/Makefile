@@ -9,21 +9,21 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-    SECTION:=base
-    CATEGORY:=Freifunk
-    TITLE:=Freifunk-Franken fastd configuration script
-    URL:=http://www.freifunk-franken.de
-    DEPENDS:=+@BUSYBOX_CUSTOM \
-             +@FASTD_ENABLE_METHOD_NULL \
-             +@FASTD_ENABLE_CIPHER_NULL \
-             +@FASTD_WITH_STATUS_SOCKET \
-             +fastd \
-             +fff-random
+	SECTION:=base
+	CATEGORY:=Freifunk
+	TITLE:=Freifunk-Franken fastd configuration script
+	URL:=http://www.freifunk-franken.de
+	DEPENDS:=+@BUSYBOX_CUSTOM \
+			 +@FASTD_ENABLE_METHOD_NULL \
+			 +@FASTD_ENABLE_CIPHER_NULL \
+			 +@FASTD_WITH_STATUS_SOCKET \
+			 +fastd \
+			 +fff-random
 endef
 
 define Package/$(PKG_NAME)/description
-    This is the fastd for the Freifunk Franken Firmware
-    It is used to configure fastd.
+	This is the fastd for the Freifunk Franken Firmware
+	It is used to configure fastd.
 endef
 
 define Build/Prepare
