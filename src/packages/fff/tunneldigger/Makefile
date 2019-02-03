@@ -41,7 +41,7 @@ define Package/$(PKG_NAME)/install
 endef
 
 define Package/$(PKG_NAME)/conffiles
-/etc/config/tunneldigger
+	/etc/config/tunneldigger
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
