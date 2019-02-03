@@ -1,5 +1,6 @@
 /selected_bsp
 /selected_community
+/selected_variant
 /build
 /bin*
 /src/dl
