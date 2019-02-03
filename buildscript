@@ -201,6 +201,9 @@ prebuild() {
     if [ 0 -ne $? ]; then
         version=$(git log -1 --pretty=format:%h)
     fi
+    if [ -n "$(cat selected_variant)" ]; then
+        version="$(cat selected_variant)-$version"
+    fi
 
     {
         echo "FIRMWARE_VERSION=\"$version\""
