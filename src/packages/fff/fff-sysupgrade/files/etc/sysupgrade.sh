@@ -69,7 +69,7 @@ if [ "$VERSION" = "$FIRMWARE_VERSION" ]; then
   done
 fi
 
-FILE="fff-${VERSION}-${SOC}-${BOARD}-squashfs-sysupgrade.bin"
+FILE="fff-${VERSION}-${SOC}-${BOARD}-sysupgrade.bin"
 echo "Downloading $FILE"
 echo ""
 wget "${UPGRADE_PATH}/${FILE}"
