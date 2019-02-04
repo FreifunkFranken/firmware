@@ -30,19 +30,20 @@ setupPorts() {
 
 setAutoConf() {
     # Sets ipv6 auto configuration on an interface to on/off
-    # Usage: enableAutoConf <interface> <[0|1]>
+    # Usage: setAutoConf <interface> <[0|1]>
     local iface=$1
     local on=$2
 
-    echo "# Generated from configurenetwork" > "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.accept_ra = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.autoconf = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.accept_ra_rtr_pref = $on" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
-    echo "net.ipv6.conf.$iface.forwarding = 0" >> "/etc/sysctl.d/51-fff-network-$iface.conf"
+    sysctlfile="/etc/sysctl.d/51-fff-network-$iface.conf"
+    echo "# Generated from configurenetwork" > "$sysctlfile"
+    echo "net.ipv6.conf.$iface.accept_ra = $on" >> "$sysctlfile"
+    echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "$sysctlfile"
+    echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "$sysctlfile"
+    echo "net.ipv6.conf.$iface.autoconf = $on" >> "$sysctlfile"
+    echo "net.ipv6.conf.$iface.accept_ra_rtr_pref = $on" >> "$sysctlfile"
+    echo "net.ipv6.conf.$iface.forwarding = 0" >> "$sysctlfile"
 
-    /sbin/sysctl -p "/etc/sysctl.d/51-fff-network-$iface.conf"
+    /sbin/sysctl -p "$sysctlfile"
 }
 
 enableAutoConf() {
