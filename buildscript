@@ -283,9 +283,6 @@ cp_firmware() {
             image_factory=${image/sysupgrade/factory$region}
             if [[ -f "$target/bin/targets/${chipset}/${subtarget}/$image_factory" ]]; then
               filename_build_factory=${filename_build/sysupgrade/factory$region}
-              if [ ${#image_factory} -lt ${#filename_build_factory} ]; then
-                echo "Warning: The factory image file name (${filename_build_factory}) is longer than the OpenWrt one, which might lead to incompatibility with the stock firmware."
-              fi
               cp "$target/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$filename_build_factory"
             fi
         done
