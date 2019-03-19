@@ -13,5 +13,5 @@ config interface 'wan'
         option ifname 'eth1'
 
 config interface 'ethmesh'
-        option proto 'batadv'
-        option mesh 'bat0'
+        option proto 'batadv_hardif'
+        option master 'bat0'

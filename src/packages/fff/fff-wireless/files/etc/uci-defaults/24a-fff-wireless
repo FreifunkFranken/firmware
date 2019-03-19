@@ -41,8 +41,8 @@ configWifiDevice() {
 
 		set network.w${freq}mesh='interface'
 		set network.w${freq}mesh.mtu='1560'
-		set network.w${freq}mesh.proto='batadv'
-		set network.w${freq}mesh.mesh='bat0'
+		set network.w${freq}mesh.proto='batadv_hardif'
+		set network.w${freq}mesh.master='bat0'
 
 		set wireless.w${freq}mesh='wifi-iface'
 		set wireless.w${freq}mesh.device='${radio}'
