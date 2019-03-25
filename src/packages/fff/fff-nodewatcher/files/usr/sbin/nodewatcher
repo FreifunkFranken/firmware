@@ -12,7 +12,7 @@ if ! lock -n "$lockfile"; then
 fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
-SCRIPT_VERSION="51"
+SCRIPT_VERSION="52"
 
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
@@ -227,14 +227,13 @@ crawl() {
         done
 
         # Build a list of direct neighbors
-        batman_adv_originators=$(awk \
+        batman_adv_originators=$(/usr/sbin/batctl o -H | awk \
             'BEGIN { FS=" "; i=0 } # set the delimiter to " "
-            /O/ { next } # ignore lines with O (will remove second line)
-            /B/ { next } # ignore line with B (will remove first line)
             {   sub("\\(", "", $0) # remove parentheses
                 sub("\\)", "", $0)
                 sub("\\[", "", $0)
-                sub("\\]:", "", $0)
+                sub("\\]", "", $0)
+                sub("\\*", "", $0)
                 sub("  ", " ", $0)
                 o=$1".*"$1 # build a regex to find lines that contains the $1 (=originator) twice
                 if ($0 ~ o) # filter for this regex (will remove entries without direct neighbor)
@@ -242,24 +241,22 @@ crawl() {
                     printf "<originator_"i"><originator>"$1"</originator><link_quality>"$3"</link_quality><nexthop>"$4"</nexthop><last_seen>"$2"</last_seen><outgoing_interface>"$5"</outgoing_interface></originator_"i">"
                     i++
                 }
-            }' /sys/kernel/debug/batman_adv/bat0/originators)
+            }')
 
-        batman_adv_gateway_mode=$(batctl gw)
+        batman_adv_gateway_mode=$(/usr/sbin/batctl gw)
 
-        batman_adv_gateway_list=$(awk \
+        batman_adv_gateway_list=$(/usr/sbin/batctl gwl -H | awk \
             'BEGIN { FS=" "; i=0 }
-            /B.A.T.M.A.N./ { next }
-            /Gateway/ { next }
             /No gateways/ { next }
             {   sub("\\(", "", $0)
                 sub("\\)", "", $0)
                 sub("\\[ *", "", $0)
                 sub("\\]:", "", $0)
-                sub("=> ", "true ", $0)
-                sub("   ", "false ", $0)
+                sub("\\* ", "true ", $0)
+                sub("  ", "false ", $0)
                 printf "<gateway_"i"><selected>"$1"</selected><gateway>"$2"</gateway><link_quality>"$3"</link_quality><nexthop>"$4"</nexthop><outgoing_interface>"$5"</outgoing_interface><gw_class>"$6" "$7" "$8"</gw_class></gateway_"i">"
                 i++
-            }' /sys/kernel/debug/batman_adv/bat0/gateways)
+            }')
     fi
     err "$(date): Collecting information about conected clients"
     #CLIENTS
