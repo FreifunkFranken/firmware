@@ -23,23 +23,20 @@ PACKAGEURL="https://git.openwrt.org/feed/packages.git"
 #official openwrt packages
 OPENWRT=(openwrt
          $PACKAGEURL
-         $PACKAGEREV
-         fastd/0020-fastd_generate_key_from_urandom.patch)
+         $PACKAGEREV)
 OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 
 ## Be careful: FFF uses COMPAT_VERSION 15 as default at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
-            8b65619f59c3bdce743c2f2fb2588fdd7079355a
-            "0001-simple-tc-Use-hotplug.d-iface-instead-of-hotplug.d-n.patch")
+            8b65619f59c3bdce743c2f2fb2588fdd7079355a)
 GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
          https://git.openwrt.org/feed/routing.git
-         ea345d16a6e27c2a8fdf67bf543cc36a5f189131
-         "0002-Add-batman-adv-patch-to-remove-gw-mode-switch-messag.patch") # openwrt-18.06.2
+         ea345d16a6e27c2a8fdf67bf543cc36a5f189131) # openwrt-18.06.2
 ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
 
 FFF=(fff)
@@ -101,19 +98,14 @@ get_source() {
         if [ -n "$URL" ] && [ -n "$REV" ]; then
             checkout_git "$NAME" "$URL" "$REV"
 
-            # Patches for feeds could be stored in known directories like build_patches/$NAME/
-            # That way multiple patches for one feed could be supported
-            count=3
-            while [ "x${FEED[count]}" != "x" ]
-            do
-                local PATCH="../../../build_patches/${NAME}/${FEED[count]}"
-                if [ ! -z "$PATCH" ] ; then
-                    echo "Patching $PATCH"
-                    git -C "$NAME" am --whitespace=nowarn "$PATCH"
+            # Patches for feeds are stored in known directories like feed_patches/$NAME/
+            for PATCH in $(ls ../../feed_patches/${NAME}/*.patch 2>/dev/null); do
+                if [ -s "$PATCH" ] ; then
+                    echo "Applying $PATCH"
+                    git -C "$NAME" am --whitespace=nowarn "../$PATCH"
                 else
-                    echo "Warning, $PATCH not found."
+                    echo "Empty patch $PATCH ignored."
                 fi
-                count=$(( count + 1 ))
             done
         fi
     done
