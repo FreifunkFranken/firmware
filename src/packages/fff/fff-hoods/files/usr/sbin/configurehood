@@ -22,7 +22,7 @@ rm -f "$hoodfiletmp"
 
 # Gatewaycheck function
 isGatewayAvailable() {
-	if [ "$(batctl gwl | wc -l)" -gt 2 ]; then
+	if [ -n "$(batctl gwl -H)" ]; then
 		return 0
 	else
 		return 1
