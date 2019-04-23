@@ -1,0 +1,102 @@
+#!/bin/sh
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+
+# IMPORTANT!!
+# DO NOT RUN THIS IN CRONJOB!
+
+execute_subshell() {
+	if [ $# -ne 1 ]; then
+		echo "Usage:" "$0" "<function>"
+	fi
+
+	for script in /etc/gateway.d/*; do
+		(
+			# unset function to prevent executing parents shell function
+			unset -f "$1"
+			. "$script"
+
+			if type "$1" | grep -q "shell function"; then
+				"$1"
+			fi
+		)
+
+		if [ $? -ne 0 ]; then
+			echo "Error when executing" "$1" "from" "$(basename "$script")"
+			exit 1
+		fi
+	done
+}
+
+configure() {
+	echo "This script might remove existing vlans, interfaces, addresses, etc."
+	read -r -p "Do you really want to continue? (y/n) " response
+	if ! ( [ "$response" == "y" ] || [ "$response" == "Y" ] ); then
+		exit 1
+	fi
+
+	execute_subshell configure
+
+	exit 0
+}
+
+reload_services() {
+	execute_subshell reload
+	reload_config
+}
+
+apply_changes() {
+	execute_subshell apply
+	reload_services
+	exit 0
+}
+
+revert_changes() {
+	execute_subshell revert
+	exit 0
+}
+
+test_changes() {
+	reload_services
+
+	sleep 5
+	echo "Configuration reloaded. Changes will be reverted in 200s."
+	echo "Kill this script to keep changes."
+	sleep 200
+	echo "Reverting changes.."
+
+	revert_changes
+	reload_services
+}
+
+
+usage() {
+	echo "Usage: $0 [OPTION]"
+	echo
+	echo "Options:"
+	echo "	-c: configure. No commit, no restart!"
+	echo "	-t: test changes. Restarts services, waits up to 200s for SIGINT"
+	echo "	-a: apply changes"
+	echo "	-r: revert changes"
+}
+
+
+if [ $# != 1 ]; then
+	usage; exit 1
+fi
+
+case "$1" in
+	-c) configure ;;
+	-t) test_changes ;;
+	-a) apply_changes ;;
+	-r) revert_changes ;;
+	*) usage; exit 1 ;;
+esac
