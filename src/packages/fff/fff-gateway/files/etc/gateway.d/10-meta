@@ -1,0 +1,37 @@
+configure() {
+	## set hostname
+	if name=$(uci -q get fff.system.hostname); then
+		uci -q set system.@system[0].hostname="$name"
+	else
+		echo "WARNING: No hostname set!"
+	fi
+
+	## set contact
+	if ! contact=$(uci -q get fff.system.contact); then
+		echo "WARNING: No contact set!"
+	fi
+
+	## set location
+	if ! lat=$(uci -q get fff.system.latitude) || ! long=$(uci -q get fff.system.longitude); then
+		echo "WARNING: No location set!"
+	fi
+
+	## hoodname
+	if hood=$(uci -q get fff.system.hoodname); then
+		echo "Setting hood name: $hood"
+		uci -q set "system.@system[0].hood=$hood"
+	else
+		echo "WARNING: No hoodname set!"
+	fi
+}
+
+apply() {
+	uci commit system
+	uci commit fff
+	echo "$(uci get "system.@system[0].hostname")" > /proc/sys/kernel/hostname
+}
+
+revert() {
+	uci revert system
+	uci revert fff
+}
