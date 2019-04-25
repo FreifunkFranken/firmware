@@ -11,7 +11,7 @@ FIREWALL_DIR=/usr/lib/firewall.d
 
 service_triggers()
 {
-    procd_add_reload_trigger "fff-firewall"
+    procd_add_reload_trigger "fff-firewall" "network"
 }
 
 start_service()
