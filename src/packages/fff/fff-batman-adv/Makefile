@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-batman-adv
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -13,8 +13,8 @@ define Package/$(PKG_NAME)
 	TITLE:=Freifunk-Franken batman-adv
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+kmod-batman-adv \
-			 +@KMOD_BATMAN_ADV_BATMAN_V \
-			 +@KMOD_BATMAN_ADV_NC \
+			 +@BATMAN_ADV_BATMAN_V \
+			 +@BATMAN_ADV_NC \
 			 +batctl
 endef
 
