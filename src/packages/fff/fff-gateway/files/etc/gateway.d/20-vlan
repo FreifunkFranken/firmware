@@ -1,0 +1,48 @@
+# load uci functions
+. /lib/functions.sh
+
+# load board specific properties
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+. /lib/functions/fff/cpuport
+
+
+configure() {
+	add_vlan() {
+		local vlan="$1"
+		local ports=$(uci get gateway.$vlan.ports)
+		local name="$SWITCHDEV"_$vlan
+
+		uci set network.$name='switch_vlan'
+		uci set network.$name.device="$(uci get network.$SWITCHDEV.name)"
+		uci set network.$name.vlan="$vlan"
+		uci set network.$name.ports="$CPUPORT $ports"
+	}
+
+	remove_vlan() {
+		local name="$1"
+
+		local switchdev=$(echo $name | cut -d_ -f1)
+		local vlan=$(echo $name | cut -d_ -f2)
+
+		# only remove vlans not present in gateway config
+		if ! uci -q get gateway.$vlan > /dev/null; then
+			# remove switch_vlan
+			uci del network.$name
+		fi
+	}
+
+	config_load network
+	config_foreach remove_vlan switch_vlan
+
+	config_load gateway
+	config_foreach add_vlan vlan
+}
+
+apply() {
+	uci commit network
+}
+
+revert() {
+	uci revert network
+}
