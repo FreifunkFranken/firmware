@@ -13,6 +13,5 @@ config interface 'wan'
         option ifname 'eth1'
 
 config interface 'ethmesh'
-        option mtu '1528'
         option proto 'batadv'
         option mesh 'bat0'
