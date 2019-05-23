@@ -217,7 +217,7 @@ wifiAddMesh() {
 		commit wireless
 
 		set network.${iface}='interface'
-		set network.${iface}.mtu='1528'
+		set network.${iface}.mtu='1560'
 		set network.${iface}.proto='batadv'
 		set network.${iface}.mesh='bat0'
 		commit network
