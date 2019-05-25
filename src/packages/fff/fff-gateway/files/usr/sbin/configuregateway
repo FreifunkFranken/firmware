@@ -24,7 +24,7 @@ execute_subshell() {
 			unset -f "$1"
 			. "$script"
 
-			if type "$1" | grep -q "shell function"; then
+			if type "$1" | grep -q "function" ; then
 				"$1"
 			fi
 		)
