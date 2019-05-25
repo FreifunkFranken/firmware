@@ -72,8 +72,9 @@ elif [ "$do_sysupgrade" = "1" ] ; then
 	echo "<pre>"
 	echo "# Freeing caches ..."
 	echo 3 > /proc/sys/vm/drop_caches
-	echo "# sysupgrade $args $HASERL_firmware_path"
-	sysupgrade $args $HASERL_firmware_path
+	echo "# sysupgrade $args /tmp/uploadedfw.bin"
+	mv -f "$HASERL_firmware_path" /tmp/uploadedfw.bin
+	sysupgrade $args /tmp/uploadedfw.bin || rm /tmp/uploadedfw.bin
 	echo "</pre>"
 fi
 %>
