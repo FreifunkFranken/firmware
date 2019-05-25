@@ -20,7 +20,6 @@ define Package/fff/base
 			 +fff-config \
 			 +fff-nodewatcher \
 			 +fff-web \
-			 +fff-batman-adv \
 			 +fff-support \
 			 +fff-network \
 			 +fff-sysupgrade \
@@ -39,6 +38,7 @@ define Package/fff-node
 	DEPENDS+=+fff-fastd \
 			 +fff-firewall \
 			 +fff-uradvd \
+			 +fff-batman-adv \
 			 +fff-hoods
 	VARIANT:=homenode
 endef
