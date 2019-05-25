@@ -54,6 +54,8 @@ define Package/fff-layer3
 			 +fff-dhcp \
 			 +fff-babeld \
 			 +fff-ra \
+			 +iperf3 \
+			 +tcpdump \
 			 +arptables \
 			 +ebtables \
 			 +ebtables-utils \
