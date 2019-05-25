@@ -18,7 +18,6 @@ configure() {
 
 	## hoodname
 	if hood=$(uci -q get fff.system.hoodname); then
-		echo "Setting hood name: $hood"
 		uci -q set "system.@system[0].hood=$hood"
 	else
 		echo "WARNING: No hoodname set!"
