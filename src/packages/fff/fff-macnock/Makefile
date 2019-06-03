@@ -28,7 +28,7 @@ define Package/$(PKG_NAME)
 		CONFIG_NET_CLS_ACT=y \
 		CONFIG_NET_ACT_GACT=y \
 		CONFIG_NET_CLS_U32=y
-	DEPENDS:=+fff-network
+	DEPENDS:=+fff-network +tc
 endef
 
 define Package/$(PKG_NAME)/install
