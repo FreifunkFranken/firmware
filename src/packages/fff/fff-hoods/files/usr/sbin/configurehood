@@ -54,7 +54,7 @@ if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
 		# Break: wXconfig is up
 		uci -q get "wireless.w${freq}configap" > /dev/null && continue
 		# Break: No mesh interface
-		(uci -q get "wireless.w${freq}mesh" > /dev/null || uci -q get "wireless.w${freq}ibss" > /dev/null) || continue
+		uci -q get "wireless.w${freq}mesh" > /dev/null || continue
 		
 		# Create configap
 		iface="configap$freq"

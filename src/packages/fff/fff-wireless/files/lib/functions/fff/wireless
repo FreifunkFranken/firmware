@@ -100,9 +100,9 @@ wifiAddAdHocMesh() {
 	local bssid=$3
 
 	local channel=$(uci get "wireless.${radio}.channel")
-	local iface="w2ibss"
+	local iface="w2mesh"
 	if [ "$channel" -gt "14" ]; then
-		iface="w5ibss"
+		iface="w5mesh"
 	fi
 
 	uci batch <<-__EOF__
