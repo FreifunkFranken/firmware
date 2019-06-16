@@ -13,32 +13,19 @@ getWirelessHoodfile() {
 
 	# only change temporarily
 
-	if ! wifiDelIface; then
-		echo "Can't delete current wifi setup"
-		exit 1
-	fi
-	#now we look for phy and add this
-	for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-		radio="$(wifiAddPhyCond "$phy" "2" "auto")"
-		radio5="$(wifiAddPhyCond "$phy" "5" "auto5")"
-		if [ -n "$radio5" ] ; then
-			radio="$radio5"
-			staiface="w5sta"
-		else
-			staiface="w2sta"
-		fi
+	# Set channel to auto, enable wXsta, disable other interfaces
+	for radio in $(wifiListRadio); do
+		uci set "wireless.${radio}.channel=auto"
 
-		#and here we add the station
-		if ! wifiAddSta "$radio" "config.franken.freifunk.net" "configSta" "$staiface" ; then
-			echo "Can't add Sta interface on $radio."
-			exit 1
-		else
-			uci -q set network.configSta=interface
-			uci -q set network.configSta.proto='static'
-			uci -q commit network
-			reload_config
-		fi
+		freq="$(wifiGetFreq $radio)"
+		uci set wireless.w${freq}ap.disabled='1'
+		uci set wireless.w${freq}mesh.disabled='1'
+		uci set wireless.w${freq}configap.disabled='1'
+		uci set wireless.w${freq}sta.disabled='0'
 	done
+
+	uci commit wireless
+	reload_config
 
 	wifi
 	# wait a moment to start the interface

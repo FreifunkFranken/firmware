@@ -1,32 +1,80 @@
 #!/bin/sh
 # Copyright 2016 Tim Niemeyer
+# Copyright 2019 Adrian Schmutzler
 # License GPLv3
 
+. /lib/functions.sh
 . /lib/functions/fff/wireless
 
-if ! wifiDelAll; then
-	echo "Can't delete current wifi setup"
-	exit 1
-fi
+removeWifiIface() {
+	local name="$1"
+	uci del "wireless.$name"
+}
 
-for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-	radio="$(wifiAddPhyCond "$phy" "2" "1")"
-	radio5="$(wifiAddPhyCond "$phy" "5" "36")"
-	[ -n "$radio5" ] && radio="$radio5"
-	if [ -z "$radio" ] ; then
-		echo "Can't create radio for $phy"
-		exit 1
-	fi
+configWifiDevice() {
+	local radio="$1"
+	local freq="$(wifiGetFreq $radio)"
 
-	if ! wifiAddAP "$radio" "do.not.use" "mesh" "ap" "0" ; then
-		echo "Can't add AP interface on $radio."
-		exit 1
-	fi
+	[ "$freq" = "2" ] && uci set "wireless.${radio}.legacy_rates=0"
 
-	if ! wifiAddMesh "$radio" "mesh.do.not.use" ; then
-		echo "Can't add Mesh interface on $radio."
-		exit 1
-	fi
-done
+	# Comments
+	# wXmesh: use 802.11s mesh as "default"
+
+	uci batch <<-__EOF__
+		set wireless.${radio}.htmode='HT20'
+		set wireless.${radio}.country='DE'
+		set wireless.${radio}.disabled='0'
+
+		set wireless.w${freq}ap='wifi-iface'
+		set wireless.w${freq}ap.device='${radio}'
+		set wireless.w${freq}ap.network='mesh'
+		set wireless.w${freq}ap.ifname='w${freq}ap'
+		set wireless.w${freq}ap.mode='ap'
+		set wireless.w${freq}ap.ssid='noservice.freifunk'
+		set wireless.w${freq}ap.encryption='none'
+		set wireless.w${freq}ap.hidden='0'
+		set wireless.w${freq}ap.disabled='0'
+
+		set network.w${freq}mesh='interface'
+		set network.w${freq}mesh.mtu='1560'
+		set network.w${freq}mesh.proto='batadv'
+		set network.w${freq}mesh.mesh='bat0'
+
+		set wireless.w${freq}mesh='wifi-iface'
+		set wireless.w${freq}mesh.device='${radio}'
+		set wireless.w${freq}mesh.network='w${freq}mesh'
+		set wireless.w${freq}mesh.ifname='w${freq}mesh'
+		set wireless.w${freq}mesh.mode='mesh'
+		set wireless.w${freq}mesh.mesh_id='nomesh.freifunk'
+		set wireless.w${freq}mesh.encryption='none'
+		set wireless.w${freq}mesh.mesh_fwding=0
+		set wireless.w${freq}mesh.disabled='0'
+
+		set network.configap${freq}=interface
+		set network.configap${freq}.proto='static'
+		set network.configap${freq}.ip6addr='fe80::1/64'
+
+		set wireless.w${freq}configap='wifi-iface'
+		set wireless.w${freq}configap.device='${radio}'
+		set wireless.w${freq}configap.network='configap${freq}'
+		set wireless.w${freq}configap.ifname='w${freq}configap'
+		set wireless.w${freq}configap.mode='ap'
+		set wireless.w${freq}configap.ssid='config.franken.freifunk.net'
+		set wireless.w${freq}configap.encryption='none'
+		set wireless.w${freq}configap.hidden='1'
+		set wireless.w${freq}configap.disabled='1'
+	__EOF__
+}
+
+# Remove WiFi config
+config_load wireless
+config_foreach removeWifiIface wifi-iface
+
+# Set up WiFi devices and interfaces, but leave the latter disabled
+config_load wireless
+config_foreach configWifiDevice wifi-device
+
+uci commit network
+uci commit wireless
 
 # vim: set noexpandtab:tabstop=4

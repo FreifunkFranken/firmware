@@ -46,27 +46,17 @@ hasInternet() {
 
 if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
 	needwifi="0"
-	for radio in $(uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'); do
-		freq="2"
-		if [ "$(uci get "wireless.${radio}.channel")" -gt "14" ]; then
-			freq="5"
-		fi
+	for radio in $(wifiListRadio); do
+		freq="$(wifiGetFreq $radio)"
+
 		# Break: wXconfig is up
-		uci -q get "wireless.w${freq}configap" > /dev/null && continue
+		[ "$(uci get "wireless.w${freq}configap.disabled")" = "0" ] && continue
 		# Break: No mesh interface
-		uci -q get "wireless.w${freq}mesh" > /dev/null || continue
+		[ "$(uci get "wireless.w${freq}mesh.disabled")" = "0" ] || continue
 		
-		# Create configap
-		iface="configap$freq"
-		uci set network.${iface}=interface
-		uci set network.${iface}.proto='static'
-		uci set network.${iface}.ip6addr='fe80::1/64'
-		uci commit network
-		reload_config
-		if ! wifiAddAP "$radio" "config.franken.freifunk.net" "$iface" "configap" "1"; then
-			echo "Can't add Config interface on $radio."
-			exit 1
-		fi
+		# Enable configap
+		uci set wireless.w${freq}configap.disabled='0'
+		uci commit wireless
 		needwifi="1"
 	done
 
@@ -157,38 +147,50 @@ if [ -s "$hoodfiletmp" ]; then
 		uci -q commit system
 		reload_config
 
-		if ! wifiDelIface; then
-			echo "Can't delete current wifi setup"
-			exit 1
-		fi
+		for radio in $(wifiListRadio); do
+			freq="$(wifiGetFreq $radio)"
 
-		for phy in $(iw phy | awk '/^Wiphy/{ print $2 }'); do
-			radio="$(wifiAddPhyCond "$phy" "2" "$chan2ghz")"
-			radio5="$(wifiAddPhyCond "$phy" "5" "$chan5ghz")"
-			[ -n "$radio5" ] && radio="$radio5"
-
-			if ! wifiAddAP "$radio" "$essid" "mesh" "ap" "0"; then
-				echo "Can't add AP interface on $radio."
-				exit 1
+			if [ "$freq" = "5" ]; then
+				uci set wireless.${radio}.channel="$chan5ghz"
+				mesh_type="$mesh_type5"
+			elif [ "$freq" = "2" ]; then
+				uci set wireless.${radio}.channel="$chan2ghz"
+				mesh_type="$mesh_type2"
 			fi
 
-			# add 802.11s mesh if type = "802.11s"
-			if ( [ -n "$radio5" ] && [ "$mesh_type5" = "802.11s" ] ) || [ "$mesh_type2" = "802.11s" ]; then
-				if ! wifiAddMesh "$radio" "$mesh_id"; then
-					echo "Can't add Mesh interface on $radio."
-					exit 1
-				fi
-			fi
+			# Disable wXsta, wXconfigap
+			uci set wireless.w${freq}sta.disabled='1'
+			uci set wireless.w${freq}configap.disabled='1'
 
-			# add IBSS mesh if type = "ibss"
-			if ( [ -n "$radio5" ] && [ "$mesh_type5" = "ibss" ] ) || [ "$mesh_type2" = "ibss" ]; then
-				if ! wifiAddAdHocMesh "$radio" "$mesh_essid" "$mesh_bssid"; then
-					echo "Can't add AdHocMesh interface on $radio."
-					exit 1
-				fi
+			# Configure wXap
+			uci set wireless.w${freq}ap.ssid="$essid"
+			uci set wireless.w${freq}ap.disabled='0'
+
+			# Configure 802.11s mesh if type = "802.11s"
+			if [ "$mesh_type" = "802.11s" ]; then
+				uci set wireless.w${freq}mesh.mode='mesh'
+				uci -q del wireless.w${freq}mesh.bssid
+				uci -q del wireless.w${freq}mesh.ssid
+				uci -q del wireless.w${freq}mesh.mcast_rate
+				uci set wireless.w${freq}mesh.mesh_id="$mesh_id"
+				uci set wireless.w${freq}mesh.mesh_fwding='0'
+				uci set wireless.w${freq}mesh.disabled='0'
+			# Configure IBSS mesh if type = "ibss"
+			elif [ "$mesh_type" = "ibss" ]; then
+				uci set wireless.w${freq}mesh.mode='adhoc'
+				uci -q del wireless.w${freq}mesh.mesh_id
+				uci -q del wireless.w${freq}mesh.mesh_fwding
+				uci set wireless.w${freq}mesh.bssid="$mesh_bssid"
+				uci set wireless.w${freq}mesh.ssid="$mesh_essid"
+				uci set wireless.w${freq}mesh.mcast_rate='6000'
+				uci set wireless.w${freq}mesh.disabled='0'
+			# Disable mesh by setting no mesh_type
+			else
+				uci set wireless.w${freq}mesh.disabled='1'
 			fi
 		done
 
+		uci commit wireless
 		echo "Loading wifi"
 		wifi
 
