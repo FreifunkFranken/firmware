@@ -89,7 +89,7 @@ else
 
 			uci -q del "system.@system[0].hood"
 			uci -q del "system.@system[0].hoodid"
-			uci -q commit system
+			uci commit system
 			reload_config
 		
 			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
@@ -142,9 +142,9 @@ if [ -s "$hoodfiletmp" ]; then
 		fi
 
 		echo "Setting hood name: $hood (ID $hoodid)"
-		uci -q set "system.@system[0].hood=$hood"
-		uci -q set "system.@system[0].hoodid=$hoodid"
-		uci -q commit system
+		uci set "system.@system[0].hood=$hood"
+		uci set "system.@system[0].hoodid=$hoodid"
+		uci commit system
 		reload_config
 
 		for radio in $(wifiListRadio); do
