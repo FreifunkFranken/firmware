@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-vpn-select
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -12,15 +12,12 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:= Freifunk-Franken vpn-select
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+@BUSYBOX_CONFIG_WGET \
-			 +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT \
-			 +fff-tunneldigger \
-			 +fff-fastd
+	DEPENDS:=+fff-fastd
 endef
 
 define Package/$(PKG_NAME)/description
 	This package selects and starts the VPN
-	In this version fastd and l2tp via tunneldigger
+	(currently only via fastd)
 endef
 
 define Build/Prepare
