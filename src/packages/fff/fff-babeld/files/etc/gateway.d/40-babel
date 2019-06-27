@@ -10,15 +10,19 @@ configure() {
 	# remove peers missing in gateway config
 	remove_babelpeer() {
 		local name="$1"
-		if ! echo $name | grep cfg > /dev/null; then # do not delete default interface
-			if ! uci -q get gateway.$name > /dev/null; then
-				# remove interface
-				uci -q del network.$name
-				# remove iif-rules
-				babel_delete_iifrules "$name"
-				# remove babel interface
-				babel_delete_interface "$name"
-			fi
+
+		# check prefix
+		if [ "$name" = "${name#babelpeer_}" ]; then
+			return
+		fi
+
+		if ! uci -q get gateway.$name > /dev/null; then
+			# remove interface
+			uci -q del network.$name
+			# remove iif-rules
+			babel_delete_iifrules "$name"
+			# remove babel interface
+			babel_delete_interface "$name"
 		fi
 	}
 
@@ -28,14 +32,9 @@ configure() {
 	#add new peers
 	add_babelpeer() {
 		local name="$1"
+		local prefixname="babelpeer_$name"
 		local vlan
 		local type
-
-		# prohibit cfg* as name
-		if echo $name | grep cfg > /dev/null; then
-			echo "ERROR: name $name is invalid for babelpeer!"
-			exit 1
-		fi
 
 		# get iface
 		if vlan=$(uci -q get gateway.$name.vlan); then
@@ -62,21 +61,21 @@ configure() {
 		fi
 
 		# add interface
-		uci set network.$name=interface
-		uci set network.$name.proto=static
-		uci set network.$name.ifname=$iface
+		uci set network.$prefixname=interface
+		uci set network.$prefixname.proto=static
+		uci set network.$prefixname.ifname=$iface
 
 		# add iif-rules
-		babel_add_iifrules "$name" || { echo "Could not add iif-rules for babelpeer $name"; exit 1; }
+		babel_add_iifrules "$prefixname" || { echo "Could not add iif-rules for babelpeer $name"; exit 1; }
 
 		# peer_ip
-		uci -q delete "network.$name.ipaddr"
-		uci -q delete "network.$name.ip6addr"
-		babel_add_peeraddr "network.$name.ipaddr"
-		babel_add_peer6addr "network.$name.ip6addr"
+		uci -q delete "network.$prefixname.ipaddr"
+		uci -q delete "network.$prefixname.ip6addr"
+		babel_add_peeraddr "network.$prefixname.ipaddr"
+		babel_add_peer6addr "network.$prefixname.ip6addr"
 
 		# add babel interface
-		babel_add_interface "$name" "$iface" "$type" "$rxcost" || { echo "Could not add babeld interface for babelpeer $name"; exit 1; }
+		babel_add_interface "$prefixname" "$iface" "$type" "$rxcost" || { echo "Could not add babeld interface for babelpeer $name"; exit 1; }
 	}
 
 	config_load gateway
