@@ -12,7 +12,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Config
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+fff-boardname +@BUSYBOX_CONFIG_WGET
+	DEPENDS:=+fff-boardname
 endef
 
 define Package/$(PKG_NAME)/description

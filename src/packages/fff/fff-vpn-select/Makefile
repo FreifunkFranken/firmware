@@ -12,7 +12,8 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:= Freifunk-Franken vpn-select
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT \
+	DEPENDS:=+@BUSYBOX_CONFIG_WGET \
+			 +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT \
 			 +fff-tunneldigger \
 			 +fff-fastd
 endef

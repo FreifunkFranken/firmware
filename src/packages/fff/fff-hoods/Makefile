@@ -12,7 +12,8 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:= Freifunk-Franken hoods
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall
+	DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall \
+			 +@BUSYBOX_CONFIG_WGET +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT
 endef
 
 define Package/$(PKG_NAME)/description
