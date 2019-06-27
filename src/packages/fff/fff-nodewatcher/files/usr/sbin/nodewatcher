@@ -12,7 +12,7 @@ if ! lock -n "$lockfile"; then
 fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
-SCRIPT_VERSION="52"
+SCRIPT_VERSION="53"
 
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
@@ -114,8 +114,8 @@ crawl() {
         status_text="<status_text>$(cat "$SCRIPT_STATUS_FILE")</status_text>"
     fi
 
-    #Checks whether either fastd or L2TP is connected
-    if pidof fastd >/dev/null || grep -q '1' /sys/class/net/l2tp*/carrier 2> /dev/null ; then
+    # Checks if fastd is running
+    if pidof fastd >/dev/null ; then
         vpn_active="<vpn_active>1</vpn_active>"
     else
         vpn_active="<vpn_active>0</vpn_active>"
