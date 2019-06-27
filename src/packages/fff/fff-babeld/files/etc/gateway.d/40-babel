@@ -1,4 +1,5 @@
 . /lib/functions.sh
+. /lib/functions/fff/babel
 
 #load board specific properties
 BOARD="$(uci get board.model.name)"
@@ -14,10 +15,9 @@ configure() {
 				# remove interface
 				uci -q del network.$name
 				# remove iif-rules
-				uci -q del network.${name}_rule
-				uci -q del network.${name}_rule6
+				babel_delete_iifrules "$name"
 				# remove babel interface
-				uci -q del babeld.$name
+				babel_delete_interface "$name"
 			fi
 		fi
 	}
@@ -67,37 +67,16 @@ configure() {
 		uci set network.$name.ifname=$iface
 
 		# add iif-rules
-		uci set network.${name}_rule=rule
-		uci set network.${name}_rule.in="$name"
-		uci set network.${name}_rule.lookup='10'
-		uci set network.${name}_rule.priority='31'
-
-		uci set network.${name}_rule6=rule6
-		uci set network.${name}_rule6.in="$name"
-		uci set network.${name}_rule6.lookup='10'
-		uci set network.${name}_rule6.priority='31'
+		babel_add_iifrules "$name" || { echo "Could not add iif-rules for babelpeer $name"; exit 1; }
 
 		# peer_ip
-		if peer_ip=$(uci -q get gateway.@gateway[0].peer_ip); then
-			uci set network.$name.ipaddr="$peer_ip"
-		elif ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
-			# use ipaddr (without subnet) if no peer_ip set
-			uci set network.$name.ipaddr=$(echo $ipaddr | cut -d / -f1)
-		else
-			echo "FATAL: Neither peer_ip nor ipaddr set! No peering ipv4 set!"
-			exit 1
-		fi
-
-		# peer_ip6
-		if peer_ip6=$(uci -q get gateway.@gateway[0].peer_ip6); then
-			uci set network.$name.ip6addr="$peer_ip6"
-		fi
+		uci -q delete "network.$name.ipaddr"
+		uci -q delete "network.$name.ip6addr"
+		babel_add_peeraddr "network.$name.ipaddr"
+		babel_add_peer6addr "network.$name.ip6addr"
 
 		# add babel interface
-		uci set babeld.$name=interface
-		uci set babeld.$name.ifname=$iface
-		uci set babeld.$name.type=$type
-		uci set babeld.$name.rxcost=$rxcost
+		babel_add_interface "$name" "$iface" "$type" "$rxcost" || { echo "Could not add babeld interface for babelpeer $name"; exit 1; }
 	}
 
 	config_load gateway

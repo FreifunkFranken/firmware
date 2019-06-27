@@ -1,0 +1,88 @@
+babel_add_iifrules() {
+	[ "$#" -ne "1" ] && return 1
+
+	local name="$1"
+	local table='10'
+	local prio='31'
+
+	uci set network.${name}_rule=rule
+	uci set network.${name}_rule.in="$name"
+	uci set network.${name}_rule.lookup="$table"
+	uci set network.${name}_rule.priority="$prio"
+
+	uci set network.${name}_rule6=rule6
+	uci set network.${name}_rule6.in="$name"
+	uci set network.${name}_rule6.lookup="$table"
+	uci set network.${name}_rule6.priority="$prio"
+
+	return 0
+}
+
+babel_delete_iifrules() {
+	[ "$#" -ne "1" ] && return 1
+
+	local name="$1"
+
+	uci -q del network.${name}_rule
+	uci -q del network.${name}_rule6
+
+	return 0
+}
+
+babel_add_peeraddr() {
+	[ "$#" -ne "1" ] && return 1
+
+	local option="$1"
+
+	if peer_ip=$(uci -q get gateway.@gateway[0].peer_ip); then
+		uci add_list "$option"="$peer_ip"
+	elif ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
+		# use ipaddr (without subnet) if no peer_ip set
+		uci add_list "$option"=$(echo $ipaddr | cut -d / -f1)
+	else
+		echo "FATAL: Neither peer_ip nor ipaddr set! No peering ipv4 set!"
+		return 1
+	fi
+
+	return 0
+}
+
+babel_add_peer6addr() {
+	[ "$#" -ne "1" ] && return 1
+
+	local option="$1"
+
+	if peer_ip6=$(uci -q get gateway.@gateway[0].peer_ip6); then
+		uci add_list "$option"="$peer_ip6"
+	else
+		return 1
+	fi
+
+	return 0
+}
+
+babel_add_interface() {
+	[ "$#" -ne "4" ] && return 1
+
+	local name="$1"
+	local interface="$2"
+	local type="$3"
+	local rxcost="$4"
+
+	uci set babeld.$name=interface
+	uci set babeld.$name.ifname="$interface"
+	uci set babeld.$name.type="$type"
+	uci set babeld.$name.rxcost="$rxcost"
+
+	return 0
+}
+
+babel_delete_interface() {
+	[ "$#" -ne "1" ] && return 1
+
+	local name="$1"
+
+	uci -q del babeld.$name
+
+	return 0
+}
