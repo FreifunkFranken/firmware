@@ -62,11 +62,7 @@ if pidof fastd >/dev/null ; then
 else
 	vpn_active="inaktiv"
 fi
-if grep -q '1' /sys/class/net/l2tp*/carrier 2> /dev/null ; then
-	l2tp_active="aktiv"
-else
-	l2tp_active="inaktiv"
-fi
+
 up="$(uptime)"
 load="${up##*:}"
 uptime="${up%%,*}"
@@ -101,7 +97,6 @@ echo "MAC-Adresse: $(cat /sys/class/net/br-mesh/address)"
 echo "Bekannte Knoten: $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)+1))"
 echo "Nachbarknoten: $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)"
 echo "VPN via fastd: ${vpn_active}"
-echo "VPN via L2TP: ${l2tp_active}"
 echo "Laufzeit: ${uptime}"
 echo "Auslastung: ${load}"
 echo "Uhrzeit: $(date)"
@@ -143,21 +138,6 @@ if [ -d /etc/fastd/fff/peers ]; then
 else
 	echo "-> FASTD"
 	echo "No FASTD peers available"
-fi
-
-function printL2TP() {
-	local broker="$1"
-	echo "${broker}: $(uci -q get "tunneldigger.$broker.address")"
-}
-
-echo ""
-if [ -s /etc/config/tunneldigger ]; then
-	echo "-> L2TP: Peer list"
-	config_load tunneldigger
-	config_foreach printL2TP broker
-else
-	echo "-> L2TP"
-	echo "No L2TP peers available"
 fi
 
 echo ""
