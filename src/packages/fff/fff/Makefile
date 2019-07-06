@@ -55,6 +55,7 @@ define Package/fff-layer3
 			 +fff-ra \
 			 +fff-wireguard \
 			 +iperf3 \
+			 +ip-full \
 			 +tcpdump \
 			 +arptables \
 			 +ebtables \
