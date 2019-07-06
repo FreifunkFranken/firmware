@@ -1,0 +1,24 @@
+#!/bin/sh
+
+uci batch <<EOF
+	set network.wireguard_main=rule6
+	set network.wireguard_main.mark='0xc8'
+	set network.wireguard_main.lookup='main'
+	set network.wireguard_main.priority='5000'
+	set network.wireguard_main4=rule
+	set network.wireguard_main4.mark='0xc8'
+	set network.wireguard_main4.lookup='main'
+	set network.wireguard_main4.priority='5000'
+	set network.wireguard_blackhole=rule6
+	set network.wireguard_blackhole.mark='0xc8'
+	set network.wireguard_blackhole.action='blackhole'
+	set network.wireguard_blackhole.priority='5001'
+	set network.wireguard_blackhole4=rule
+	set network.wireguard_blackhole4.mark='0xc8'
+	set network.wireguard_blackhole4.action='blackhole'
+	set network.wireguard_blackhole4.priority='5001'
+EOF
+
+uci commit network
+
+exit 0

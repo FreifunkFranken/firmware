@@ -53,6 +53,7 @@ define Package/fff-layer3
 			 +fff-dhcp \
 			 +fff-babeld \
 			 +fff-ra \
+			 +fff-wireguard \
 			 +iperf3 \
 			 +tcpdump \
 			 +arptables \
