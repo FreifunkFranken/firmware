@@ -60,8 +60,8 @@ if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
 		needwifi="1"
 	done
 
-	if [ "$needwifi" = "1" ] ; then
-		wifi
+	if [ "$needwifi" = "1" ]; then
+		reload_config
 		sleep 10
 	fi
 fi
@@ -145,7 +145,6 @@ if [ -s "$hoodfiletmp" ]; then
 		uci set "system.@system[0].hood=$hood"
 		uci set "system.@system[0].hoodid=$hoodid"
 		uci commit system
-		reload_config
 
 		for radio in $(wifiListRadio); do
 			freq="$(wifiGetFreq $radio)"
@@ -190,8 +189,8 @@ if [ -s "$hoodfiletmp" ]; then
 		done
 
 		uci commit wireless
-		echo "Loading wifi"
-		wifi
+		echo "Reloading wifi"
+		reload_config
 
 		oldntp="$(uci -q get system.ntp.server)"
 		newntp="${ntpip}" # requires routable address, no link-local
