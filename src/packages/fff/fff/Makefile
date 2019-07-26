@@ -24,7 +24,7 @@ define Package/fff-base
 			 +fff-sysupgrade \
 			 +fff-wireless \
 			 +fff-timeserver \
-			 +simple-tc
+			 +fff-simple-tc
 endef
 
 define Package/fff-base/description

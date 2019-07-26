@@ -5,24 +5,16 @@
 touch /etc/config/fff
 
 if ! uci -q get fff.system > /dev/null ; then
-	uci -q set fff.system=fff
-	uci -q set "fff.system.hostname=FFF"
+	uci set fff.system=fff
+	uci set "fff.system.hostname=FFF"
+	uci commit fff
 fi
 
 FFF_hostname=$(uci -q get "fff.system.hostname")
 test -n "${FFF_hostname}" && uci -q set "system.@system[0].hostname=${FFF_hostname}"
 test -n "${FFF_hostname}" && echo "${FFF_hostname}" > /proc/sys/kernel/hostname
 
-traffic_enabled=$(uci -q get "fff.trafficcontrol.enabled")
-traffic_in=$(uci -q get "fff.trafficcontrol.limit_in")
-traffic_out=$(uci -q get "fff.trafficcontrol.limit_out")
-
-test -n "${traffic_enabled}" && uci -q set "simple-tc.example.enabled=${traffic_enabled}"
-uci -q set "simple-tc.example.ifname=wan"
-uci -q set "simple-tc.example.limit_ingress=${traffic_in}"
-uci -q set "simple-tc.example.limit_egress=${traffic_out}"
-
-uci -q commit
+uci commit system
 
 poe_passthrough=$(uci -q get "fff.poe_passthrough.active")
 if [ "$poe_passthrough" = "1" ] && [ -s /usr/lib/fff-support/activate_poe_passthrough.sh ] ; then
