@@ -159,13 +159,17 @@ echo "E-Mail Adresse: $(uci -q get 'fff.system.contact')"
 
 echo ""
 echo "-> BITRATEN-BEGRENZUNG"
-if [ "$(uci -q get 'simple-tc.example.enabled')" = "1" ] ; then
-	echo "Aktiv: ja"
+if [ -s "/etc/config/simple-tc" ]; then
+	if [ "$(uci -q get 'simple-tc.example.enabled')" = "1" ] ; then
+		echo "Aktiv: ja"
+	else
+		echo "Aktiv: nein"
+	fi
+	echo "Download-Limit: $(uci -q get 'simple-tc.example.limit_ingress') kBit/s"
+	echo "Upload-Limit: $(uci -q get 'simple-tc.example.limit_egress') kBit/s"
 else
-	echo "Aktiv: nein"
+	echo "simple-tc nicht installiert."
 fi
-echo "Download-Limit: $(uci -q get 'simple-tc.example.limit_ingress') kBit/s"
-echo "Upload-Limit: $(uci -q get 'simple-tc.example.limit_egress') kBit/s"
 
 if grep -q 'PORTORDER=' /etc/network.$board_name ; then
 	portorder=$(awk -F= '/PORTORDER=/ { print $2 }' /etc/network.$board_name | sed "s/\"//g")
