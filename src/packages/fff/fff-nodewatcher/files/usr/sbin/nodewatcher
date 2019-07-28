@@ -12,7 +12,7 @@ if ! lock -n "$lockfile"; then
 fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
-SCRIPT_VERSION="53"
+SCRIPT_VERSION="54"
 
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
@@ -219,10 +219,9 @@ crawl() {
     err "$(date): Collecting information from batman advanced and its interfaces"
     #B.A.T.M.A.N. advanced
     if [ -f /sys/module/batman_adv/version ]; then
-        for iface in $(grep active /sys/class/net/*/batman_adv/iface_status); do
-            status=${iface#*:}
-            iface=${iface%/batman_adv/iface_status:active}
-            iface=${iface#/sys/class/net/}
+        for iface in $(batctl if | sed 's/ //'); do
+            status=${iface##*:}
+            iface=${iface%%:*}
             BATMAN_ADV_INTERFACES=$BATMAN_ADV_INTERFACES"<$iface><name>$iface</name><status>$status</status></$iface>"
         done
 
