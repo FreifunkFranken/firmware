@@ -30,6 +30,7 @@ execute_subshell() {
 		)
 
 		if [ $? -ne 0 ]; then
+			echo
 			echo "Error when executing" "$1" "from" "$(basename "$script")"
 			exit 1
 		fi
@@ -43,6 +44,7 @@ configure() {
 		exit 1
 	fi
 
+	echo
 	execute_subshell configure
 
 	exit 0
