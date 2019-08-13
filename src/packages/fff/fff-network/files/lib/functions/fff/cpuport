@@ -8,7 +8,9 @@ case "$BOARD" in
 		CPUPORT="5t"
 		;;
 	tl-wr1043nd-v2|\
-	tl-wr1043nd-v3)
+	tl-wr1043nd-v3|\
+	ubnt-erx|\
+	ubnt-erx-sfp)
 		CPUPORT="6t"
 		;;
 	cpe210-v2|\
