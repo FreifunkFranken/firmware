@@ -86,3 +86,36 @@ babel_delete_interface() {
 
 	return 0
 }
+
+babel_add_redistribute_filter() {
+	[ "$#" -ne "1" ] && return 1
+
+	local prefix="$1"
+
+	config=$(uci add babeld filter)
+	uci set babeld.$config.type='redistribute'
+	uci set babeld.$config.ip="$prefix"
+	uci set babeld.$config.addedbyautoconfig='true'
+
+	return 0
+}
+
+babel_remove_custom_redistribute_filters() {
+	[ "$#" -ne "0" ] && return 1
+
+	remove_filters() {
+		local name="$1"
+
+		# check if filter was added by configuregateway
+		if ! [ "$(uci -q get babeld.$name.addedbyautoconfig)" = 'true' ]; then
+			return
+		fi
+
+		uci -q del babeld.$name
+	}
+
+	config_load babeld
+	config_foreach remove_filters filter
+
+	return 0
+}

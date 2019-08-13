@@ -80,6 +80,16 @@ configure() {
 
 	config_load gateway
 	config_foreach add_babelpeer babelpeer
+
+
+	# configure babeld filters for custom ipv6 addresses
+	## remove old filters
+	babel_remove_custom_redistribute_filters
+
+	## add new filters set for client interface in gatewayconfig
+	for prefix in $(uci -q get gateway.@client[0].ip6addr); do
+		babel_add_redistribute_filter "$prefix"
+	done
 }
 
 apply() {
