@@ -59,12 +59,12 @@ configure() {
 		local persistent_keepalive
 		local mtu
 
-		if ! privkey=$(uci -q get gateway.$name.private_key); then
+		if ! privkey=$(uci -q get gateway.$name.local_private_key); then
 			privkey=$(wg genkey)
-			uci set gateway.$name.private_key="$privkey"
+			uci set gateway.$name.local_private_key="$privkey"
 		fi
 
-		if ! pubkey=$(uci get gateway.$name.public_key); then
+		if ! pubkey=$(uci get gateway.$name.remote_public_key); then
 			echo "ERROR: publickey for ${name} missing!"
 			exit 1
 		fi
@@ -91,7 +91,7 @@ configure() {
 		uci set network.$prefixname.mtu="${mtu:-1420}"
 
 		uci set network.$prefixname.private_key="$privkey"
-		echo "INFO: publickey for wireguardpeer ${name}: $(uci get gateway.$name.private_key | wg pubkey)"
+		echo "INFO: publickey for wireguardpeer ${name}: $(uci get gateway.$name.local_private_key | wg pubkey)"
 
 
 		# add wireguard properties
