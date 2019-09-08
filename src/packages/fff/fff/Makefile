@@ -31,7 +31,7 @@ define Package/fff/base/description
 	This is the Freifunk Franken Firmware Base package
 endef
 
-define Package/fff-node
+define Package/fff-variant-node
 	$(call Package/fff/base)
 	TITLE+=(Home node)
 	DEPENDS+=+fff-fastd \
@@ -42,11 +42,11 @@ define Package/fff-node
 	VARIANT:=homenode
 endef
 
-define Package/fff-node/description
+define Package/fff-variant-node/description
 	$(call Package/fff/base/description)
 endef
 
-define Package/fff-layer3
+define Package/fff-variant-layer3
 	$(call Package/fff/base)
 	TITLE+=(Layer 3 Gateway)
 	DEPENDS+=+fff-gateway \
@@ -72,11 +72,11 @@ define Package/fff-layer3
 	VARIANT:=layer3
 endef
 
-define Package/fff-layer3/description
+define Package/fff-variant-layer3/description
 	$(call Package/fff/base/description)
 endef
 
-$(eval $(call BuildPackage,fff-node))
-$(eval $(call BuildPackage,fff-layer3))
+$(eval $(call BuildPackage,fff-variant-node))
+$(eval $(call BuildPackage,fff-variant-layer3))
 
 include $(TOPDIR)/variant.mk
