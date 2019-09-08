@@ -1,0 +1,57 @@
+. /lib/functions/fff/wireless
+
+configure() {
+	# get parameters
+	essid=$(uci -q get gateway.@client[0].essid)
+	chan2ghz=$(uci -q get gateway.@client[0].chan2ghz)
+	chan5ghz=$(uci -q get gateway.@client[0].chan5ghz)
+
+	if [ -z "$essid" ]; then
+		echo "WARNING: No ESSID set! WiFi AP is disabled"
+	fi
+
+	for radio in $(wifiListRadio); do
+		freq="$(wifiGetFreq $radio)"
+		disabled=1
+
+		# Delete wXmesh, wXconfigap
+		uci -q del wireless.w${freq}mesh
+		uci -q del wireless.w${freq}configap
+
+		if [ -n "$essid" ]; then
+			# set channel for 5ghz
+			if [ "$freq" = "5" ]; then
+				if [ -z "$chan5ghz" ]; then
+					echo "WARNING: No 5 GHz channel set! Disabling AP on $radio"
+				else
+					uci set wireless.${radio}.channel="$chan5ghz"
+					disabled=0
+				fi
+			fi
+
+			# set channel for 2.4ghz
+			if [ "$freq" = "2" ]; then
+				if [ -z "$chan2ghz" ]; then
+					echo "WARNING: No 2.4 GHz channel set! Disabling AP on $radio"
+				else
+					uci set wireless.${radio}.channel="$chan2ghz"
+					disabled=0
+				fi
+			fi
+
+			# set essid
+			uci set wireless.w${freq}ap.ssid="$essid"
+		fi
+
+		# enable or disable ap interface appropriately. The radios 'disabled'-option is not touched
+		uci set wireless.w${freq}ap.disabled="$disabled"
+	done
+}
+
+apply() {
+	uci commit wireless
+}
+
+revert() {
+	uci revert wireless
+}
