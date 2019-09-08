@@ -12,7 +12,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:= Freifunk-Franken network configuration
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+fff-uradvd +fff-boardname +fff-firewall
+	DEPENDS:=+fff-boardname +fff-firewall
 endef
 
 define Package/$(PKG_NAME)/description

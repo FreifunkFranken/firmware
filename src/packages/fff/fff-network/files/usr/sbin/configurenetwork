@@ -259,5 +259,5 @@ else
 
     uci -q commit network
 
-    /etc/init.d/fff-uradvd restart
+    [ -s /etc/init.d/fff-uradvd ] && /etc/init.d/fff-uradvd restart
 fi
