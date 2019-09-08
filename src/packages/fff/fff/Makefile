@@ -34,7 +34,8 @@ endef
 define Package/fff-variant-node
 	$(call Package/fff/base)
 	TITLE+=(Home node)
-	DEPENDS+=+fff-fastd \
+	DEPENDS+=+fff-node \
+			 +fff-fastd \
 			 +fff-firewall \
 			 +fff-uradvd \
 			 +fff-batman-adv \
