@@ -1,0 +1,3 @@
+# Ensure nothing is forwarded onto WAN interface
+iptables -A FORWARD -o $IF_WAN -j REJECT --reject-with icmp-net-unreachable
+ip6tables -A FORWARD -o $IF_WAN -j REJECT --reject-with no-route
