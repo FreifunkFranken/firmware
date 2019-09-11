@@ -34,7 +34,7 @@ setAutoConf() {
     local iface=$1
     local on=$2
 
-    sysctlfile="/etc/sysctl.d/51-fff-network-$iface.conf"
+    sysctlfile="/etc/sysctl.d/65-fff-network-$iface.conf"
     echo "# Generated from configurenetwork" > "$sysctlfile"
     echo "net.ipv6.conf.$iface.accept_ra = $on" >> "$sysctlfile"
     echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "$sysctlfile"
