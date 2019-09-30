@@ -286,6 +286,19 @@ crawl() {
         dataair="$dataair<airtime5><active>$w5_ACT</active><busy>$w5_BUS</busy></airtime5>"
     fi
 
+    if pgrep babeld >/dev/null; then
+        neighbours="$(echo dump | nc ::1 33123 | grep '^add neighbour' |
+            awk '{
+                   for (i=2; i < NF; i += 2) {
+                     vars[$i] = $(i+1)
+                   }
+                 }
+                 {
+                   printf "<neighbour><ip>%s</ip><outgoing_interface>%s</outgoing_interface><link_cost>%s</link_cost></neighbour>", vars["address"], vars["if"], vars["cost"]
+                 }')"
+        BABELS="<babel_neighbours>$neighbours</babel_neighbours>"
+    fi
+
     err "$(date): Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
 
     DATA="<?xml version='1.0' standalone='yes'?><data>"
@@ -295,6 +308,7 @@ crawl() {
     DATA=$DATA"<batman_adv_originators>$batman_adv_originators</batman_adv_originators>"
     DATA=$DATA"<batman_adv_gateway_mode>$batman_adv_gateway_mode</batman_adv_gateway_mode>"
     DATA=$DATA"<batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list>"
+    DATA=$DATA"$BABELS"
     DATA=$DATA"<client_count>$client_count</client_count>"
     DATA=$DATA"<clients>$dataclient</clients>"
     DATA=$DATA"$dataair"
