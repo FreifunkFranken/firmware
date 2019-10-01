@@ -12,7 +12,7 @@ if ! lock -n "$lockfile"; then
 fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
-SCRIPT_VERSION="54"
+SCRIPT_VERSION="55"
 
 #Get the configuration from the uci configuration file
 #If it does not exists, then get it from a normal bash file with variables.
@@ -109,6 +109,9 @@ crawl() {
         fastd_version="<fastd_version>$(/usr/bin/fastd -v | awk '{ print $2 }')</fastd_version>"
     fi
     nodewatcher_version=$SCRIPT_VERSION
+    if [ -x /usr/sbin/babeld ]; then
+        babel_version="<babel_version>$(/usr/sbin/babeld -V 2>&1)</babel_version>"
+    fi
 
     if [ -f "$SCRIPT_STATUS_FILE" ]; then
         status_text="<status_text>$(cat "$SCRIPT_STATUS_FILE")</status_text>"
@@ -160,6 +163,7 @@ crawl() {
     SYSTEM_DATA=$SYSTEM_DATA"<kernel_version>$kernel_version</kernel_version>"
     SYSTEM_DATA=$SYSTEM_DATA"$fastd_version"
     SYSTEM_DATA=$SYSTEM_DATA"<nodewatcher_version>$nodewatcher_version</nodewatcher_version>"
+    SYSTEM_DATA=$SYSTEM_DATA"$babel_version"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_version>$FIRMWARE_VERSION</firmware_version>"
     SYSTEM_DATA=$SYSTEM_DATA"<firmware_revision>$BUILD_DATE</firmware_revision>"
     SYSTEM_DATA=$SYSTEM_DATA"<openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision>"
