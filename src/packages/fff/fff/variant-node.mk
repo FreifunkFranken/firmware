@@ -4,7 +4,8 @@ define Package/fff-default
 	DEFAULT:=y
 	TITLE:=Freifunk-Franken Base default switcher
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+fff-variant-node
+	DEPENDS:=+fff-base +fff-node
+	VARIANT:=node
 endef
 
 define Package/fff-default/description
