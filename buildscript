@@ -136,6 +136,14 @@ prepare() {
     # force the reevaluation of this Makefile to make note of the new variant
     touch ./src/packages/fff/fff/Makefile
 
+    #saves ~200MB for each build
+    test -d ./src/dl || mkdir ./src/dl
+    ln -s ../src/dl "$builddir"/dl
+
+    update_feeds
+}
+
+update_feeds() {
     ## generate own feeds.conf
     #this local variable should be globally configure variable used in get_source and here
     local PACKAGEBASE=${PWD}/src/packages
@@ -166,10 +174,6 @@ prepare() {
             "$builddir"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
         fi
     done
-
-    #saves ~200MB for each build
-    test -d ./src/dl || mkdir ./src/dl
-    ln -s ../src/dl "$builddir"/dl
 }
 
 prebuild() {
@@ -438,6 +442,9 @@ case "$1" in
             prepare
         fi
         ;;
+    "updatefeeds")
+        update_feeds
+        ;;
     "build")
         if [ "$2" = "help" ] || [ "$2" = "x" ]; then
             echo "This option compiles the firmware"
@@ -501,6 +508,7 @@ case "$1" in
         echo "  selectbsp <bsp-file>"
         echo "  selectvariant <name of variant>"
         echo "  prepare"
+        echo "  updatefeeds"
         echo "  config openwrt"
         echo "  build [fast|debug]"
         echo "  buildall [fast]"
