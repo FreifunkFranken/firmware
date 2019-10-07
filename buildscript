@@ -169,7 +169,7 @@ prepare() {
 
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
-    ln -s ../../src/dl "$target"/dl
+    ln -s ../src/dl "$target"/dl
 }
 
 prebuild() {
@@ -347,6 +347,7 @@ loadBSP()
 {
     echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
     . selected_bsp
+    target=$builddir
 }
 
 loadVariant()

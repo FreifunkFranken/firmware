@@ -1,7 +1,6 @@
 machine=mt7621
 chipset=ramips
 subtarget=mt7621
-target=$builddir/$machine
 
 images=(
         "openwrt-ramips-mt7621-ubnt-erx-squashfs-sysupgrade.tar"

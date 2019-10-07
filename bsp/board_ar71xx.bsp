@@ -1,7 +1,6 @@
 machine=ar71xx
 chipset=ar71xx
 subtarget=tiny
-target=$builddir/$machine
 images=("openwrt-${chipset}-${subtarget}-archer-c25-v1-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-archer-c60-v1-squashfs-sysupgrade.bin"
         "openwrt-${chipset}-${subtarget}-archer-c7-v2-squashfs-sysupgrade.bin"
