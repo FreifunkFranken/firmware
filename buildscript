@@ -117,7 +117,7 @@ get_source() {
 patch_target() {
     for patch in $(ls "$PWD"/build_patches/openwrt/*.patch 2>/dev/null); do
         echo "Applying $patch:"
-        patch --no-backup-if-mismatch -p1 -d "$target" -i "$patch"
+        patch --no-backup-if-mismatch -p1 -d "$builddir" -i "$patch"
     done
 }
 
@@ -126,32 +126,32 @@ prepare() {
 
     test -d $builddir || mkdir $builddir
 
-    /bin/rm -rf "$target"
-    cp -a src/openwrt "$target"
+    /bin/rm -rf "$builddir"
+    cp -a src/openwrt "$builddir"
 
     patch_target
 
     # set the variant for this build
-    cp "./src/packages/fff/fff/variant-$(cat selected_variant).mk" "$target"/variant.mk
+    cp "./src/packages/fff/fff/variant-$(cat selected_variant).mk" "$builddir"/variant.mk
     # force the reevaluation of this Makefile to make note of the new variant
     touch ./src/packages/fff/fff/Makefile
 
     ## generate own feeds.conf
     #this local variable should be globally configure variable used in get_source and here
     local PACKAGEBASE=${PWD}/src/packages
-    rm -f "$target"/feeds.conf
+    rm -f "$builddir"/feeds.conf
     for FEEDVAR in "${FEEDS[@]}" ; do
         FEED="${FEEDVAR}[@]"
         FEED=("${!FEED}")
         local NAME=${FEED[0]}
         echo "adding $NAME to package feeds"
-        echo src-link "$NAME" "$PACKAGEBASE"/"$NAME" >> "$target"/feeds.conf
+        echo src-link "$NAME" "$PACKAGEBASE"/"$NAME" >> "$builddir"/feeds.conf
     done
 
     echo "cleaning feeds"
-    /bin/rm -rf "$target"/feeds
+    /bin/rm -rf "$builddir"/feeds
 
-    "$target"/scripts/feeds update
+    "$builddir"/scripts/feeds update
 
     for FEEDVAR in "${FEEDS[@]}" ; do
         FEED="${FEEDVAR}[@]"
@@ -163,29 +163,29 @@ prepare() {
 
         if [[ -n "${PACKAGESVAR[@]}" ]] ; then
             echo "adding ${PACKAGESVAR[*]} from feed $NAME to available packages"
-            "$target"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
+            "$builddir"/scripts/feeds install -p "$NAME" "${PACKAGESVAR[@]}"
         fi
     done
 
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
-    ln -s ../src/dl "$target"/dl
+    ln -s ../src/dl "$builddir"/dl
 }
 
 prebuild() {
     #create filesdir for our config
-    /bin/rm -rf "$target"/files
-    mkdir "$target"/files
+    /bin/rm -rf "$builddir"/files
+    mkdir "$builddir"/files
 
-    cp -r ./bsp/default/root_file_system/* "$target"/files/
-    cp ./bsp/"$machine"/.config "$target"/.config
+    cp -r ./bsp/default/root_file_system/* "$builddir"/files/
+    cp ./bsp/"$machine"/.config "$builddir"/.config
 
     while IFS= read -r -d '' template
     do
         echo "Translating $template .."
         $tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
         /bin/rm "$template"
-    done < <(find "${target}/files" -name '*.tpl' -print0)
+    done < <(find "${builddir}/files" -name '*.tpl' -print0)
 
     #insert actual firware version informations into release file
     version=$(git describe --tags --dirty)
@@ -201,10 +201,10 @@ prebuild() {
         echo "BUILD_DATE=\"build date: $(date)\""
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
-    } > "$target"/files/etc/firmware_release
+    } > "$builddir"/files/etc/firmware_release
 
     opath=$(pwd)
-    cd "$target"
+    cd "$builddir"
     make defconfig
     cd "$opath"
 }
@@ -215,7 +215,7 @@ build() {
     rm_firmware
 
     opath=$(pwd)
-    cd "$target"
+    cd "$builddir"
     cpus=$(grep -c processor /proc/cpuinfo)
 
     case "$1" in
@@ -243,7 +243,7 @@ config() {
     prebuild
 
     opath=$(pwd)
-    cd "$target"
+    cd "$builddir"
 
     case "$1" in
         "openwrt")
@@ -274,7 +274,7 @@ config() {
 rm_firmware() {
     [ -n "$subtarget" ] || subtarget="generic"
 
-    rm -rf $target/bin/targets/${chipset}/${subtarget}
+    rm -rf $builddir/bin/targets/${chipset}/${subtarget}
 }
 
 cp_firmware() {
@@ -285,13 +285,13 @@ cp_firmware() {
         filename_build=${filename_build//generic/g}
         filename_build=${filename_build//tiny/t}
         filename_build=${filename_build//squashfs-/}
-        cp "$target/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
+        cp "$builddir/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
 
         for region in "" "-eu" "-us"; do
             image_factory=${image/sysupgrade/factory$region}
-            if [[ -f "$target/bin/targets/${chipset}/${subtarget}/$image_factory" ]]; then
+            if [[ -f "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" ]]; then
               filename_build_factory=${filename_build/sysupgrade/factory$region}
-              cp "$target/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$filename_build_factory"
+              cp "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$filename_build_factory"
             fi
         done
     done
@@ -347,7 +347,6 @@ loadBSP()
 {
     echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
     . selected_bsp
-    target=$builddir
 }
 
 loadVariant()
