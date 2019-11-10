@@ -131,16 +131,22 @@ prepare() {
 
     patch_target
 
-    # set the variant for this build
-    cp "./src/packages/fff/fff/variant-$(cat selected_variant).mk" "$builddir"/variant.mk
-    # force the reevaluation of this Makefile to make note of the new variant
-    touch ./src/packages/fff/fff/Makefile
+    # apply variant to ensure the included file "variant.mk"
+    # exists in builddir.
+    apply_variant
 
     #saves ~200MB for each build
     test -d ./src/dl || mkdir ./src/dl
     ln -s ../src/dl "$builddir"/dl
 
     update_feeds
+}
+
+apply_variant() {
+    # set the variant for this build
+    cp "./src/packages/fff/fff/variant-$(cat selected_variant).mk" "$builddir"/variant.mk
+    # force the reevaluation of this Makefile to make note of the new variant
+    touch ./src/packages/fff/fff/Makefile
 }
 
 update_feeds() {
@@ -177,6 +183,8 @@ update_feeds() {
 }
 
 prebuild() {
+    apply_variant
+
     #create filesdir for our config
     /bin/rm -rf "$builddir"/files
     mkdir "$builddir"/files
