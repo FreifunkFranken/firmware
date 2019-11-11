@@ -34,7 +34,7 @@ case $BOARD in
         BOARD="cpe510-520-v1" ;;
 esac
 
-wget "${UPGRADE_PATH}/release.nfo"
+/bin/busybox wget "${UPGRADE_PATH}/release.nfo"
 if [ ! -f release.nfo ]; then
   echo "Latest release information not found. Please try to update manually."
   echo ""
@@ -72,8 +72,8 @@ fi
 FILE="fff-${VERSION}-${SOC}-${BOARD}-sysupgrade.bin"
 echo "Downloading $FILE"
 echo ""
-wget "${UPGRADE_PATH}/${FILE}"
-wget "${UPGRADE_PATH}/${FILE}.sha256"
+/bin/busybox wget "${UPGRADE_PATH}/${FILE}"
+/bin/busybox wget "${UPGRADE_PATH}/${FILE}.sha256"
 
 sum=$(sha256sum -c "${FILE}.sha256")
 ret=$?

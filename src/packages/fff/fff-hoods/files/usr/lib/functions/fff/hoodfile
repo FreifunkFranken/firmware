@@ -31,9 +31,9 @@ getWirelessHoodfile() {
 	# wait a moment to start the interface
 	sleep 10;
 
-	if wget -T15 -O "$file" "http://[fe80::1%w2sta]:2342/keyxchangev2data"; then
+	if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%w2sta]:2342/keyxchangev2data"; then
 		return 0
-	elif wget -T15 -O "$file" "http://[fe80::1%w5sta]:2342/keyxchangev2data"; then
+	elif /bin/busybox wget -T15 -O "$file" "http://[fe80::1%w5sta]:2342/keyxchangev2data"; then
 		return 0
 	else
 		return 1
@@ -57,7 +57,7 @@ getEthernetHoodfile() {
 	neighbor_addrs=$(ping6 -c2 ff02::1%"${ethmesh_dev}" | grep seq | grep DUP | cut -d " " -f4 | sed s/:$//g | sort -u)
 
 	for addr in $neighbor_addrs; do
-		wget -T2 -qO "$file" "http://[${addr}%${ethmesh_dev}]:2342/keyxchangev2data" && return 0
+		/bin/busybox wget -T2 -qO "$file" "http://[${addr}%${ethmesh_dev}]:2342/keyxchangev2data" && return 0
 	done
 
 	# got no hoodfile
@@ -73,7 +73,7 @@ getGatewayHoodfile() {
 
 	echo "Trying to get hoodfile from gateway..."
 
-	if wget -T15 -O "$file" "http://[fe80::1%br-mesh]:2342/keyxchangev2data"; then
+	if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%br-mesh]:2342/keyxchangev2data"; then
 		return 0
 	else
 		return 1
@@ -95,7 +95,7 @@ getKeyserverHoodfile() {
 
 	echo "Getting hoodfile from Keyserver"
 
-	if wget -T15 -O "$file" "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long"; then
+	if /bin/busybox wget -T15 -O "$file" "http://keyserver.freifunk-franken.de/v2/?lat=$lat&long=$long"; then
 		return 0
 	else
 		return 1

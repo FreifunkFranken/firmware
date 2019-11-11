@@ -24,7 +24,7 @@ if ( [ ! -s /tmp/fwcheck ] || [ "$(cat /tmp/fwcheck)" -lt "$NOW" ] ) && [ ! "$(u
 	rm -f /tmp/isupdate
 	NEXTUPDATE=$(($(date +%s)+86400))
 	echo $NEXTUPDATE > /tmp/fwcheck
-	/usr/bin/wget "${UPGRADE_PATH}/release.nfo" -P /tmp -T 2
+	/bin/busybox wget "${UPGRADE_PATH}/release.nfo" -P /tmp -T 2
 	VERSION=$(cat /tmp/release.nfo|awk -F: '/VERSION:/ { print $2 }')
 	rm -f /tmp/release.nfo
 	if [ "$VERSION" != "$FIRMWARE_VERSION" -a -n "$VERSION" ]; then
