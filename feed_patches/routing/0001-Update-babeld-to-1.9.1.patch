@@ -1,4 +1,4 @@
-From a9b2106178cf8f249056e23525c9841029bdf3d8 Mon Sep 17 00:00:00 2001
+From b58e2b95ffc83f73779619ea63777c0970398d13 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Sun, 8 Sep 2019 23:19:33 +0200
 Subject: [PATCH] Update babeld to 1.9.1
@@ -8,25 +8,24 @@ Subject: [PATCH] Update babeld to 1.9.1
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/babeld/Makefile b/babeld/Makefile
-index 5cf136d..3235847 100644
+index 972862c..d113d54 100644
 --- a/babeld/Makefile
 +++ b/babeld/Makefile
-@@ -8,13 +8,13 @@
+@@ -8,12 +8,12 @@
  include $(TOPDIR)/rules.mk
  
  PKG_NAME:=babeld
--PKG_VERSION:=1.8.2
+-PKG_VERSION:=1.8.5
 +PKG_VERSION:=1.9.1
  PKG_RELEASE:=1
  
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
  PKG_SOURCE_URL:=https://www.irif.fr/~jch/software/files/
- PKG_MD5SUM:=eec395ade02524b3f351507a21742939
--PKG_HASH:=07edecb132386d5561a767482bc5200e04239b18e48c2f0f47ae1c78d60fe5dc
+-PKG_HASH:=202d99c275604507c6ce133710522f1ddfb62cb671c26f1ac2d3ab44af3d5bc4
 +PKG_HASH:=1e1b3c01dd929177bc8d027aff1494da75e1e567e1f60df3bb45a78d5f1ca0b4
  PKG_LICENSE:=MIT
  
  include $(INCLUDE_DIR)/package.mk
 -- 
-2.23.0
+2.24.0
 
