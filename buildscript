@@ -200,16 +200,18 @@ prebuild() {
     done < <(find "${builddir}/files" -name '*.tpl' -print0)
 
     #insert actual firware version informations into release file
+    variant=$(cat selected_variant)
     version=$(git describe --tags --dirty)
     if [ 0 -ne $? ]; then
         version=$(git log -1 --pretty=format:%h)
     fi
-    if [ -n "$(cat selected_variant)" ]; then
-        version="$(cat selected_variant)-$version"
+    if [ -n "$variant" ]; then
+        version="$variant-$version"
     fi
 
     {
         echo "FIRMWARE_VERSION=\"$version\""
+        echo "VARIANT=\"$variant\""
         echo "BUILD_DATE=\"build date: $(date)\""
         echo "OPENWRT_CORE_REVISION=\"${OPENWRTREV}\""
         echo "OPENWRT_FEEDS_PACKAGES_REVISION=\"${PACKAGEREV}\""
