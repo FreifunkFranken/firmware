@@ -14,16 +14,6 @@ fi
 
 BOARD=$(uci get board.model.name)
 
-#decide SOC
-case $BOARD in
-    tl-wdr4900-v1 )
-        SOC="mpc85xx-g"
-        ;;
-    * )
-        SOC="ar71xx-t"
-        ;;
-esac
-echo ""
 echo "Hardware: $BOARD"
 
 #rewrite BOARD
@@ -69,7 +59,7 @@ if [ "$VERSION" = "$FIRMWARE_VERSION" ]; then
   done
 fi
 
-FILE="fff-${VERSION}-${SOC}-${BOARD}-sysupgrade.bin"
+FILE="fff-${VERSION}-${BOARD}-sysupgrade.bin"
 echo "Downloading $FILE"
 echo ""
 /bin/busybox wget "${UPGRADE_PATH}/${FILE}"

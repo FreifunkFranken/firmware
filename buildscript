@@ -296,9 +296,8 @@ cp_firmware() {
 
     for image in ${images[@]}; do
         filename_build=${image//openwrt/fff-${version}}
-        filename_build=${filename_build//generic/g}
-        filename_build=${filename_build//tiny/t}
         filename_build=${filename_build//squashfs-/}
+        filename_build=${filename_build//${chipset}-${subtarget}-/}
         cp "$builddir/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
 
         for region in "" "-eu" "-us"; do
