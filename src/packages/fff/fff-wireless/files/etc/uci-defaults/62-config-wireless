@@ -43,9 +43,11 @@ esac
 
 # rssileds
 case "$BOARD" in
+	cpe210|\
 	cpe210-v2|\
-	cpe210-v3)
-		uci -q set system.rssid_wlan0.dev=radio0
-		uci -q commit system
+	cpe210-v3|\
+	cpe510|\
+	tl-wa850re-v1)
+		/etc/init.d/rssileds disable
 		;;
 esac
