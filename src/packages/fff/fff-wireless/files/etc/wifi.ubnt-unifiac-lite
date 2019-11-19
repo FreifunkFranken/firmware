@@ -1,3 +1,0 @@
-uci -q set wireless.radio0.antenna_gain=4
-uci -q set wireless.radio1.antenna_gain=3
-uci -q commit wireless

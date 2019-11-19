@@ -4,6 +4,48 @@
 
 BOARD="$(uci get board.model.name)"
 
-if [ -s "/etc/wifi.$BOARD" ] ; then
-	. "/etc/wifi.$BOARD"
-fi
+# antenna gain
+case "$BOARD" in
+	tl-wr1043nd-v1)
+		uci set wireless.radio0.antenna_gain=3
+		uci commit wireless
+		;;
+	ubnt-loco-m|\
+	ubnt-loco-m-xw)
+		uci set wireless.radio0.antenna_gain=9
+		uci commit wireless
+		;;
+	ubnt-nano-m)
+		uci set wireless.radio0.antenna_gain=11
+		uci commit wireless
+		;;
+	ubnt-pico-m)
+		uci set wireless.radio0.antenna_gain=12
+		uci commit wireless
+		;;
+	ubnt-power-m-xw)
+		uci set wireless.radio0.antenna_gain=18
+		uci commit wireless
+		;;
+	ubnt-unifi)
+		# No support for Unifi AP Pro!
+		uci set wireless.radio0.antenna_gain=3
+		uci commit wireless
+		;;
+	ubnt-unifiac-lite)
+		# These are the values for the AC MESH.
+		# The actual AC Lite has different values
+		uci set wireless.radio0.antenna_gain=4
+		uci set wireless.radio1.antenna_gain=3
+		uci commit wireless
+		;;
+esac
+
+# rssileds
+case "$BOARD" in
+	cpe210-v2|\
+	cpe210-v3)
+		uci -q set system.rssid_wlan0.dev=radio0
+		uci -q commit system
+		;;
+esac

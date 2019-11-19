@@ -1,2 +1,0 @@
-uci -q set wireless.radio0.antenna_gain=11
-uci -q commit wireless
