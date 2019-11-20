@@ -30,7 +30,8 @@ getUpgradePath() {
 		json_get_var upath upgrade_path
 		upgrade_path="$upath"
 	else
-		return 1
+		upgrade_path="http://dev.freifunk-franken.de"
+		>&2 echo "Upgrade path not set! Falling back to $upgrade_path"
 	fi
 
 	# add full firmware path for current firmwares variant
