@@ -2,6 +2,7 @@
 # License GPLv3
 
 . /usr/share/libubox/jshn.sh
+. /etc/firmware_release
 
 hoodfiletmp="/tmp/hoodfile"
 hoodfileref="/tmp/hoodfileref"
@@ -21,14 +22,19 @@ getJsonPath() {
 
 getUpgradePath() {
 	jsonfile="$(getJsonPath)"
+	local upgrade_path
 
 	if [ -n "$jsonfile" ] ; then
 		json_load "$(cat "$jsonfile")"
 		json_select hood
 		json_get_var upath upgrade_path
-		echo "$upath"
+		upgrade_path="$upath"
 	else
 		return 1
 	fi
+
+	# add full firmware path for current firmwares variant
+	echo "${upgrade_path}/${VARIANT}/current"
+
 	return 0
 }
