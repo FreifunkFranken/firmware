@@ -8,7 +8,7 @@ wifiListRadio() {
 		return 1
 	fi
 
-	uci show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'
+	uci -q show wireless | sed -n 's,.*\.\([a-z0-9]*\)=wifi-device,\1,p'
 	return 0
 }
 

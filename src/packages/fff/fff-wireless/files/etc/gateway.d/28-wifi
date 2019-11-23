@@ -49,9 +49,11 @@ configure() {
 }
 
 apply() {
-	uci commit wireless
+	uci -q commit wireless
+	return 0
 }
 
 revert() {
-	uci revert wireless
+	uci -q revert wireless
+	return 0
 }
