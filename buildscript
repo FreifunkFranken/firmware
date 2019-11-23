@@ -382,7 +382,6 @@ setBSP()
 buildall() {
     for bsp in $(/bin/ls bsp/*.bsp); do
         setBSP "$bsp"
-        prepare
         build "$1"
     done
 }
