@@ -1,0 +1,40 @@
+# completion for buildscript
+# just source this script
+# or put it in your /etc/bash_completion.d/ (you should rename it)
+
+_buildscript() {
+case "${COMP_WORDS[1]}" in
+config)
+	COMPREPLY=($(compgen -W "openwrt" "${COMP_WORDS[2]}"))
+	;;
+selectbsp)
+	COMPREPLY=($(compgen -W "$(find bsp -name '*.bsp')" "${COMP_WORDS[2]}"))
+	;;
+selectvariant)
+	COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" "${COMP_WORDS[1]}" | sed '0,/available variants:/d')" "${COMP_WORDS[2]}"))
+	;;
+build)
+	COMPREPLY=($(compgen -W "fast debug" "${COMP_WORDS[2]}"))
+	;;
+buildall)
+	COMPREPLY=($(compgen -W "fast" "${COMP_WORDS[2]}"))
+	;;
+release)
+	case "${COMP_WORDS[2]}" in
+	all)
+		COMPREPLY=($(compgen -W "fast" "${COMP_WORDS[3]}"))
+		;;
+	fast)
+		COMPREPLY=($(compgen -W "all" "${COMP_WORDS[3]}"))
+		;;
+	*)
+		COMPREPLY=($(compgen -W "fast all" "${COMP_WORDS[2]}"))
+		;;
+	esac;;
+*)
+	COMPREPLY=($(compgen -W "selectbsp selectvariant updatefeeds prepare config build buildall release clean" "${COMP_WORDS[1]}"))
+	;;
+esac
+}
+
+complete -F _buildscript ./buildscript
