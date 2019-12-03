@@ -17,11 +17,15 @@ configWifiDevice() {
 
 	[ "$freq" = "2" ] && uci set "wireless.${radio}.legacy_rates=0"
 
+	# detect 802.11ac capable radio and set htmode appropriately
+	local htmode="HT20"
+	iw phy "${radio}" info | grep -q 'VHT Capabilities' && htmode="VHT20"
+
 	# Comments
 	# wXmesh: use 802.11s mesh as "default"
 
 	uci batch <<-__EOF__
-		set wireless.${radio}.htmode='HT20'
+		set wireless.${radio}.htmode='${htmode}'
 		set wireless.${radio}.country='DE'
 		set wireless.${radio}.disabled='0'
 
