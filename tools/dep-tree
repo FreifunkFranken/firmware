@@ -1,0 +1,38 @@
+#!/bin/bash
+
+builddir=./build
+[ -f selected_bsp ] && . selected_bsp
+# variant=$(cat selected_variant)
+feeds=$builddir/feeds
+feed=${1:-fff}
+
+tmpfile=$(mktemp)
+
+write_deps() {
+	local deps
+	local dep
+	local pkg=$1
+    deps=$(awk -v RS="@@" "/Package: $pkg\\n/ { print }" "${feeds}/${feed}".index | grep ^Depends: | sed 's/Depends: //' | tr -d +)
+	for dep in $deps; do
+		echo "\"$pkg\" -> \"$dep\"" >> "$tmpfile"
+	done
+	for dep in $deps; do
+		grep "Package:" "${feeds}/${feed}.index" | grep " $dep$" &> /dev/null && write_deps "$dep"
+	done
+}
+# find default packages
+defaults=$(awk -v RS="@@" '/Default: y/ { print }' "${feeds}/${feed}.index" | grep Package: | cut -f2 -d" ")
+
+# start tree
+for package in $defaults; do
+	write_deps "$package"
+done
+
+# write the gv file to stdout
+echo "digraph G {"
+sort "$tmpfile" | uniq | grep -v libc | grep -v libssp | grep -v libpthread | grep -v librt
+echo "}"
+rm "$tmpfile"
+
+
+# vim: ts=4
