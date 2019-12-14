@@ -19,7 +19,7 @@ configWifiDevice() {
 
 	# detect 802.11ac capable radio and set htmode appropriately
 	local htmode="HT20"
-	iw phy "${radio}" info | grep -q 'VHT Capabilities' && htmode="VHT20"
+	uci -q get wireless.${radio}.htmode | grep VHT && htmode="VHT20"
 
 	# Comments
 	# wXmesh: use 802.11s mesh as "default"
