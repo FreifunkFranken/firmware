@@ -246,10 +246,6 @@ build() {
 
     cd "$opath"
 
-    if [ ! -d bin ]; then
-        mkdir bin
-    fi
-
     cp_firmware
 }
 
@@ -294,17 +290,19 @@ rm_firmware() {
 cp_firmware() {
     [ -n "$subtarget" ] || subtarget="generic"
 
+    mkdir -p "bin/$variant"
+
     for image in ${images[@]}; do
         filename_build=${image//openwrt/fff-${version}}
         filename_build=${filename_build//squashfs-/}
         filename_build=${filename_build//${chipset}-${subtarget}-/}
-        cp "$builddir/bin/targets/${chipset}/${subtarget}/$image" "./bin/$filename_build"
+        cp "$builddir/bin/targets/${chipset}/${subtarget}/$image" "./bin/$variant/$filename_build"
 
         for region in "" "-eu" "-us"; do
             image_factory=${image/sysupgrade/factory$region}
             if [[ -f "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" ]]; then
               filename_build_factory=${filename_build/sysupgrade/factory$region}
-              cp "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$filename_build_factory"
+              cp "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$variant/$filename_build_factory"
             fi
         done
     done
@@ -329,13 +327,13 @@ buildrelease() {
         build $fast
     fi
 
-    cd bin
+    cd bin/$variant
     for binary in *.bin; do
         md5sum "$binary" > ./"$binary".md5
         sha256sum "$binary" > ./"$binary".sha256
     done
-    cd ..
-    echo -e "VERSION:$version" > ./bin/release.nfo
+    echo -e "VERSION:$version" > release.nfo
+    cd ../..
 }
 
 clean() {
