@@ -12,7 +12,7 @@ configure() {
 	fi
 }
 
-commit() {
+apply() {
 	uci commit dhcp
 }
 

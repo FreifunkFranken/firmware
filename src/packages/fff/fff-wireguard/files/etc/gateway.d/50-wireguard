@@ -133,7 +133,7 @@ configure() {
 	config_foreach add_wgpeer wireguardpeer
 }
 
-commit() {
+apply() {
 	uci commit network
 	uci commit babeld
 	uci commit gateway
