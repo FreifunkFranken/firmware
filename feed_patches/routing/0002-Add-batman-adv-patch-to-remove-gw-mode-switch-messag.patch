@@ -1,4 +1,4 @@
-From e775f12c11d425611ba490c98ab84fb6cf4f0c01 Mon Sep 17 00:00:00 2001
+From f8c90adf89a45d9cfd5e189f28d0250e06710764 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Wed, 11 Jul 2018 13:39:06 +0200
 Subject: [PATCH] Add batman-adv patch to remove gw mode switch message
@@ -11,7 +11,7 @@ Signed-off-by: Fabian Bläse <fabian@blaese.de>
 
 diff --git a/batman-adv/patches/0000-Remove-gw-mode-switch-message.patch b/batman-adv/patches/0000-Remove-gw-mode-switch-message.patch
 new file mode 100644
-index 0000000..3fcd99c
+index 0000000..fb49d6c
 --- /dev/null
 +++ b/batman-adv/patches/0000-Remove-gw-mode-switch-message.patch
 @@ -0,0 +1,26 @@
@@ -41,7 +41,6 @@ index 0000000..3fcd99c
 + 	 * a re-election the next time that this is needed.
 +-- 
 +2.18.0
-+
 -- 
-2.18.0
+2.25.1
 

@@ -1,28 +1,27 @@
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Mon, 6 Aug 2018 18:39:04 +0200
-Subject: allow building all devives as tiny
+Subject: [PATCH 4/4] allow building all devives as tiny
 
 diff --git a/target/linux/ar71xx/image/Makefile b/target/linux/ar71xx/image/Makefile
-index 1eaf1e457c8862b603cc2477af1638a05aa5a599..602323bba27ee1e401a3e99bb47b9327e9db2e6a 100644
+index 804532b55c..6328d5cc29 100644
 --- a/target/linux/ar71xx/image/Makefile
 +++ b/target/linux/ar71xx/image/Makefile
-@@ -22,6 +22,11 @@ endif
- ifeq ($(SUBTARGET),tiny)
+@@ -23,6 +23,10 @@ include ./tiny.mk
  include ./tiny-tp-link.mk
  include ./tiny-legacy-devices.mk
+ include ./tiny-senao.mk
 +include ./generic.mk
 +include ./generic-legacy-devices.mk
-+include ./generic-senao.mk
 +include ./generic-tp-link.mk
 +include ./generic-ubnt.mk
  endif
  ifeq ($(SUBTARGET),nand)
  include ./nand.mk
 diff --git a/target/linux/ar71xx/tiny/config-default b/target/linux/ar71xx/tiny/config-default
-index 2e9031a24cb23cc6b9a5fffc5223d93a5229fabb..02836de067f3bd2e175c9028596a896b26e2d332 100644
+index 1148d8c451..eccc01757e 100644
 --- a/target/linux/ar71xx/tiny/config-default
 +++ b/target/linux/ar71xx/tiny/config-default
-@@ -70,3 +70,19 @@ CONFIG_SOC_AR933X=y
+@@ -74,3 +74,19 @@ CONFIG_SOC_AR933X=y
  CONFIG_SOC_AR934X=y
  CONFIG_SOC_QCA953X=y
  CONFIG_SOC_QCA956X=y

@@ -1,4 +1,4 @@
-From 74a1488696ccc375a57236f15bcbd90e1ec76b77 Mon Sep 17 00:00:00 2001
+From 20a7fa7bf33d47e8fbcbcb553d5bb8a542808fbf Mon Sep 17 00:00:00 2001
 From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 Date: Mon, 30 Sep 2019 16:52:28 +0200
 Subject: [PATCH 2/2] babeld: Add src_plen patch
@@ -15,7 +15,7 @@ Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
  create mode 100644 babeld/patches/0001-Remove-src_plen-assignments-which-break-v4mapped-encoding.patch
 
 diff --git a/babeld/Makefile b/babeld/Makefile
-index cc266ce..cc1598b 100644
+index 78fdf83..5a7b8cd 100644
 --- a/babeld/Makefile
 +++ b/babeld/Makefile
 @@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
@@ -105,5 +105,5 @@ index 0000000..089e35f
 +             debugf("Received unknown%s Route Request sub-TLV %d.\n",
 +                    ((type & 0x80) != 0) ? " mandatory" : "", type);
 -- 
-2.20.1
+2.25.1
 
