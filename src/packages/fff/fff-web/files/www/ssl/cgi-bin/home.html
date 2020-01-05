@@ -46,6 +46,10 @@ else
 	internet_active="Nein"
 fi
 
+if ! fastd_pub=$(echo "secret \"$(uci -q get fastd.fff.secret)\";" | fastd -c - --show-key --machine-readable); then
+	fastd_pub="-"
+fi
+
 %>
 <table style="width: 100%;">
 <tr><td>
@@ -58,6 +62,7 @@ fi
 		<tr><th>Bekannte Knoten:</th><td><%= $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)+1)) %></td></tr>
 		<tr><th>Nachbarknoten:</th><td><%= $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
 		<tr><th>VPN via fastd:</th><td><%= ${vpn_active} %></td></tr>
+		<tr><th>fastd public key:</th><td><%= ${fastd_pub} %></td></tr>
 		<tr><th>Laufzeit:</th><td><%= ${uptime} %></td></tr>
 		<tr><th>Auslastung:</th><td><%= ${load} %></td></tr>
 		<tr><th>Uhrzeit:</th><td><% date %></td></tr>
