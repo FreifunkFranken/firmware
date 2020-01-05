@@ -158,8 +158,7 @@ if [ -s "$hoodfiletmp" ]; then
 				mesh_type="$mesh_type2"
 			fi
 
-			# Disable wXsta, wXconfigap
-			uci set wireless.w${freq}sta.disabled='1'
+			# Disable wXconfigap
 			uci set wireless.w${freq}configap.disabled='1'
 
 			# Configure wXap

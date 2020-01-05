@@ -15,29 +15,33 @@ getWirelessHoodfile() {
 
 	# Set channel to auto, enable wXsta, disable other interfaces
 	for radio in $(wifiListRadio); do
-		uci set "wireless.${radio}.channel=auto"
-
 		freq="$(wifiGetFreq $radio)"
 		uci set wireless.w${freq}ap.disabled='1'
 		uci set wireless.w${freq}mesh.disabled='1'
 		uci set wireless.w${freq}configap.disabled='1'
-		uci set wireless.w${freq}sta.disabled='0'
 	done
 
 	uci commit wireless
 	reload_config
 
-	wifi
-	# wait a moment to start the interface
-	sleep 10;
+	# wait for wireless interfaces to vanish
+	sleep 8;
 
-	if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%w2sta]:2342/keyxchangev2data"; then
-		return 0
-	elif /bin/busybox wget -T15 -O "$file" "http://[fe80::1%w5sta]:2342/keyxchangev2data"; then
-		return 0
-	else
-		return 1
-	fi
+
+	for phy in $(ls /sys/class/ieee80211); do
+		iw phy $phy interface add configsta type managed
+		ip link set up configsta
+		iw dev configsta connect -w config.franken.freifunk.net 2>/dev/null
+
+		if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%configsta]:2342/keyxchangev2data"; then
+			iw dev configsta del
+			return 0
+		fi
+
+		iw dev configsta del
+	done
+
+	return 1
 }
 
 getEthernetHoodfile() {
