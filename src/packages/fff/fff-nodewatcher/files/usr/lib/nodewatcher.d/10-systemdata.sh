@@ -9,8 +9,8 @@ debug() {
 	(>&2 echo "$1")
 }
 
-#Get system data from other locations
 debug "$(date): Collecting basic system status data"
+
 hostname="$(cat /proc/sys/kernel/hostname)"
 mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
 [ "$hostname" = "OpenWrt" ] && hostname="$mac"

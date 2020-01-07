@@ -7,7 +7,7 @@ debug() {
 }
 
 debug "$(date): Collecting information from batman advanced and its interfaces"
-#B.A.T.M.A.N. advanced
+
 if [ -f /sys/module/batman_adv/version ]; then
 	for iface in $(batctl if | sed 's/ //'); do
 		status=${iface##*:}

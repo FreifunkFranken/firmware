@@ -12,25 +12,21 @@ debug() {
 inArray() {
 	local value
 	for value in $1; do
-		if [ "$value" = "$2" ]; then
-			return 0
-		fi
+		[ "$value" = "$2" ] && return 0
 	done
 	return 1
 }
 
 debug "$(date): Collecting information from network interfaces"
 
-#Get interfaces
 interface_data=""
-#Loop interfaces
-#for entry in $IFACES; do
+
+# Loop through interfaces: for entry in $IFACES; do
 for filename in $(grep 'up\|unknown' /sys/class/net/*/operstate); do
 	ifpath=${filename%/operstate*}
 	iface=${ifpath#/sys/class/net/}
-	if inArray "$IFACEBLACKLIST" "$iface"; then
-		continue
-	fi
+
+	inArray "$IFACEBLACKLIST" "$iface" && continue
 
 	#Get interface data for whitelisted interfaces
 	# shellcheck disable=SC2016
