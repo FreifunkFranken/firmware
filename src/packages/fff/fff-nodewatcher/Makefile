@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-nodewatcher
-PKG_RELEASE:=58
+PKG_RELEASE:=59
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -36,6 +36,7 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
+	printf "$(if $(PKG_VERSION),$(PKG_VERSION).)$(PKG_RELEASE)" >> $(1)/etc/nodewatcher_version
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
