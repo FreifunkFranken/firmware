@@ -41,13 +41,5 @@ case "$BOARD" in
 		;;
 esac
 
-# rssileds
-case "$BOARD" in
-	cpe210|\
-	cpe210-v2|\
-	cpe210-v3|\
-	cpe510|\
-	tl-wa850re-v1)
-		/etc/init.d/rssileds disable
-		;;
-esac
+# rssileds: always disable if package is installed
+[ -x "/etc/init.d/rssileds" ] && /etc/init.d/rssileds disable
