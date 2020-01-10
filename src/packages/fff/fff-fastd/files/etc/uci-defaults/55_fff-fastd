@@ -15,8 +15,16 @@ uci batch <<EOF
   set fastd.fff.mtu='1426'
   set fastd.fff.on_up="/etc/fastd/fff/up.sh"
   set fastd.fff.secure_handshakes='0'
-  set fastd.fff.secret="generate"
 EOF
+
+if ! secret=$(uci -q get fff.fastd.secret); then
+	secret=$(/usr/bin/fastd --generate-key --machine-readable)
+	uci set fff.fastd='fff'
+	uci set fff.fastd.secret="$secret"
+	uci commit fff
+fi
+uci set fastd.fff.secret="$secret"
+uci commit fastd
 
 [ ! -d /etc/fastd/fff ] &&  mkdir -p /etc/fastd/fff
 ln -s /tmp/fastd_fff_peers /etc/fastd/fff/peers
