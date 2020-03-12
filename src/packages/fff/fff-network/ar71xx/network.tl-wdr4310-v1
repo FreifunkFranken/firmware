@@ -4,4 +4,7 @@ CLIENT_PORTS="0t 4 5"
 WAN_PORTS="0t 1"
 BATMAN_PORTS="0t 2 3"
 
+. /lib/functions/system.sh
+
 ROUTERMAC=$(cat /sys/class/ieee80211/phy1/macaddress)
+ETHMESHMAC=$(macaddr_add $ROUTERMAC 1)
