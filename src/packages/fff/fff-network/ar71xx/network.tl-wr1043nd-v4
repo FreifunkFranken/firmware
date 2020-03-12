@@ -7,11 +7,10 @@ WAN_PORTS="5 0t"
 BATMAN_PORTS="3 4 0t"
 
 . /lib/functions/system.sh
-. /lib/functions/uci-defaults.sh
-. /lib/ar71xx.sh
+. /lib/functions.sh
 
-# Load second MAC from Flash because we haven't any Interface with this MAC where we can copy the MAC from
-# https://github.com/lede-project/source/pull/613/files#diff-abd6f42f54204372151e73eac0556db1
+# Load second MAC address from flash because we haven't any interface with this
+# address where we can copy it from
 
-ETHMESHMAC=$(mtd_get_mac_binary config 0x1017c)
+ETHMESHMAC=$(macaddr_add $(mtd_get_mac_binary product-info 8) 1)
 ROUTERMAC=$(cat /sys/class/net/eth0/address)
