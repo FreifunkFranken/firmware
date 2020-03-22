@@ -3,6 +3,6 @@ chipset=ramips
 subtarget=mt7621
 
 images=(
-        "openwrt-ramips-mt7621-ubnt-erx-squashfs-sysupgrade.tar"
-        "openwrt-ramips-mt7621-ubnt-erx-sfp-squashfs-sysupgrade.tar"
+        "openwrt-ramips-mt7621-ubnt-erx-squashfs-sysupgrade.bin"
+        "openwrt-ramips-mt7621-ubnt-erx-sfp-squashfs-sysupgrade.bin"
        )
