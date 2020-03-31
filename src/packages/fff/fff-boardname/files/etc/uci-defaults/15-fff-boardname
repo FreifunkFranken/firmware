@@ -42,7 +42,6 @@ case "$BOARD" in
         ;;
     loco-m-xw)
         BOARD=ubnt-loco-m-xw
-        grep -i "Power" /var/sysinfo/model && BOARD=ubnt-power-m-xw
         ;;
     unifiac-lite)
         BOARD=ubnt-unifiac-lite
