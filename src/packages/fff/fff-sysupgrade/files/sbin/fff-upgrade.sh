@@ -12,7 +12,7 @@ if [ -z "$UPGRADE_PATH" ]; then
   exit 1
 fi
 
-BOARD=$(uci get board.model.name)
+BOARD=$(uci get board.model.name | sed 's/,/_/')
 
 echo "Hardware: $BOARD"
 
