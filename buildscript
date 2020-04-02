@@ -292,18 +292,22 @@ cp_firmware() {
 
     mkdir -p "bin/$variant"
 
-    for image in ${images[@]}; do
-        filename_build=${image//openwrt/fff-${version}}
-        filename_build=${filename_build//squashfs-/}
-        filename_build=${filename_build//${chipset}-${subtarget}-/}
-        cp "$builddir/bin/targets/${chipset}/${subtarget}/$image" "./bin/$variant/$filename_build"
+    imagesrcpath="$builddir/bin/targets/${chipset}/${subtarget}"
+    imagedestpath="./bin/$variant"
 
-        for region in "" "-eu" "-us"; do
-            image_factory=${image/sysupgrade/factory$region}
-            if [[ -f "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" ]]; then
-              filename_build_factory=${filename_build/sysupgrade/factory$region}
-              cp "$builddir/bin/targets/${chipset}/${subtarget}/$image_factory" "./bin/$variant/$filename_build_factory"
-            fi
+    for image in ${images[@]}; do
+        # This assumes the set of images names is given with a wildcard
+        fullsrcpattern=$imagesrcpath/$image
+        if ! ls $fullsrcpattern >/dev/null 2>/dev/null; then
+            echo "Warning: $image not found."
+            continue
+        fi
+        for f in $fullsrcpattern; do
+            filename_build=${f##*/}
+            filename_build=${filename_build//openwrt/fff-${version}}
+            filename_build=${filename_build//squashfs-/}
+            filename_build=${filename_build//${chipset}-${subtarget}-/}
+            cp "$f" "$imagedestpath/$filename_build"
         done
     done
 }

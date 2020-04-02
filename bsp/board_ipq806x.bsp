@@ -3,5 +3,5 @@ chipset=ipq806x
 subtarget=generic
 
 images=(
-        "openwrt-${chipset}-${subtarget}-tplink_c2600-squashfs-sysupgrade.bin"
+        "openwrt-${chipset}-${subtarget}-tplink_c2600-squashfs-*"
        )

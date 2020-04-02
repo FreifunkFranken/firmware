@@ -3,5 +3,5 @@ chipset=mpc85xx
 subtarget=generic
 
 images=(
-        "openwrt-${chipset}-${subtarget}-tl-wdr4900-v1-squashfs-sysupgrade.bin"
+        "openwrt-${chipset}-${subtarget}-tl-wdr4900-v1-squashfs-*"
        )
