@@ -1,4 +1,4 @@
-machine=wdr4900
+machine=mpc85xx
 chipset=mpc85xx
 subtarget=generic
 
