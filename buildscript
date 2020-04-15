@@ -362,6 +362,7 @@ loadBSP()
 {
     echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
     . selected_bsp
+    machine=$(basename $(realpath selected_bsp) .bsp)
 }
 
 loadVariant()

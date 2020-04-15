@@ -1,4 +1,3 @@
-machine=ipq806x-generic
 chipset=ipq806x
 subtarget=generic
 

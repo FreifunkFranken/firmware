@@ -1,4 +1,3 @@
-machine=mpc85xx-generic
 chipset=mpc85xx
 subtarget=generic
 
