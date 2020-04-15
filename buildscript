@@ -31,7 +31,7 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
 GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
             8b65619f59c3bdce743c2f2fb2588fdd7079355a)
-GLUON_PKGS="kmod-batman-adv-legacy micrond simple-tc uradvd"
+GLUON_PKGS="micrond simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
