@@ -30,7 +30,7 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond"
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
-            8b65619f59c3bdce743c2f2fb2588fdd7079355a)
+            12e41d0ff07ec54bbd67a31ab50d12ca04f2238c) # 2020-02-04
 GLUON_PKGS="simple-tc uradvd"
 
 #official openwrt routing packages
