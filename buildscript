@@ -24,14 +24,14 @@ PACKAGEURL="https://git.openwrt.org/feed/packages.git"
 OPENWRT=(openwrt
          $PACKAGEURL
          $PACKAGEREV)
-OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl"
+OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond"
 
 ## Be careful: FFF uses COMPAT_VERSION 15 as default at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
 GLUON=(gluon
             https://github.com/freifunk-gluon/packages.git
             8b65619f59c3bdce743c2f2fb2588fdd7079355a)
-GLUON_PKGS="micrond simple-tc uradvd"
+GLUON_PKGS="simple-tc uradvd"
 
 #official openwrt routing packages
 ROUTING=(routing
