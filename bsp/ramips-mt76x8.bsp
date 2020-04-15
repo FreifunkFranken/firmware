@@ -1,4 +1,4 @@
-machine=mt76x8
+machine=ramips-mt76x8
 chipset=ramips
 subtarget=mt76x8
 images=("openwrt-${chipset}-${subtarget}-tplink_c50-v3-squashfs-*"

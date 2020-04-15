@@ -1,4 +1,4 @@
-machine=ar71xx
+machine=ar71xx-tiny
 chipset=ar71xx
 subtarget=tiny
 images=("openwrt-${chipset}-${subtarget}-archer-c25-v1-squashfs-*"

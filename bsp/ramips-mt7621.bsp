@@ -1,4 +1,4 @@
-machine=mt7621
+machine=mt7621-generic
 chipset=ramips
 subtarget=mt7621
 
