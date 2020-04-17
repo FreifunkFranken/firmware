@@ -7,34 +7,36 @@
 hoodfile="$1"
 
 make_config() {
-# remove old config
-rm /tmp/fastd_fff_peers/*
-Index=1
-json_load "$(cat "$hoodfile")"
-json_select vpn
-# get fastd peers
-while json_select "$Index" > /dev/null
-do
-	json_get_var protocol protocol
-	if [ "$protocol" = "fastd" ]; then
-		json_get_var servername name
-		filename="/etc/fastd/fff/peers/$servername"
-		echo "#name \"${servername}\";" > "$filename"
-		json_get_var key key
-		echo "key \"${key}\";" >> "$filename"
-		json_get_var address address
-		json_get_var port port
-		echo "remote \"${address}\" port ${port};" >> "$filename"
-		echo "" >> "$filename"
-		echo "float yes;" >> "$filename"
-	fi
-	json_select ".." # back to vpn
-	Index=$(( Index + 1 ))
-done
-json_select ".." # back to root
-}
+	# remove old config
+	rm /tmp/fastd_fff_peers/*
 
-# main
+	# prepare
+	Index=1
+	json_load "$(cat "$hoodfile")"
+	json_select vpn
+
+	# get fastd peers
+	while json_select "$Index" > /dev/null
+	do
+		json_get_var protocol protocol
+		if [ "$protocol" = "fastd" ]; then
+			# set up fastd
+			json_get_var servername name
+			filename="/etc/fastd/fff/peers/$servername"
+			echo "#name \"${servername}\";" > "$filename"
+			json_get_var key key
+			echo "key \"${key}\";" >> "$filename"
+			json_get_var address address
+			json_get_var port port
+			echo "remote \"${address}\" port ${port};" >> "$filename"
+			echo "" >> "$filename"
+			echo "float yes;" >> "$filename"
+		fi
+		json_select ".." # back to vpn
+		Index=$(( Index + 1 ))
+	done
+	json_select ".." # back to root
+}
 
 # Only do something if file is there and not empty; otherwise exit 1
 if [ -s "$hoodfile" ]; then
