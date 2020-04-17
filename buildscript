@@ -163,7 +163,7 @@ update_feeds() {
     done
 
     echo "cleaning feeds"
-    /bin/rm -rf "$builddir"/feeds
+    "$builddir"/scripts/feeds clean
 
     "$builddir"/scripts/feeds update
 
