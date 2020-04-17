@@ -10,7 +10,7 @@ BOARD="$(uci get board.model.name)"
 configure() {
 	add_vlan() {
 		local vlan="$1"
-		local ports=$(uci get gateway.$vlan.ports)
+		local ports="$(uci -q get gateway.$vlan.ports)"
 		local name="$SWITCHDEV"_$vlan
 
 		uci set network.$name='switch_vlan'
