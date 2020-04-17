@@ -360,7 +360,14 @@ clean() {
 
 loadBSP()
 {
-    echo "Working with $(/bin/ls -l selected_bsp | awk '{ print $11 }')"
+    localbsppath=$(/bin/ls -l selected_bsp | awk '{ print $11 }')
+
+    if ! [ -s selected_bsp ]; then
+        echo "Error: $localbsppath does not exist. Aborting ..."
+        exit 1
+    fi
+
+    echo "Working with $localbsppath"
     . selected_bsp
     machine=$(basename $(realpath selected_bsp) .bsp)
 }
