@@ -61,7 +61,10 @@ SYSTEM_DATA="$SYSTEM_DATA$load"
 
 debug "Collecting version information"
 
-SYSTEM_DATA="$SYSTEM_DATA<batman_advanced_version>$(cat /sys/module/batman_adv/version)</batman_advanced_version>"
+if [ -e /sys/module/batman_adv/version ]; then
+	SYSTEM_DATA="$SYSTEM_DATA<batman_advanced_version>$(cat /sys/module/batman_adv/version)</batman_advanced_version>"
+fi
+
 SYSTEM_DATA="$SYSTEM_DATA<kernel_version>$(uname -r)</kernel_version>"
 SYSTEM_DATA="$SYSTEM_DATA<nodewatcher_version>$SCRIPT_VERSION</nodewatcher_version>"
 
