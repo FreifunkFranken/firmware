@@ -1,15 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-macnock
-PKG_VERSION:=0.1
 PKG_RELEASE:=1
-PKG_REV:=ffd1a64515709d75afaab0f990308fd164dc4cc6
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=https://github.com/FreifunkFranken/macnocker.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=$(PKG_REV)
+PKG_SOURCE_URL:=https://github.com/FreifunkFranken/macnocker.git
+PKG_SOURCE_DATE:=2018-04-03
+PKG_SOURCE_VERSION:=ffd1a64515709d75afaab0f990308fd164dc4cc6
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
