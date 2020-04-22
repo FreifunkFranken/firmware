@@ -14,28 +14,10 @@ trap "lock -u \"$lockfile\"" INT TERM EXIT
 
 [ -s /etc/config/nodewatcher ] || exit 1
 
-SCRIPT_ERROR_LEVEL=$(uci get nodewatcher.@script[0].error_level)
-SCRIPT_LOGFILE=$(uci get nodewatcher.@script[0].logfile)
 SCRIPT_DATA_FILE=$(uci get nodewatcher.@script[0].data_file)
 
-if [ "$SCRIPT_ERROR_LEVEL" -gt "1" ]; then
-	debug() {
-		echo "$1" >> "$SCRIPT_LOGFILE"
-	}
-else
-	debug() {
-		:
-	}
-fi
-
-#This method checks if the log file has become too big and deletes the first X lines
-delete_log() {
-	if [ -f "$SCRIPT_LOGFILE" ]; then
-		if [ "$(find "$SCRIPT_LOGFILE" -printf "%s")" -gt "6000" ]; then
-			sed -i '1,60d' "$SCRIPT_LOGFILE"
-			debug "$(date): Logfile has been made smaller"
-		fi
-	fi
+debug() {
+	(>&2 echo "$1")
 }
 
 #This method generates the crawl data XML file that is being fetched by netmon
@@ -59,10 +41,6 @@ crawl() {
 }
 
 LANG=C
-
-#Prüft ob das logfile zu groß geworden ist
-debug "$(date): Check logfile"
-delete_log
 
 #Erzeugt die statusdaten
 debug "$(date): Generate actual status data"

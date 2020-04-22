@@ -2,8 +2,6 @@ touch /etc/config/nodewatcher
 
 uci batch <<EOF
   add nodewatcher script
-  set nodewatcher.@script[-1].error_level='0'
-  set nodewatcher.@script[-1].logfile='/var/log/nodewatcher.log'
   set nodewatcher.@script[-1].data_file='/tmp/crawldata/node.data'
   set nodewatcher.@script[-1].status_text_file='/tmp/status.txt'
 EOF
