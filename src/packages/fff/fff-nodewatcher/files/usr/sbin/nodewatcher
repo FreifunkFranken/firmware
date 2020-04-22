@@ -17,7 +17,7 @@ trap "lock -u \"$lockfile\"" INT TERM EXIT
 SCRIPT_DATA_FILE=$(uci get nodewatcher.@script[0].data_file)
 
 debug() {
-	(>&2 echo "$1")
+	(>&2 echo "nodewatcher: $1")
 }
 
 #This method generates the crawl data XML file that is being fetched by netmon

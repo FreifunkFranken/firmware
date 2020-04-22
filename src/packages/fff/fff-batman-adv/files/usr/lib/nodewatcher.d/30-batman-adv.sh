@@ -3,7 +3,7 @@
 # License; GPL v3
 
 debug() {
-	(>&2 echo "$1")
+	(>&2 echo "nodewatcher: $1")
 }
 
 debug "Collecting information from batman advanced and its interfaces"

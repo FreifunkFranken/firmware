@@ -5,7 +5,7 @@
 MESH_INTERFACE=$(uci get nodewatcher.@network[0].mesh_interface)
 
 debug() {
-	(>&2 echo "$1")
+	(>&2 echo "nodewatcher: $1")
 }
 
 debug "Collecting information about connected clients"

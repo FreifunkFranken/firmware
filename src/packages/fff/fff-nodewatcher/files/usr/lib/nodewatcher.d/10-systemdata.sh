@@ -6,7 +6,7 @@ SCRIPT_STATUS_FILE=$(uci get nodewatcher.@script[0].status_text_file)
 SCRIPT_VERSION=$(cat /etc/nodewatcher_version)
 
 debug() {
-	(>&2 echo "$1")
+	(>&2 echo "nodewatcher: $1")
 }
 
 debug "Collecting basic system status data"

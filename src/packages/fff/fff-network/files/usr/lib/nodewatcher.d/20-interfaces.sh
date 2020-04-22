@@ -6,7 +6,7 @@ IFACEBLACKLIST=$(uci get nodewatcher.@network[0].iface_blacklist)
 IPWHITELIST=$(uci get nodewatcher.@network[0].ip_whitelist)
 
 debug() {
-	(>&2 echo "$1")
+	(>&2 echo "nodewatcher: $1")
 }
 
 inArray() {
