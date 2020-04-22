@@ -1,5 +1,3 @@
-#!/bin/sh
-
 >/etc/config/alfred
 
 uci batch <<EOF
@@ -10,3 +8,5 @@ uci batch <<EOF
   set alfred.alfred.start_vis='0'
   set alfred.alfred.run_facters='0'
 EOF
+
+exit 0

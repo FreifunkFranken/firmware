@@ -1,5 +1,3 @@
-#!/bin/sh
-
 uci batch <<EOF
   add network rule
   set network.@rule[0].src='10.50.0.0/16'
@@ -41,6 +39,6 @@ uci batch <<EOF
   set network.@rule6[2].priority='31'
 EOF
 
-uci commit
+uci commit network
 
 exit 0

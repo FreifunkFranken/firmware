@@ -1,5 +1,3 @@
-#!/bin/sh
-
 uci batch <<EOF
   set network.bat0=interface
   set network.bat0.proto=batadv

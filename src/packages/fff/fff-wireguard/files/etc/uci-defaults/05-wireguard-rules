@@ -1,5 +1,3 @@
-#!/bin/sh
-
 uci batch <<EOF
 	set network.wireguard_main=rule6
 	set network.wireguard_main.mark='0xc8'

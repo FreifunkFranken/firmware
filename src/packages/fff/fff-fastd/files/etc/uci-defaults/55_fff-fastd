@@ -1,5 +1,3 @@
-#!/bin/sh
-
 /etc/init.d/fastd disable
 
 >/etc/config/fastd
@@ -32,3 +30,5 @@ echo "#!/bin/sh" > /etc/fastd/fff/up.sh
 echo "ip link set up dev fffVPN" >> /etc/fastd/fff/up.sh
 echo "batctl if add fffVPN" >> /etc/fastd/fff/up.sh
 chmod +x /etc/fastd/fff/up.sh
+
+exit 0

@@ -1,5 +1,3 @@
-#!/bin/sh
-
 uci batch <<EOF
 	set dhcp.mesh=dhcp
 	set dhcp.mesh.interface='mesh'

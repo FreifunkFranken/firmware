@@ -1,5 +1,3 @@
-#!/bin/sh
-
 traffic_enabled=$(uci -q get "fff.trafficcontrol.enabled")
 traffic_in=$(uci -q get "fff.trafficcontrol.limit_in")
 traffic_out=$(uci -q get "fff.trafficcontrol.limit_out")
@@ -10,3 +8,5 @@ uci set "simple-tc.example.limit_ingress=${traffic_in}"
 uci set "simple-tc.example.limit_egress=${traffic_out}"
 
 uci commit simple-tc
+
+exit 0

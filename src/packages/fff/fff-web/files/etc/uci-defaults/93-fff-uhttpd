@@ -1,5 +1,3 @@
-#!/bin/sh
-
 . /lib/functions/fff/keyxchange
 
 ln -s "$hoodfilewww" /www/hood/keyxchangev2data
@@ -46,4 +44,5 @@ uci batch <<EOF
 EOF
 
 uci commit uhttpd
+
 exit 0

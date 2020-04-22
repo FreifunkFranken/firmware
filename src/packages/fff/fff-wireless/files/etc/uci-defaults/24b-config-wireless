@@ -1,4 +1,3 @@
-#!/bin/sh
 # Copyright 2018 Adrian Schmutzler
 # License GPLv3
 
@@ -39,3 +38,5 @@ esac
 
 # rssileds: always disable if package is installed
 [ -x "/etc/init.d/rssileds" ] && /etc/init.d/rssileds disable
+
+exit 0

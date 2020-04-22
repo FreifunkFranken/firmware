@@ -1,5 +1,3 @@
-#!/bin/sh
-
 BOARD=$(cat /var/sysinfo/board_name)
 
 case "$BOARD" in
@@ -73,3 +71,5 @@ esac
 
 uci set board.model.name=$BOARD
 uci commit board
+
+exit 0

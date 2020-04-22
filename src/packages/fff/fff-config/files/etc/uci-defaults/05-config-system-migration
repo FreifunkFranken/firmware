@@ -1,5 +1,3 @@
-#!/bin/sh
-
 if [ ! -s /etc/config/fff ] ; then
 
 	UPGRADE_hostname=$(uci -q get "system.@system[0].hostname")
@@ -25,3 +23,5 @@ if [ ! -s /etc/config/fff ] ; then
 
 	uci -q commit fff
 fi
+
+exit 0

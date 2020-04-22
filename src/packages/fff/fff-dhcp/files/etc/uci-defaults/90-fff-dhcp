@@ -1,5 +1,3 @@
-#!/bin/sh
-
 uci batch <<EOF
   delete dhcp.@dnsmasq[0]
   delete dhcp.lan

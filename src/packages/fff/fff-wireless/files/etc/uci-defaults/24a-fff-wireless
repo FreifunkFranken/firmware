@@ -1,4 +1,3 @@
-#!/bin/sh
 # Copyright 2016 Tim Niemeyer
 # Copyright 2019 Adrian Schmutzler
 # License GPLv3
@@ -80,5 +79,7 @@ config_foreach configWifiDevice wifi-device
 
 uci commit network
 uci commit wireless
+
+exit 0
 
 # vim: set noexpandtab:tabstop=4

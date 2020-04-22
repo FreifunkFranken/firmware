@@ -1,4 +1,3 @@
-#!/bin/sh
 # Copyright 2018 Adrian Schmutzler
 # License GPLv3
 
@@ -7,3 +6,5 @@
 echo "" >> /etc/banner
 echo "> $(cat /tmp/sysinfo/model 2>/dev/null) @ $FIRMWARE_VERSION" >> /etc/banner
 echo "" >> /etc/banner
+
+exit 0
