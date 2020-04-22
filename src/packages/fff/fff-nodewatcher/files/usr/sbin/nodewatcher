@@ -29,6 +29,10 @@ crawl() {
 
 	for f in /usr/lib/nodewatcher.d/*.sh; do
 		tmp="$($f)"
+		if [ $? -ne 0 ]; then
+			debug "Error when executing subscript $f, exiting!"
+			exit 1
+		fi
 		DATA="$DATA$tmp"
 	done
 
