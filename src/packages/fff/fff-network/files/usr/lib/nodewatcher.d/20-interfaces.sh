@@ -17,7 +17,7 @@ inArray() {
 	return 1
 }
 
-debug "$(date): Collecting information from network interfaces"
+debug "Collecting information from network interfaces"
 
 interface_data=""
 

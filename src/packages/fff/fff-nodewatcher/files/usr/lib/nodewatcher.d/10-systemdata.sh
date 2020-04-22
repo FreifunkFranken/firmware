@@ -9,7 +9,7 @@ debug() {
 	(>&2 echo "$1")
 }
 
-debug "$(date): Collecting basic system status data"
+debug "Collecting basic system status data"
 
 SYSTEM_DATA="<status>online</status>"
 
@@ -59,7 +59,7 @@ SYSTEM_DATA="$SYSTEM_DATA<local_time>$(date +%s)</local_time>"
 load=$(awk '{ printf "<loadavg>"$3"</loadavg><processes>"$4"</processes>" }' /proc/loadavg)
 SYSTEM_DATA="$SYSTEM_DATA$load"
 
-debug "$(date): Collecting version information"
+debug "Collecting version information"
 
 SYSTEM_DATA="$SYSTEM_DATA<batman_advanced_version>$(cat /sys/module/batman_adv/version)</batman_advanced_version>"
 SYSTEM_DATA="$SYSTEM_DATA<kernel_version>$(uname -r)</kernel_version>"
@@ -95,7 +95,7 @@ SYSTEM_DATA="$SYSTEM_DATA<firmware_revision>$BUILD_DATE</firmware_revision>"
 SYSTEM_DATA="$SYSTEM_DATA<openwrt_core_revision>$OPENWRT_CORE_REVISION</openwrt_core_revision>"
 SYSTEM_DATA="$SYSTEM_DATA<openwrt_feeds_packages_revision>$OPENWRT_FEEDS_PACKAGES_REVISION</openwrt_feeds_packages_revision>"
 
-debug "$(date): Collecting hood information and additional status data"
+debug "Collecting hood information and additional status data"
 
 SYSTEM_DATA="$SYSTEM_DATA<hood>$(uci -q get "system.@system[0].hood")</hood>"
 SYSTEM_DATA="$SYSTEM_DATA<hoodid>$(uci -q get "system.@system[0].hoodid")</hoodid>"

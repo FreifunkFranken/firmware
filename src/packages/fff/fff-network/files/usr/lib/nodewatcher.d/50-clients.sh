@@ -8,7 +8,7 @@ debug() {
 	(>&2 echo "$1")
 }
 
-debug "$(date): Collecting information about connected clients"
+debug "Collecting information about connected clients"
 
 client_count=0
 dataclient=""

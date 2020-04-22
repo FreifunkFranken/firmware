@@ -6,7 +6,7 @@ debug() {
 	(>&2 echo "$1")
 }
 
-debug "$(date): Collecting information from batman advanced and its interfaces"
+debug "Collecting information from batman advanced and its interfaces"
 
 if [ -f /sys/module/batman_adv/version ]; then
 	for iface in $(batctl if | sed 's/ //'); do
@@ -53,7 +53,7 @@ if [ -f /sys/module/batman_adv/version ]; then
 
 	echo -n "<batman_adv_gateway_list>$batman_adv_gateway_list</batman_adv_gateway_list>"
 else
-	debug "$(date): No batman data .."
+	debug "No batman data .."
 	exit 1
 fi
 

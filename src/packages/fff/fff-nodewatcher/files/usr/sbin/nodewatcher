@@ -23,7 +23,7 @@ debug() {
 #This method generates the crawl data XML file that is being fetched by netmon
 #and provided by a small local httpd
 crawl() {
-	debug "$(date): Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
+	debug "Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
 
 	DATA="<?xml version='1.0' standalone='yes'?><data>"
 
@@ -43,7 +43,7 @@ crawl() {
 LANG=C
 
 #Erzeugt die statusdaten
-debug "$(date): Generate actual status data"
+debug "Generate actual status data"
 crawl
 
 exit 0
