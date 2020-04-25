@@ -1,0 +1,5 @@
+. /lib/functions/fff/keyxchange
+
+ln -s "$hoodfilewww" /www/hood/keyxchangev2data
+
+exit 0

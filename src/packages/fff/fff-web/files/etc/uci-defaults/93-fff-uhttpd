@@ -1,7 +1,3 @@
-. /lib/functions/fff/keyxchange
-
-ln -s "$hoodfilewww" /www/hood/keyxchangev2data
-
 uci batch <<EOF
   delete uhttpd.main
   delete uhttpd.public
