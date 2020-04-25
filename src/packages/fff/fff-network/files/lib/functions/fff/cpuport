@@ -7,8 +7,10 @@ case "$BOARD" in
 	tl-wr1043nd-v1)
 		CPUPORT="5t"
 		;;
+	tplink,c50-v3|\
 	tl-wr1043nd-v2|\
 	tl-wr1043nd-v3|\
+	tl-wr841n-v13|\
 	ubnt-erx|\
 	ubnt-erx-sfp)
 		CPUPORT="6t"
