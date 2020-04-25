@@ -1,5 +1,5 @@
-uci -q set "alfred.alfred.mode=master"
+uci set "alfred.alfred.mode=master"
 
-uci -q commit alfred
+uci commit alfred
 
 exit 0
