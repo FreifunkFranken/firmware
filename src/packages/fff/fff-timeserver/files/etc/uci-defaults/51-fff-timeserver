@@ -1,9 +1,7 @@
-. /lib/functions/fff/timeserver
-
 # No initialization here, this is done in configurehood
 
-uci -q set "system.@system[0].timezone=CET-1CEST,M3.5.0,M10.5.0/3"
+uci set "system.@system[0].timezone=CET-1CEST,M3.5.0,M10.5.0/3"
 
-uci -q commit system
+uci commit system
 
 exit 0
