@@ -10,6 +10,12 @@ configure() {
 	fi
 
 	# check version of configuration
+	if ! [ -n "$config_version" ]; then
+		echo "ERROR: No config version given. Supported versions: '$expected_version'"
+
+		exit 1
+	fi
+
 	if [ "$config_version" != "$expected_version" ]; then
 		echo "ERROR: Invalid config version. Expected '$expected_version', got '$config_version'."
 		echo "Please check what has been changed and adjust your config appropriately."
