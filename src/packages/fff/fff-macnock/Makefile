@@ -5,8 +5,8 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/FreifunkFranken/macnocker.git
-PKG_SOURCE_DATE:=2020-04-23
-PKG_SOURCE_VERSION:=ce01c3253b7f6acb1e25a26e8de4e013aed52bb0
+PKG_SOURCE_DATE:=2020-04-26
+PKG_SOURCE_VERSION:=d0bdfdba569934442e9d8bfc01bcc6c3712b6011
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
