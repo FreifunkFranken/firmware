@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-hoods
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -13,6 +13,7 @@ define Package/$(PKG_NAME)
 	TITLE:= Freifunk-Franken hoods
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall \
+			 +fff-timeserver +fff-network +fff-wireless +jshn \
 			 +@BUSYBOX_CONFIG_WGET +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT
 endef
 
