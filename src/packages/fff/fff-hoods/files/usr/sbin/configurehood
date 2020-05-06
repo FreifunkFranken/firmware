@@ -38,30 +38,6 @@ hasInternet() {
 	return 1
 }
 
-# Hidden AP check
-
-if [ -s "$hoodfilewww" ] && isGatewayAvailable ; then
-	needwifi="0"
-	for radio in $(wifiListRadio); do
-		freq="$(wifiGetFreq $radio)"
-
-		# Break: wXconfig is up
-		[ "$(uci get "wireless.w${freq}configap.disabled")" = "0" ] && continue
-		# Break: No mesh interface
-		[ "$(uci get "wireless.w${freq}mesh.disabled")" = "0" ] || continue
-		
-		# Enable configap
-		uci set wireless.w${freq}configap.disabled='0'
-		uci commit wireless
-		needwifi="1"
-	done
-
-	if [ "$needwifi" = "1" ]; then
-		reload_config
-		sleep 10
-	fi
-fi
-
 if [ -s "$hoodfilelocal" ]; then
 	# remove webroot hoodfile to prevent offering local hoodfiles to neighbours
 	rm -f "$hoodfilewww"
@@ -246,4 +222,27 @@ if [ -s "$hoodfiletmp" ]; then
 else
 	echo "We haven't got a file. We do nothing. We try it again in 5 minutes...";
 	exit 0
+fi
+
+# Hidden AP check
+if [ -s "$hoodfilewww" ] && isGatewayAvailable; then
+	needwifi="0"
+	for radio in $(wifiListRadio); do
+		freq="$(wifiGetFreq $radio)"
+
+		# Break: wXconfig is up
+		[ "$(uci get "wireless.w${freq}configap.disabled")" = "0" ] && continue
+		# Break: No mesh interface
+		[ "$(uci get "wireless.w${freq}mesh.disabled")" = "0" ] || continue
+
+		# Enable configap
+		uci set wireless.w${freq}configap.disabled='0'
+		uci commit wireless
+		needwifi="1"
+	done
+
+	if [ "$needwifi" = "1" ]; then
+		reload_config
+		sleep 10
+	fi
 fi
