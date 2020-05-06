@@ -31,14 +31,10 @@ isGatewayAvailable() {
 
 # Ping test
 hasInternet() {
-	test_ipv4_host1="keyserver.freifunk-franken.de" # Freifunk-Franken keyserver
-	test_ipv4_host2="8.8.8.8"        # Google DNS
-	test_ipv6_host1="heise.de"       # heise Zeitschriftenverlag
-	if ping -w5 -c3 "$test_ipv4_host1" &>/dev/null ||
-		ping -w5 -c3 "$test_ipv4_host2" &>/dev/null ||
-		ping6 -w5 -c3 "$test_ipv6_host1" &>/dev/null ; then
-		return 0
-	fi
+	internetAddresses="keyserver.freifunk-franken.de heise.de"
+	for addr in $internetAddresses; do
+		ping -w5 -c3 "$addr" &>/dev/null && return 0
+	done
 	return 1
 }
 
