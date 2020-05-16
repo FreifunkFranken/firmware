@@ -1,0 +1,30 @@
+################
+## This file is used to configure the behavior of network interfaces
+## if the routers interfaces differ from the standard WAN+4LAN-Ports
+## +2Wireless APs.
+## If you want to change their behavior, you should edit the file
+## /etc/network.config
+## After that you have to reboot the router with following command.
+#reboot
+#
+### The canonical syntax of this file is:
+#SPECIFIER="MODE"
+### MODES
+## Generally there are 3 operating modes for network interfaces in fff.
+#BATMAN: The interface is used to mesh with other fff-nodes
+#WAN:    The interface is used to connect to supernodes via vpn and
+#         ordinary internet.
+#CLIENT: The interface is used to connect clients to the fff-net
+##
+### SPECIFIER
+## For devices only including one ethernet port the specifier is called
+## ETHMODE. The default mode for these devices is "BATMAN".
+## For example this is the case for: gl-ar150, tl-mr3020-v1, tl-wa850re-v1,
+## tl-wa860re-v1, tl-wa901nd-v2, ubnt-bullet-m, ubnt-loco-m-xw, ubnt-nano-m,
+## ubnt-unifi
+ETHMODE="CLIENT"
+## Devices featuring 2 ethernet ports are configured by SPECIFIERs ressembling
+## the labels on the PORT itself. For the cpe210 these are called LAN0 and LAN1.
+## Therefore they are configured as follows:
+LAN0MODE="WAN"
+LAN1MODE="CLIENT"

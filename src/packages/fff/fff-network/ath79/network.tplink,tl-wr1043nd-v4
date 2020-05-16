@@ -12,5 +12,5 @@ BATMAN_PORTS="3 4 0t"
 # Load second MAC address from flash because we haven't any interface with this
 # address where we can copy it from
 
-ETHMESHMAC=$(macaddr_add $(mtd_get_mac_binary product-info 8) 1)
+ETHMESHMAC=$(macaddr_add $(mtd_get_mac_binary info 8) 1)
 ROUTERMAC=$(cat /sys/class/net/eth0/address)

@@ -1,9 +1,8 @@
 PORTORDER="4 3 2 1"
 
-WANDEV=eth0
-SWITCHDEV=eth1
+WANDEV=eth1
+SWITCHDEV=eth0
 CLIENT_PORTS="1 2 0t"
-WAN_PORTS=""
 BATMAN_PORTS="3 4 0t"
 
 ETHMESHMAC=$(cat /sys/class/net/eth1/address)

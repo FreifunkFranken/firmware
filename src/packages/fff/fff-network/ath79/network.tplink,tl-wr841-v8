@@ -1,9 +1,10 @@
+PORTORDER="2 3 4 1"
+
 WANDEV=eth1
-# WANDEV=eth0
 SWITCHDEV=eth0
 CLIENT_PORTS="1 4 0t"
 WAN_PORTS=
-BATMAN_PORTS="2 3 0t"
+BATMAN_PORTS="3 2 0t"
 
 ETHMESHMAC=$(cat /sys/class/net/eth1/address)
-ROUTERMAC=$(cat /sys/class/ieee80211/phy0/macaddress)
+ROUTERMAC=$(cat /sys/class/net/eth0/address)

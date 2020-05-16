@@ -4,32 +4,30 @@
 BOARD="$(uci get board.model.name)"
 
 case "$BOARD" in
-	tl-wr1043nd-v1)
+	tplink,tl-wr1043nd-v1)
 		CPUPORT="5t"
 		;;
 	tplink,c50-v3|\
-	tl-wr1043nd-v2|\
-	tl-wr1043nd-v3|\
+	tplink,tl-wr1043nd-v2|\
+	tplink,tl-wr1043nd-v3|\
 	tl-wr841n-v13|\
 	ubnt-erx|\
 	ubnt-erx-sfp)
 		CPUPORT="6t"
 		;;
-	cpe210-v2|\
-	cpe210-v3|\
-	tl-mr3020-v1|\
-	tl-wa850re-v1|\
-	tl-wa860re-v1|\
-	tl-wa901nd-v2|\
-	ubnt-bullet-m|\
-	ubnt-loco-m|\
-	ubnt-loco-m-xw|\
-	ubnt-nano-m|\
-	ubnt-pico-m|\
-	ubnt-power-m-xw|\
-	ubnt-unifi|\
-	ubnt-unifiac-lite|\
-	ubnt-unifiac-mesh)
+	tplink,cpe210-v2|\
+	tplink,cpe210-v3|\
+	tplink,tl-mr3020-v1|\
+	tplink,tl-wa850re-v1|\
+	tplink,tl-wa860re-v1|\
+	tplink,tl-wa901nd-v2|\
+	ubnt,bullet-m|\
+	ubnt,nanostation-loco-m|\
+	ubnt,nanostation-loco-m-xw|\
+	ubnt,nanostation-m|\
+	ubnt,picostation-m|\
+	ubnt,unifi|\
+	ubnt,unifiac-mesh)
 		CPUPORT=""
 		;;
 	*)
