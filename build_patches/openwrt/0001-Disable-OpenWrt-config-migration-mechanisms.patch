@@ -1,4 +1,3 @@
-From 5bc010240769c167dcbe13fa6aa726fb71a84f17 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Sat, 8 Jul 2017 10:46:59 +0200
 Subject: Disable OpenWrt config migration mechanisms
@@ -7,7 +6,7 @@ This disables all OpenWrt config migration mechanisms except for
 files listed in /etc/sysupgrade.conf
 
 diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
-index 6c518b780e..49d4514b98 100755
+index 6c518b780eddd973966537b50d8f7c82539bb1e1..49d4514b988e827098450d57da0ae50a37506d3a 100755
 --- a/package/base-files/files/sbin/sysupgrade
 +++ b/package/base-files/files/sbin/sysupgrade
 @@ -134,9 +134,9 @@ list_changed_conffiles() {
@@ -22,6 +21,3 @@ index 6c518b780e..49d4514b98 100755
  	return 0
  }
  
--- 
-2.25.1
-

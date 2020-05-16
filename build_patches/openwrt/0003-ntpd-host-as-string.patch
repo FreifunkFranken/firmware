@@ -1,14 +1,9 @@
-From bc184e5c95dd934ad8c9d41fb5449390b4e160d2 Mon Sep 17 00:00:00 2001
 From: Tim Niemeyer <tim@tn-x.org>
 Date: Sat, 8 Jul 2017 10:47:56 +0200
-Subject: [PATCH 3/4] ntpd host as string
-
----
- package/utils/busybox/files/sysntpd | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Subject: ntpd host as string
 
 diff --git a/package/utils/busybox/files/sysntpd b/package/utils/busybox/files/sysntpd
-index 52866ba32a..b6b28cd025 100755
+index 52866ba32acd26a490f9c9024fc3e43e0f757496..b6b28cd02527b89c0a4cc2f9adef52bb4c8427b0 100755
 --- a/package/utils/busybox/files/sysntpd
 +++ b/package/utils/busybox/files/sysntpd
 @@ -30,7 +30,7 @@ get_dhcp_ntp_servers() {
@@ -20,6 +15,3 @@ index 52866ba32a..b6b28cd025 100755
  }
  
  start_ntpd_instance() {
--- 
-2.25.1
-

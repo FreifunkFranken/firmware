@@ -13,9 +13,9 @@
 
 builddir=./build
 
-OPENWRTREV="v19.07.2"
+OPENWRTREV="v19.07.3"
 OPENWRTURL="https://git.openwrt.org/openwrt/openwrt.git"
-PACKAGEREV="99efce0cd27adfcc53384fba93f37e5ee2e517de" # openwrt-19.07.2
+PACKAGEREV="2e6bd4cb86682b224803325127d3f777d40b3231" # openwrt-19.07.3
 PACKAGEURL="https://git.openwrt.org/feed/packages.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
@@ -36,7 +36,7 @@ GLUON_PKGS="simple-tc uradvd"
 #official openwrt routing packages
 ROUTING=(routing
          https://git.openwrt.org/feed/routing.git
-         efa6e5445adda9c6545f551808829ec927cbade8) # openwrt-19.07.2
+         3f8571194c2765ed31aa73459e86c2ebf943d27d) # openwrt-19.07.3
 ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
 
 FFF=(fff)
