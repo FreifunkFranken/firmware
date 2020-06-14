@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-network
-PKG_RELEASE:=21
+PKG_RELEASE:=22
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -33,7 +33,7 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(CP) ./files/* $(1)/
-	test -d ./$(BOARD) && $(CP) ./$(BOARD)/* $(1)/etc/
+	test -d ./$(ARCH) && $(CP) ./$(ARCH)/* $(1)/etc/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
