@@ -126,7 +126,7 @@ configure() {
 		babel_add_iifrules "$prefixname" || { echo "ERROR: Could not add iif-rules for wgpeer $name"; exit 1; }
 
 		# add babel interface
-		babel_add_interface "$prefixname" "$prefixname" 'tunnel' "$rxcost" || { echo "ERROR: Could not add babeld interface for wgpeer $name"; exit 1; }
+		babel_add_interface "$prefixname" "$prefixname" 'wired' "$rxcost" || { echo "ERROR: Could not add babeld interface for wgpeer $name"; exit 1; }
 	}
 
 	config_load gateway
