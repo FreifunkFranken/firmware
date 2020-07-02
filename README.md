@@ -15,22 +15,14 @@ Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.
 ## Erste Schritte
 Je nachdem, für welche Hardware die Firmware gebaut werden soll, muss das BSP gewählt werden:
 
-* `./buildscript selectbsp bsp/board_ar71xx.bsp`
+* `./buildscript selectbsp bsp/ath79-generic.bsp`
 * Um die vorhandenen BSPs zu sehen, kann `./buildscript selectbsp help` ausgeführt werden.
 
 ## Was ist ein BSP?
 Ein BSP (Board-Support-Package) beschreibt, was zu tun ist, damit ein Firmware Image für eine spezielle Hardware gebaut werden kann.
-Typischerweise ist eine Ordner-Struktur wie folgt vorhanden:
-* .config
-* root_file_system/
-  * etc/
-    * rc.local.board
-    * config/
-      * board
-      * network
-      * system
-    * crontabs/
-      * root
+Typischerweise besteht ein bsp aus:
+* target-subtarget.bsp
+* target-subtarget/.config
 
 Die Daten des BSP werden nie alleine verwendet. Zuerst werden immer die Daten aus dem "default"-BSP zum Ziel kopiert, erst danach werden die Daten des eigentlichen BSPs dazu kopiert. Durch diesen Effekt kann ein BSP die "default" Daten überschreiben.
 
@@ -43,8 +35,6 @@ Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die 
   * OpenWrt
   * Sämtliche Packages (ggf. werden Patches angewandt)
 
-* Ein ggf. altes Target wird gelöscht
-* OpenWrt wird ins Target exportiert (kopiert)
 * Eine OpenWrt Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
 * Die Feeds werden geladen
 * Spezielle Auswahl an Paketen wird geladen
@@ -83,37 +73,35 @@ cd firmware
 ```
 
 ### Erste Images erzeugen
-Du fügst die Dateinamen der Images, die zusätzlich kopiert werden sollen, in das `images`-Array ein:
+Du fügst die Dateinamen der Images, die zusätzlich kopiert werden sollen, in das `images`-Array ein. Hierbei können Wildcards verwendet werden, um z.B. sysupgrade.bin und ggf. meherere factory.bin Ergebnisse aus dem OpenWrt Buildverzeichnis in unser Buildverzeichnis zu kopieren.
 
 ```
-vim bsp/board_ar71xx.bsp
+vim bsp/ath79-generic.bsp
 images=(
     // ...
-    openwrt-${chipset}-${subtarget}-tl-wr1043nd-v2-squashfs-sysupgrade.bin"
-    openwrt-${chipset}-${subtarget}-tl-wr1043nd-v2-squashfs-factory.bin"
+    openwrt-${chipset}-${subtarget}-tl-wr1043nd-v2-squashfs-*"
     // ...
 )
 ```
 
-Dann muss auf jeden Fall noch das Netzwerk richtig konfiguriert werden. Dazu muss man den Router sehr gut kennen, i.d.R. lernt man den erst beim Verwenden kennen, daher ist ein guter Startpunkt die Config vom v1 zu kopieren und erstmal zu gucken was passiert:
+Dann muss auf jeden Fall noch das Netzwerk richtig konfiguriert werden. Dazu muss man den Router sehr gut kennen, i.d.R. lernt man den erst beim Verwenden kennen, daher ist ein guter Startpunkt die Config vom v1 zu kopieren und erstmal zu gucken was passiert.
+Wichtig: Zur Laufzeit wird (wenn keine Anpassung in fff-boardname vorgenommen wurde) die Datei `network.$(cat /var/sysinfo/board_name)` geladen. Um den richtigen Dateinamen zu bestimmen kann zunächst ein normales OpenWrt in der gleichen Version auf den Router installiert werden; dort kan man sich dann diese Datei ansehen.
 ```
-cp bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v1 bsp/wr1043nd/root_file_system/etc/network.tl-wr1043nd-v2
+cd src/packages/fff/fff-network/mips
+cp network.tplink,wr1043nd-v1 network.tplink,wr1043nd-v2
 ```
+
 Anschließend kann ein erstes Image erzeugt werden:
 ```
-./buildscript selectbsp bsp/board_wr1043nd.bsp
+./buildscript selectbsp bsp/ath79-generic.bsp
 
 ./buildscript prepare
 ./buildscript build
 ```
 Jetzt gehst du n Kaffee trinken.
 
-**Vorsicht:** Für das ar71xx BSP wurde das tiny-Subtarget so erweitert, so dass auch die Geräte aus dem OpenWRT generic Subtarget damit gebaut werden können. (vgl. [Patch](build_patches/openwrt/0005-allow-building-all-devives-as-tiny.patch))
-
-Soll das ar71xx BSP um ein Gerät erweitert werden, das bei OpenWRT unter generic geführt wird, muss die Kernel Konfiguration entsprechend um die passende MIPS MACH erweitert werden. Ansonsten führt das resultierende Image zu einem Bootloop, wenn es installiert wird.
-
 ### Netzwerkeinstellungen korrekt setzen
-Am Ende sollte im bin/ Verzeichnis das Image für v1 und v2 liegen. Das v2 Image wird auf den Router geflasht. Achtung: Eventuell ist das Netzwerk jetzt so falsch eingestellt, dass man nicht mehr über Netzwerk auf den Router zugreifen kann. Am einfachsten ist es den Router dann über eine serielle Konsole zu verwenden. Theoretisch kann man an den unterschiedlichen LAN-Ports mit der IPv6 Link-Local aus der MAC Adresse des Geräts versuchen drauf zu kommen. Es kann auch sein, dass die IPv6 +/- 1 am Ende hat. Letztlich kann das funktionieren, ist aber aufwändig und da am LAN Einstellungen verändert werden sollen, ist die serielle Konsole das Mittel der Wahl!
+Am Ende sollte im bin/ Verzeichnis unter anderem das Image für v1 und v2 liegen. Das v2 Image wird auf den Router geflasht. Achtung: Eventuell ist das Netzwerk jetzt so falsch eingestellt, dass man nicht mehr über Netzwerk auf den Router zugreifen kann. Am einfachsten ist es den Router dann über eine serielle Konsole zu verwenden. Alternativ kann aber auch der OpenWrt Failsafe Modus verwendet werden, dort werden unsere Netzwerkeinstellungen nicht angewendet. Außerdem kann man an den unterschiedlichen LAN-Ports mit der IPv6 Link-Local aus der MAC Adresse des Geräts versuchen drauf zu kommen. Es kann auch sein, dass die IPv6 +/- 1 am Ende hat. Letztlich kann das funktionieren, die serielle Konsole ist hier aber häufig einfacher!
 Wenn man dann auf dem Router drauf ist, muss als erstes festgestellt werden, welches Ethernet-Device für den WAN Port zuständig ist. Mir sind da folgende Möglichkeiten bekannt. a) WAN ist eth0, b) WAN ist eth1, c) WAN ist teil vom Switch eth0. Dementsprechend wird das WANDEV auf dem Router in der /etc/network.tl-wr1043nd-v2 konfiguriert. Wenn WAN ein eigenes ethX hat, dann muss WAN_PORTS="" sein. Dann muss eingestellt werden welches Ethernet-Device an dem internen Switch angeschlossen ist (swconfig list). Dieses wird als SWITCHDEV konfiguriert. Es muss noch eingestellt werden, welches Ethernet oder Wifi Device die MAC Adresse hat, die auch unter dem Gerät steht. Dieses Device wird als ROUTERMAC eingetragen. Nun ist es an der Zeit die Einstellungen zu testen, dafür muss die falsche Netzwerk-Config zurück gesetzt werden:
 ```
 cp /rom/etc/config/network /etc/config/network
