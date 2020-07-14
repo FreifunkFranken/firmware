@@ -2,6 +2,7 @@ chipset=ramips
 subtarget=mt7621
 
 images=(
+        "openwrt-ramips-mt7621-r6220-squashfs-*"
         "openwrt-ramips-mt7621-ubnt-erx-squashfs-*"
         "openwrt-ramips-mt7621-ubnt-erx-sfp-squashfs-*"
        )

@@ -11,6 +11,7 @@ case "$BOARD" in
 	tplink,tl-wr1043nd-v2|\
 	tplink,tl-wr1043nd-v3|\
 	tl-wr841n-v13|\
+	r6220|\
 	ubnt-erx|\
 	ubnt-erx-sfp)
 		CPUPORT="6t"
