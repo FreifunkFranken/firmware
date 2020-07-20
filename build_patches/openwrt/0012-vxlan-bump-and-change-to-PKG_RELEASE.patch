@@ -1,0 +1,29 @@
+From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+Date: Wed, 15 Jul 2020 16:49:36 +0200
+Subject: vxlan: bump and change to PKG_RELEASE
+
+Bumping package version has been overlooked in a previous commit.
+
+While at it, use PKG_RELEASE instead of PKG_VERSION, as the latter
+is meant for upstream version number only.
+(The effective version string for the package would be "3" in both
+cases, so there is no harm done for version comparison.)
+
+Fixes: 0453c3866feb ("vxlan: fix udp checksum control")
+
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+(cherry picked from commit b29d620ed2521fe6fda40ddafe6cb0f1d70e4503)
+
+diff --git a/package/network/config/vxlan/Makefile b/package/network/config/vxlan/Makefile
+index 5850c443e73131f19fbeb1f986f85259d5747ac4..13fcf0c55d07d97f5dcc3cbfcf2478020e7107cc 100644
+--- a/package/network/config/vxlan/Makefile
++++ b/package/network/config/vxlan/Makefile
+@@ -1,7 +1,7 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=vxlan
+-PKG_VERSION:=2
++PKG_RELEASE:=3
+ PKG_LICENSE:=GPL-2.0
+ 
+ include $(INCLUDE_DIR)/package.mk
