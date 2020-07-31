@@ -69,32 +69,30 @@ if [ -s "$hoodfilelocal" ]; then
 	cp "$hoodfilelocal" "$hoodfiletmp"
 	echo "Use local hood file"
 else
-	# if we have Internet, we download the Hoodfile from the keyxchangev2
-	if hasInternet ; then
-		getKeyserverHoodfile "$hoodfiletmp" && cp "$hoodfiletmp" "$hoodfilewww"
+	# if internet is available, the hoodfile is downloaded from our keyserver
+	if getKeyserverHoodfile "$hoodfiletmp"; then
+		cp "$hoodfiletmp" "$hoodfilewww"
 
-		#if no Internet, we connect to the hidden AP and download the file from another Node in range
+	# if no internet is available, but the node is already configured,
+	# a gateway with the appropriate hoodfile should be available
+	elif getGatewayHoodfile "$hoodfiletmp"; then
+		cp "$hoodfiletmp" "$hoodfilewww"
+
+	# no internet and no gateway available. the node is either unconfigured,
+	# has lost connectivity or the hood is broken. Try to regain connectivity by
+	# fetching hoodfiles from nearby nodes
 	else
-		# connect to wireless hidden ap here and download the json File from the nearest router
-		# Only do that, when we have no gateway in range. If the Uplinkrouter changed the hood, we lost the GW and do this automatically again, I think! Nice idea?
-		if ! isGatewayAvailable ; then
-			#now we haven't a gateway in Range, we search for a hidden AP to get a keyxchangev2data file!
-			#first we delete all wifi settings
-			rm -f "$hoodfileref" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
-			rm -f "$hoodfilewww" # delete this, so wrong hood file is not broadcasted anymore
+		rm -f "$hoodfileref" # delete this, so interfaces are recreated if reconnect with unchanged hood file takes place
+		rm -f "$hoodfilewww" # delete this, so wrong hood file is not broadcasted anymore
 
-			uci -q del "system.@system[0].hood"
-			uci -q del "system.@system[0].hoodid"
-			uci commit system
-			reload_config
-		
-			sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
+		uci -q del "system.@system[0].hood"
+		uci -q del "system.@system[0].hoodid"
+		uci commit system
+		reload_config
 
-			getEthernetHoodfile "$hoodfiletmp" || getWirelessHoodfile "$hoodfiletmp"
-		else
-			echo "We have a Gateway in Range, we load the keyxchangev2data from fe80::1"
-			getGatewayHoodfile "$hoodfiletmp" && cp "$hoodfiletmp" "$hoodfilewww"
-		fi
+		sleep 30 # Wait for the config AP, which may be created at the same time as this script has started
+
+		getEthernetHoodfile "$hoodfiletmp" || getWirelessHoodfile "$hoodfiletmp"
 	fi
 fi
 
