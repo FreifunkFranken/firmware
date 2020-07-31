@@ -106,7 +106,7 @@ if [ -s "$hoodfiletmp" ]; then
 		
 		json_select ".." # back to root
 		
-		if ! ([ -n "$chan2ghz" ] && [ -n "$chan5ghz" ]) ; then
+		if [ -z "$chan2ghz" ] || [ -z "$chan5ghz" ] ; then
 			# If channel is missing, do nothing
 			exit 0
 		fi
