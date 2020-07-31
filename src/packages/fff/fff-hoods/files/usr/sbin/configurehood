@@ -78,8 +78,8 @@ if [ -s "$hoodfiletmp" ]; then
 	# https://pw.freifunk-franken.de/patch/205/
 	# but without signature, every hood file we get is valid!
 
-	sumnew=$(cat "$hoodfiletmp" 2>/dev/null | sha256sum | cut -f1 -d " ")
-	sumold=$(cat "$hoodfileref" 2>/dev/null | sha256sum | cut -f1 -d " ")
+	sumnew=$(sha256sum "$hoodfiletmp" 2>/dev/null | cut -f1 -d " ")
+	sumold=$(sha256sum "$hoodfileref" 2>/dev/null | cut -f1 -d " ")
 
 	json_load "$(cat "$hoodfiletmp")"
 
