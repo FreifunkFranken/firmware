@@ -12,6 +12,12 @@ config interface 'wan'
         option proto 'dhcp'
         option ifname 'eth1'
 
+config interface 'wan6'
+        option proto 'dhcpv6'
+        option reqprefix 'no'
+        option sourcefilter '0'
+        option ifname '@wan'
+
 config interface 'ethmesh'
         option proto 'batadv_hardif'
         option master 'bat0'

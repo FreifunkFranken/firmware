@@ -28,40 +28,6 @@ setupPorts() {
     fi
 }
 
-setAutoConf() {
-    # Sets ipv6 auto configuration on an interface to on/off
-    # Usage: setAutoConf <interface> <[0|1]>
-    local iface=$1
-    local on=$2
-
-    sysctlfile="/etc/sysctl.d/65-fff-network-$iface.conf"
-    echo "# Generated from configurenetwork" > "$sysctlfile"
-    echo "net.ipv6.conf.$iface.accept_ra = $on" >> "$sysctlfile"
-    echo "net.ipv6.conf.$iface.accept_ra_defrtr = $on" >> "$sysctlfile"
-    echo "net.ipv6.conf.$iface.accept_ra_pinfo = $on" >> "$sysctlfile"
-    echo "net.ipv6.conf.$iface.autoconf = $on" >> "$sysctlfile"
-    echo "net.ipv6.conf.$iface.accept_ra_rtr_pref = $on" >> "$sysctlfile"
-    echo "net.ipv6.conf.$iface.forwarding = 0" >> "$sysctlfile"
-
-    /sbin/sysctl -p "$sysctlfile"
-}
-
-enableAutoConf() {
-    # Enables ipv6 auto configuration on an interface
-    # Usage: enableAutoConf <interface>
-    local iface=$1
-
-    setAutoConf "$iface" "1"
-}
-
-disableAutoConf() {
-    # Disables ipv6 auto configuration on an interface
-    # Usage: disableAutoConf <interface>
-    local iface=$1
-
-    setAutoConf "$iface" "0"
-}
-
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
@@ -125,12 +91,8 @@ if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
         uci set network.${SWITCHDEV}_2.device=$SWITCHHW
         uci set network.${SWITCHDEV}_2.vlan=2
         uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
-
-        enableAutoConf "$WANDEV.2"
-    else
-        enableAutoConf "$WANDEV"
     fi
-    
+
     uci set network.${SWITCHDEV}_3=switch_vlan
     uci set network.${SWITCHDEV}_3.device=$SWITCHHW
     uci set network.${SWITCHDEV}_3.vlan=3
@@ -153,19 +115,16 @@ if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FO
     uci set network.$SWITCHDEV=interface
     uci set network.$SWITCHDEV.ifname=$SWITCHDEV
     if [ "$ETHMODE" = "WAN" ]; then
-        enableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0"
         uci set network.wan.ifname="$WANDEV"
         uci del uci set network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "CLIENT" ] ; then
-        disableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0 $SWITCHDEV"
         uci set network.wan.ifname="eth1" #eth1 because it is default in config file
         uci del network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "BATMAN" ] ; then
-        disableAutoConf "$WANDEV"
         uci set network.mesh.ifname="bat0"
         uci set network.wan.ifname="eth1" #eth1 because it is default in config file
         uci set network.ethmesh.ifname="$SWITCHDEV"
