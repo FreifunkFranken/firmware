@@ -20,6 +20,7 @@ define Package/fff-gateway
 	         +fff-ra \
 	         +fff-wireguard \
 	         +arptables \
+	         +bmon \
 	         +ebtables \
 	         +ebtables-utils \
 	         +kmod-ebtables-ipv4 \
@@ -33,6 +34,7 @@ define Package/fff-gateway
 	         +iptables-mod-ipopt \
 	         +iptables-mod-conntrack-extra \
 	         +mtr \
+	         +tc \
 	         +tcpdump \
 	         +vxlan
 endef

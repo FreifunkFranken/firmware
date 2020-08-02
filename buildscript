@@ -24,7 +24,7 @@ PACKAGEURL="https://git.openwrt.org/feed/packages.git"
 OPENWRT=(openwrt
          $PACKAGEURL
          $PACKAGEREV)
-OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr"
+OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon"
 
 ## Be careful: FFF uses COMPAT_VERSION 15 as default at the moment.
 ## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
