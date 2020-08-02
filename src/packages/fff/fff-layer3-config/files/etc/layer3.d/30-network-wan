@@ -1,0 +1,21 @@
+# load board specific properties
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+configure() {
+	if vlan=$(uci -q get gateway.@wan[0].vlan); then
+		uci set network.wan.ifname="${SWITCHDEV}.$vlan"
+	elif iface=$(uci -q get gateway.@wan[0].iface); then
+		uci set network.wan.ifname="$iface"
+	else
+		echo "WARNING: No vlan/interface for WAN specified. The default setting won't be overwritten."
+	fi
+}
+
+apply() {
+	uci commit network
+}
+
+revert() {
+	uci revert network
+}
