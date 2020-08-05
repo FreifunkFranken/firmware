@@ -117,7 +117,7 @@ if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FO
     if [ "$ETHMODE" = "WAN" ]; then
         uci set network.mesh.ifname="bat0"
         uci set network.wan.ifname="$WANDEV"
-        uci del uci set network.ethmesh.ifname
+        uci del network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "CLIENT" ] ; then
         uci set network.mesh.ifname="bat0 $SWITCHDEV"
