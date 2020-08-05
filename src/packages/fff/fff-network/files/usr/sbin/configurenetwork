@@ -65,66 +65,68 @@ if [ -n "$LAN1PORT" ] ; then
     setupPorts "$LAN1PORT" "${LAN1MODE}"
 fi
 
-if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
+if [ "$ONE_PORT" != "YES" ]; then
+    if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
 
-    SWITCHHW=$(swconfig list | awk '{ print $4 }')
+        SWITCHHW=$(swconfig list | awk '{ print $4 }')
 
-    uci set network.$SWITCHDEV=switch
-    uci set network.$SWITCHDEV.name=$SWITCHHW
-    uci set network.$SWITCHDEV.enable=1
-    uci set network.$SWITCHDEV.reset=1
-    uci set network.$SWITCHDEV.enable_vlan=1
+        uci set network.$SWITCHDEV=switch
+        uci set network.$SWITCHDEV.name=$SWITCHHW
+        uci set network.$SWITCHDEV.enable=1
+        uci set network.$SWITCHDEV.reset=1
+        uci set network.$SWITCHDEV.enable_vlan=1
 
-    uci set network.${SWITCHDEV}_1=switch_vlan
-    uci set network.${SWITCHDEV}_1.device=$SWITCHHW
-    uci set network.${SWITCHDEV}_1.vlan=1
-    uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
+        uci set network.${SWITCHDEV}_1=switch_vlan
+        uci set network.${SWITCHDEV}_1.device=$SWITCHHW
+        uci set network.${SWITCHDEV}_1.vlan=1
+        uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
 
-    if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
-        uci set network.${SWITCHDEV}_2=switch_vlan
-        uci set network.${SWITCHDEV}_2.device=$SWITCHHW
-        uci set network.${SWITCHDEV}_2.vlan=2
-        uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
+        if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
+            uci set network.${SWITCHDEV}_2=switch_vlan
+            uci set network.${SWITCHDEV}_2.device=$SWITCHHW
+            uci set network.${SWITCHDEV}_2.vlan=2
+            uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
+        fi
+
+        uci set network.${SWITCHDEV}_3=switch_vlan
+        uci set network.${SWITCHDEV}_3.device=$SWITCHHW
+        uci set network.${SWITCHDEV}_3.vlan=3
+        uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
+
+        uci set network.client.ifname="$SWITCHDEV.1 bat0"
+
+        uci set network.ethmesh.ifname="$SWITCHDEV.3"
+
+        if [ "$WANDEV" = "$SWITCHDEV" ]; then
+            uci set network.wan.ifname=$WANDEV.2
+        else
+            uci set network.wan.ifname=$WANDEV
+        fi
+
+        uci commit network
     fi
-
-    uci set network.${SWITCHDEV}_3=switch_vlan
-    uci set network.${SWITCHDEV}_3.device=$SWITCHHW
-    uci set network.${SWITCHDEV}_3.vlan=3
-    uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
-
-    uci set network.client.ifname="$SWITCHDEV.1 bat0"
-
-    uci set network.ethmesh.ifname="$SWITCHDEV.3"
-
-    if [ "$WANDEV" = "$SWITCHDEV" ]; then
-        uci set network.wan.ifname=$WANDEV.2
-    else
-        uci set network.wan.ifname=$WANDEV
+else
+    if ! uci -q get network.$SWITCHDEV.ifname || [ "$FORCEPARSE" = '1' ] ; then
+        uci set network.$SWITCHDEV=interface
+        uci set network.$SWITCHDEV.ifname=$SWITCHDEV
+        if [ "$ETHMODE" = "WAN" ]; then
+            uci set network.client.ifname="bat0"
+            uci set network.wan.ifname="$WANDEV"
+            uci del network.ethmesh.ifname
+            uci del network.${SWITCHDEV}.macaddr
+        elif [ "$ETHMODE" = "CLIENT" ] ; then
+            uci set network.client.ifname="bat0 $SWITCHDEV"
+            uci set network.wan.ifname="eth2" #eth2 because it is default in config file
+            uci del network.ethmesh.ifname
+            uci del network.${SWITCHDEV}.macaddr
+        elif [ "$ETHMODE" = "BATMAN" ] ; then
+            uci set network.client.ifname="bat0"
+            uci set network.wan.ifname="eth2" #eth2 because it is default in config file
+            uci set network.ethmesh.ifname="$SWITCHDEV"
+            ETH0MAC="w2ap"
+        fi
+        uci commit network
     fi
-
-    uci commit network
-fi
-
-if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FORCEPARSE" = '1' ] ) ; then
-    uci set network.$SWITCHDEV=interface
-    uci set network.$SWITCHDEV.ifname=$SWITCHDEV
-    if [ "$ETHMODE" = "WAN" ]; then
-        uci set network.client.ifname="bat0"
-        uci set network.wan.ifname="$WANDEV"
-        uci del network.ethmesh.ifname
-        uci del network.${SWITCHDEV}.macaddr
-    elif [ "$ETHMODE" = "CLIENT" ] ; then
-        uci set network.client.ifname="bat0 $SWITCHDEV"
-        uci set network.wan.ifname="eth2" #eth2 because it is default in config file
-        uci del network.ethmesh.ifname
-        uci del network.${SWITCHDEV}.macaddr
-    elif [ "$ETHMODE" = "BATMAN" ] ; then
-        uci set network.client.ifname="bat0"
-        uci set network.wan.ifname="eth2" #eth2 because it is default in config file
-        uci set network.ethmesh.ifname="$SWITCHDEV"
-        ETH0MAC="w2ap"
-    fi
-    uci commit network
 fi
 
 /etc/init.d/network restart
