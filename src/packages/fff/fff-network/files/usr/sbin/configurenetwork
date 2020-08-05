@@ -121,12 +121,12 @@ if [ "$ONE_PORT" = "YES" ] && ( ! uci -q get network.$SWITCHDEV.ifname || [ "$FO
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "CLIENT" ] ; then
         uci set network.mesh.ifname="bat0 $SWITCHDEV"
-        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci set network.wan.ifname="eth2" #eth2 because it is default in config file
         uci del network.ethmesh.ifname
         uci del network.eth0.macaddr
     elif [ "$ETHMODE" = "BATMAN" ] ; then
         uci set network.mesh.ifname="bat0"
-        uci set network.wan.ifname="eth1" #eth1 because it is default in config file
+        uci set network.wan.ifname="eth2" #eth2 because it is default in config file
         uci set network.ethmesh.ifname="$SWITCHDEV"
         ETH0MAC="w2ap"
     fi

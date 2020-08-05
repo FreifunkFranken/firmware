@@ -10,7 +10,7 @@ config interface 'mesh'
 
 config interface 'wan'
         option proto 'dhcp'
-        option ifname 'eth1'
+        option ifname 'eth2'
 
 config interface 'wan6'
         option proto 'dhcpv6'
