@@ -1,0 +1,47 @@
+# Copyright 2019 Adrian Schmutzler
+# License GPLv3
+
+get_port_order() {
+	local BOARD=$(uci get board.model.name)
+	local PORTORDER
+
+	case "$BOARD" in
+		glinet,gl-ar150)
+			PORTORDER="1"
+			;;
+		r6220)
+			PORTORDER="4 3 2 1 0"
+			;;
+		tplink,archer-c25-v1|\
+		tplink,archer-c60-v1|\
+		tplink,archer-c60-v2|\
+		tplink,tl-wr841-v10|\
+		tplink,tl-wr841-v11|\
+		tplink,tl-wr841-v12)
+			PORTORDER="4 3 2 1"
+			;;
+		tplink,c50-v4|\
+		tl-wr841n-v13)
+			PORTORDER="0 1 2 3 4"
+			;;
+		tplink,archer-c7-v2|\
+		tplink,archer-c7-v5|\
+		tplink,tl-wdr4300-v1)
+			PORTORDER="1 2 3 4 5"
+			;;
+		tplink,c2600|\
+		tplink,tl-wr1043nd-v4|\
+		tplink,tl-wr1043n-v5)
+			PORTORDER="5 4 3 2 1"
+			;;
+		cpe210|\
+		cpe510)
+			PORTORDER="5 4"
+			;;
+		tplink,tl-wr841-v8)
+			PORTORDER="2 3 4 1"
+			;;
+	esac
+
+	echo "$PORTORDER"
+}

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web-ui
-PKG_RELEASE:=17
+PKG_RELEASE:=18
 
 include $(INCLUDE_DIR)/package.mk
 

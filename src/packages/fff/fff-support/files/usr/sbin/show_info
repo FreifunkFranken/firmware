@@ -3,6 +3,7 @@
 . /etc/firmware_release
 . /lib/functions/fff/evalhoodinfo
 . /lib/functions/fff/evalbytes
+. /lib/functions/fff/portorder
 . /lib/functions.sh # required for config_load and config_foreach
 
 board_name=$(uci -q get board.model.name)
@@ -171,9 +172,7 @@ else
 	echo "simple-tc nicht installiert."
 fi
 
-if grep -q 'PORTORDER=' /etc/network.$board_name ; then
-	portorder=$(awk -F= '/PORTORDER=/ { print $2 }' /etc/network.$board_name | sed "s/\"//g")
-fi
+portorder=$(get_port_order)
 
 echo ""
 if swconfig list | grep -q switch0 ; then

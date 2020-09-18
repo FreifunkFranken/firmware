@@ -1,7 +1,5 @@
 . /lib/functions/fff/network
 
-PORTORDER="4 3 2 1 0"
-
 WANDEV=eth0
 SWITCHDEV=eth0
 CLIENT_PORTS="6t 0 1"
