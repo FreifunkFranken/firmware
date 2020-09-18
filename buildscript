@@ -13,31 +13,36 @@
 
 builddir=./build
 
+# OpenWrt: openwrt-19.07.5
 OPENWRTREV="v19.07.5"
-OPENWRTURL="https://git.openwrt.org/openwrt/openwrt.git"
-PACKAGEREV="2974079d3db786fe5da00c10f1d80e79b0112093" # openwrt-19.07.5
-PACKAGEURL="https://git.openwrt.org/feed/packages.git"
+PACKAGEREV="2974079d3db786fe5da00c10f1d80e79b0112093"
+ROUTINGREV="02b4dbfcb7b8f8b566940847d22d5a6f229d2e66"
 
-## Feed definition [0]: name aka directory, [1]: url, [2]: revision, [3..n]: patches
+# Gluon packages: master from 2020-02-04
+GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"
+
+OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon"
+ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
+GLUON_PKGS="simple-tc uradvd"
+
+OPENWRTURL="https://git.openwrt.org/openwrt/openwrt.git"
+
+## Feed definition [0]: name aka directory, [1]: url, [2]: revision
 
 #official openwrt packages
 OPENWRT=(openwrt
-         $PACKAGEURL
+         https://git.openwrt.org/feed/packages.git
          $PACKAGEREV)
-OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon"
 
-## Be careful: FFF uses COMPAT_VERSION 15 as default at the moment.
-## See http://www.open-mesh.org/projects/batman-adv/wiki/Compatversion
+#gluon packages
 GLUON=(gluon
-            https://github.com/freifunk-gluon/packages.git
-            12e41d0ff07ec54bbd67a31ab50d12ca04f2238c) # 2020-02-04
-GLUON_PKGS="simple-tc uradvd"
+       https://github.com/freifunk-gluon/packages.git
+       $GLUONREV)
 
 #official openwrt routing packages
 ROUTING=(routing
          https://git.openwrt.org/feed/routing.git
-         02b4dbfcb7b8f8b566940847d22d5a6f229d2e66) # openwrt-19.07.5
-ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
+         $ROUTINGREV)
 
 FFF=(fff)
 FFF_PKGS="-a"
