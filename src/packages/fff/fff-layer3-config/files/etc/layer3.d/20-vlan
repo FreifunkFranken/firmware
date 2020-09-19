@@ -16,7 +16,7 @@ configure() {
 		uci set network.$name='switch_vlan'
 		uci set network.$name.device="$(uci get network.$SWITCHDEV.name)"
 		uci set network.$name.vlan="$vlan"
-		uci set network.$name.ports="$CPUPORT $ports"
+		uci set network.$name.ports="$(get_cpu_port) $ports"
 	}
 
 	remove_vlan() {
