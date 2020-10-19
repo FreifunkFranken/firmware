@@ -1,5 +1,1 @@
-#!/bin/sh
-
-rm /tmp/fastd_fff_peers/*
-/etc/init.d/fastd stop
-
+vpn-select

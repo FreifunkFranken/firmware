@@ -1,65 +1,45 @@
 #!/bin/sh
 
 # Usage: vpn-select <path-to-hood-file>
+# To add a new protocol, put a file with three functions to /usr/lib/vpn-select.d/ .
+# The file must start with protocol=name. It is most important to use the same name here and in hoodfile.
+# The old config can be cleared in function ${protocol}_clear(). It is called first once per installed protocol.
+# The function ${protocol}_addpeer() is called for every selected peer in hoodfile.
+# The function ${protocol}_start_stop() is called at the end once per installed protocol.
 
 . /usr/share/libubox/jshn.sh
 
 hoodfile="$1"
 
-make_config() {
-	# remove old config
-	rm /tmp/fastd_fff_peers/*
+# source functions
+for file in /usr/lib/vpn-select.d/*; do
+	[ -f $file ] && . "$file"
+	supported_protocols="$supported_protocols $protocol"
+done
 
-	# prepare
-	Index=1
+# clear old config
+for protocol in $supported_protocols; do
+	"${protocol}_clear"
+done
+
+# configure vpn
+
+if [ -n "$hoodfile" ] && [ -s "$hoodfile" ] ; then
 	json_load "$(cat "$hoodfile")"
+	json_select hood
+	json_get_var id id
+	json_select ".."
 	json_select vpn
-
-	# get fastd peers
-	while json_select "$Index" > /dev/null
-	do
+	json_get_keys vpn_keys
+	for key in $vpn_keys; do
+		json_select $key
 		json_get_var protocol protocol
-		if [ "$protocol" = "fastd" ]; then
-			# set up fastd
-			json_get_var servername name
-			filename="/etc/fastd/fff/peers/$servername"
-			echo "#name \"${servername}\";" > "$filename"
-			json_get_var key key
-			echo "key \"${key}\";" >> "$filename"
-			json_get_var address address
-			json_get_var port port
-			echo "remote \"${address}\" port ${port};" >> "$filename"
-			echo "" >> "$filename"
-			echo "float yes;" >> "$filename"
-		fi
+		"${protocol}_addpeer"
 		json_select ".." # back to vpn
-		Index=$(( Index + 1 ))
 	done
-	json_select ".." # back to root
-}
-
-# Only do something if file is there and not empty; otherwise exit 1
-if [ -s "$hoodfile" ]; then
-	if [ ! -d /tmp/fastd_fff_peers ]; then
-		# first run after reboot
-		mkdir /tmp/fastd_fff_peers
-		make_config
-		# start fastd only if there are some peers
-		[ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ] && /etc/init.d/fastd start
-	else
-		make_config
-		/etc/init.d/fastd reload
-
-		# fastd start/stop for various situations
-		pidfile="/tmp/run/fastd.fff.pid"
-		if [ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ]; then
-			([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) || /etc/init.d/fastd start
-		else
-			([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) && /etc/init.d/fastd stop
-		fi
-	fi
-	exit 0
-else
-	echo "vpn-select: Hood file not found or empty!"
-	exit 1
 fi
+
+# start/restart/stop vpnservices
+for protocol in $supported_protocols; do
+	"${protocol}_start_stop"
+done

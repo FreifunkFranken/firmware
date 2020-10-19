@@ -1,0 +1,34 @@
+protocol=fastd
+
+fastd_clear() {
+	rm /tmp/fastd_fff_peers/*
+}
+
+fastd_addpeer() {
+	[ -d /tmp/fastd_fff_peers ] || mkdir /tmp/fastd_fff_peers
+
+	# write fastd-config
+	json_get_var servername name
+	filename="/etc/fastd/fff/peers/$servername"
+	echo "#name \"${servername}\";" > "$filename"
+	json_get_var key key
+	echo "key \"${key}\";" >> "$filename"
+	json_get_var address address
+	json_get_var port port
+	echo "remote \"${address}\" port ${port};" >> "$filename"
+	echo "" >> "$filename"
+	echo "float yes;" >> "$filename"
+}
+
+fastd_start_stop() {
+	/etc/init.d/fastd reload # does nothing if fastd was not running
+
+	# fastd start/stop for various situations
+	# this is needed for first start and if fastd comes up or disappears in hoodfile
+	pidfile="/tmp/run/fastd.fff.pid"
+	if [ "$(ls /etc/fastd/fff/peers/* 2>/dev/null)" ]; then
+		([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) || /etc/init.d/fastd start
+	else
+		([ -s "$pidfile" ] && [ -d "/proc/$(cat "$pidfile")" ]) && /etc/init.d/fastd stop
+	fi
+}
