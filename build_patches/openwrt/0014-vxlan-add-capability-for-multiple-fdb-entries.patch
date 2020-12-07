@@ -69,6 +69,7 @@ All available peer options for completeness:
       option src_vni '123'               # see man 3 bridge
 
 Signed-off-by: Johannes Kimmel <fff@bareminimum.eu>
+(cherry picked from commit 65e9de3c333bae1ccef1dfb0cc008ad6f13958e4)
 
 diff --git a/package/network/config/vxlan/Makefile b/package/network/config/vxlan/Makefile
 index 13fcf0c55d07d97f5dcc3cbfcf2478020e7107cc..7232f71b45e6f72f2c62a245ad44cb9ade144f52 100644
