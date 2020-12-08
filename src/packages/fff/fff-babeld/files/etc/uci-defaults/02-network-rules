@@ -37,6 +37,11 @@ uci batch <<EOF
   set network.@rule6[2].in='mesh'
   set network.@rule6[2].lookup='10'
   set network.@rule6[2].priority='31'
+  add network rule6
+  set network.@rule6[3]=rule6
+  set network.@rule6[3].src='::/0'
+  set network.@rule6[3].lookup='10'
+  set network.@rule6[3].priority='32000'
 EOF
 
 uci commit network
