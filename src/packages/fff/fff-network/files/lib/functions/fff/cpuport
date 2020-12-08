@@ -8,6 +8,7 @@ case "$BOARD" in
 		CPUPORT="5t"
 		;;
 	tplink,c50-v3|\
+	tplink,c50-v4|\
 	tplink,tl-wr1043nd-v2|\
 	tplink,tl-wr1043nd-v3|\
 	tl-wr841n-v13|\
