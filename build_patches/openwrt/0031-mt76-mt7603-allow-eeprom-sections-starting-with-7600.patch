@@ -1,0 +1,50 @@
+From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+Date: Fri, 16 Oct 2020 13:36:02 +0200
+Subject: mt76: mt7603: allow eeprom sections starting with 7600
+
+Fixes low signal issue for 2.4 GHz for the TP-Link Archer C50 v4.
+The first two bytes in the eeprom are the chip id. The working
+devices have 0x7628 there, whereas the non-working devices have
+0x7600 there. This chip id gets checked by the function
+mt7603_check_eeprom() which leads the driver to ignore the
+contents of the eeprom partition and load default values from otp.
+
+The has been manually added based on mt76 PR:
+https://github.com/openwrt/mt76/pull/442/
+
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+
+diff --git a/package/kernel/mt76/patches/0001-fix-archer-c50-v4.patch b/package/kernel/mt76/patches/0001-fix-archer-c50-v4.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..29e422dc0c7f3046be0aa761bcfe8db1e298ed88
+--- /dev/null
++++ b/package/kernel/mt76/patches/0001-fix-archer-c50-v4.patch
+@@ -0,0 +1,28 @@
++From b0c7f88d900d2986cd2061113201825eda6a6482 Mon Sep 17 00:00:00 2001
++From: Ron Asimi <ron.asimi@gmail.com>
++Date: Wed, 2 Sep 2020 23:18:23 -0400
++Subject: [PATCH] mt7603: allow eeprom sections starting with 7600
++
++Fixes low  signal issue for 2.4 GHz for the TP-Link Archer C50 v4.
++The first two bytes in the eeprom are the chip id. The working
++devices have 0x7628 there, whereas the non-working devices have
++0x7600 there. This chip id gets checked by the function
++mt7603_check_eeprom() which leads the driver to ignore the contents
++of the eeprom partition and load default values from otp.
++
++---
++ mt7603/eeprom.c | 1 +
++ 1 file changed, 1 insertion(+)
++
++diff --git a/mt7603/eeprom.c b/mt7603/eeprom.c
++index 01f1e0da..9d5042af 100644
++--- a/mt7603/eeprom.c
+++++ b/mt7603/eeprom.c
++@@ -136,6 +136,7 @@ static int mt7603_check_eeprom(struct mt76_dev *dev)
++ 	switch (val) {
++ 	case 0x7628:
++ 	case 0x7603:
+++	case 0x7600:
++ 		return 0;
++ 	default:
++ 		return -EINVAL;
