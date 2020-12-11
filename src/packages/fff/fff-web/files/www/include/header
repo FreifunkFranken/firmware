@@ -7,13 +7,6 @@
 UPGRADE_PATH="$(getUpgradePath)"
 
 echo -en "Content-Type: text/html\r\n\r\n"
-nav_entry() {
-	script_file="/cgi-bin/$1"
-	if [ "$script_file" = "$REQUEST_URI" ] ; then
-		local class_active=' class="active"'
-	fi
-	echo -ne "\t<li${class_active}><a href=\"${script_file}\">$2</a></li>\n\t\t"
-}
 
 HOSTNAME="$(uci -q get "fff.system.hostname")"
 hood="$(uci -q get "system.@system[0].hood")"
@@ -52,14 +45,15 @@ fi
 	<div id="menu">
 		<ul>
 		<%
-			nav_entry home.html		"Home"
-			nav_entry settings.html		"Einstellungen"
-			nav_entry ports.html		"Anschl&uuml;sse"
-			nav_entry wifiscan.html		"Wifi Scan"
-			nav_entry upgrade.html		"Upgrade"
-			nav_entry password.html		"Password"
-			nav_entry reboot.html		"Neustart"
-			nav_entry logout.html		"Logout"
+		for f in /www/menu/ssl/*; do
+			var=$(cat $f);
+			menu_file=$(echo $var | cut -d "," -f 1)
+			menu_name=$(echo $var | cut -d "," -f 2)
+			menu_link="/cgi-bin/${menu_file}.html";
+			class_active=""
+			[ "$menu_link" = "$REQUEST_URI" ] && class_active=' class="active"'
+			echo -ne "\t<li$class_active><a href=\"${menu_link}\">$menu_name</a></li>\n\t\t";
+		done
 		%>
 		</ul>
 		<div></div>
