@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken Webinterface
+	TITLE:=Freifunk-Franken Webinterface
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +fff-simple-tc \
 			 +fff-boardname +fff-config +fff-network +fff-hoodutils \

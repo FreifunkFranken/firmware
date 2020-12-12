@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken uradvd
+	TITLE:=Freifunk-Franken uradvd
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+uradvd
 endef

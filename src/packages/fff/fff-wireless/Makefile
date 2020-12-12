@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken wireless configuration
+	TITLE:=Freifunk-Franken wireless configuration
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+@ATH_USER_REGD +wireless-tools +fff-boardname
 endef

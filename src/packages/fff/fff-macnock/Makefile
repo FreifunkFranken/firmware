@@ -16,7 +16,7 @@ CMAKE_OPTIONS:=-DMACNOCK_DEBUG=ON
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken mac nocker
+	TITLE:=Freifunk-Franken mac nocker
 	URL:=http://www.freifunk-franken.de
 	KCONFIG:= \
 		CONFIG_NET_EMATCH=y \

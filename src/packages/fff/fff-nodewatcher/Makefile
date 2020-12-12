@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken Nodewatcher
+	TITLE:=Freifunk-Franken Nodewatcher
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+fff-alfred +micrond +fff-config +fff-random +ip +ip-bridge
 endef

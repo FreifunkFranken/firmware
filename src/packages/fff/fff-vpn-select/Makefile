@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken vpn-select
+	TITLE:=Freifunk-Franken vpn-select
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+fff-fastd
 endef

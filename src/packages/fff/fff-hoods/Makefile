@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:= Freifunk-Franken hoods
+	TITLE:=Freifunk-Franken hoods
 	URL:=http://www.freifunk-franken.de
 	DEPENDS:=+fff-hoodutils +fff-macnock +fff-vpn-select +fff-firewall \
 			 +fff-timeserver +fff-network +fff-wireless +jshn \
