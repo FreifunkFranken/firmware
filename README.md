@@ -9,7 +9,7 @@ Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.
 # Firmware selbst kompilieren
 ## Voraussetzungen
 * `apt-get install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion realpath libssl-dev` (Sicherlich müssen noch mehr Abhängigkeiten installiert werden, diese Liste wird sich hoffentlich nach und nach füllen. Ein erster Ansatzpunkt sind die Abhängigkeiten von OpenWrt selbst)
-* `git clone https://github.com/FreifunkFranken/firmware.git`
+* `git clone https://git.freifunk-franken.de/freifunk-franken/firmware.git`
 * `cd firmware`
 
 ## Erste Schritte
@@ -68,7 +68,7 @@ Beispielhaftes Vorgehen um den WR1043V2 zu unterstützen.
 
 ### Repository auschecken
 ```
-git clone https://github.com/FreifunkFranken/firmware.git
+git clone https://git.freifunk-franken.de/freifunk-franken/firmware.git
 cd firmware
 ```
 
