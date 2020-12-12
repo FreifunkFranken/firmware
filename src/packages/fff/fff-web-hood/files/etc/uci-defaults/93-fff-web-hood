@@ -1,0 +1,15 @@
+uci -q delete uhttpd.main
+
+uci batch <<EOF
+  set uhttpd.hood=uhttpd
+  add_list uhttpd.hood.listen_http='2342'
+  set uhttpd.hood.home='/www/hood'
+  set uhttpd.hood.rfc1918_filter='1'
+  set uhttpd.hood.network_timeout='30'
+  set uhttpd.hood.tcp_keepalive='1'
+  set uhttpd.hood.config='_'
+EOF
+
+uci commit uhttpd
+
+exit 0
