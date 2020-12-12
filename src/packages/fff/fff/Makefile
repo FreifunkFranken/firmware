@@ -18,7 +18,7 @@ define Package/fff-base
 			 +micrond \
 			 +fff-config \
 			 +fff-nodewatcher \
-			 +fff-web \
+			 +fff-web-ui \
 			 +fff-support \
 			 +fff-network \
 			 +fff-sysupgrade \
