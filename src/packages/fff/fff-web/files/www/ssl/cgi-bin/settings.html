@@ -65,8 +65,8 @@ if [ "$REQUEST_METHOD" = "POST" ] ; then
 	fi
 fi
 %>
-<%in /www/ssl/cgi-bin/header %>
-<%in /www/ssl/cgi-bin/helpers %>
+<%in /www/include/header %>
+<%in /www/include/helpers %>
 <%
 # read
 chkd='checked="checked" '
@@ -154,4 +154,4 @@ fi
 </td></tr>
 </table>
 </form>
-<%in /www/ssl/cgi-bin/footer %>
+<%in /www/include/footer %>

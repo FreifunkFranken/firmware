@@ -29,8 +29,8 @@ if [ "$REQUEST_METHOD" = "POST" ] ; then
 	fi
 fi
 %>
-<%in /www/ssl/cgi-bin/header %>
-<%in /www/ssl/cgi-bin/helpers %>
+<%in /www/include/header %>
+<%in /www/include/helpers %>
 <% show_msg %>
 <form method="post" enctype="multipart/form-data">
 <table style="width: 100%;">
@@ -60,7 +60,7 @@ fi
 </td></tr>
 </table>
 </form>
-<%in /www/ssl/cgi-bin/footer %>
+<%in /www/include/footer %>
 <%
 # write
 if [ "$do_reset" = "1" ] ; then

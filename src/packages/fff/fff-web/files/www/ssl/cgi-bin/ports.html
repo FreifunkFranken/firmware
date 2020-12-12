@@ -71,8 +71,8 @@ format_port() {
 
 
 %>
-<%in /www/ssl/cgi-bin/header %>
-<%in /www/ssl/cgi-bin/helpers %>
+<%in /www/include/header %>
+<%in /www/include/helpers %>
 <% show_msg %>
 <form method="post">
 <table style="width: 100%;">
@@ -237,7 +237,7 @@ format_port() {
 <% fi %>
 </table>
 </form>
-<%in /www/ssl/cgi-bin/footer %>
+<%in /www/include/footer %>
 <%
 # write
 if [ "$do_reboot" = "1" ] ; then
