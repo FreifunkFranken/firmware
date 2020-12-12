@@ -14,7 +14,6 @@ Weitere Informationen gibt es auf <https://freifunk.net/> und auf <https://wiki.
 
 ## Erste Schritte
 Je nachdem, für welche Hardware die Firmware gebaut werden soll, muss das BSP gewählt werden:
-
 * `./buildscript selectbsp bsp/ath79-generic.bsp`
 * Um die vorhandenen BSPs zu sehen, kann `./buildscript selectbsp help` ausgeführt werden.
 
@@ -34,7 +33,6 @@ Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die 
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
   * OpenWrt
   * Sämtliche Packages (ggf. werden Patches angewandt)
-
 * Eine OpenWrt Feed-Config wird mit dem lokalen Source Verzeichnis als Quelle angelegt
 * Die Feeds werden geladen
 * Spezielle Auswahl an Paketen wird geladen
