@@ -29,6 +29,11 @@ Die Daten des BSP werden nie alleine verwendet. Zuerst werden immer die Daten au
 Die BSP-Datei wird durch das Buildscript automatisch als dot-Script geladen, somit stehen dort alle Funktionen zur Verfügung.
 Das Buildscript generiert ein dynamisches sed-Script. Dies geschieht, damit die Templates mit den richtigen Werten gefüllt werden können.
 
+### `./buildscript selectvariant`
+Hier wählt man aus ob man Node Firmware oder Layer3 Firmware bauen möchte:
+* `./buildscript selectvariant [node/layer3]`
+* Um die verschiedenen Varianten zu sehen, kann `./buildscript selectvariant help` ausgeführt werden.
+
 ### `./buildscript prepare`
 * Sourcen werden in einen separaten src-Folder geladen, sofern diese nicht schon da sind. Zu den Sourcen zählen folgende Komponenten:
   * OpenWrt
@@ -48,7 +53,11 @@ Dieses Kommando arbeitet folgendermaßen:
 * Config-Format vereinfachen
 * Config ins BSP zurück speichern
 
+### `./buildscript updatefeeds`
+Aktualisiert die OpenWrt Feeds für zusätzliche Pakete, die in die Firmware eingebaut werden. Dabei werden die Referenzen im build/ Verzeichnis aktualisiert. Dieser Schritt wird bereits von `./buildscript prepare` übernommen, daher ist dies nur bei manuellen Änderungen der Feeds nötig.
+
 ### `./buildscript build`
+Sollte man am besten mit Hilfe des Tools 'screen' oder ähnlichem laufen lassen um einen Abbruch des Builds bei Verbindungsproblemen oder ähnlichem zu verhindern.
 * prebuild
   * $target/files aufräumen
     * (In $target/files liegen Dateien, die später direkt im Ziel-Image landen)
@@ -60,6 +69,9 @@ Dieses Kommando arbeitet folgendermaßen:
 * OpenWrt: make
 * postbuild
   * board_postbuild() wird aufgerufen
+
+### `./buildscript buildall`
+Kann verwendet werden um für alle BSPs Firmware zu bauen. Das kann jedoch mehrere Stunden dauern.
 
 ## Erweiterung eines BSPs
 Beispielhaftes Vorgehen um den WR1043V2 zu unterstützen.
