@@ -66,15 +66,35 @@ revert_changes() {
 	exit 0
 }
 
+keep_changes() {
+	if [ -f "/tmp/configure-layer3-pid" ]; then
+		echo "Keep changes"
+		kill -9 $(cat /tmp/configure-layer3-pid)
+		rm /tmp/configure-layer3-pid
+		# We need exit because trap in test_changes() will not stop
+		# the script here and revert settings otherwise
+		exit
+	else
+		echo "configure-layer3 -t is not running"
+	fi
+}
+
 test_changes() {
+	echo $$ > /tmp/configure-layer3-pid
+	trap keep_changes SIGINT SIGTERM
+
 	reload_services
 
 	sleep 5
-	echo "Configuration reloaded. Changes will be reverted in 200s."
-	echo "Kill this script to keep changes."
-	sleep 200
-	echo "Reverting changes.."
 
+	echo "Configuration reloaded. Changes will be reverted in 200s."
+	echo "Kill this script or use configure-layer3 -k to keep changes."
+
+	sleep 200
+
+	echo "Reverting changes.."
+	# on revert we must delete the pid-file
+	rm /tmp/configure-layer3-pid
 	revert_changes
 	reload_services
 }
@@ -86,6 +106,7 @@ usage() {
 	echo "Options:"
 	echo "	-c: configure. No commit, no restart!"
 	echo "	-t: test changes. Restarts services, waits up to 200s for SIGINT"
+	echo "	-k: keep changes from test mode"
 	echo "	-a: apply changes"
 	echo "	-r: revert changes"
 }
@@ -98,6 +119,7 @@ fi
 case "$1" in
 	-c) configure ;;
 	-t) test_changes ;;
+	-k) keep_changes ;;
 	-a) apply_changes ;;
 	-r) revert_changes ;;
 	*) usage; exit 1 ;;
