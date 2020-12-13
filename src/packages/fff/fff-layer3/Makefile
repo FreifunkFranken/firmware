@@ -20,6 +20,7 @@ define Package/fff-layer3
 	         +fff-mqtt-monitoring \
 	         +fff-network \
 	         +fff-ra \
+	         +fff-web-l3config \
 	         +fff-web-mqtt \
 	         +fff-wireguard \
 	         +kmod-sched-cake \

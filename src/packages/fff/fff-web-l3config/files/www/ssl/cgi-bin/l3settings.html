@@ -1,0 +1,75 @@
+#!/usr/bin/haserl
+
+<%in /www/include/header %>
+<%in /www/include/helpers %>
+<% show_msg %>
+
+<%
+l3config=$(cat /etc/config/gateway)
+
+if [ -n "${POST_test}" ] || [ -n "${POST_apply}" ]; then
+%>
+<fieldset style="min-height: 10em;">
+	<legend>Status</legend>
+	<textarea style="width: 100%; height: 15em; resize: vertical;" readonly>
+<%
+	# write configuration to temp directory
+	tmp=$(mktemp -d)
+        echo "${POST_l3config}" | sed 's/\r$//' > "$tmp/gateway"
+
+	# try to parse with uci
+	status=$(uci -c "$tmp" show gateway 2>&1)
+	parse_error="$?"
+
+	if [ "$parse_error" -ne "0" ]; then
+		echo "Unable to parse gateway configuration:"
+		echo
+		echo -n "  "
+		echo "$status"
+		echo
+		echo "Configuration has not been saved!"
+
+		l3config="$POST_l3config"
+	else
+
+	# save to /etc/config/gateway
+	cp "$tmp/gateway" /etc/config/gateway
+	rm -r "$tmp"
+
+	yes | configure-layer3 -c
+
+	if [ -n "${POST_test}" ]; then
+		configure-layer3 -k >/dev/null 2>&1
+		configure-layer3 -t &
+
+		echo
+		echo "Test mode started. Reverting in 300s."
+	fi
+
+	if [ -n "${POST_apply}" ]; then
+		configure-layer3 -k >/dev/null 2>&1
+		configure-layer3 -a
+	fi
+
+	l3config=$(cat /etc/config/gateway)
+
+	fi
+%></textarea>
+</fieldset>
+&nbsp;
+&nbsp;
+
+<%
+fi
+%>
+
+<form method="post">
+<fieldset style="min-height: 13em;">
+	<legend>Konfigurationsdatei</legend>
+	<textarea name="l3config" style="width: 100%; height: 40em; resize: vertical;"><% echo "$l3config" %></textarea>
+</fieldset>
+<input type="submit" name="test" value="Speichern & Testen" style="margin-top: 5px; margin-left: 3px;" />
+<input type="submit" name="apply" value="Speichern & Anwenden" style="margin-top: 5px; margin-left: 3px;" />
+</form>
+
+<%in /www/include/footer %>
