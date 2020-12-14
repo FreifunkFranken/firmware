@@ -18,7 +18,7 @@ execute_subshell() {
 		echo "Usage:" "$0" "<function>"
 	fi
 
-	for script in /etc/gateway.d/*; do
+	for script in /etc/layer3.d/*; do
 		(
 			# unset function to prevent executing parents shell function
 			unset -f "$1"

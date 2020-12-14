@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-gateway
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-gateway
 
@@ -16,6 +16,7 @@ define Package/fff-gateway
 	         +fff-babeld \
 	         +fff-boardname \
 	         +fff-dhcp \
+	         +fff-layer3-config \
 	         +fff-network \
 	         +fff-ra \
 	         +fff-wireguard \
