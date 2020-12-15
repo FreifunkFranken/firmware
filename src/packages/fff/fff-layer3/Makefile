@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=fff-gateway
+PKG_NAME:=fff-layer3
 PKG_RELEASE:=7
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-gateway
+PKG_BUILD_DIR:=$(BUILD_DIR)/fff-layer3
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-gateway
+define Package/fff-layer3
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken gateway configuration
@@ -40,8 +40,8 @@ define Package/fff-gateway
 	         +vxlan
 endef
 
-define Package/fff-gateway/description
-	This package configures the gateway
+define Package/fff-layer3/description
+	This package provides the packages and settings for the layer 3 firmware
 endef
 
 define Build/Prepare
@@ -56,8 +56,8 @@ define Build/Compile
 	# nothing
 endef
 
-define Package/fff-gateway/install
+define Package/fff-layer3/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,fff-gateway))
+$(eval $(call BuildPackage,fff-layer3))
