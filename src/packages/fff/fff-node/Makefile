@@ -23,14 +23,6 @@ define Package/fff-node/description
 	This package configures the node
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef

@@ -21,14 +21,6 @@ define Package/$(PKG_NAME)/description
 	This package load and configures the current hood
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef

@@ -20,14 +20,6 @@ define Package/$(PKG_NAME)/description
 	This packages provides an semi automated sysupgrade script.
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef

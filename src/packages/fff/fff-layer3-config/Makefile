@@ -23,14 +23,6 @@ define Package/fff-layer3-config/description
 	This package provides the means for configuring the gateway
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef

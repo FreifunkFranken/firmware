@@ -21,8 +21,8 @@ define Package/fff-alfred-monitoring-proxy/description
 	https://monitoring.freifunk-franken.de/
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
+define Build/Compile
+	# nothing
 endef
 
 define Package/fff-alfred-monitoring-proxy/install

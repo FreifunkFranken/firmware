@@ -22,14 +22,6 @@ define Package/fff-wireguard/description
 	This package provides configuration scripts for wireguard tunnels.
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef

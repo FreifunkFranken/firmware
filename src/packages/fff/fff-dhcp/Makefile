@@ -20,14 +20,6 @@ define Package/fff-dhcp/description
 	It is used to configure dnsmasq for use as gateway.
 endef
 
-define Build/Prepare
-	echo "all: " > $(PKG_BUILD_DIR)/Makefile
-endef
-
-define Build/Configure
-	# nothing
-endef
-
 define Build/Compile
 	# nothing
 endef
