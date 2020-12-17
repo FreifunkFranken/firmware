@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web-hood
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -25,6 +25,7 @@ define Build/Compile
 endef
 
 define Package/fff-web-hood/install
+	$(INSTALL_DIR) $(1)/www/hood
 	$(CP) ./files/* $(1)/
 endef
 
