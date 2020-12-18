@@ -184,36 +184,36 @@ if [ -s "$hoodfiletmp" ]; then
 		/usr/sbin/vpn-stop
 	fi
 
-	# now we load the prefix from the hoodfile and set this to br-mesh
+	# now we load the prefix from the hoodfile and set this to br-client
 	json_select network
 	json_get_var prefix ula_prefix
 	# Set $prefix::MAC as IP
 	if [ -n "$prefix" ] ; then
 		prefix="$(echo "$prefix" | sed -e 's,\\,,')"
-		mac="$(cat "/sys/class/net/br-mesh/address")"
+		mac="$(cat "/sys/class/net/br-client/address")"
 		addr="$(ipMacAssemble "$prefix" "$mac")"
 		addr="$(ipTidyColon "$addr")"
 		addr_eui="$(ipEUIAssemble "$prefix" "$mac")"
 		addr_eui="$(ipTidyColon "$addr_eui")"
-		for ip in $(ip -6 addr show dev br-mesh | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
-			ip -6 addr del "$ip" dev br-mesh
+		for ip in $(ip -6 addr show dev br-client | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
+			ip -6 addr del "$ip" dev br-client
 		done
-		if ! ( ip -6 addr show dev br-mesh | grep -q "$addr" ) ; then
-			ip -6 addr add "$addr" dev br-mesh
-			echo "Set ULA address to br-mesh: $addr"
+		if ! ( ip -6 addr show dev br-client | grep -q "$addr" ) ; then
+			ip -6 addr add "$addr" dev br-client
+			echo "Set ULA address to br-client: $addr"
 		else
 			echo "Address already set."
 		fi
 		# Set $prefix::link-local as IP
-		if ! ( ip -6 addr show dev br-mesh | grep -q "$addr_eui" ) ; then
-			ip -6 addr add "$addr_eui" dev br-mesh
-			echo "Set ULA EUI-64 address to br-mesh: $addr_eui"
+		if ! ( ip -6 addr show dev br-client | grep -q "$addr_eui" ) ; then
+			ip -6 addr add "$addr_eui" dev br-client
+			echo "Set ULA EUI-64 address to br-client: $addr_eui"
 		else
 			echo "Address already set."
 		fi
-		if ! ( ip -6 route show dev br-mesh | grep -q "fc00::" ) ; then
-			ip -6 route add fc00::/7 via fe80::1 dev br-mesh
-			echo "Set ULA route to br-mesh."
+		if ! ( ip -6 route show dev br-client | grep -q "fc00::" ) ; then
+			ip -6 route add fc00::/7 via fe80::1 dev br-client
+			echo "Set ULA route to br-client."
 		else
 			echo "Route already set."
 		fi

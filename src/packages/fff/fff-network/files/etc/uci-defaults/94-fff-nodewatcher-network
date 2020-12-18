@@ -1,8 +1,8 @@
 uci batch <<EOF
   add nodewatcher network
-  set nodewatcher.@network[-1].mesh_interface='br-mesh'
+  set nodewatcher.@network[-1].mesh_interface='br-client'
   set nodewatcher.@network[-1].iface_blacklist='lo ifb0'
-  set nodewatcher.@network[-1].ip_whitelist='br-mesh'
+  set nodewatcher.@network[-1].ip_whitelist='br-client'
 EOF
 uci commit nodewatcher
 

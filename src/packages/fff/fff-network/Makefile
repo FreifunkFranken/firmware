@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-network
-PKG_RELEASE:=25
+PKG_RELEASE:=26
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 

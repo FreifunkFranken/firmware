@@ -4,7 +4,7 @@ config interface 'loopback'
         option ipaddr '127.0.0.1'
         option netmask '255.0.0.0'
 
-config interface 'mesh'
+config interface 'client'
         option type 'bridge'
         option auto '1'
 

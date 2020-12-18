@@ -30,7 +30,7 @@ configWifiDevice() {
 
 		set wireless.w${freq}ap='wifi-iface'
 		set wireless.w${freq}ap.device='${radio}'
-		set wireless.w${freq}ap.network='mesh'
+		set wireless.w${freq}ap.network='client'
 		set wireless.w${freq}ap.ifname='w${freq}ap'
 		set wireless.w${freq}ap.mode='ap'
 		set wireless.w${freq}ap.ssid='noservice.freifunk'

@@ -24,9 +24,9 @@ uci batch <<EOF
   add_list dhcp.@dnsmasq[0].server='/ip6.arpa/10.50.252.11'
   add_list dhcp.@dnsmasq[0].server='/ip6.arpa/10.50.252.0'
 
-  set dhcp.mesh=dhcp
-  set dhcp.mesh.interface='mesh'
-  set dhcp.mesh.leasetime='1h'
+  set dhcp.client=dhcp
+  set dhcp.client.interface='client'
+  set dhcp.client.leasetime='1h'
 EOF
 
 uci commit dhcp

@@ -58,7 +58,7 @@ fi
 	<table>
 		<tr><th>Name:</th><td><%= ${HOSTNAME} %></td></tr>
 		<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
-		<tr><th>MAC-Adresse:</th><td><%= $(cat /sys/class/net/br-mesh/address) %></td></tr>
+		<tr><th>MAC-Adresse:</th><td><%= $(cat /sys/class/net/br-client/address) %></td></tr>
 		<tr><th>Bekannte Knoten:</th><td><%= $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)+1)) %></td></tr>
 		<tr><th>Nachbarknoten:</th><td><%= $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
 		<tr><th>VPN via fastd:</th><td><%= ${vpn_active} %></td></tr>
@@ -72,10 +72,10 @@ fi
 	<legend>Netz: Freifunk</legend>
 	<table>
 		<tr><th>Nutzer:</th><td><% batctl tl -H 2> /dev/null | grep -c 'W' %></td></tr>
-		<tr><th>Empfangen:</th><td><% cat /sys/class/net/br-mesh/statistics/rx_bytes 2> /dev/null | human_bytes %></td></tr>
-		<tr><th>Gesendet:</th><td><% cat /sys/class/net/br-mesh/statistics/tx_bytes 2> /dev/null | human_bytes %></td></tr>
-		<tr><th>IPv4 Adressen:</th><td><% addr 4 br-mesh %></td></tr>
-		<tr><th>IPv6 Adressen:</th><td><% addr 6 br-mesh %></td></tr>
+		<tr><th>Empfangen:</th><td><% cat /sys/class/net/br-client/statistics/rx_bytes 2> /dev/null | human_bytes %></td></tr>
+		<tr><th>Gesendet:</th><td><% cat /sys/class/net/br-client/statistics/tx_bytes 2> /dev/null | human_bytes %></td></tr>
+		<tr><th>IPv4 Adressen:</th><td><% addr 4 br-client %></td></tr>
+		<tr><th>IPv6 Adressen:</th><td><% addr 6 br-client %></td></tr>
 	</table>
 </fieldset>
 </td><td>

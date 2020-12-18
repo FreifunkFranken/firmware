@@ -6,55 +6,55 @@ BOARD="$(uci get board.model.name)"
 configure() {
 	# ipaddr
 	#remove old ipaddr
-	uci -q del network.mesh.ipaddr
+	uci -q del network.client.ipaddr
 	#set new ipaddr
 	if ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
 		for ip in $ipaddr; do
-			uci add_list network.mesh.ipaddr=$ip
+			uci add_list network.client.ipaddr=$ip
 		done
 	else
 		echo "WARNING: No client ipaddr set!"
 	fi
 	#put interface routes from set addresses into fff table
-	uci set network.mesh.ip4table='fff'
+	uci set network.client.ip4table='fff'
 
 	# ip6addr
 	#remove old ip6addr
-	for ip in $(uci get network.mesh.ip6addr); do
+	for ip in $(uci get network.client.ip6addr); do
 		if echo "$ip" | grep -v -e "fdff:" -e "fe80::1/64" > /dev/null; then
-			uci del_list network.mesh.ip6addr="$ip"
+			uci del_list network.client.ip6addr="$ip"
 		fi
 	done
 	#set new ip6addr
 	if ip6addr=$(uci -q get gateway.@client[0].ip6addr); then
 		for ip in $ip6addr; do
-			uci add_list network.mesh.ip6addr=$ip
+			uci add_list network.client.ip6addr=$ip
 		done
 	else
 		echo "WARNING: No client ip6addr set!"
 	fi
 	#put interface routes from set addresses into fff table
-	uci set network.mesh.ip6table='fff'
+	uci set network.client.ip6table='fff'
 
 	# dhcp
-	uci -q del dhcp.mesh.start
-	uci -q del dhcp.mesh.limit
+	uci -q del dhcp.client.start
+	uci -q del dhcp.client.limit
 	if dhcp_start=$(uci -q get gateway.@client[0].dhcp_start); then
-		uci set dhcp.mesh=dhcp
-		uci set dhcp.mesh.interface=mesh
-		uci set dhcp.mesh.start=$dhcp_start
-		uci set dhcp.mesh.limit=$(uci -q get gateway.@client[0].dhcp_limit)
+		uci set dhcp.client=dhcp
+		uci set dhcp.client.interface=client
+		uci set dhcp.client.start=$dhcp_start
+		uci set dhcp.client.limit=$(uci -q get gateway.@client[0].dhcp_limit)
 	else
 		echo "WARNING: No DHCP range start and/or limit set!"
 	fi
 
 	# set interface
 	#remove all eth interfaces
-	ifaces=$(uci get network.mesh.ifname | sed 's/\beth[^ ]* *//g')
+	ifaces=$(uci get network.client.ifname | sed 's/\beth[^ ]* *//g')
 	if vlan=$(uci -q get gateway.@client[0].vlan); then
-		uci set network.mesh.ifname="${SWITCHDEV}.$vlan $ifaces"
+		uci set network.client.ifname="${SWITCHDEV}.$vlan $ifaces"
 	elif iface=$(uci -q get gateway.@client[0].iface); then
-		uci set network.mesh.ifname="$iface $ifaces"
+		uci set network.client.ifname="$iface $ifaces"
 	else
 		echo "WARNING: No Interface for client specified"
 	fi

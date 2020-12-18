@@ -5,7 +5,7 @@ echo -en "Content-Type: text/html\r\n\r\n"
 HOSTNAME="$(uci -q get "fff.system.hostname")"
 hood="$(uci -q get "system.@system[0].hood")"
 
-MAC="$(uci -q get network.mesh.macaddr)"
+MAC="$(uci -q get network.client.macaddr)"
 lat="$(uci -q get "fff.system.latitude")"
 lon="$(uci -q get "fff.system.longitude")"
 contact="$(uci -q get "fff.system.contact")"

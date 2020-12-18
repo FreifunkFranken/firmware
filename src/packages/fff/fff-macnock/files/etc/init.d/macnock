@@ -11,7 +11,7 @@ validate_hood_section() {
         return 1
     fi
 
-    if [ -n "$(uci -q get system.@system[0].hood)" -o -n "$(uci -q get network.mesh.macaddr)" ]; then
+    if [ -n "$(uci -q get system.@system[0].hood)" -o -n "$(uci -q get network.client.macaddr)" ]; then
         # true
         return 0
     fi
@@ -49,7 +49,7 @@ start_service() {
     local IFACE="$(uci -q get network.ethmesh.ifname)"
     local HOOD="$(uci -q get system.@system[0].hood)"
     if [ -z "$HOOD" ]; then
-        HOOD="$(uci -q get network.mesh.macaddr)"
+        HOOD="$(uci -q get network.client.macaddr)"
     fi
 
     procd_open_instance macnock

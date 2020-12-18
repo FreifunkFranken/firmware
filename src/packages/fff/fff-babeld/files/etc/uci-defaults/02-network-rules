@@ -19,7 +19,7 @@ uci batch <<EOF
   set network.@rule[3].priority='20'
   add network rule
   set network.@rule[4]=rule
-  set network.@rule[4].in='mesh'
+  set network.@rule[4].in='client'
   set network.@rule[4].lookup='10'
   set network.@rule[4].priority='31'
   add network rule6
@@ -34,7 +34,7 @@ uci batch <<EOF
   set network.@rule6[1].priority='20'
   add network rule6
   set network.@rule6[2]=rule6
-  set network.@rule6[2].in='mesh'
+  set network.@rule6[2].in='client'
   set network.@rule6[2].lookup='10'
   set network.@rule6[2].priority='31'
   add network rule6

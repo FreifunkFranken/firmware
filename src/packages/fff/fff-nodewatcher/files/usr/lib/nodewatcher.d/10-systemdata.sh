@@ -14,7 +14,7 @@ debug "Collecting basic system status data"
 SYSTEM_DATA="<status>online</status>"
 
 hostname="$(cat /proc/sys/kernel/hostname)"
-mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-mesh/address 2>/dev/null)
+mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-client/address 2>/dev/null)
 [ "$hostname" = "OpenWrt" ] && hostname="$mac"
 [ "$hostname" = "FFF" ] && hostname="$mac"
 SYSTEM_DATA="$SYSTEM_DATA<hostname>$hostname</hostname>"

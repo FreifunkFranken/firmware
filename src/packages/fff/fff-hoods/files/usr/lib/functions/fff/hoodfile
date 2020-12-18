@@ -77,7 +77,7 @@ getGatewayHoodfile() {
 
 	echo "Trying to get hoodfile from gateway..."
 
-	if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%br-mesh]:2342/keyxchangev2data"; then
+	if /bin/busybox wget -T15 -O "$file" "http://[fe80::1%br-client]:2342/keyxchangev2data"; then
 		return 0
 	else
 		return 1
