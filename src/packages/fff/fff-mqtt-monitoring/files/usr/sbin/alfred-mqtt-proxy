@@ -1,0 +1,8 @@
+#!/bin/sh
+MACADDR=$(cat /sys/class/net/br-client/address | /bin/sed 's/://g')
+
+fetch_id="64"
+if [ -n "$(uci -q get fff.mqtt.server)" ] ; then
+	mosquitto_pub -h "$(uci get fff.mqtt.server)" -p 1883 -t /monitoring/v1/$MACADDR -m "$(/bin/alfred-json -r "$fetch_id")"
+fi
+

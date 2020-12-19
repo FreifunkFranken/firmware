@@ -15,6 +15,7 @@ define Package/fff-layer3
 	         +fff-boardname \
 	         +fff-dhcp \
 	         +fff-layer3-config \
+	         +fff-mqtt-monitoring \
 	         +fff-network \
 	         +fff-ra \
 	         +fff-wireguard \
