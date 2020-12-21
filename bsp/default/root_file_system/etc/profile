@@ -13,6 +13,9 @@ export HOME=${HOME:-/root}
 [ -x /usr/bin/arp ] || arp() { cat /proc/net/arp; }
 [ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }
 
+# update uhttpd passwd on passwd-change
+[ -e /etc/rc.d/S50uhttpd ] && passwd() { /bin/passwd && /etc/init.d/uhttpd restart; }
+
 # I'm lazy, let's add some aliases
 alias ..='cd ..'
 alias ...='cd ../..'
