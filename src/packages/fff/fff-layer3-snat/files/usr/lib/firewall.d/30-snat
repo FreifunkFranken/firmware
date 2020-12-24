@@ -1,0 +1,4 @@
+if [ "$(uci -q get network.client.fff_snat)" = '1' ]; then
+	iptables -t mangle -A PREROUTING -i br-client -j MARK --set-mark 0x736e6174
+	iptables -t nat -A POSTROUTING -m mark --mark 0x736e6174 -j SNAT --to-source $(uci -q get network.client.fff_snat_sourceip)
+fi
