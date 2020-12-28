@@ -18,6 +18,7 @@ define Package/fff-layer3
 	         +fff-mqtt-monitoring \
 	         +fff-network \
 	         +fff-ra \
+	         +fff-web-mqtt \
 	         +fff-wireguard \
 	         +arptables \
 	         +bmon \

@@ -1,0 +1,26 @@
+#!/usr/bin/haserl
+
+<%in /www/include/header %>
+<%in /www/include/helpers %>
+<% show_msg %>
+
+<%
+# write
+if [ "$REQUEST_METHOD" = "POST" ] ; then
+	uci -q set "fff.mqtt.server=${POST_server}"
+	uci commit fff
+fi
+%>
+
+<form method="post">
+
+<fieldset style="min-height: 7em;" class="smallinput">
+        <legend>MQTT</legend>
+	<table>
+		<tr><th>Server:</th><td><input type="text" name="server" value="<%= $(uci -q get fff.mqtt.server) %>" /></td></tr>
+	</table>
+</fieldset>
+<input type="submit" style="margin-top: 5px; margin-left: 3px;" />
+</form>
+
+<%in /www/include/footer %>
