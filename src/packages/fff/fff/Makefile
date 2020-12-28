@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff
 PKG_RELEASE:=8
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-base

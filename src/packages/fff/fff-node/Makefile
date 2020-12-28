@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-node
 PKG_RELEASE:=3
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-node
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-node

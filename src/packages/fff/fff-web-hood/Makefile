@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-web-hood
 PKG_RELEASE:=2
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-web-hood

@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-ra
 PKG_RELEASE:=3
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-ra
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-ra

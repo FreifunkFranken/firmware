@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-wireguard
 PKG_RELEASE:=5
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-wireguard
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-wireguard

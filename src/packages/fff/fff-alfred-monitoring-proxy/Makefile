@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-alfred-monitoring-proxy
 PKG_RELEASE:=4
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-alfred-monitoring-proxy
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-alfred-monitoring-proxy

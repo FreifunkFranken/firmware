@@ -3,8 +3,6 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=fff-dhcp
 PKG_RELEASE:=4
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/fff-dhcp
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fff-dhcp
