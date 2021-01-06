@@ -17,12 +17,6 @@ uci batch >/dev/null <<EOF
   set dhcp.@dnsmasq[-1].leasefile='/tmp/dhcp.leases'
   set dhcp.@dnsmasq[-1].noresolv='1'
   set dhcp.@dnsmasq[-1].localservice='1'
-  add_list dhcp.@dnsmasq[-1].server='10.50.252.11'
-  add_list dhcp.@dnsmasq[-1].server='10.50.252.0'
-  add_list dhcp.@dnsmasq[-1].server='/in-addr.arpa/10.50.252.11'
-  add_list dhcp.@dnsmasq[-1].server='/in-addr.arpa/10.50.252.0'
-  add_list dhcp.@dnsmasq[-1].server='/ip6.arpa/10.50.252.11'
-  add_list dhcp.@dnsmasq[-1].server='/ip6.arpa/10.50.252.0'
 
   set dhcp.client=dhcp
   set dhcp.client.interface='client'
