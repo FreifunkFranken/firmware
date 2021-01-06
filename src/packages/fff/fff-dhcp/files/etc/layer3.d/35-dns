@@ -8,7 +8,10 @@ configure() {
 			uci add_list dhcp.@dnsmasq[0].server="/ip6.arpa/$f"
 		done
 	else
-		echo "WARNING: No DNS servers set!"
+		echo "WARNING: No DNS servers set! Using default server fd43:5602:29bd:ffff:1:1:1:1"
+		uci add_list dhcp.@dnsmasq[0].server="fd43:5602:29bd:ffff:1:1:1:1"
+		uci add_list dhcp.@dnsmasq[0].server="/in-addr.arpa/fd43:5602:29bd:ffff:1:1:1:1"
+		uci add_list dhcp.@dnsmasq[0].server="/ip6.arpa/fd43:5602:29bd:ffff:1:1:1:1"
 	fi
 }
 
