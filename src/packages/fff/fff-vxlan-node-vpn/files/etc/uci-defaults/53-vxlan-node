@@ -1,0 +1,15 @@
+uci batch <<EOF
+ set network.vxlan0=interface
+ set network.vxlan0.proto=vxlan6
+ set network.vxlan0.port=8472
+ set network.vxlan0.ip6addr=auto
+ set network.vxlan0.srcportmin=8472
+ set network.vxlan0.srcportmax=8473
+ set network.vxlan0.ageing=30
+ set network.vxlan0.mtu=1422
+
+ set network.vxbat=interface
+ set network.vxbat.proto=batadv_hardif
+ set network.vxbat.master=bat0
+ set network.vxbat.ifname=vxlan0
+EOF

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-node
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -12,6 +12,7 @@ define Package/fff-node
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+fff-batman-adv \
 	         +fff-fastd \
+	         +fff-vxlan-node-vpn \
 	         +fff-firewall \
 	         +fff-hoods \
 	         +fff-uradvd
