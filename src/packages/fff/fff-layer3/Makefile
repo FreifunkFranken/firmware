@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-layer3
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-layer3
 
@@ -26,6 +26,7 @@ define Package/fff-layer3
 	         +ebtables-utils \
 	         +kmod-ebtables-ipv4 \
 	         +kmod-ebtables-ipv6 \
+	         +kmod-sched-cake \
 	         +gre \
 	         +@PACKAGE_grev4 \
 	         +@PACKAGE_grev6 \
