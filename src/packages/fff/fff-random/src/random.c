@@ -6,6 +6,36 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+
+static int parse_int(char *str) {
+        char *endptr = NULL;
+        errno = 0;
+        long val = strtol(str, &endptr, 10);
+
+        if (errno != 0) {
+                perror("strtol");
+                exit(EXIT_FAILURE);
+        }
+
+        if (endptr == str) {
+                fprintf(stderr, "No digits were found\n");
+                exit(EXIT_FAILURE);
+        }
+
+        if (*endptr != '\0') {
+                fprintf(stderr, "Further characters were found after number: \"%s\"\n", endptr);
+                exit(EXIT_FAILURE);
+        }
+
+        int retVal = (int) val;
+        if (val != retVal) {
+                fprintf(stderr, "Given number is out of range\n");
+                exit(EXIT_FAILURE);
+        }
+
+        return retVal;
+}
 
 int main(int argc, char **argv)
 {
@@ -22,8 +52,8 @@ int main(int argc, char **argv)
         }
         else if (argc == 3)
         {
-                from = atoi(argv[1]);
-                to = atoi(argv[2]);
+                from = parse_int(argv[1]);
+                to = parse_int(argv[2]);
         }
 
         diff = to - from;
