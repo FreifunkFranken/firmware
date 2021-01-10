@@ -40,7 +40,7 @@ babel_add_peeraddr() {
 		# use ipaddr (without subnet) if no peer_ip set
 		uci add_list "$option"=$(echo $ipaddr | cut -d / -f1)
 	else
-		echo "FATAL: Neither peer_ip nor ipaddr set! No peering ipv4 set!"
+		echo "WARNING: Neither peer_ip nor ipaddr set! IPv4 routing is not possible."
 		return 1
 	fi
 
