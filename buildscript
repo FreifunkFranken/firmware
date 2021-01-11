@@ -230,7 +230,7 @@ build() {
 
     opath=$(pwd)
     cd "$builddir"
-    cpus=$(grep -c processor /proc/cpuinfo)
+    cpus=$(nproc)
 
     case "$1" in
         "debug")
