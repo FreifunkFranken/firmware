@@ -195,9 +195,9 @@ else
         ip -6 addr del $ip dev br-client
     done
 
-    prefix="fdff:0::/64"
+    prefix="fdff::/64"
     # Set $prefix::MAC as IP
-    addr="$(ipMacAssemble "$prefix" "$ROUTERMAC")"
+    addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
     ip -6 addr add $addr dev br-client
 
     uci -q del network.globals
@@ -207,12 +207,12 @@ else
     uci -q set network.client.proto=static
 
     # Set $prefix::1 as IP
-    addr="$(ipAssemble "$prefix" "1")"
+    addr=$(owipcalc "$prefix" add ::1)
     ip -6 addr add $addr dev br-client
     uci -q add_list network.client.ip6addr=$addr
 
     # Set $prefix::link-local as IP
-    addr="$(ipEUIAssemble "$prefix" "$ROUTERMAC")"
+    addr=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
     ip -6 addr add $addr dev br-client
     uci -q add_list network.client.ip6addr=$addr
 

@@ -116,7 +116,7 @@ configure() {
 		uci -q del network.$prefixname.addresses
 
 		# add link local address
-		uci add_list network.$prefixname.addresses="$(ipEUIAssemble "fe80::/64" "$ROUTERMAC")"
+		uci add_list network.$prefixname.addresses="$(owipcalc "fe80::/64" add "::$(ipEUISuffix "$ROUTERMAC")")"
 
 		# add peer_ip
 		babel_add_peeraddr "network.$prefixname.addresses"

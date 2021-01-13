@@ -189,12 +189,13 @@ if [ -s "$hoodfiletmp" ]; then
 	json_get_var prefix ula_prefix
 	# Set $prefix::MAC as IP
 	if [ -n "$prefix" ] ; then
-		prefix="$(echo "$prefix" | sed -e 's,\\,,')"
-		mac="$(cat "/sys/class/net/br-client/address")"
-		addr="$(ipMacAssemble "$prefix" "$mac")"
-		addr="$(ipTidyColon "$addr")"
-		addr_eui="$(ipEUIAssemble "$prefix" "$mac")"
-		addr_eui="$(ipTidyColon "$addr_eui")"
+		# remove escape character
+		prefix=$(echo "$prefix" | sed -e 's,\\,,')
+		# create proper prefix
+		prefix=$(echo "$prefix" | sed -e 's,/,:/,')
+		mac=$(cat "/sys/class/net/br-client/address")
+		addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$mac")")
+		addr_eui=$(owipcalc "$prefix" add "::$(ipEUISuffix "$mac")")
 		for ip in $(ip -6 addr show dev br-client | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
 			ip -6 addr del "$ip" dev br-client
 		done

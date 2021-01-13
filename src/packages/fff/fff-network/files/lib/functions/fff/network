@@ -29,62 +29,6 @@ ipEUISuffix() {
 	return 0
 }
 
-ipAssemble() {
-	# Concatenates a prefix (1st argument) and a suffix (2nd argument) to a merged IPv6 address
-	# (The prefix has to bear the subnet: fdff::/64)
-	# (The prefix must only contain the higher 64 bits (correct: 0:0:0:0: or 0:: - wrong: 0:0:0:0::)
-
-	[ $# -ne "2" ] && return 1
-
-	local prefix=$1
-	local suffix=$2
-
-	echo "$prefix" | sed -e 's,/,'$suffix'/,'
-	return 0
-}
-
-ipMacAssemble() {
-	# Concatenates a prefix (1st argument) and a MAC-based suffix (MAC address as 2nd argument) to a merged IPv6 address
-	# (Details on prefix: Check ipAssemble(), details on suffix: Check ipMacSuffix())
-
-	[ $# -ne "2" ] && return 1
-
-	local prefix=$1
-	local mac=$2
-
-	suffix="$(ipMacSuffix "$mac")"
-	ipAssemble "$prefix" "$suffix"
-	return 0
-}
-
-ipEUIAssemble() {
-	# Concatenates a prefix (1st argument) and an EUI-based suffix (MAC address as 2nd argument) to a merged IPv6 address
-	# (Details on prefix: Check ipAssemble(), details on suffix: Check ipEUISuffix())
-
-	[ $# -ne "2" ] && return 1
-
-	local prefix=$1
-	local mac=$2
-
-	suffix="$(ipEUISuffix "$mac")"
-	ipAssemble "$prefix" "$suffix"
-	return 0
-}
-
-ipTidyColon() {
-	# Collapses zeros to :: to yield short but valid IPv6 addresses
-	#
-	# Argument: IPv6 address to be shortened
-
-	[ $# -ne "1" ] && return 1
-
-	local addr=$1
-
-	echo "$addr" | grep -q "::" || addr="$(echo "$addr" | sed -e 's,:[0:]*:,::,')"
-	echo "$addr"
-	return 0
-}
-
 macFlipLocalBit() {
 	# Returns given MAC-address with locally administered bit flipped
 	#

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-hoods
-PKG_RELEASE:=17
+PKG_RELEASE:=18
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -22,6 +22,7 @@ define Package/$(PKG_NAME)
 		+fff-web-hood \
 		+fff-wireless \
 		+jshn \
+		+owipcalc \
 		+@BUSYBOX_CONFIG_WGET \
 		+@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT
 endef

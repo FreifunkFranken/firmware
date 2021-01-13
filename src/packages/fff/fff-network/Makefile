@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-network
-PKG_RELEASE:=27
+PKG_RELEASE:=28
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -12,7 +12,10 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken network configuration
 	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+fff-boardname +fff-firewall
+	DEPENDS:= \
+		+owipcalc \
+		+fff-boardname \
+		+fff-firewall
 endef
 
 define Package/$(PKG_NAME)/description
