@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-ra
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-ra
 
@@ -12,7 +12,7 @@ define Package/fff-ra
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Router Advertisements
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+odhcpd
+	DEPENDS:=+odhcpd-ipv6only
 endef
 
 define Package/fff-ra/description
