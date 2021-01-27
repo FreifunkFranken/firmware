@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web-ui
-PKG_RELEASE:=16
+PKG_RELEASE:=17
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
