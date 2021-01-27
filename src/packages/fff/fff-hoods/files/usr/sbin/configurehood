@@ -191,8 +191,15 @@ if [ -s "$hoodfiletmp" ]; then
 	if [ -n "$prefix" ] ; then
 		# remove escape character
 		prefix=$(echo "$prefix" | sed -e 's,\\,,')
-		# create proper prefix
-		prefix=$(echo "$prefix" | sed -e 's,/,:/,')
+
+		# In earlier firmware versions the prefix had to be written
+		# in an incorrect syntax (missing a trailing colon).
+		# To make hoodfiles with this old incorrect syntax work with
+		# newer firmware versions like this one, we have to fix the
+		# incorrect syntax here. Both the old, incorrect and
+		# the correct syntax work with this fix.
+		prefix="$(echo "$prefix" | sed -e 's,\([^:]\):/,\1::/,')"
+
 		mac=$(cat "/sys/class/net/br-client/address")
 		addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$mac")")
 		addr_eui=$(owipcalc "$prefix" add "::$(ipEUISuffix "$mac")")
