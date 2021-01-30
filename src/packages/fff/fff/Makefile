@@ -1,34 +1,56 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff
-PKG_RELEASE:=8
+PKG_RELEASE:=9
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/fff-base
+define Package/fff-variant/default
 	SECTION:=base
 	CATEGORY:=Freifunk
-	TITLE:=Freifunk-Franken Base
-	URL:=http://www.freifunk-franken.de
-	DEPENDS:=+iptables \
-			 +ip6tables \
-			 +odhcp6c \
-			 +micrond \
-			 +fff-config \
-			 +fff-nodewatcher \
-			 +fff-web-ui \
-			 +fff-support \
-			 +fff-network \
-			 +fff-sysupgrade \
-			 +fff-wireless \
-			 +fff-timeserver \
-			 +fff-simple-tc
+	URL:=https://www.freifunk-franken.de
+	DEFAULT:=$(if $(filter fff-variant-$(FFF_VARIANT),$(1)),y,n)
+	DEPENDS:= \
+		+iptables \
+		+ip6tables \
+		+micrond \
+		+odhcp6c \
+		+fff-config \
+		+fff-network \
+		+fff-nodewatcher \
+		+fff-simple-tc \
+		+fff-support \
+		+fff-sysupgrade \
+		+fff-timeserver \
+		+fff-web-ui \
+		+fff-wireless
 endef
 
-define Package/fff-base/description
-	This is the Freifunk Franken Firmware Base package
+define Package/fff-variant/default/description
+	This package is used to switch one of the variants on by default
 endef
 
-$(eval $(call BuildPackage,fff-base))
+define Package/fff-variant-layer3
+	$(Package/fff-variant/default)
+	TITLE:=Freifunk-Franken Layer3 Variant
+	DEPENDS+=+fff-layer3
+	VARIANT:=layer3
+endef
 
-include $(TOPDIR)/variant.mk
+define Package/fff-variant-layer3/description
+	$(Package/fff-variant/default/description)
+endef
+
+define Package/fff-variant-node
+	$(Package/fff-variant/default)
+	TITLE:=Freifunk-Franken Node Variant
+	DEPENDS+=+fff-node
+	VARIANT:=node
+endef
+
+define Package/fff-variant-node/description
+	$(Package/fff-variant/default/description)
+endef
+
+$(eval $(call BuildPackage,fff-variant-layer3))
+$(eval $(call BuildPackage,fff-variant-node))

@@ -25,6 +25,8 @@ OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon"
 ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
 GLUON_PKGS="simple-tc uradvd"
 
+FFF_VARIANTS="node layer3"
+
 OPENWRTURL="https://git.openwrt.org/openwrt/openwrt.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision
@@ -149,7 +151,7 @@ prepare() {
 
 apply_variant() {
     # set the variant for this build
-    cp "./src/packages/fff/fff/variant-$(cat selected_variant).mk" "$builddir"/variant.mk
+    export FFF_VARIANT=$(cat selected_variant)
     # force the reevaluation of this Makefile to make note of the new variant
     touch ./src/packages/fff/fff/Makefile
 }
@@ -441,14 +443,13 @@ case "$1" in
         ;;
     "selectvariant")
         if [ "$2" = "help" ] || [ "$2" = "" ]; then
-            echo "Select a build varaint:"
+            echo "Select a build variant:"
             echo
             echo "Usage: $0 $1 <name of variant>"
-            echo "available variants: "
-            /bin/ls src/packages/fff/fff/variant-*.mk | sed 's#.*/variant-\(.*\)\.mk#\1#g'
+            echo "available variants: $FFF_VARIANTS"
             echo
         else
-            if [ ! -f "src/packages/fff/fff/variant-$2.mk" ]; then
+            if ! echo "$FFF_VARIANTS" | grep -q "\b$2\b"; then
                 echo "Could not find variant $2"
             else
                 setVariant $2
