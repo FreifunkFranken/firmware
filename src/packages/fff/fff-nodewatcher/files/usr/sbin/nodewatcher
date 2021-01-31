@@ -13,6 +13,7 @@ fi
 trap "lock -u \"$lockfile\"" INT TERM EXIT
 
 [ -s /etc/config/nodewatcher ] || exit 1
+[ "$(uci get nodewatcher.@script[0].disabled)" = "1" ] && exit 0
 
 SCRIPT_DATA_FILE=$(uci get nodewatcher.@script[0].data_file)
 
