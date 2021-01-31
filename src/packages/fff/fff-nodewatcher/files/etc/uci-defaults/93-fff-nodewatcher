@@ -1,3 +1,5 @@
+[ -s /etc/config/nodewatcher ] && exit 0
+
 touch /etc/config/nodewatcher
 
 uci batch >/dev/null <<EOF
