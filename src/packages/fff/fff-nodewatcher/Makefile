@@ -20,6 +20,10 @@ define Package/$(PKG_NAME)/description
 	netmon.freifunk-franken.de
 endef
 
+define Package/$(PKG_NAME)/conffiles
+/etc/config/nodewatcher
+endef
+
 define Build/Compile
 	# nothing
 endef
