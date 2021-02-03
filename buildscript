@@ -190,13 +190,6 @@ prebuild() {
     cp -r ./bsp/default/root_file_system/* "$builddir"/files/
     cp ./bsp/"$machine"/.config "$builddir"/.config
 
-    while IFS= read -r -d '' template
-    do
-        echo "Translating $template .."
-        $tpl_translate "$template" > "$(dirname "$template")"/"$(basename "$template" .tpl)"
-        /bin/rm "$template"
-    done < <(find "${builddir}/files" -name '*.tpl' -print0)
-
     #insert actual firware version informations into release file
     variant=$(cat selected_variant)
     version=$(git describe --tags --dirty)
