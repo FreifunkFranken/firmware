@@ -142,10 +142,6 @@ prepare() {
     # exists in builddir.
     apply_variant
 
-    #saves ~200MB for each build
-    test -d ./src/dl || mkdir ./src/dl
-    ln -s ../src/dl "$builddir"/dl
-
     update_feeds
 }
 
