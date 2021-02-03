@@ -64,7 +64,10 @@ checkout_git(){
     if [ -d "$DIRECTORY" ]; then
         if $MYGIT remote -v | grep -q "$REPO_URL" ; then
             echo "Right remote detected"
-            if ! $MYGIT checkout "$COMMITID" ; then
+            # Remove untracked files
+            $MYGIT clean -f -d
+            # Select desired commit and remove local changes (-f)
+            if ! $MYGIT checkout -f "$COMMITID" ; then
                 echo "commitid not found trying to fetch new commits"
                 $MYGIT pull && $MYGIT checkout "$COMMITID"
             fi
@@ -84,14 +87,11 @@ checkout_git(){
 }
 
 get_source() {
-    test -d src || mkdir src
-    cd src
+    #Get the OpenWrt main repo
+    checkout_git $builddir $OPENWRTURL $OPENWRTREV
 
-    #Get the OpenWrt Core Source for Firmware
-    checkout_git openwrt $OPENWRTURL $OPENWRTREV
-
-    test -d packages || mkdir packages
-    cd packages
+    test -d src/packages || mkdir -p src/packages
+    cd src/packages
 
     #checkout needed package feeds
     for FEEDVAR in "${FEEDS[@]}" ; do
@@ -130,11 +130,6 @@ patch_target() {
 
 prepare() {
     get_source
-
-    test -d $builddir || mkdir $builddir
-
-    /bin/rm -rf "$builddir"
-    cp -a src/openwrt "$builddir"
 
     patch_target
 
@@ -344,7 +339,7 @@ buildrelease() {
 }
 
 clean() {
-    /bin/rm -rf bin $builddir src/openwrt
+    /bin/rm -rf bin $builddir
 
     # remove downloaded package feeds
     for FEEDVAR in "${FEEDS[@]}" ; do
