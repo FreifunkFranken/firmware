@@ -10,7 +10,7 @@ get_port_order() {
 		glinet,gl-ar150)
 			PORTORDER="1"
 			;;
-		r6220)
+		netgear,r6220)
 			PORTORDER="4 3 2 1 0"
 			;;
 		tplink,archer-c25-v1|\
@@ -21,8 +21,8 @@ get_port_order() {
 		tplink,tl-wr841-v12)
 			PORTORDER="4 3 2 1"
 			;;
-		tplink,c50-v4|\
-		tl-wr841n-v13)
+		tplink,archer-c50-v4|\
+		tplink,tl-wr841n-v13)
 			PORTORDER="0 1 2 3 4"
 			;;
 		tplink,archer-c7-v2|\
@@ -35,8 +35,8 @@ get_port_order() {
 		tplink,tl-wr1043n-v5)
 			PORTORDER="5 4 3 2 1"
 			;;
-		cpe210|\
-		cpe510)
+		tplink,cpe210-v1|\
+		tplink,cpe510-v1)
 			PORTORDER="5 4"
 			;;
 		tplink,tl-wr841-v8)

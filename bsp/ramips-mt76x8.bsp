@@ -1,6 +1,6 @@
 chipset=ramips
 subtarget=mt76x8
-images=("openwrt-${chipset}-${subtarget}-tplink_c50-v3-squashfs-*"
-        "openwrt-${chipset}-${subtarget}-tplink_c50-v4-squashfs-*"
-        "openwrt-${chipset}-${subtarget}-tl-wr841n-v13-squashfs-*"
+images=("openwrt-${chipset}-${subtarget}-tplink_archer-c50-v3-squashfs-*"
+        "openwrt-${chipset}-${subtarget}-tplink_archer-c50-v4-squashfs-*"
+        "openwrt-${chipset}-${subtarget}-tplink_tl-wr841n-v13-squashfs-*"
         )

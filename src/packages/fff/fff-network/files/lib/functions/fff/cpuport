@@ -7,14 +7,14 @@ get_cpu_port() {
 	local CPUPORT
 
 	case "$BOARD" in
-		tplink,c50-v3|\
-		tplink,c50-v4|\
+		netgear,r6220|\
+		tplink,archer-c50-v3|\
+		tplink,archer-c50-v4|\
 		tplink,tl-wr1043nd-v2|\
 		tplink,tl-wr1043nd-v3|\
-		tl-wr841n-v13|\
-		r6220|\
-		ubnt-erx|\
-		ubnt-erx-sfp)
+		tplink,tl-wr841n-v13|\
+		ubnt,edgerouter-x|\
+		ubnt,edgerouter-x-sfp)
 			CPUPORT="6t"
 			;;
 		tplink,cpe210-v2|\

@@ -1,5 +1,0 @@
-chipset=ar71xx
-subtarget=generic
-images=("openwrt-${chipset}-${subtarget}-cpe210-220-v1-squashfs-*"
-        "openwrt-${chipset}-${subtarget}-cpe510-520-v1-squashfs-*"
-        )
