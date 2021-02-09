@@ -4,9 +4,9 @@
 builddir=./build
 
 # OpenWrt: package hashes correspond to core repo version
-OPENWRTREV="v19.07.7"
-PACKAGEREV="90af10d01579425369bd474051b6d3ddaf32a7e3"
-ROUTINGREV="e26b4745209655976b7d124465b1dc53ade632f9"
+OPENWRTREV="v21.02.0-rc1"
+PACKAGEREV="4ceeb8fc90ed2c2e650ddddc855e7ed1df071c22"
+ROUTINGREV="5b4d4c7fb6a97cac68c7d8b156fd0ab27bab4dcc"
 
 # Gluon packages: master from 2020-02-04
 GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"

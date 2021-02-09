@@ -6,18 +6,23 @@ This disables all OpenWrt config migration mechanisms except for
 files listed in /etc/sysupgrade.conf
 
 diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
-index 6c518b780eddd973966537b50d8f7c82539bb1e1..49d4514b988e827098450d57da0ae50a37506d3a 100755
+index 7e0a00e13b8ee4be7163936fd01a7beff0ce5c99..97f50dc83088e29fba651741fff28c70f7585b3f 100755
 --- a/package/base-files/files/sbin/sysupgrade
 +++ b/package/base-files/files/sbin/sysupgrade
-@@ -134,9 +134,9 @@ list_changed_conffiles() {
- add_conffiles() {
- 	local file="$1"
- 	( find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
+@@ -135,14 +135,14 @@ list_static_conffiles() {
+ 	local filter=$1
+ 
+ 	find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
 -		/etc/sysupgrade.conf /lib/upgrade/keep.d/* 2>/dev/null) \
 +		/etc/sysupgrade.conf 2>/dev/null) \
- 		\( -type f -o -type l \) $find_filter 2>/dev/null;
--	  list_changed_conffiles ) | sort -u > "$file"
-+	  ) | sort -u > "$file"
- 	return 0
+ 		\( -type f -o -type l \) $filter 2>/dev/null
  }
  
+ add_conffiles() {
+ 	local file="$1"
+ 
+-	( list_static_conffiles "$find_filter"; list_changed_conffiles ) |
++	( list_static_conffiles "$find_filter" ) |
+ 		sort -u > "$file"
+ 	return 0
+ }

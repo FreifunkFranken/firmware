@@ -1,7 +1,6 @@
-From f114914490740247f2b6ca705f0f7055db9681ab Mon Sep 17 00:00:00 2001
 From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 Date: Mon, 30 Sep 2019 17:09:10 +0200
-Subject: [PATCH 1/2] babeld: Include PKG_RELEASE in babeld version
+Subject: babeld: Include PKG_RELEASE in babeld version
 
 This will account for custom patches added, as otherwise version
 would stay the same.
@@ -9,17 +8,14 @@ would stay the same.
 Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 [fabian@blaese.de: revise version string]
 Signed-off-by: Fabian Bläse <fabian@blaese.de>
----
- babeld/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
 
 diff --git a/babeld/Makefile b/babeld/Makefile
-index 022d0b8..78fdf83 100644
+index 0b611286092464528135c15e100b3d6928f5a677..b0ed749e98714bf146b4e4be34d71484447b8ecb 100644
 --- a/babeld/Makefile
 +++ b/babeld/Makefile
-@@ -48,6 +48,11 @@ MAKE_FLAGS+= \
- 	CFLAGS="$(TARGET_CFLAGS)" \
+@@ -49,6 +49,11 @@ MAKE_FLAGS+= \
  	LDLIBS="" \
+ 	LDLIBS+="-lubus -lubox"
  
 +define Build/Configure
 +	echo "babeld-$(PKG_VERSION)+fff$(PKG_RELEASE)" > $(PKG_BUILD_DIR)/version
@@ -29,6 +25,3 @@ index 022d0b8..78fdf83 100644
  define Package/babeld/install
  	$(INSTALL_DIR) $(1)/usr/sbin
  	$(INSTALL_BIN) $(PKG_BUILD_DIR)/babeld $(1)/usr/sbin/
--- 
-2.25.1
-

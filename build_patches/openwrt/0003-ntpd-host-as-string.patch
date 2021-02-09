@@ -3,7 +3,7 @@ Date: Sat, 8 Jul 2017 10:47:56 +0200
 Subject: ntpd host as string
 
 diff --git a/package/utils/busybox/files/sysntpd b/package/utils/busybox/files/sysntpd
-index 52866ba32acd26a490f9c9024fc3e43e0f757496..b6b28cd02527b89c0a4cc2f9adef52bb4c8427b0 100755
+index e4a070762f2e6be299db8a7af7a8383062b0cf57..9f7aff31c57803de1d61fdfaac751fc8c8d0d108 100755
 --- a/package/utils/busybox/files/sysntpd
 +++ b/package/utils/busybox/files/sysntpd
 @@ -30,7 +30,7 @@ get_dhcp_ntp_servers() {
