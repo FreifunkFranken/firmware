@@ -8,4 +8,3 @@ ONE_PORT="YES"
 . /etc/network.mode
 
 ETHMESHMAC=$(cat /sys/class/net/eth0/address)
-ROUTERMAC=$(cat /sys/class/net/eth0/address)

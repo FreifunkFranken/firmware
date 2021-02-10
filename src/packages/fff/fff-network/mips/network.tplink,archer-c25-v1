@@ -5,4 +5,3 @@ WAN_PORTS=""
 BATMAN_PORTS="3 4 0t"
 
 ETHMESHMAC=$(cat /sys/class/net/eth0/address)
-ROUTERMAC=$(cat /sys/class/net/eth1/address)

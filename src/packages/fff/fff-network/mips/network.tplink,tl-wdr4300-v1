@@ -6,5 +6,4 @@ BATMAN_PORTS="0t 2 3"
 
 . /lib/functions/system.sh
 
-ROUTERMAC=$(cat /sys/class/ieee80211/phy1/macaddress)
-ETHMESHMAC=$(macaddr_add $ROUTERMAC 1)
+ETHMESHMAC=$(macaddr_add $(cat /sys/class/ieee80211/phy1/macaddress) 1)

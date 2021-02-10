@@ -6,5 +6,3 @@ BATMAN_PORTS=""
 ONE_PORT="YES"
 
 . /etc/network.mode
-
-ROUTERMAC=$(cat /sys/class/ieee80211/phy0/macaddress)

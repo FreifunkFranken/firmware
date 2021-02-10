@@ -4,5 +4,4 @@ CLIENT_PORTS="4 5 0t"
 WAN_PORTS="1 0t"
 BATMAN_PORTS="2 3 0t"
 
-ROUTERMAC=$(cat /sys/class/net/eth1/address)
 ETHMESHMAC=$(cat /sys/class/net/eth0/address)

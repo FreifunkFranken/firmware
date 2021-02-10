@@ -6,5 +6,4 @@ CLIENT_PORTS="6t 3 4"
 WAN_PORTS="6t 0"
 BATMAN_PORTS="6t 1 2"
 
-ROUTERMAC=$(cat /sys/class/net/eth0/address)
 ETHMESHMAC=$(macFlipLocalBit "$(cat /sys/class/net/eth0/address)")

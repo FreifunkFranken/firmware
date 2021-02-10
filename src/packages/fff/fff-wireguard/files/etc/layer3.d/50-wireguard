@@ -5,6 +5,7 @@
 #load board specific properties
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
 configure() {
 	# remove peers missing in gateway config

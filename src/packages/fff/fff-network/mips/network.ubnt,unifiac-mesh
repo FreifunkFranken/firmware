@@ -6,7 +6,3 @@ BATMAN_PORTS=""
 ONE_PORT="YES"
 
 . /etc/network.mode
-. /lib/functions.sh
-. /lib/functions/system.sh
-
-ROUTERMAC=$(mtd_get_mac_binary EEPROM 0x0)

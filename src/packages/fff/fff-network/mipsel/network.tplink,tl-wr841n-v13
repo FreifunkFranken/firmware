@@ -6,5 +6,4 @@ CLIENT_PORTS="6t 3 4"
 WAN_PORTS="6t 0"
 BATMAN_PORTS="6t 1 2"
 
-ROUTERMAC=$(cat /sys/class/net/eth0/address)
-ETHMESHMAC=$(macaddr_setbit_la "$ROUTERMAC")
+ETHMESHMAC=$(macaddr_setbit_la $(cat /sys/class/net/eth0/address))

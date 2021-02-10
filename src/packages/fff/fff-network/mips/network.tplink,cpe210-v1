@@ -10,7 +10,6 @@ BATMAN_PORTS="0t"
 # only possible, because wXmesh is created first and therefore gets the 'universally administered address'
 
 ETHMESHMAC=$(macFlipLocalBit "$(cat /sys/class/ieee80211/phy0/macaddress)")
-ROUTERMAC=$(cat /sys/class/net/eth0/address)
 
 . /etc/network.mode
 

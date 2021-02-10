@@ -1,6 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+. /lib/functions/system.sh
 . /lib/functions/fff/network
 
 setupPorts() {
@@ -22,6 +23,7 @@ setupPorts() {
 
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
 if [ -s /etc/network.config ] ; then
     . /etc/network.config

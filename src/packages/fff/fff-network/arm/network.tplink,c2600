@@ -3,5 +3,3 @@ SWITCHDEV=eth0
 CLIENT_PORTS="0t 1 2"
 WAN_PORTS="0t 5"
 BATMAN_PORTS="0t 3 4"
-
-ROUTERMAC=$(cat /sys/class/net/eth1/address)
