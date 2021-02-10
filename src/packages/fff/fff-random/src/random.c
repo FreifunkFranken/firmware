@@ -1,8 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Simple random tool, used to get a random value
  * 2017-07-02
  * Tim Niemeyer
- * GPLv2
  */
 #include <stdio.h>
 #include <stdlib.h>

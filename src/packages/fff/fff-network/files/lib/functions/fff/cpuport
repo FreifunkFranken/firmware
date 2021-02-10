@@ -1,5 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Copyright 2019 Adrian Schmutzler
-# License GPLv3
 
 get_cpu_port() {
 	local BOARD=$(uci get board.model.name)

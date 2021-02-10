@@ -1,6 +1,7 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
-# License; GPL v3
 
 MESH_INTERFACE=$(uci get nodewatcher.@network[0].mesh_interface)
 

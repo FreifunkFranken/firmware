@@ -1,5 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Copyright 2017 Tim Niemeyer
-# License GPLv3
 
 cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/shadow

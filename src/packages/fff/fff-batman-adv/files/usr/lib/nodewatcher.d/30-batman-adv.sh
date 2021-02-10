@@ -1,6 +1,7 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
-# License; GPL v3
 
 debug() {
 	(>&2 echo "nodewatcher: $1")

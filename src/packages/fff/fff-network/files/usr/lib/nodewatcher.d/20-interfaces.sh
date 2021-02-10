@@ -1,6 +1,7 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
-# License; GPL v3
 
 IFACEBLACKLIST=$(uci get nodewatcher.@network[0].iface_blacklist)
 IPWHITELIST=$(uci get nodewatcher.@network[0].ip_whitelist)

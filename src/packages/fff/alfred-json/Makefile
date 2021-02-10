@@ -3,7 +3,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=alfred-json
 PKG_VERSION:=0.3.1
 PKG_RELEASE:=1
-PKG_LICENSE:=GPL-2.0
+PKG_LICENSE:=GPL-2.0-only
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=e4cacfc791092389f63c36a435d3f1d069f8a13e
 PKG_SOURCE_URL:=https://github.com/FreifunkFranken/alfred-json.git

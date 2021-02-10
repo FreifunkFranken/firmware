@@ -1,6 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Copyright 2016 Tim Niemeyer
 # Copyright 2019 Adrian Schmutzler
-# License GPLv3
 
 . /lib/functions.sh
 . /lib/functions/fff/wireless

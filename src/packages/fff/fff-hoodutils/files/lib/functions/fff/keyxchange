@@ -1,5 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Copyright 2017 Adrian Schmutzler
-# License GPLv3
 
 . /usr/share/libubox/jshn.sh
 . /etc/firmware_release

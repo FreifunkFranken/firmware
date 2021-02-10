@@ -1,6 +1,7 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
-# License; GPL v3
 
 w2dump="$(iw dev w2ap survey dump 2> /dev/null | sed '/Survey/,/\[in use\]/d')"
 if [ -n "$w2dump" ] ; then

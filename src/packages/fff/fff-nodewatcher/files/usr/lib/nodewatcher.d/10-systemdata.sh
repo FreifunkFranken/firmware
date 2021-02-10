@@ -1,6 +1,7 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
-# License; GPL v3
 
 SCRIPT_STATUS_FILE=$(uci get nodewatcher.@script[0].status_text_file)
 SCRIPT_VERSION=$(cat /etc/nodewatcher_version)
