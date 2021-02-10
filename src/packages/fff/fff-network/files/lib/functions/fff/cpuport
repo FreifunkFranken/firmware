@@ -23,7 +23,8 @@ get_cpu_port() {
 		tplink,tl-wa850re-v1|\
 		tplink,tl-wa860re-v1|\
 		tplink,tl-wa901nd-v2|\
-		ubnt,bullet-m|\
+		ubnt,bullet-m-ar7240|\
+		ubnt,bullet-m-ar7241|\
 		ubnt,nanostation-loco-m|\
 		ubnt,nanostation-loco-m-xw|\
 		ubnt,nanostation-m|\
