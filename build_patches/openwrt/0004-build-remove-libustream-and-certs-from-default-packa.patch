@@ -1,0 +1,29 @@
+From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+Date: Wed, 10 Feb 2021 19:12:59 +0100
+Subject: build: remove libustream and certs from default packages
+
+This effectively reverts upstream commit e79df3516d3e ("build: add
+libustream and certs to default pkgs").
+
+The libustream-wolfssl library conflicts with the libustream-mbedtls
+we are selecting in fff-web-ui and is probably much bigger.
+
+Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+
+diff --git a/include/target.mk b/include/target.mk
+index 7526224972e18148fec8a12318ca7f90a382475f..338e97f836759fc454986210e5818ad390ba6efb 100644
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -12,12 +12,10 @@ DEVICE_TYPE?=router
+ # Default packages - the really basic set
+ DEFAULT_PACKAGES:=\
+ 	base-files \
+-	ca-bundle \
+ 	dropbear \
+ 	fstools \
+ 	libc \
+ 	libgcc \
+-	libustream-wolfssl \
+ 	logd \
+ 	mtd \
+ 	netifd \
