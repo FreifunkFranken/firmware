@@ -1,1 +1,0 @@
-ebtables -P MULTICAST_OUT RETURN
