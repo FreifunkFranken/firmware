@@ -13,7 +13,12 @@ configure() {
 		local ports="$(uci -q get gateway.$vlan.ports)"
 		local name="$SWITCHDEV"_$vlan
 
-		uci set network.$name='switch_vlan'
+		if [ "$DSA" = "1" ]; then
+			uci set network.$name='bridge-vlan'
+		else
+			uci set network.$name='switch_vlan'
+		fi
+
 		uci set network.$name.device="$(uci get network.$SWITCHDEV.name)"
 		uci set network.$name.vlan="$vlan"
 		uci set network.$name.ports="$(get_cpu_port) $ports"
@@ -34,6 +39,7 @@ configure() {
 
 	config_load network
 	config_foreach remove_vlan switch_vlan
+	config_foreach remove_vlan bridge-vlan
 
 	config_load gateway
 	config_foreach add_vlan vlan
