@@ -1,3 +1,5 @@
 # Limit ssh to 6 new connections per 60 seconds
 /usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --set --name dropbear
 /usr/sbin/ip6tables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 6 --rttl --name dropbear -j DROP
+/usr/sbin/iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --set --name dropbear
+/usr/sbin/iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 6 --rttl --name dropbear -j DROP
