@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-network
-PKG_RELEASE:=33
+PKG_RELEASE:=34
 
 include $(INCLUDE_DIR)/package.mk
 

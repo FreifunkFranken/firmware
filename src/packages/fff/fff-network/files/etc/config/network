@@ -9,8 +9,12 @@ config interface 'client'
         option auto '1'
 
 config interface 'wan'
-        option proto 'dhcp'
+        option proto 'none'
         option ifname 'eth2'
+
+config interface 'wan4'
+        option proto 'dhcp'
+        option ifname '@wan'
 
 config interface 'wan6'
         option proto 'dhcpv6'
