@@ -14,7 +14,7 @@ define Package/fff-wireguard
 		+kmod-wireguard \
 		+owipcalc \
 		+wireguard-tools \
-		+fff-babeld \
+		+fff-babel \
 		+fff-network
 endef
 

@@ -11,6 +11,7 @@ define Package/fff-babeld
 	TITLE:=Freifunk-Franken babeld configuration example
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+babeld
+	PROVIDES:=fff-babel-implementation
 endef
 
 define Package/fff-babeld/description

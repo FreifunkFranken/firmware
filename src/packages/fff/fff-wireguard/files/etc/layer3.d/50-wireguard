@@ -31,7 +31,7 @@ configure() {
 		fi
 	}
 
-	config_load babeld
+	config_load network
 	config_foreach remove_wgpeer interface
 
 
@@ -128,7 +128,7 @@ configure() {
 		babel_add_iifrules "$prefixname" || { echo "ERROR: Could not add iif-rules for wgpeer $name"; exit 1; }
 
 		# add babel interface
-		babel_add_interface "$prefixname" "$prefixname" 'wired' "$rxcost" || { echo "ERROR: Could not add babeld interface for wgpeer $name"; exit 1; }
+		babel_add_interface "$prefixname" "$prefixname" 'wired' "$rxcost" || { echo "ERROR: Could not add babel interface for wgpeer $name"; exit 1; }
 	}
 
 	config_load gateway
@@ -137,12 +137,16 @@ configure() {
 
 apply() {
 	uci commit network
-	uci commit babeld
 	uci commit gateway
+	babel_apply
+}
+
+reload() {
+	babel_reload
 }
 
 revert() {
 	uci revert network
-	uci revert babeld
 	uci revert gateway
+	babel_revert
 }

@@ -11,6 +11,7 @@ define Package/fff-layer3
 	TITLE:=Freifunk-Franken gateway configuration
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+fff-alfred-monitoring-proxy \
+	         +fff-babel \
 	         +fff-babeld \
 	         +fff-boardname \
 	         +fff-dhcp \
