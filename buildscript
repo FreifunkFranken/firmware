@@ -15,7 +15,7 @@ ROUTINGREV="10d3ffd8b30186b49538167bac1fa1bf9c88f860"
 GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"
 
 OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon"
-ROUTING_PKGS="kmod-batman-adv batctl alfred babeld"
+ROUTING_PKGS="kmod-batman-adv batctl alfred babeld bird2"
 GLUON_PKGS="simple-tc uradvd"
 
 FFF_VARIANTS="node layer3"

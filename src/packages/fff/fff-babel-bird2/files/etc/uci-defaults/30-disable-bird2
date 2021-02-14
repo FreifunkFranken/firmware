@@ -1,0 +1,4 @@
+/etc/init.d/bird disable
+rm -f /etc/init.d/bird
+
+exit 0

@@ -76,6 +76,8 @@ fi
 
 if [ -x /usr/sbin/babeld ]; then
 	SYSTEM_DATA="$SYSTEM_DATA<babel_version>$(/usr/sbin/babeld -V 2>&1)</babel_version>"
+elif [ -x /usr/sbin/bird ]; then
+	SYSTEM_DATA="$SYSTEM_DATA<babel_version>$(/usr/sbin/bird --version 2>&1 | sed "s/BIRD version /bird-/")</babel_version>"
 fi
 
 # example for /etc/openwrt_release:

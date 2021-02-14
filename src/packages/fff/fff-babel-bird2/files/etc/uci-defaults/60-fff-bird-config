@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only
+
+mv /etc/bird-fff.conf /etc/bird.conf
+
+exit 0

@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: GPL-3.0-only
+
+babel_add_interface() {
+	[ "$#" -ne "4" ] && return 1
+
+	local name="$1"
+	local interface="$2"
+	local type="$3"
+	local rxcost="$4"
+
+	mkdir -p /tmp/bird/fff/babelpeers
+	echo "interface \"$interface\" { type $type; rxcost $rxcost; };" > /tmp/bird/fff/babelpeers/$name.conf
+
+	return 0
+}
+
+babel_delete_interface() {
+	[ "$#" -ne "1" ] && return 1
+
+	local name="$1"
+
+	# Removing peers from /etc is not necessary, as all peers are generated into /tmp on every configuration run,
+	# which completely overwrites existing peers in /etc in the apply step.
+	rm -f /tmp/bird/fff/babelpeers/$name.conf
+
+	return 0
+}
+
+babel_add_redistribute_filter() {
+	return 0
+}
+
+babel_add_private_prefix_filter() {
+	[ "$#" -ne "1" ] && return 1
+
+	local prefix="$1"
+	prefix=$(owipcalc "$prefix" network prefix "$prefix")
+
+	mkdir -p /tmp/bird/fff
+	echo "if net ~ $prefix then reject;" > /tmp/bird/fff/nat-filter.conf
+
+	return 0
+}
+
+babel_remove_custom_redistribute_filters() {
+	mkdir -p /tmp/bird/fff
+	> /tmp/bird/fff/nat-filter.conf
+
+	return 0
+}
+
+babel_apply() {
+	# error output hidden because apply might be executed without a preceding configure step.
+	if [ -d /tmp/bird/fff ]; then
+		rm -rf /etc/bird/fff
+		mv /tmp/bird/fff /etc/bird/fff
+	fi
+
+	return 0
+}
+
+babel_reload() {
+	/etc/init.d/fff-bird reload
+}
+
+babel_revert() {
+	rm -r /tmp/bird/fff
+}
