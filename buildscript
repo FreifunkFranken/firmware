@@ -13,10 +13,10 @@
 
 builddir=./build
 
-# OpenWrt: openwrt-19.07.5
-OPENWRTREV="v19.07.6"
-PACKAGEREV="ce5a4eaea218111350e05ea86de8171344a70ce4"
-ROUTINGREV="02b4dbfcb7b8f8b566940847d22d5a6f229d2e66"
+# OpenWrt: package hashes correspond to core repo version
+OPENWRTREV="v19.07.7"
+PACKAGEREV="90af10d01579425369bd474051b6d3ddaf32a7e3"
+ROUTINGREV="e26b4745209655976b7d124465b1dc53ade632f9"
 
 # Gluon packages: master from 2020-02-04
 GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"
