@@ -1,10 +1,20 @@
 #!/bin/bash
 
+usage() {
+	cat <<- EOF
+	usage: tools/dep-tree [variant] [variant]
+	If no parameter is given the selected-variant is used.
+	Possible variants: node layer3
+	To display the tree pipe it to dot:
+	tools/dep-tree | dot -Tx11
+	EOF
+}
+
 builddir=./build
-[ -f selected_bsp ] && . selected_bsp
-# variant=$(cat selected_variant)
+variant=$(cat selected_variant)
+[ $# = 0 ] || variant="$@"
 feeds=$builddir/feeds
-feed=${1:-fff}
+feed=fff
 
 tmpfile=$(mktemp)
 
@@ -12,7 +22,7 @@ write_deps() {
 	local deps
 	local dep
 	local pkg=$1
-    deps=$(awk -v RS="@@" "/Package: $pkg\\n/ { print }" "${feeds}/${feed}".index | grep ^Depends: | sed 's/Depends: //' | tr -d +)
+	deps=$(awk -v RS="@@" "/Package: $pkg\\n/ { print }" "${feeds}/${feed}".index | grep ^Depends: | sed 's/Depends: //' | tr -d +)
 	for dep in $deps; do
 		echo "\"$pkg\" -> \"$dep\"" >> "$tmpfile"
 	done
@@ -20,9 +30,10 @@ write_deps() {
 		grep "Package:" "${feeds}/${feed}.index" | grep " $dep$" &> /dev/null && write_deps "$dep"
 	done
 }
-# find default packages
-defaults=$(awk -v RS="@@" '/Default: y/ { print }' "${feeds}/${feed}.index" | grep Package: | cut -f2 -d" ")
 
+for v in $variant; do
+	defaults="$defaults fff-variant-$v"
+done
 # start tree
 for package in $defaults; do
 	write_deps "$package"
@@ -32,6 +43,7 @@ done
 echo "digraph G {"
 sort "$tmpfile" | uniq | grep -v libc | grep -v libssp | grep -v libpthread | grep -v librt
 echo "}"
+[ -s $tmpfile ] || usage
 rm "$tmpfile"
 
 
