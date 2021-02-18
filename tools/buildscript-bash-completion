@@ -11,7 +11,7 @@ selectbsp)
 	COMPREPLY=($(compgen -W "$(find bsp -name '*.bsp')" "${COMP_WORDS[2]}"))
 	;;
 selectvariant)
-	COMPREPLY=($(compgen -W "$("${COMP_WORDS[0]}" "${COMP_WORDS[1]}" | sed '0,/available variants:/d')" "${COMP_WORDS[2]}"))
+	COMPREPLY=($(compgen -W "node layer3" "${COMP_WORDS[2]}"))
 	;;
 build)
 	COMPREPLY=($(compgen -W "fast debug" "${COMP_WORDS[2]}"))
