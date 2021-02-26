@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-layer3-snat
-PKG_RELEASE:=1
+PKG_RELEASE:=$(COMMITCOUNT)
 
 include $(INCLUDE_DIR)/package.mk
 

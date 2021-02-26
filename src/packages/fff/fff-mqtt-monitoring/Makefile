@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-mqtt-monitoring
-PKG_RELEASE:=1
+PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-mqtt-monitoring
 

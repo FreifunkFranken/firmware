@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web-ui
-PKG_RELEASE:=18
+PKG_RELEASE:=$(shell echo -n $$(( $(COMMITCOUNT) + 20 )))
 
 include $(INCLUDE_DIR)/package.mk
 

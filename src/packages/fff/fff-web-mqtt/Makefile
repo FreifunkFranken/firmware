@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-web-mqtt
-PKG_RELEASE:=1
+PKG_RELEASE:=$(COMMITCOUNT)
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
