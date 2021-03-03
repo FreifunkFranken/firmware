@@ -24,6 +24,11 @@ config filter
 config filter
 	option type 'redistribute'
 	option local 'true'
+	option if 'lo'
+
+config filter
+	option type 'redistribute'
+	option local 'true'
 	option action 'deny'
 
 config filter

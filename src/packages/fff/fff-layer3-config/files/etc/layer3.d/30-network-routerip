@@ -1,0 +1,31 @@
+configure() {
+	local router_ip
+	local router_ip6
+
+	# clean old addresses
+	uci -q del network.loopback.ipaddr
+	uci -q del network.loopback.ip6addr
+
+	# remove netmask entry that ships by default
+	uci -q del network.loopback.netmask
+
+	# add router_ip
+	router_ip=$(uci -q get gateway.meta.router_ip)
+	for ip in $router_ip; do
+		uci -q add_list network.loopback.ipaddr="$ip"
+	done
+
+	# add router_ip6
+	router_ip6=$(uci -q get gateway.meta.router_ip6)
+	for ip in $router_ip6; do
+		uci -q add_list network.loopback.ip6addr="$ip"
+	done
+}
+
+apply() {
+	uci commit network
+}
+
+revert() {
+	uci revert network
+}

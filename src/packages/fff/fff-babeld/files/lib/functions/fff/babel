@@ -36,11 +36,14 @@ babel_add_peeraddr() {
 
 	if peer_ip=$(uci -q get gateway.@gateway[0].peer_ip); then
 		uci add_list "$option"="$peer_ip"
+	elif router_ip=$(uci -q get gateway.meta.router_ip); then
+		# use router_ip if no peer_ip is set
+		uci add_list "$option"="$router_ip"
 	elif ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
-		# use ipaddr (without subnet) if no peer_ip set
+		# use client interface address (without subnet) if no router_ip is set
 		uci add_list "$option"=$(echo $ipaddr | cut -d / -f1)
 	else
-		echo "WARNING: Neither peer_ip nor ipaddr set! IPv4 routing is not possible."
+		echo "WARNING: No peer_ip, router_ip or client interface ipaddr set! IPv4 routing is not possible."
 		return 1
 	fi
 
