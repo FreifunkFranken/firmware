@@ -2,8 +2,5 @@
 ebtables -F
 ebtables -X
 
-iptables -F
-iptables -X
-
-ip6tables -F
-ip6tables -X
+iptables-save  | awk '/^[*]/ { print $1 } /^:[A-Z]+ [^-]/ { print $1 " ACCEPT" ; }  /COMMIT/ { print $0; }' | iptables-restore
+ip6tables-save | awk '/^[*]/ { print $1 } /^:[A-Z]+ [^-]/ { print $1 " ACCEPT" ; }  /COMMIT/ { print $0; }' | ip6tables-restore
