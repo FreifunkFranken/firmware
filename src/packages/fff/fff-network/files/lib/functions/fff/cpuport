@@ -23,6 +23,7 @@ get_cpu_port() {
 		tplink,tl-wa901nd-v2|\
 		ubnt,bullet-m-ar7240|\
 		ubnt,bullet-m-ar7241|\
+		ubnt,edgerouter-4|\
 		ubnt,edgerouter-x|\
 		ubnt,edgerouter-x-sfp|\
 		ubnt,nanostation-loco-m|\

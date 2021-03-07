@@ -1,0 +1,5 @@
+chipset=octeon
+
+images=(
+        "openwrt-${chipset}-ubnt_edgerouter-4-*"
+       )

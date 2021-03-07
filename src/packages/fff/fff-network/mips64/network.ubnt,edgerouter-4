@@ -1,0 +1,10 @@
+. /lib/functions/fff/network
+
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="lan2"
+WAN_PORTS="lan0"
+BATMAN_PORTS="lan1"
+DSA=1
+
+ROUTERMAC=$(cat /sys/class/net/lan3/address)
