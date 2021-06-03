@@ -62,7 +62,7 @@ checkout_git(){
             # Select desired commit and remove local changes (-f)
             if ! $MYGIT checkout -f "$COMMITID" ; then
                 echo "commitid not found trying to fetch new commits"
-                $MYGIT pull && $MYGIT checkout "$COMMITID"
+                $MYGIT fetch --all && $MYGIT checkout "$COMMITID"
             fi
         else
             echo "wrong remote or not an git repo at all -> deleting whole directory"
