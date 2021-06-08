@@ -17,13 +17,13 @@ GLUON_PKGS="simple-tc uradvd"
 
 FFF_VARIANTS="node layer3"
 
-OPENWRTURL="https://git.openwrt.org/openwrt/openwrt.git"
+OPENWRTURL="https://git.freifunk-franken.de/mirror/openwrt.git"
 
 ## Feed definition [0]: name aka directory, [1]: url, [2]: revision
 
 #official openwrt packages
 OPENWRT=(openwrt
-         https://git.openwrt.org/feed/packages.git
+         https://git.freifunk-franken.de/mirror/openwrt-packages.git
          $PACKAGEREV)
 
 #gluon packages
@@ -33,7 +33,7 @@ GLUON=(gluon
 
 #official openwrt routing packages
 ROUTING=(routing
-         https://git.openwrt.org/feed/routing.git
+         https://git.freifunk-franken.de/mirror/openwrt-routing.git
          $ROUTINGREV)
 
 FFF=(fff)
