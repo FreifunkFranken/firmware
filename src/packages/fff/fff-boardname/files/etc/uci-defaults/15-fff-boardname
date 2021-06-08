@@ -1,5 +1,9 @@
 BOARD=$(cat /var/sysinfo/board_name)
 
+if uname -a | grep x86_64 > /dev/null; then
+	BOARD="x86_64"
+fi
+
 uci set board.model.name=$BOARD
 uci commit board
 

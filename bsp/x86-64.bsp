@@ -1,0 +1,4 @@
+chipset=x86
+subtarget=64
+images=("openwrt-${chipset}-${subtarget}-generic-squashfs-combined-*"
+        )

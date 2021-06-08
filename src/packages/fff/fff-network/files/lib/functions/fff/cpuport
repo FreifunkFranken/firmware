@@ -24,6 +24,7 @@ get_cpu_port() {
 		ubnt,nanostation-loco-m-xw|\
 		ubnt,unifi|\
 		ubnt,unifiac-mesh|\
+		x86_64|\
 		xiaomi,mi-router-4a-gigabit)
 			CPUPORT=""
 			;;
