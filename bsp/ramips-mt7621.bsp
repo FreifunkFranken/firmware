@@ -2,7 +2,7 @@ chipset=ramips
 subtarget=mt7621
 
 images=(
-#        "openwrt-ramips-mt7621-netgear_r6220-squashfs-*"
-#        "openwrt-ramips-mt7621-ubnt_edgerouter-x-squashfs-*"
-#        "openwrt-ramips-mt7621-ubnt_edgerouter-x-sfp-squashfs-*"
+        "openwrt-ramips-mt7621-netgear_r6220-squashfs-*"
+        "openwrt-ramips-mt7621-ubnt_edgerouter-x-squashfs-*"
+        "openwrt-ramips-mt7621-ubnt_edgerouter-x-sfp-squashfs-*"
        )

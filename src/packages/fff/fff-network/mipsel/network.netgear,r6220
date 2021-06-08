@@ -1,9 +1,10 @@
 . /lib/functions/fff/network
 
-WANDEV=eth0
-SWITCHDEV=eth0
-CLIENT_PORTS="6t 0 1"
-WAN_PORTS="6t 4"
-BATMAN_PORTS="6t 2 3"
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="lan1 lan2"
+WAN_PORTS="wan"
+BATMAN_PORTS="lan3 lan4"
+DSA=1
 
 ETHMESHMAC=$(macFlipLocalBit "$(cat /sys/class/net/eth0/address)")
