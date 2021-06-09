@@ -1,17 +1,5 @@
-. /lib/functions/fff/network
-
-WANDEV=eth0
+WANDEV=eth1
 SWITCHDEV=eth0
-CLIENT_PORTS="0t"
-WAN_PORTS="0t"
-BATMAN_PORTS="0t"
-
-# use mac address from phy0 with 'locally administered' bit set to '1'
-# only possible, because wXmesh is created first and therefore gets the 'universally administered address'
-
-ETHMESHMAC=$(macFlipLocalBit "$(cat /sys/class/ieee80211/phy0/macaddress)")
+TWO_PORT=YES
 
 . /etc/network.mode
-
-LAN0PORT=5
-LAN1PORT=4
