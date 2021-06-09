@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-wireguard
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -11,8 +11,9 @@ define Package/fff-wireguard
 	TITLE:=Freifunk-Franken wireguard
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:= \
+		+kmod-wireguard \
 		+owipcalc \
-		+wireguard \
+		+wireguard-tools \
 		+fff-babeld \
 		+fff-network
 endef
