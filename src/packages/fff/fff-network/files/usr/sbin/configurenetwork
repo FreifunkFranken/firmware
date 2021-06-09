@@ -126,7 +126,7 @@ else
         uci set network.${SWITCHDEV}_1.vlan=1
         uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
 
-        if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
+        if [ "$WANDEV" = "$SWITCHDEV" ] || [ -n "$WAN_PORTS" ]; then
             uci set network.${SWITCHDEV}_2=switch_vlan
             uci set network.${SWITCHDEV}_2.device=$SWITCHHW
             uci set network.${SWITCHDEV}_2.vlan=2
