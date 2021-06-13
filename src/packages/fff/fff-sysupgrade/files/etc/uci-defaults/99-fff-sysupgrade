@@ -4,8 +4,9 @@
 
 cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/shadow
-/etc/dropbear/dropbear_dss_host_key
 /etc/dropbear/dropbear_rsa_host_key
+/etc/dropbear/dropbear_ecdsa_host_key
+/etc/dropbear/dropbear_ed25519_host_key
 /etc/dropbear/authorized_keys
 /etc/network.config
 /etc/config/fff
