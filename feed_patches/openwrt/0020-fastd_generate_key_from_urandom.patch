@@ -1,16 +1,10 @@
-From 8e7de199282ba76a94a1b4370ac7712325b81fc2 Mon Sep 17 00:00:00 2001
 From: Robert Langhammer <rlanghammer@web.de>
 Date: Mon, 13 Nov 2017 21:04:55 +0100
-Subject: [PATCH] fastd_generate_key_from_urandom
-
----
- net/fastd/patches/001-generate_key_from_urandom.patch | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
- create mode 100644 net/fastd/patches/001-generate_key_from_urandom.patch
+Subject: fastd_generate_key_from_urandom
 
 diff --git a/net/fastd/patches/001-generate_key_from_urandom.patch b/net/fastd/patches/001-generate_key_from_urandom.patch
 new file mode 100644
-index 000000000..e06739a1e
+index 0000000000000000000000000000000000000000..e06739a1e715ab310d9b30ae704f615572d6b4b9
 --- /dev/null
 +++ b/net/fastd/patches/001-generate_key_from_urandom.patch
 @@ -0,0 +1,14 @@
@@ -28,6 +22,3 @@ index 000000000..e06739a1e
 + 	ecc_25519_gf_sanitize_secret(&secret_key, &secret_key);
 +
 + 	ecc_25519_work_t work;
--- 
-2.25.1
-

@@ -10,10 +10,10 @@ Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 Signed-off-by: Fabian Bläse <fabian@blaese.de>
 
 diff --git a/babeld/Makefile b/babeld/Makefile
-index 0b611286092464528135c15e100b3d6928f5a677..b0ed749e98714bf146b4e4be34d71484447b8ecb 100644
+index 056ce43d5ddb461ba94e51a5b18ffac0ef971468..16cc86fe5c2ae8731b0d7d2f64517e9b92d029f9 100644
 --- a/babeld/Makefile
 +++ b/babeld/Makefile
-@@ -49,6 +49,11 @@ MAKE_FLAGS+= \
+@@ -50,6 +50,11 @@ MAKE_FLAGS+= \
  	LDLIBS="" \
  	LDLIBS+="-lubus -lubox"
  
