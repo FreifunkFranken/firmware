@@ -12,11 +12,6 @@ if [ -s /etc/network.config ] ; then
     . /etc/network.config
 else
     # Write network.config
-    echo "CLIENT_PORTS='$CLIENT_PORTS'" > /etc/network.config
-    echo "BATMAN_PORTS='$BATMAN_PORTS'" >> /etc/network.config
-    if [ -n "$WAN_PORTS" ] ; then
-        echo "WAN_PORTS='$WAN_PORTS'" >> /etc/network.config
-    fi
     if [ "$ONE_PORT" = "YES" ] || [ -n "$ETHPORT" ] ; then
         echo "ETHMODE='$ETHMODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
     fi
@@ -111,7 +106,7 @@ elif [ "$TWO_PORT" = "YES" ]; then
         uci commit network
     fi
 else
-    if ! uci -q get network.$SWITCHDEV > /dev/null || [ "$FORCEPARSE" = '1' ] ; then
+    if ! uci -q get network.$SWITCHDEV > /dev/null ; then
 
         if [ "$DSA" = "1" ]; then
             uci set network.$SWITCHDEV=device

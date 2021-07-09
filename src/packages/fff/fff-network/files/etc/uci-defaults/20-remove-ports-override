@@ -1,0 +1,2 @@
+# Remove port configuration residues from earlier firmware versions
+sed -i -e '/^WAN_PORTS/d' -e '/^BATMAN_PORTS/d' -e '/^CLIENT_PORTS/d' /etc/network.config
