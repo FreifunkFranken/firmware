@@ -31,7 +31,8 @@ get_cpu_port() {
 		ubnt,nanostation-m|\
 		ubnt,picostation-m|\
 		ubnt,unifi|\
-		ubnt,unifiac-mesh)
+		ubnt,unifiac-mesh|\
+		xiaomi,mi-router-4a-gigabit)
 			CPUPORT=""
 			;;
 		tplink,tl-wr1043nd-v1)
