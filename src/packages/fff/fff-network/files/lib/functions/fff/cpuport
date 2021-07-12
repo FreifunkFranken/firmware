@@ -11,7 +11,8 @@ get_cpu_port() {
 		tplink,archer-c50-v4|\
 		tplink,tl-wr1043nd-v2|\
 		tplink,tl-wr1043nd-v3|\
-		tplink,tl-wr841n-v13)
+		tplink,tl-wr841n-v13|\
+		xiaomi,mi-router-4a-100m)
 			CPUPORT="6t"
 			;;
 		netgear,r6220|\

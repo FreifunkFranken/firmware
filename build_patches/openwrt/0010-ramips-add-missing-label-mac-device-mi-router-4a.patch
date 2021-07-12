@@ -1,0 +1,25 @@
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Mon, 19 Jul 2021 21:54:29 +0200
+Subject: [PATCH] ramips: add missing label-mac-device for Xiaomi Mi Router 4A
+ (100M)
+
+As both the Mi Router 4A (100M) and the Mi Router 4C use the same
+label-mac-device, the alias can be moved to the shared dtsi.
+
+Signed-off-by: Fabian Bläse <fabian@blaese.de>
+---
+ target/linux/ramips/dts/mt7628an_xiaomi_mi-router-4.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/target/linux/ramips/dts/mt7628an_xiaomi_mi-router-4.dtsi b/target/linux/ramips/dts/mt7628an_xiaomi_mi-router-4.dtsi
+index 0f5897f5c593..d3f5e33be732 100644
+--- a/target/linux/ramips/dts/mt7628an_xiaomi_mi-router-4.dtsi
++++ b/target/linux/ramips/dts/mt7628an_xiaomi_mi-router-4.dtsi
+@@ -11,6 +11,7 @@
+ 		led-failsafe = &led_power_yellow;
+ 		led-running = &led_power_blue;
+ 		led-upgrade = &led_power_yellow;
++		label-mac-device = &ethernet;
+ 	};
+ 
+ 	chosen {

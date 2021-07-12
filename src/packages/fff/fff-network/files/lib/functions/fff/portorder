@@ -42,6 +42,9 @@ get_port_order() {
 		tplink,tl-wr841-v8)
 			PORTORDER="2 3 4 1"
 			;;
+		xiaomi,mi-router-4a-100m)
+			PORTORDER="0 2 4"
+			;;
 	esac
 
 	echo "$PORTORDER"
