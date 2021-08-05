@@ -242,8 +242,6 @@ else
     addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
     ip -6 addr add $addr dev br-client
 
-    uci -q del network.globals
-    uci -q set network.globals=globals
     uci -q set network.globals.ula_prefix=$prefix
     uci -q add_list network.client.ip6addr=$addr
     uci -q set network.client.proto=static
