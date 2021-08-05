@@ -1,7 +1,6 @@
 config general
 	option export_table '10'
 	option import_table '10'
-	option first_table_number '100'
 	option local_port '33123'
 
 config interface
