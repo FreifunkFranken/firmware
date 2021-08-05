@@ -73,6 +73,7 @@ keep_changes() {
 test_changes() {
 	echo $$ > /tmp/configure-layer3-pid
 	trap keep_changes SIGINT SIGTERM
+	trap : SIGHUP
 
 	reload_services
 
