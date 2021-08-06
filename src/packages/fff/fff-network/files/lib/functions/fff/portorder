@@ -7,6 +7,9 @@ get_port_order() {
 	local PORTORDER
 
 	case "$BOARD" in
+		avm,fritzbox-4040)
+			PORTORDER="5 1 2 3 4"
+			;;
 		glinet,gl-ar150)
 			PORTORDER="1"
 			;;

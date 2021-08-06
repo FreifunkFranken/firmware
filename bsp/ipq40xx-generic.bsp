@@ -1,0 +1,6 @@
+chipset=ipq40xx
+subtarget=generic
+
+images=(
+        "openwrt-${chipset}-${subtarget}-avm_fritzbox-4040-squashfs-*"
+       )
