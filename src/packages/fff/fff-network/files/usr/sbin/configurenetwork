@@ -3,9 +3,15 @@
 
 . /lib/functions/system.sh
 . /lib/functions/fff/network
+. /lib/functions/fff/cpuport
 
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
+
+# Add cpuport to switch configuration
+CLIENT_PORTS="$(get_cpu_port) $CLIENT_PORTS"
+BATMAN_PORTS="$(get_cpu_port) $BATMAN_PORTS"
+[ -n "$WAN_PORTS" ] && WAN_PORTS="$(get_cpu_port) $WAN_PORTS"
 
 if [ -s /etc/network.config ] ; then
     . /etc/network.config

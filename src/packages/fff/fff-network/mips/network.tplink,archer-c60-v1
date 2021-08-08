@@ -1,6 +1,6 @@
 WANDEV=eth1
 SWITCHDEV=eth0
-CLIENT_PORTS="1 2 0t"
-BATMAN_PORTS="3 4 0t"
+CLIENT_PORTS="1 2"
+BATMAN_PORTS="3 4"
 
 ETHMESHMAC=$(cat /sys/class/net/eth1/address)

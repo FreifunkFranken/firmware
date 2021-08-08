@@ -1,8 +1,8 @@
 WANDEV=eth0
 SWITCHDEV=eth0
-CLIENT_PORTS="1 2 0t"
-WAN_PORTS="5 0t"
-BATMAN_PORTS="3 4 0t"
+CLIENT_PORTS="1 2"
+WAN_PORTS="5"
+BATMAN_PORTS="3 4"
 
 . /lib/functions/system.sh
 . /lib/functions.sh
