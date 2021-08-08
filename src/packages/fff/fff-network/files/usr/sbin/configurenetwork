@@ -6,7 +6,6 @@
 
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
-[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
 if [ -s /etc/network.config ] ; then
     . /etc/network.config
@@ -105,97 +104,6 @@ elif [ "$TWO_PORT" = "YES" ]; then
 
         uci commit network
     fi
-else
-    if ! uci -q get network.$SWITCHDEV > /dev/null ; then
-
-        if [ "$DSA" = "1" ]; then
-            uci set network.$SWITCHDEV=device
-            uci set network.$SWITCHDEV.name=$SWITCHDEV
-            uci set network.$SWITCHDEV.type=bridge
-            # temporary workaround for netifd bug present in OpenWrt 21.02.0 (FS#4104)
-            uci set network.$SWITCHDEV.bridge_empty='1'
-
-            uci set network.${SWITCHDEV}_1=bridge-vlan
-            uci set network.${SWITCHDEV}_1.device=$SWITCHDEV
-            uci set network.${SWITCHDEV}_1.vlan=1
-            uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
-
-            if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
-                uci set network.${SWITCHDEV}_2=bridge-vlan
-                uci set network.${SWITCHDEV}_2.device=$SWITCHDEV
-                uci set network.${SWITCHDEV}_2.vlan=2
-                uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
-            fi
-
-            uci set network.${SWITCHDEV}_3=bridge-vlan
-            uci set network.${SWITCHDEV}_3.device=$SWITCHDEV
-            uci set network.${SWITCHDEV}_3.vlan=3
-            uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
-        else
-            SWITCHHW=$(swconfig list | awk '{ print $4 }')
-
-            uci set network.$SWITCHDEV=switch
-            uci set network.$SWITCHDEV.name=$SWITCHHW
-            uci set network.$SWITCHDEV.enable=1
-            uci set network.$SWITCHDEV.reset=1
-            uci set network.$SWITCHDEV.enable_vlan=1
-
-            uci set network.${SWITCHDEV}_1=switch_vlan
-            uci set network.${SWITCHDEV}_1.device=$SWITCHHW
-            uci set network.${SWITCHDEV}_1.vlan=1
-            uci set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
-
-            if [ "$WANDEV" = "$SWITCHDEV" ] || [ -n "$WAN_PORTS" ]; then
-                uci set network.${SWITCHDEV}_2=switch_vlan
-                uci set network.${SWITCHDEV}_2.device=$SWITCHHW
-                uci set network.${SWITCHDEV}_2.vlan=2
-                uci set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
-            fi
-
-            uci set network.${SWITCHDEV}_3=switch_vlan
-            uci set network.${SWITCHDEV}_3.device=$SWITCHHW
-            uci set network.${SWITCHDEV}_3.vlan=3
-            uci set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
-        fi
-
-        uci set network.client.ifname="$SWITCHDEV.1 bat0"
-
-        uci set network.ethmesh.ifname="$SWITCHDEV.3"
-
-        if [ "$WANDEV" = "$SWITCHDEV" ]; then
-            uci set network.wan.ifname=$WANDEV.2
-        else
-            uci set network.wan.ifname=$WANDEV
-        fi
-
-        uci commit network
-    fi
-fi
-
-if [ -n "$ETHMESHMAC" ]; then
-    if uci get network.ethmesh.macaddr
-    then
-        echo "MAC for ethmesh is set already"
-    else
-        echo "Fixing MAC on $SWITCHDEV.3 (ethmesh)"
-        sleep 10
-
-        uci set network.ethmesh.macaddr=$ETHMESHMAC
-        uci commit network
-    fi
-fi
-
-if [ -n "$ROUTERMAC" ]; then
-    if uci get network.client.macaddr
-    then
-        echo "MAC for client is set already"
-    else
-        echo "Fixing MAC on br-client"
-        sleep 10
-
-        uci set network.client.macaddr=$ROUTERMAC
-        uci commit network
-    fi
 fi
 
 if [ -n "$ETH0MAC" ]; then
@@ -204,33 +112,6 @@ if [ -n "$ETH0MAC" ]; then
         NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
         uci set network.$ETH0DEV.macaddr=$NEW_MACADDR
         uci commit network
-fi
-
-if uci -q get "network.client.ip6addr" > /dev/null
-then
-    echo "IPv6 for client is set already"
-else
-    echo "Setting IPv6 addresses"
-    # Some time needed :(
-    sleep 5
-
-    prefix="fdff::/64"
-    # Set $prefix::MAC as IP
-    addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
-
-    uci -q set network.globals.ula_prefix=$prefix
-    uci -q add_list network.client.ip6addr=$addr
-    uci -q set network.client.proto=static
-
-    # Set $prefix::1 as IP
-    addr=$(owipcalc "$prefix" add ::1)
-    uci -q add_list network.client.ip6addr=$addr
-
-    # Set $prefix::link-local as IP
-    addr=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
-    uci -q add_list network.client.ip6addr=$addr
-
-    uci -q commit network
 fi
 
 reload_config
