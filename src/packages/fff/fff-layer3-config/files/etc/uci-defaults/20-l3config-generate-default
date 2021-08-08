@@ -1,0 +1,80 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+# skip if gateway configuration already exists
+if [ -s /etc/config/gateway ]; then
+	exit 0
+fi
+
+touch /etc/config/gateway
+
+essid='noservice.freifunk'
+chan2ghz='1'
+chan5ghz='36'
+
+uci batch <<-EOF
+	set gateway.meta='gateway'
+	set gateway.meta.config_version='4'
+
+	add gateway client
+	set gateway.@client[0].chan2ghz='$chan2ghz'
+	set gateway.@client[0].chan5ghz='$chan5ghz'
+
+	add gateway dns
+	add_list gateway.@dns[0].server='fd43:5602:29bd:ffff:1:1:1:1'
+EOF
+
+if [ "$ONE_PORT" = "YES" ]; then
+	uci batch <<-EOF
+		set gateway.@client[0].iface='$SWITCHDEV'
+	EOF
+elif [ "$TWO_PORT" = "YES" ]; then
+	uci batch <<-EOF
+		set gateway.@client[0].iface='$SWITCHDEV'
+		add gateway wan
+		set gateway.@wan[0].iface='$WANDEV'
+	EOF
+elif [ "$DSA" = "1" ]; then
+	uci batch <<-EOF
+		set gateway.@client[0].vlan='1'
+		add gateway wan
+		set gateway.@wan[0].vlan='2'
+
+		set gateway.1=vlan
+		set gateway.1.comment='client'
+		set gateway.1.ports='$BATMAN_PORTS:* $CLIENT_PORTS:*'
+
+		set gateway.2=vlan
+		set gateway.2.comment='wan'
+		set gateway.2.ports='$WAN_PORTS:*'
+	EOF
+else
+	uci batch <<-EOF
+		set gateway.@client[0].vlan='1'
+		add gateway wan
+		set gateway.@wan[0].vlan='2'
+
+		set gateway.1=vlan
+		set gateway.1.comment='client'
+		set gateway.1.ports='$BATMAN_PORTS $CLIENT_PORTS'
+
+		set gateway.2=vlan
+		set gateway.2.comment='wan'
+		set gateway.2.ports='$WAN_PORTS'
+	EOF
+fi
+
+# separated from the section above for
+# a more pleasing option order in the configuration file
+uci batch <<-EOF
+	set gateway.@client[0].essid='$essid'
+	add_list gateway.@client[0].ip6addr="fdff::1/64"
+EOF
+
+uci commit gateway
+
+exit 0
