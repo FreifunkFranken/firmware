@@ -7,7 +7,7 @@ configure() {
 	fi
 
 	# check version of configuration
-	local expected_version=1
+	local expected_version=2
 	local config_version=$(uci -q get gateway.meta.config_version)
 
 	if ! [ -n "$config_version" ]; then
