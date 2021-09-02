@@ -1,0 +1,79 @@
+## this script migrates configs from version 1 to 2.
+##
+## with version 2 the switchport names of some devices changed
+## due to the switch to DSA
+
+
+BOARD="$(uci get board.model.name)"
+
+# only migrate appropriate config versions
+[ "$(uci -q get gateway.meta.config_version)" = "1" ] || exit 1
+
+translate_ports() {
+	local vlan="$1"
+	local oldports="$(uci -q get gateway.$vlan.ports)"
+	local newports
+
+	local name
+	local tag
+
+	for port in $oldports; do
+		# generate new tagged/untagged syntax
+		if [ -z "${port##*t}" ]; then
+			# port is tagged
+			tag=":t"
+		else
+			# port is untagged
+			tag=":*"
+		fi
+
+		# generate new name
+		case "$BOARD" in
+			ubnt,edgerouter-x|\
+			ubnt,edgerouter-x-sfp)
+				case "${port%%t}" in
+					0) name="eth0" ;;
+					1) name="eth1" ;;
+					2) name="eth2" ;;
+					3) name="eth3" ;;
+					4) name="eth4" ;;
+					5) name="eth5" ;;
+					*) name="" ;;
+				esac
+				;;
+			netgear,r6220)
+				case "${port%%t}" in
+					0) name="lan1" ;;
+					1) name="lan2" ;;
+					2) name="lan3" ;;
+					3) name="lan4" ;;
+					4) name="wan" ;;
+					*) name="" ;;
+				esac
+				;;
+		esac
+
+		# catch empty name (invalid entry or old cpuport)
+		[ -z "$name" ] && continue
+
+		# assemble new port name
+		newports="$newports ${name}${tag}"
+	done
+
+	# cleanup unnecessary spaces
+	newports=$(echo "$newports" | xargs)
+
+	uci set gateway.$vlan.ports="$newports"
+}
+
+case "$BOARD" in
+	ubnt,edgerouter-x|\
+	ubnt,edgerouter-x-sfp|\
+	netgear,r6220)
+		config_load gateway
+		config_foreach translate_ports vlan
+		;;
+esac
+
+uci set gateway.meta.config_version='2'
+uci commit gateway
