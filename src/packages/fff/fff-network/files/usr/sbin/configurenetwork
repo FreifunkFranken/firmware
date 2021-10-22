@@ -117,6 +117,8 @@ else
             uci set network.$SWITCHDEV=device
             uci set network.$SWITCHDEV.name=$SWITCHDEV
             uci set network.$SWITCHDEV.type=bridge
+            # temporary workaround for netifd bug present in OpenWrt 21.02.0 (FS#4104)
+            uci set network.$SWITCHDEV.bridge_empty='1'
 
             uci set network.${SWITCHDEV}_1=bridge-vlan
             uci set network.${SWITCHDEV}_1.device=$SWITCHDEV
