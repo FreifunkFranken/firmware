@@ -1,0 +1,19 @@
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 23 Oct 2021 23:34:07 +0200
+Subject: [PATCH] mt7621: retain old compat_version
+
+diff --git a/target/linux/ramips/image/mt7621.mk b/target/linux/ramips/image/mt7621.mk
+index a3bc14d59d..99887e8192 100644
+--- a/target/linux/ramips/image/mt7621.mk
++++ b/target/linux/ramips/image/mt7621.mk
+@@ -91,8 +91,7 @@ define Build/zytrx-header
+ endef
+ 
+ define Device/dsa-migration
+-  DEVICE_COMPAT_VERSION := 1.1
+-  DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA
++  DEVICE_COMPAT_VERSION := 1.0
+ endef
+ 
+ define Device/adslr_g7
+
