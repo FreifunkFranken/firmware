@@ -9,7 +9,7 @@ define Package/fff-babeld
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken babeld configuration example
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+babeld
 endef
 

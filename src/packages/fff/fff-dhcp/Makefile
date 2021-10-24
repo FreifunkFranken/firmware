@@ -9,7 +9,7 @@ define Package/fff-dhcp
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken dhcp
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+dnsmasq
 endef
 

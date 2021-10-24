@@ -9,7 +9,7 @@ define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Alfred
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+alfred
 endef
 

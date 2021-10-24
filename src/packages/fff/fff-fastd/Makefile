@@ -9,7 +9,7 @@ define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken fastd configuration script
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+@BUSYBOX_CUSTOM \
 			 +@FASTD_ENABLE_METHOD_NULL \
 			 +@FASTD_ENABLE_CIPHER_NULL \

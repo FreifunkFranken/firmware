@@ -9,7 +9,7 @@ define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken hoodutils
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+fff-network +fff-config
 endef
 

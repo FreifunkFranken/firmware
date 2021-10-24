@@ -9,7 +9,7 @@ define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Webinterface
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+uhttpd +libustream-mbedtls +haserl +px5g +fff-simple-tc \
 			 +fff-boardname +fff-config +fff-network +fff-hoodutils \
 			 +@BUSYBOX_CONFIG_WGET +@BUSYBOX_CONFIG_FEATURE_WGET_TIMEOUT

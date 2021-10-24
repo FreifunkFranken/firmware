@@ -17,7 +17,7 @@ define Package/$(PKG_NAME)
 	SECTION:=base
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken mac nocker
-	URL:=http://www.freifunk-franken.de
+	URL:=https://www.freifunk-franken.de
 	KCONFIG:= \
 		CONFIG_NET_EMATCH=y \
 		CONFIG_NET_EMATCH_U32=y \
