@@ -1,3 +1,10 @@
+# Use a larger cachesize by default
+cachesize=1024
+
+# Increase cachesize for systems with enough memory
+mem="$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)"
+[ "$mem" -gt 65536 ] && cachesize=8192
+
 uci batch >/dev/null <<EOF
   delete dhcp.@dnsmasq[0]
   delete dhcp.lan
@@ -12,6 +19,7 @@ uci batch >/dev/null <<EOF
   set dhcp.@dnsmasq[-1].domain='fff.community'
   set dhcp.@dnsmasq[-1].expandhosts='0'
   set dhcp.@dnsmasq[-1].nonegcache='0'
+  set dhcp.@dnsmasq[-1].cachesize="$cachesize"
   set dhcp.@dnsmasq[-1].authoritative='1'
   set dhcp.@dnsmasq[-1].readethers='1'
   set dhcp.@dnsmasq[-1].leasefile='/tmp/dhcp.leases'
