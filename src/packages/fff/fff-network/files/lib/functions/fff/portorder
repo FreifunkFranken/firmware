@@ -18,10 +18,7 @@ get_port_order() {
 			;;
 		tplink,archer-c25-v1|\
 		tplink,archer-c60-v1|\
-		tplink,archer-c60-v2|\
-		tplink,tl-wr841-v10|\
-		tplink,tl-wr841-v11|\
-		tplink,tl-wr841-v12)
+		tplink,archer-c60-v2)
 			PORTORDER="4 3 2 1"
 			;;
 		tplink,archer-c50-v4|\
@@ -41,9 +38,6 @@ get_port_order() {
 		tplink,cpe210-v1|\
 		tplink,cpe510-v1)
 			PORTORDER="5 4"
-			;;
-		tplink,tl-wr841-v8)
-			PORTORDER="2 3 4 1"
 			;;
 		xiaomi,mi-router-4a-100m)
 			PORTORDER="0 2 4"

@@ -1,8 +1,0 @@
-WANDEV=eth1
-SWITCHDEV=eth1
-CLIENT_PORTS=""
-WAN_PORTS=""
-BATMAN_PORTS=""
-ONE_PORT="YES"
-
-. /etc/network.mode

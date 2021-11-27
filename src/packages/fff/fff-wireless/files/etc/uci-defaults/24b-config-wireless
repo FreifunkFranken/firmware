@@ -6,21 +6,8 @@ BOARD="$(uci get board.model.name)"
 
 # antenna gain
 case "$BOARD" in
-	tplink,tl-wr1043nd-v1)
-		uci set wireless.radio0.antenna_gain=3
-		uci commit wireless
-		;;
-	ubnt,nanostation-loco-m|\
 	ubnt,nanostation-loco-m-xw)
 		uci set wireless.radio0.antenna_gain=9
-		uci commit wireless
-		;;
-	ubnt,nanostation-m)
-		uci set wireless.radio0.antenna_gain=11
-		uci commit wireless
-		;;
-	ubnt,picostation-m)
-		uci set wireless.radio0.antenna_gain=12
 		uci commit wireless
 		;;
 	ubnt,unifi)

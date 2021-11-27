@@ -18,26 +18,14 @@ get_cpu_port() {
 		netgear,r6220|\
 		tplink,cpe210-v2|\
 		tplink,cpe210-v3|\
-		tplink,tl-mr3020-v1|\
-		tplink,tl-wa850re-v1|\
-		tplink,tl-wa860re-v1|\
-		tplink,tl-wa901nd-v2|\
-		ubnt,bullet-m-ar7240|\
-		ubnt,bullet-m-ar7241|\
 		ubnt,edgerouter-4|\
 		ubnt,edgerouter-x|\
 		ubnt,edgerouter-x-sfp|\
-		ubnt,nanostation-loco-m|\
 		ubnt,nanostation-loco-m-xw|\
-		ubnt,nanostation-m|\
-		ubnt,picostation-m|\
 		ubnt,unifi|\
 		ubnt,unifiac-mesh|\
 		xiaomi,mi-router-4a-gigabit)
 			CPUPORT=""
-			;;
-		tplink,tl-wr1043nd-v1)
-			CPUPORT="5t"
 			;;
 		*)
 			CPUPORT="0t"
