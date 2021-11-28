@@ -1,3 +1,5 @@
+. /lib/functions.sh
+
 configure() {
 	local router_ip
 	local router_ip6
@@ -9,16 +11,66 @@ configure() {
 	# remove netmask entry that ships by default
 	uci -q del network.loopback.netmask
 
+	# clean old rules
+	remove_rules() {
+		local name="$1"
+
+		# check if filter was added by this script
+		if ! [ "$(uci -q get network.$name.addedbyautoconfig)" = '30-network-routerip' ]; then
+			return
+		fi
+
+		uci -q del network.$name
+	}
+
+	config_load network
+	config_foreach remove_rules rule
+	config_foreach remove_rules rule6
+
 	# add router_ip
 	router_ip=$(uci -q get gateway.meta.router_ip)
 	for ip in $router_ip; do
 		uci -q add_list network.loopback.ipaddr="$ip"
+
+		# CIDR notation required
+		case $ip in
+			*/*)
+				# do nothing; ip is already in CIDR notation
+				;;
+			*)
+				ip="$ip/32"
+				;;
+		esac
+
+		config=$(uci add network rule)
+		uci -q set network.$config.src="$ip"
+		uci -q set network.$config.lookup='fff'
+		# default prio for the ip4table interface option is 10000
+		uci -q set network.$config.priority='10000'
+		uci -q set network.$config.addedbyautoconfig='30-network-routerip'
 	done
 
 	# add router_ip6
 	router_ip6=$(uci -q get gateway.meta.router_ip6)
 	for ip in $router_ip6; do
 		uci -q add_list network.loopback.ip6addr="$ip"
+
+		# CIDR notation required
+		case $ip in
+			*/*)
+				# do nothing; ip is already in CIDR notation
+				;;
+			*)
+				ip="$ip/128"
+				;;
+		esac
+
+		config=$(uci add network rule6)
+		uci -q set network.$config.src="$ip"
+		uci -q set network.$config.lookup='fff'
+		# default prio for the ip6table interface option is 10000
+		uci -q set network.$config.priority='10000'
+		uci -q set network.$config.addedbyautoconfig='30-network-routerip'
 	done
 }
 
