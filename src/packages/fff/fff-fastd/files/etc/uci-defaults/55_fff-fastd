@@ -29,6 +29,7 @@ ln -s /tmp/fastd_fff_peers /etc/fastd/fff/peers
 echo "#!/bin/sh" > /etc/fastd/fff/up.sh
 echo "ip link set up dev fffVPN" >> /etc/fastd/fff/up.sh
 echo "batctl if add fffVPN" >> /etc/fastd/fff/up.sh
+echo "batctl hardif fffVPN hop_penalty 30" >> /etc/fastd/fff/up.sh
 chmod +x /etc/fastd/fff/up.sh
 
 exit 0
