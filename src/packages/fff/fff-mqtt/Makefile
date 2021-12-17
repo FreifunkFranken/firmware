@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fff-mqtt
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/fff-mqtt
 
@@ -15,8 +15,7 @@ define Package/fff-mqtt
 	DEPENDS:= \
 		+fff-config \
 		+libmosquitto-ssl \
-		+mosquitto-client-ssl \
-		+mosquitto-ssl
+		+mosquitto-client-ssl
 endef
 
 define Package/fff-mqtt/description
