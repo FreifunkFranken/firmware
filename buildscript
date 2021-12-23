@@ -316,7 +316,7 @@ buildrelease() {
     fi
 
     cd bin/$variant
-    for binary in *.bin; do
+    for binary in *.bin *.img *.tar; do
         md5sum "$binary" > ./"$binary".md5
         sha256sum "$binary" > ./"$binary".sha256
     done
