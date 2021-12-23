@@ -1,0 +1,3433 @@
+From 14940aee4566cff33fff9e068fb9559a1925cf44 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 5 Dec 2021 16:43:36 +0000
+Subject: [PATCH] kernel: bump 5.4 to 5.4.163
+
+Removed upstreamed:
+ target/linux/mvebu/patches-5.4/001-PCI-aardvark-Wait-for-endpoint-to-be-ready-before-tr.patch
+ target/linux/mvebu/patches-5.4/016-PCI-aardvark-Train-link-immediately-after-enabling-t.patch
+ target/linux/mvebu/patches-5.4/017-PCI-aardvark-Improve-link-training.patch
+ target/linux/mvebu/patches-5.4/018-PCI-aardvark-Issue-PERST-via-GPIO.patch
+ target/linux/mvebu/patches-5.4/020-arm64-dts-marvell-armada-37xx-Set-pcie_reset_pin-to-.patch
+
+The following patch does not apply to upstream any more and needs some
+more work to make it work fully again. I am not sure if we are still
+able to set the UART to a none standard baud rate.
+ target/linux/ath79/patches-5.4/921-serial-core-add-support-for-boot-console-with-arbitr.patch
+
+These patches needed manually changes:
+  target/linux/generic/pending-5.4/110-ehci_hcd_ignore_oc.patch
+  target/linux/ipq806x/patches-5.4/0065-arm-override-compiler-flags.patch
+  target/linux/layerscape/patches-5.4/804-crypto-0016-MLKU-114-1-crypto-caam-reduce-page-0-regs-access-to-.patch
+  target/linux/mvebu/patches-5.4/019-PCI-aardvark-Add-PHY-support.patch
+  target/linux/octeontx/patches-5.4/0004-PCI-add-quirk-for-Gateworks-PLX-PEX860x-switch-with-.patch
+
+All others updated automatically.
+
+Compile-tested on: malta/le, armvirt/64, lantiq/xrx200
+Runtime-tested on: malta/le, armvirt/64, lantiq/xrx200
+
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+---
+ include/kernel-version.mk                     |   4 +-
+ ...mware-loader-for-uPD720201-and-uPD72.patch |  10 +-
+ .../802-usb-xhci-force-msi-renesas-xhci.patch |   2 +-
+ .../910-unaligned_access_hacks.patch          |   2 +-
+ ...support-for-boot-console-with-arbitr.patch |  54 -----
+ .../950-0037-Add-dwc_otg-driver.patch         |   2 +-
+ ...oup-Disable-cgroup-memory-by-default.patch |   8 +-
+ ...Show-that-the-VIA-VL805-supports-LPM.patch |   2 +-
+ ...or-host-controllers-that-don-t-updat.patch |   2 +-
+ ...-inbound-resource-parsing-to-helpers.patch |   6 +-
+ ...finitions-for-HEVC-stateless-decodin.patch |   2 +-
+ ...h-Add-a-format-for-column-YUV4-2-0-m.patch |   2 +-
+ ...-0504-mmc-sdhci-Silence-MMC-warnings.patch |   4 +-
+ ...core-Add-sensor-ancillary-data-V4L2-.patch |   2 +-
+ ...core-Add-ISP-statistics-output-V4L2-.patch |   2 +-
+ ...car-csi2-Negotiate-data-lanes-number.patch |   6 +-
+ ...l-Add-14-bit-raw-bayer-pixel-formats.patch |   2 +-
+ ...dd-14-bit-raw-greyscale-pixel-format.patch |   2 +-
+ ...l-format-for-MIPI-packed-12bit-luma-.patch |   2 +-
+ ...l-format-for-MIPI-packed-14bit-luma-.patch |   2 +-
+ ...tft-Add-support-for-display-variants.patch |   6 +-
+ ...-quirks-add-link-TRB-quirk-for-VL805.patch |   2 +-
+ ...M-dts-BCM5301X-Specify-PWM-in-the-DT.patch |   4 +-
+ ...dts-BCM5301X-Specify-uart2-in-the-DT.patch |   2 +-
+ ...dts-BCM5301X-Specify-pcie2-in-the-DT.patch |   2 +-
+ ...1X-Harmonize-EHCI-OHCI-DT-nodes-name.patch |   4 +-
+ ...CM5310X-Harmonize-xHCI-DT-nodes-name.patch |   2 +-
+ ...-Use-corretc-pinctrl-compatible-for-.patch |   2 +-
+ ...01X-Update-Ethernet-switch-node-name.patch |   2 +-
+ ...-Add-a-default-compatible-for-switch.patch |   2 +-
+ ...-Provide-defaults-ports-container-no.patch |   2 +-
+ ...01X-Update-Northstar-pinctrl-binding.patch |   2 +-
+ ...low-limiting-ports-for-ehci-platform.patch |   2 +-
+ ...IPS-BCM63XX-add-support-for-BCM63268.patch |   4 +-
+ ...MIPS-BCM63XX-add-support-for-BCM6318.patch |   6 +-
+ ...X-add-clkdev-lookups-for-device-tree.patch |  20 +-
+ .../430-MIPS-BCM63XX-add-nand-clocks.patch    |   6 +-
+ ...ast-GRO-for-skbs-with-Ethernet-heade.patch |   2 +-
+ ...sfs-attributes-for-VPD-pages-0h-and-.patch |   6 +-
+ .../301-mips_image_cmdline_hack.patch         |   2 +-
+ .../661-use_fq_codel_by_default.patch         |   2 +-
+ .../generic/hack-5.4/721-phy_packets.patch    |   2 +-
+ .../generic/hack-5.4/902-debloat_proc.patch   |   2 +-
+ .../hack-5.4/904-debloat_dma_buf.patch        |   4 +-
+ ...CPU_MIPS64-for-remaining-MIPS64-CPUs.patch |   2 +-
+ .../pending-5.4/110-ehci_hcd_ignore_oc.patch  |   8 +-
+ .../300-mips_expose_boot_raw.patch            |   4 +-
+ ...-support-hardware-flow-table-offload.patch |   4 +-
+ ...ng-with-source-address-failed-policy.patch |  18 +-
+ ...T-skip-GRO-for-foreign-MAC-addresses.patch |  10 +-
+ ...dd-support-for-threaded-NAPI-polling.patch |  18 +-
+ .../0065-arm-override-compiler-flags.patch    |   6 +-
+ .../0001-MIPS-lantiq-add-pcie-driver.patch    |   2 +-
+ .../lantiq/patches-5.4/0152-lantiq-VPE.patch  |   2 +-
+ ...t-to-remap-kernel-cacheable-memory-t.patch |   2 +-
+ ...d-support-to-map-cacheable-and-non-s.patch |   2 +-
+ ...-dts-0011-ARM-dts-accumulated-change.patch |  14 +-
+ ...DWC3-IP-VBUS-glitch-issue-on-LS1021A.patch |   2 +-
+ ...replace-ftm0-with-ftm_alarm0-DT-node.patch |   7 +-
+ ...fix-that-FlexTimer-cannot-wakeup-sys.patch |   2 +-
+ ...-fsl-Add-clock-names-mclk0-for-SAI-n.patch |   4 +-
+ ...link-too-be-created-with-a-cftype-fi.patch |   4 +-
+ ...bfq-revert-bfq.weight-symlink-change.patch |   4 +-
+ ...t-break-apart-ocelot_vlan_port_apply.patch |  12 +-
+ ...break-out-fdb-operations-into-abstra.patch |   2 +-
+ ...change-prototypes-of-hwtstamping-ioc.patch |   4 +-
+ ...change-prototypes-of-switchdev-port-.patch |  10 +-
+ ...refactor-struct-ocelot_port-out-of-f.patch |  14 +-
+ ...separate-net_device-related-items-ou.patch |  28 +--
+ ...cc-ocelot-refactor-ethtool-callbacks.patch |  10 +-
+ ...move-port-initialization-into-separa.patch |   6 +-
+ ...initialize-list-of-multicast-address.patch |   2 +-
+ ...split-assignment-of-the-cpu-port-int.patch |   6 +-
+ ...don-t-hardcode-the-number-of-the-CPU.patch |   4 +-
+ ...move-invariant-configs-out-of-adjust.patch |   2 +-
+ ...create-a-helper-for-changing-the-por.patch |   6 +-
+ ...adjust-MTU-on-the-CPU-port-in-NPI-mo.patch |   2 +-
+ ...separate-the-implementation-of-switc.patch |   2 +-
+ ...publish-structure-definitions-to-inc.patch |  30 +--
+ ...export-ocelot_hwstamp_get-set-functi.patch |   2 +-
+ ...t-use-skb-queue-instead-of-skbs-list.patch |   6 +-
+ ...scc-ocelot-tsn-configuration-support.patch |   2 +-
+ ...ocelot-add-VCAP-IS2-rule-to-trap-PTP.patch |   6 +-
+ ...Workaround-to-allow-traffic-to-CPU-i.patch |   2 +-
+ ..._ocelot-don-t-flood-unicast-traffic-.patch |   4 +-
+ ...K-19053-crypto-caam-RNG4-TRNG-errata.patch |   2 +-
+ ...o-caam-reduce-page-0-regs-access-to-.patch |  12 +-
+ ...rypto-caam-add-Secure-Memory-support.patch |  10 +-
+ ...-caam-Change-structure-type-represen.patch |   4 +-
+ ...2-2-crypto-caam-add-power-management.patch |   2 +-
+ ...aer-pme-interrupts-with-none-MSI-MSI.patch |   2 +-
+ ...move-EH-SINGLE_STEP_SET_FEATURE-impl.patch |   2 +-
+ ...host-xhci-add-EH-SINGLE_STEP_SET_FEA.patch |   2 +-
+ ...e-print-suggested-message-if-failed-.patch |   2 +-
+ ...st-xhci-do-warm-reset-for-link-state.patch |   2 +-
+ ...agate-resolved-link-config-via-mac_l.patch |   2 +-
+ ...t-for-endpoint-to-be-ready-before-tr.patch |  50 -----
+ ...in-link-immediately-after-enabling-t.patch |  60 -----
+ ...7-PCI-aardvark-Improve-link-training.patch | 208 ------------------
+ ...18-PCI-aardvark-Issue-PERST-via-GPIO.patch | 123 -----------
+ .../019-PCI-aardvark-Add-PHY-support.patch    |  14 +-
+ ...l-armada-37xx-Set-pcie_reset_pin-to-.patch |  93 --------
+ ...-t-touch-PCIe-registers-if-no-card-c.patch |   4 +-
+ ...-initialization-with-old-Marvell-s-A.patch |   2 +-
+ ...r-Gateworks-PLX-PEX860x-switch-with-.patch |   6 +-
+ ...0031-uvc-add-iPassion-iP2970-support.patch |   6 +-
+ ...erial-add-ugly-custom-baud-rate-hack.patch |   2 +-
+ .../ramips/patches-5.4/0098-disable_cm.patch  |   4 +-
+ ...122-mips-ralink-enable-zboot-support.patch |   2 +-
+ .../300-mips-add-rtl838x-platform.patch       |   2 +-
+ .../302-clocksource-add-rtl9300-driver.patch  |   4 +-
+ 111 files changed, 260 insertions(+), 847 deletions(-)
+ delete mode 100644 target/linux/ath79/patches-5.4/921-serial-core-add-support-for-boot-console-with-arbitr.patch
+ delete mode 100644 target/linux/mvebu/patches-5.4/001-PCI-aardvark-Wait-for-endpoint-to-be-ready-before-tr.patch
+ delete mode 100644 target/linux/mvebu/patches-5.4/016-PCI-aardvark-Train-link-immediately-after-enabling-t.patch
+ delete mode 100644 target/linux/mvebu/patches-5.4/017-PCI-aardvark-Improve-link-training.patch
+ delete mode 100644 target/linux/mvebu/patches-5.4/018-PCI-aardvark-Issue-PERST-via-GPIO.patch
+ delete mode 100644 target/linux/mvebu/patches-5.4/020-arm64-dts-marvell-armada-37xx-Set-pcie_reset_pin-to-.patch
+
+diff --git a/include/kernel-version.mk b/include/kernel-version.mk
+index 688660cbbd..ecb2857263 100644
+--- a/include/kernel-version.mk
++++ b/include/kernel-version.mk
+@@ -6,9 +6,9 @@ ifdef CONFIG_TESTING_KERNEL
+   KERNEL_PATCHVER:=$(KERNEL_TESTING_PATCHVER)
+ endif
+ 
+-LINUX_VERSION-5.4 = .158
++LINUX_VERSION-5.4 = .163
+ 
+-LINUX_KERNEL_HASH-5.4.158 = 6e018fecdc8fc24553756e582d83b82d65b10a6b03ef36262a24911f839b8d59
++LINUX_KERNEL_HASH-5.4.163 = 6246fe1776d83039d71f74eb839f38ebdec23e1b37a7bf76f3bce13cbf0290be
+ 
+ remove_uri_prefix=$(subst git://,,$(subst http://,,$(subst https://,,$(1))))
+ sanitize_uri=$(call qstrip,$(subst @,_,$(subst :,_,$(subst .,_,$(subst -,_,$(subst /,_,$(1)))))))
+diff --git a/target/linux/apm821xx/patches-5.4/801-usb-xhci-add-firmware-loader-for-uPD720201-and-uPD72.patch b/target/linux/apm821xx/patches-5.4/801-usb-xhci-add-firmware-loader-for-uPD720201-and-uPD72.patch
+index 220e5da73b..b85f62e680 100644
+--- a/target/linux/apm821xx/patches-5.4/801-usb-xhci-add-firmware-loader-for-uPD720201-and-uPD72.patch
++++ b/target/linux/apm821xx/patches-5.4/801-usb-xhci-add-firmware-loader-for-uPD720201-and-uPD72.patch
+@@ -48,7 +48,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  
+  #include "xhci.h"
+  #include "xhci-trace.h"
+-@@ -65,6 +67,44 @@
++@@ -72,6 +74,44 @@
+  #define PCI_DEVICE_ID_ASMEDIA_2142_XHCI			0x2142
+  #define PCI_DEVICE_ID_ASMEDIA_3242_XHCI			0x3242
+  
+@@ -93,7 +93,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  static const char hcd_name[] = "xhci_hcd";
+  
+  static struct hc_driver __read_mostly xhci_pci_hc_driver;
+-@@ -311,6 +351,873 @@ static void xhci_pme_acpi_rtd3_enable(st
++@@ -327,6 +367,873 @@ static void xhci_pme_acpi_rtd3_enable(st
+  static void xhci_pme_acpi_rtd3_enable(struct pci_dev *dev) { }
+  #endif /* CONFIG_ACPI */
+  
+@@ -967,7 +967,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  /* called during probe() after chip reset completes */
+  static int xhci_pci_setup(struct usb_hcd *hcd)
+  {
+-@@ -352,6 +1259,27 @@ static int xhci_pci_probe(struct pci_dev
++@@ -368,6 +1275,27 @@ static int xhci_pci_probe(struct pci_dev
+  	struct hc_driver *driver;
+  	struct usb_hcd *hcd;
+  
+@@ -995,7 +995,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  	driver = (struct hc_driver *)id->driver_data;
+  
+  	/* Prevent runtime suspending between USB-2 and USB-3 initialization */
+-@@ -413,6 +1341,16 @@ static void xhci_pci_remove(struct pci_d
++@@ -429,6 +1357,16 @@ static void xhci_pci_remove(struct pci_d
+  {
+  	struct xhci_hcd *xhci;
+  
+@@ -1012,7 +1012,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  	xhci = hcd_to_xhci(pci_get_drvdata(dev));
+  	xhci->xhc_state |= XHCI_STATE_REMOVING;
+  
+-@@ -552,6 +1490,11 @@ static int xhci_pci_resume(struct usb_hc
++@@ -568,6 +1506,11 @@ static int xhci_pci_resume(struct usb_hc
+  	if (pdev->vendor == PCI_VENDOR_ID_INTEL)
+  		usb_enable_intel_xhci_ports(pdev);
+  
+diff --git a/target/linux/apm821xx/patches-5.4/802-usb-xhci-force-msi-renesas-xhci.patch b/target/linux/apm821xx/patches-5.4/802-usb-xhci-force-msi-renesas-xhci.patch
+index 6980ce80ee..1fe38dc60a 100644
+--- a/target/linux/apm821xx/patches-5.4/802-usb-xhci-force-msi-renesas-xhci.patch
++++ b/target/linux/apm821xx/patches-5.4/802-usb-xhci-force-msi-renesas-xhci.patch
+@@ -13,7 +13,7 @@ produce a noisy warning.
+ 
+ --- a/drivers/usb/host/xhci-pci.c
+ +++ b/drivers/usb/host/xhci-pci.c
+-@@ -290,6 +290,7 @@ static void xhci_pci_quirks(struct devic
++@@ -297,6 +297,7 @@ static void xhci_pci_quirks(struct devic
+  	    pdev->device == 0x0015) {
+  		xhci->quirks |= XHCI_RESET_ON_RESUME;
+  		xhci->quirks |= XHCI_ZERO_64B_REGS;
+diff --git a/target/linux/ath79/patches-5.4/910-unaligned_access_hacks.patch b/target/linux/ath79/patches-5.4/910-unaligned_access_hacks.patch
+index d2200c8976..26c4a7b213 100644
+--- a/target/linux/ath79/patches-5.4/910-unaligned_access_hacks.patch
++++ b/target/linux/ath79/patches-5.4/910-unaligned_access_hacks.patch
+@@ -754,7 +754,7 @@
+  	ptr = ip6hoff + sizeof(struct ipv6hdr);
+ --- a/include/net/neighbour.h
+ +++ b/include/net/neighbour.h
+-@@ -274,8 +274,10 @@ static inline bool neigh_key_eq128(const
++@@ -275,8 +275,10 @@ static inline bool neigh_key_eq128(const
+  	const u32 *n32 = (const u32 *)n->primary_key;
+  	const u32 *p32 = pkey;
+  
+diff --git a/target/linux/ath79/patches-5.4/921-serial-core-add-support-for-boot-console-with-arbitr.patch b/target/linux/ath79/patches-5.4/921-serial-core-add-support-for-boot-console-with-arbitr.patch
+deleted file mode 100644
+index 2a2aafa568..0000000000
+--- a/target/linux/ath79/patches-5.4/921-serial-core-add-support-for-boot-console-with-arbitr.patch
++++ /dev/null
+@@ -1,54 +0,0 @@
+-From 4d3c17975c7814884a721fe693b3adf5c426d759 Mon Sep 17 00:00:00 2001
+-From: Hauke Mehrtens <hauke@hauke-m.de>
+-Date: Tue, 10 Nov 2015 22:18:39 +0100
+-Subject: [RFC] serial: core: add support for boot console with arbitrary
+- baud rates
+-
+-The Arduino Yun uses a baud rate of 250000 by default. The serial is
+-going over the Atmel ATmega and is used to connect to this chip.
+-Without this patch Linux wants to switch the console to 9600 Baud.
+-
+-With this patch Linux will use the configured baud rate and not a
+-default one specified in uart_register_driver().
+-
+-Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+-[rebased to 4.14, slightly reworded commit message]
+-Signed-off-by: Sungbo Eo <mans0n@gorani.run>
+----
+- drivers/tty/serial/serial_core.c | 6 +++++-
+- include/linux/console.h          | 1 +
+- 2 files changed, 6 insertions(+), 1 deletions(-)
+-
+---- a/drivers/tty/serial/serial_core.c
+-+++ b/drivers/tty/serial/serial_core.c
+-@@ -220,6 +220,8 @@ static int uart_port_startup(struct tty_
+- 	if (retval == 0) {
+- 		if (uart_console(uport) && uport->cons->cflag) {
+- 			tty->termios.c_cflag = uport->cons->cflag;
+-+			tty->termios.c_ospeed = uport->cons->baud;
+-+			tty->termios.c_ispeed = uport->cons->baud;
+- 			uport->cons->cflag = 0;
+- 		}
+- 		/*
+-@@ -2110,8 +2112,10 @@ uart_set_options(struct uart_port *port,
+- 	 * Allow the setting of the UART parameters with a NULL console
+- 	 * too:
+- 	 */
+--	if (co)
+-+	if (co) {
+- 		co->cflag = termios.c_cflag;
+-+		co->baud = baud;
+-+	}
+- 
+- 	return 0;
+- }
+---- a/include/linux/console.h
+-+++ b/include/linux/console.h
+-@@ -153,6 +153,7 @@ struct console {
+- 	short	flags;
+- 	short	index;
+- 	int	cflag;
+-+	int	baud;
+- 	void	*data;
+- 	struct	 console *next;
+- };
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0037-Add-dwc_otg-driver.patch b/target/linux/bcm27xx/patches-5.4/950-0037-Add-dwc_otg-driver.patch
+index f514d9940d..b7cf6857ab 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0037-Add-dwc_otg-driver.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0037-Add-dwc_otg-driver.patch
+@@ -1040,7 +1040,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
+  }
+ --- a/drivers/usb/core/hub.c
+ +++ b/drivers/usb/core/hub.c
+-@@ -5369,7 +5369,7 @@ static void port_event(struct usb_hub *h
++@@ -5379,7 +5379,7 @@ static void port_event(struct usb_hub *h
+  		port_dev->over_current_count++;
+  		port_over_current_notify(port_dev);
+  
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0089-cgroup-Disable-cgroup-memory-by-default.patch b/target/linux/bcm27xx/patches-5.4/950-0089-cgroup-Disable-cgroup-memory-by-default.patch
+index d4818b2239..aa7629ac0b 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0089-cgroup-Disable-cgroup-memory-by-default.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0089-cgroup-Disable-cgroup-memory-by-default.patch
+@@ -17,7 +17,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+ 
+ --- a/kernel/cgroup/cgroup.c
+ +++ b/kernel/cgroup/cgroup.c
+-@@ -5721,6 +5721,9 @@ int __init cgroup_init_early(void)
++@@ -5744,6 +5744,9 @@ int __init cgroup_init_early(void)
+  	return 0;
+  }
+  
+@@ -27,7 +27,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+  /**
+   * cgroup_init - cgroup initialization
+   *
+-@@ -5759,6 +5762,12 @@ int __init cgroup_init(void)
++@@ -5782,6 +5785,12 @@ int __init cgroup_init(void)
+  
+  	mutex_unlock(&cgroup_mutex);
+  
+@@ -40,7 +40,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+  	for_each_subsys(ss, ssid) {
+  		if (ss->early_init) {
+  			struct cgroup_subsys_state *css =
+-@@ -6168,6 +6177,10 @@ static int __init cgroup_disable(char *s
++@@ -6191,6 +6200,10 @@ static int __init cgroup_disable(char *s
+  			    strcmp(token, ss->legacy_name))
+  				continue;
+  
+@@ -51,7 +51,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+  			static_branch_disable(cgroup_subsys_enabled_key[i]);
+  			pr_info("Disabling %s control group subsystem\n",
+  				ss->name);
+-@@ -6177,6 +6190,31 @@ static int __init cgroup_disable(char *s
++@@ -6200,6 +6213,31 @@ static int __init cgroup_disable(char *s
+  }
+  __setup("cgroup_disable=", cgroup_disable);
+  
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0211-usb-xhci-Show-that-the-VIA-VL805-supports-LPM.patch b/target/linux/bcm27xx/patches-5.4/950-0211-usb-xhci-Show-that-the-VIA-VL805-supports-LPM.patch
+index cf3cb58362..dfc6193625 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0211-usb-xhci-Show-that-the-VIA-VL805-supports-LPM.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0211-usb-xhci-Show-that-the-VIA-VL805-supports-LPM.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+ 
+ --- a/drivers/usb/host/xhci-pci.c
+ +++ b/drivers/usb/host/xhci-pci.c
+-@@ -259,6 +259,10 @@ static void xhci_pci_quirks(struct devic
++@@ -266,6 +266,10 @@ static void xhci_pci_quirks(struct devic
+  			pdev->device == 0x3432)
+  		xhci->quirks |= XHCI_BROKEN_STREAMS;
+  
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0264-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch b/target/linux/bcm27xx/patches-5.4/950-0264-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
+index 683f0905ef..e5cff71905 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0264-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0264-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
+@@ -23,7 +23,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
+ 
+ --- a/drivers/usb/host/xhci-pci.c
+ +++ b/drivers/usb/host/xhci-pci.c
+-@@ -260,8 +260,10 @@ static void xhci_pci_quirks(struct devic
++@@ -267,8 +267,10 @@ static void xhci_pci_quirks(struct devic
+  		xhci->quirks |= XHCI_BROKEN_STREAMS;
+  
+  	if (pdev->vendor == PCI_VENDOR_ID_VIA &&
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0441-PCI-of-Add-inbound-resource-parsing-to-helpers.patch b/target/linux/bcm27xx/patches-5.4/950-0441-PCI-of-Add-inbound-resource-parsing-to-helpers.patch
+index bbcb3aeeda..8f21837db7 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0441-PCI-of-Add-inbound-resource-parsing-to-helpers.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0441-PCI-of-Add-inbound-resource-parsing-to-helpers.patch
+@@ -82,7 +82,7 @@ Cc: linux-rockchip@lists.infradead.org
+  
+ --- a/drivers/pci/controller/pci-aardvark.c
+ +++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -1176,7 +1176,8 @@ static int advk_pcie_probe(struct platfo
++@@ -1523,7 +1523,8 @@ static int advk_pcie_probe(struct platfo
+  		return ret;
+  	}
+  
+@@ -402,7 +402,7 @@ Cc: linux-rockchip@lists.infradead.org
+  }
+ --- a/include/linux/pci.h
+ +++ b/include/linux/pci.h
+-@@ -2279,6 +2279,7 @@ struct irq_domain;
++@@ -2281,6 +2281,7 @@ struct irq_domain;
+  struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus);
+  int pci_parse_request_of_pci_ranges(struct device *dev,
+  				    struct list_head *resources,
+@@ -410,7 +410,7 @@ Cc: linux-rockchip@lists.infradead.org
+  				    struct resource **bus_range);
+  
+  /* Arch may override this (weak) */
+-@@ -2287,9 +2288,11 @@ struct device_node *pcibios_get_phb_of_n
++@@ -2289,9 +2290,11 @@ struct device_node *pcibios_get_phb_of_n
+  #else	/* CONFIG_OF */
+  static inline struct irq_domain *
+  pci_host_bridge_of_msi_domain(struct pci_bus *bus) { return NULL; }
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0492-media-v4l-Add-definitions-for-HEVC-stateless-decodin.patch b/target/linux/bcm27xx/patches-5.4/950-0492-media-v4l-Add-definitions-for-HEVC-stateless-decodin.patch
+index effff9b748..f0c311d916 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0492-media-v4l-Add-definitions-for-HEVC-stateless-decodin.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0492-media-v4l-Add-definitions-for-HEVC-stateless-decodin.patch
+@@ -838,7 +838,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+  		break;
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1356,6 +1356,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1374,6 +1374,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  		case V4L2_PIX_FMT_VP8_FRAME:    descr = "VP8 Frame"; break;
+  		case V4L2_PIX_FMT_VP9:		descr = "VP9"; break;
+  		case V4L2_PIX_FMT_HEVC:		descr = "HEVC"; break; /* aka H.265 */
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0499-media-videodev2.h-Add-a-format-for-column-YUV4-2-0-m.patch b/target/linux/bcm27xx/patches-5.4/950-0499-media-videodev2.h-Add-a-format-for-column-YUV4-2-0-m.patch
+index 5a309827e2..e2e0ec72db 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0499-media-videodev2.h-Add-a-format-for-column-YUV4-2-0-m.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0499-media-videodev2.h-Add-a-format-for-column-YUV4-2-0-m.patch
+@@ -278,7 +278,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+      pixfmt-nv24
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1258,6 +1258,8 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1276,6 +1276,8 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_PIX_FMT_NV61M:	descr = "Y/CrCb 4:2:2 (N-C)"; break;
+  	case V4L2_PIX_FMT_NV12MT:	descr = "Y/CbCr 4:2:0 (64x32 MB, N-C)"; break;
+  	case V4L2_PIX_FMT_NV12MT_16X16:	descr = "Y/CbCr 4:2:0 (16x16 MB, N-C)"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0504-mmc-sdhci-Silence-MMC-warnings.patch b/target/linux/bcm27xx/patches-5.4/950-0504-mmc-sdhci-Silence-MMC-warnings.patch
+index ba815eecfd..bf15071587 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0504-mmc-sdhci-Silence-MMC-warnings.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0504-mmc-sdhci-Silence-MMC-warnings.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+  
+  #define MAX_TUNING_LOOP 40
+  
+-@@ -2768,7 +2768,7 @@ static void sdhci_timeout_timer(struct t
++@@ -2780,7 +2780,7 @@ static void sdhci_timeout_timer(struct t
+  	spin_lock_irqsave(&host->lock, flags);
+  
+  	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
+@@ -31,7 +31,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+  		       mmc_hostname(host->mmc));
+  		sdhci_dumpregs(host);
+  
+-@@ -2790,7 +2790,7 @@ static void sdhci_timeout_data_timer(str
++@@ -2802,7 +2802,7 @@ static void sdhci_timeout_data_timer(str
+  
+  	if (host->data || host->data_cmd ||
+  	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0641-media-uapi-v4l2-core-Add-sensor-ancillary-data-V4L2-.patch b/target/linux/bcm27xx/patches-5.4/950-0641-media-uapi-v4l2-core-Add-sensor-ancillary-data-V4L2-.patch
+index 69414e381c..3fa056258c 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0641-media-uapi-v4l2-core-Add-sensor-ancillary-data-V4L2-.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0641-media-uapi-v4l2-core-Add-sensor-ancillary-data-V4L2-.patch
+@@ -65,7 +65,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+ +
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1332,6 +1332,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1350,6 +1350,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_META_FMT_VSP1_HGT:	descr = "R-Car VSP1 2-D Histogram"; break;
+  	case V4L2_META_FMT_UVC:		descr = "UVC Payload Header Metadata"; break;
+  	case V4L2_META_FMT_D4XX:	descr = "Intel D4xx UVC Metadata"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0669-media-uapi-v4l2-core-Add-ISP-statistics-output-V4L2-.patch b/target/linux/bcm27xx/patches-5.4/950-0669-media-uapi-v4l2-core-Add-ISP-statistics-output-V4L2-.patch
+index 082dff510c..d3404b8531 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0669-media-uapi-v4l2-core-Add-ISP-statistics-output-V4L2-.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0669-media-uapi-v4l2-core-Add-ISP-statistics-output-V4L2-.patch
+@@ -74,7 +74,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+ +
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1333,6 +1333,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1351,6 +1351,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_META_FMT_UVC:		descr = "UVC Payload Header Metadata"; break;
+  	case V4L2_META_FMT_D4XX:	descr = "Intel D4xx UVC Metadata"; break;
+  	case V4L2_META_FMT_SENSOR_DATA:	descr = "Sensor Ancillary Metadata"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0803-media-rcar-csi2-Negotiate-data-lanes-number.patch b/target/linux/bcm27xx/patches-5.4/950-0803-media-rcar-csi2-Negotiate-data-lanes-number.patch
+index f54b33e59c..def9ab09d5 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0803-media-rcar-csi2-Negotiate-data-lanes-number.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0803-media-rcar-csi2-Negotiate-data-lanes-number.patch
+@@ -119,7 +119,7 @@ Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+  	unsigned int i;
+  	int mbps, ret;
+  
+-@@ -520,10 +571,18 @@ static int rcsi2_start_receiver(struct r
++@@ -522,10 +573,18 @@ static int rcsi2_start_receiver(struct r
+  			fld |= FLD_FLD_NUM(1);
+  	}
+  
+@@ -140,7 +140,7 @@ Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+  	if (mbps < 0)
+  		return mbps;
+  
+-@@ -570,7 +629,7 @@ static int rcsi2_start_receiver(struct r
++@@ -572,7 +631,7 @@ static int rcsi2_start_receiver(struct r
+  	rcsi2_write(priv, PHYCNT_REG, phycnt | PHYCNT_SHUTDOWNZ);
+  	rcsi2_write(priv, PHYCNT_REG, phycnt | PHYCNT_SHUTDOWNZ | PHYCNT_RSTZ);
+  
+@@ -149,7 +149,7 @@ Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+  	if (ret)
+  		return ret;
+  
+-@@ -747,6 +806,7 @@ static int rcsi2_notify_bound(struct v4l
++@@ -749,6 +808,7 @@ static int rcsi2_notify_bound(struct v4l
+  	}
+  
+  	priv->remote = subdev;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0844-media-v4l-Add-14-bit-raw-bayer-pixel-formats.patch b/target/linux/bcm27xx/patches-5.4/950-0844-media-v4l-Add-14-bit-raw-bayer-pixel-formats.patch
+index 1bb9a932a3..4717f0dbc5 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0844-media-v4l-Add-14-bit-raw-bayer-pixel-formats.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0844-media-v4l-Add-14-bit-raw-bayer-pixel-formats.patch
+@@ -125,7 +125,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+ +      - R\ :sub:`33high`
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1298,6 +1298,10 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1316,6 +1316,10 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_PIX_FMT_SGBRG12P:	descr = "12-bit Bayer GBGB/RGRG Packed"; break;
+  	case V4L2_PIX_FMT_SGRBG12P:	descr = "12-bit Bayer GRGR/BGBG Packed"; break;
+  	case V4L2_PIX_FMT_SRGGB12P:	descr = "12-bit Bayer RGRG/GBGB Packed"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0845-media-v4l-Add-14-bit-raw-greyscale-pixel-format.patch b/target/linux/bcm27xx/patches-5.4/950-0845-media-v4l-Add-14-bit-raw-greyscale-pixel-format.patch
+index 1910668595..52bff95e54 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0845-media-v4l-Add-14-bit-raw-greyscale-pixel-format.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0845-media-v4l-Add-14-bit-raw-greyscale-pixel-format.patch
+@@ -111,7 +111,7 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+      pixfmt-y16
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1212,6 +1212,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1230,6 +1230,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_PIX_FMT_Y6:		descr = "6-bit Greyscale"; break;
+  	case V4L2_PIX_FMT_Y10:		descr = "10-bit Greyscale"; break;
+  	case V4L2_PIX_FMT_Y12:		descr = "12-bit Greyscale"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0847-media-Add-a-pixel-format-for-MIPI-packed-12bit-luma-.patch b/target/linux/bcm27xx/patches-5.4/950-0847-media-Add-a-pixel-format-for-MIPI-packed-12bit-luma-.patch
+index b5d407b205..1f562bc1c3 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0847-media-Add-a-pixel-format-for-MIPI-packed-12bit-luma-.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0847-media-Add-a-pixel-format-for-MIPI-packed-12bit-luma-.patch
+@@ -75,7 +75,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+      pixfmt-y10p
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1217,6 +1217,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1235,6 +1235,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_PIX_FMT_Y16_BE:	descr = "16-bit Greyscale BE"; break;
+  	case V4L2_PIX_FMT_Y10BPACK:	descr = "10-bit Greyscale (Packed)"; break;
+  	case V4L2_PIX_FMT_Y10P:		descr = "10-bit Greyscale (MIPI Packed)"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0848-media-Add-a-pixel-format-for-MIPI-packed-14bit-luma-.patch b/target/linux/bcm27xx/patches-5.4/950-0848-media-Add-a-pixel-format-for-MIPI-packed-14bit-luma-.patch
+index f8b255f15a..4aefd822e2 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0848-media-Add-a-pixel-format-for-MIPI-packed-14bit-luma-.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0848-media-Add-a-pixel-format-for-MIPI-packed-14bit-luma-.patch
+@@ -84,7 +84,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+      pixfmt-y16
+ --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+ +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+-@@ -1218,6 +1218,7 @@ static void v4l_fill_fmtdesc(struct v4l2
++@@ -1236,6 +1236,7 @@ static void v4l_fill_fmtdesc(struct v4l2
+  	case V4L2_PIX_FMT_Y10BPACK:	descr = "10-bit Greyscale (Packed)"; break;
+  	case V4L2_PIX_FMT_Y10P:		descr = "10-bit Greyscale (MIPI Packed)"; break;
+  	case V4L2_PIX_FMT_Y12P:		descr = "12-bit Greyscale (MIPI Packed)"; break;
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0960-staging-fbtft-Add-support-for-display-variants.patch b/target/linux/bcm27xx/patches-5.4/950-0960-staging-fbtft-Add-support-for-display-variants.patch
+index 7206bad51d..30178b0eb8 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0960-staging-fbtft-Add-support-for-display-variants.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0960-staging-fbtft-Add-support-for-display-variants.patch
+@@ -94,7 +94,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  #include <video/mipi_display.h>
+  
+  #include "fbtft.h"
+-@@ -1199,6 +1200,7 @@ static struct fbtft_platform_data *fbtft
++@@ -1192,6 +1193,7 @@ static struct fbtft_platform_data *fbtft
+   * @display: Display properties
+   * @sdev: SPI device
+   * @pdev: Platform device
+@@ -102,7 +102,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+   *
+   * Allocates, initializes and registers a framebuffer
+   *
+-@@ -1208,12 +1210,15 @@ static struct fbtft_platform_data *fbtft
++@@ -1201,12 +1203,15 @@ static struct fbtft_platform_data *fbtft
+   */
+  int fbtft_probe_common(struct fbtft_display *display,
+  		       struct spi_device *sdev,
+@@ -119,7 +119,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret;
+  
+  	if (sdev)
+-@@ -1229,6 +1234,14 @@ int fbtft_probe_common(struct fbtft_disp
++@@ -1222,6 +1227,14 @@ int fbtft_probe_common(struct fbtft_disp
+  		pdata = fbtft_probe_dt(dev);
+  		if (IS_ERR(pdata))
+  			return PTR_ERR(pdata);
+diff --git a/target/linux/bcm27xx/patches-5.4/950-0993-xhci-quirks-add-link-TRB-quirk-for-VL805.patch b/target/linux/bcm27xx/patches-5.4/950-0993-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
+index cc05573eb0..639e9325d8 100644
+--- a/target/linux/bcm27xx/patches-5.4/950-0993-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
++++ b/target/linux/bcm27xx/patches-5.4/950-0993-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+ 
+ --- a/drivers/usb/host/xhci-pci.c
+ +++ b/drivers/usb/host/xhci-pci.c
+-@@ -263,6 +263,7 @@ static void xhci_pci_quirks(struct devic
++@@ -270,6 +270,7 @@ static void xhci_pci_quirks(struct devic
+  			pdev->device == 0x3483) {
+  		xhci->quirks |= XHCI_LPM_SUPPORT;
+  		xhci->quirks |= XHCI_EP_CTX_BROKEN_DCS;
+diff --git a/target/linux/bcm53xx/patches-5.4/033-v5.10-0001-ARM-dts-BCM5301X-Specify-PWM-in-the-DT.patch b/target/linux/bcm53xx/patches-5.4/033-v5.10-0001-ARM-dts-BCM5301X-Specify-PWM-in-the-DT.patch
+index 335378656c..760418a086 100644
+--- a/target/linux/bcm53xx/patches-5.4/033-v5.10-0001-ARM-dts-BCM5301X-Specify-PWM-in-the-DT.patch
++++ b/target/linux/bcm53xx/patches-5.4/033-v5.10-0001-ARM-dts-BCM5301X-Specify-PWM-in-the-DT.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -350,6 +350,14 @@
++@@ -352,6 +352,14 @@
+  		};
+  	};
+  
+@@ -31,7 +31,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+  	mdio: mdio@18003000 {
+  		compatible = "brcm,iproc-mdio";
+  		reg = <0x18003000 0x8>;
+-@@ -417,12 +425,12 @@
++@@ -419,12 +427,12 @@
+  					function = "spi";
+  				};
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/033-v5.10-0002-ARM-dts-BCM5301X-Specify-uart2-in-the-DT.patch b/target/linux/bcm53xx/patches-5.4/033-v5.10-0002-ARM-dts-BCM5301X-Specify-uart2-in-the-DT.patch
+index 8cee6745ee..629e4bac24 100644
+--- a/target/linux/bcm53xx/patches-5.4/033-v5.10-0002-ARM-dts-BCM5301X-Specify-uart2-in-the-DT.patch
++++ b/target/linux/bcm53xx/patches-5.4/033-v5.10-0002-ARM-dts-BCM5301X-Specify-uart2-in-the-DT.patch
+@@ -12,7 +12,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -392,6 +392,15 @@
++@@ -394,6 +394,15 @@
+  		reg = <0x18105000 0x1000>;
+  	};
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/033-v5.10-0003-ARM-dts-BCM5301X-Specify-pcie2-in-the-DT.patch b/target/linux/bcm53xx/patches-5.4/033-v5.10-0003-ARM-dts-BCM5301X-Specify-pcie2-in-the-DT.patch
+index d3e2fbcc9e..07b173702e 100644
+--- a/target/linux/bcm53xx/patches-5.4/033-v5.10-0003-ARM-dts-BCM5301X-Specify-pcie2-in-the-DT.patch
++++ b/target/linux/bcm53xx/patches-5.4/033-v5.10-0003-ARM-dts-BCM5301X-Specify-pcie2-in-the-DT.patch
+@@ -13,7 +13,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -252,6 +252,10 @@
++@@ -254,6 +254,10 @@
+  			reg = <0x00013000 0x1000>;
+  		};
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0002-ARM-dts-BCM5301X-Harmonize-EHCI-OHCI-DT-nodes-name.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0002-ARM-dts-BCM5301X-Harmonize-EHCI-OHCI-DT-nodes-name.patch
+index 271257c669..d6e5fca967 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0002-ARM-dts-BCM5301X-Harmonize-EHCI-OHCI-DT-nodes-name.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0002-ARM-dts-BCM5301X-Harmonize-EHCI-OHCI-DT-nodes-name.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -265,7 +265,7 @@
++@@ -267,7 +267,7 @@
+  
+  			interrupt-parent = <&gic>;
+  
+@@ -29,7 +29,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+  				#usb-cells = <0>;
+  
+  				compatible = "generic-ehci";
+-@@ -287,7 +287,7 @@
++@@ -289,7 +289,7 @@
+  				};
+  			};
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0003-ARM-dts-BCM5310X-Harmonize-xHCI-DT-nodes-name.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0003-ARM-dts-BCM5310X-Harmonize-xHCI-DT-nodes-name.patch
+index 08380d735c..2f9c8ce8c0 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0003-ARM-dts-BCM5310X-Harmonize-xHCI-DT-nodes-name.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0003-ARM-dts-BCM5310X-Harmonize-xHCI-DT-nodes-name.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -318,7 +318,7 @@
++@@ -320,7 +320,7 @@
+  
+  			interrupt-parent = <&gic>;
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0005-ARM-dts-BCM5301X-Use-corretc-pinctrl-compatible-for-.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0005-ARM-dts-BCM5301X-Use-corretc-pinctrl-compatible-for-.patch
+index 3796967936..ddebdc4343 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0005-ARM-dts-BCM5301X-Use-corretc-pinctrl-compatible-for-.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0005-ARM-dts-BCM5301X-Use-corretc-pinctrl-compatible-for-.patch
+@@ -38,7 +38,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+  };
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -428,7 +428,7 @@
++@@ -430,7 +430,7 @@
+  			#address-cells = <1>;
+  			#size-cells = <1>;
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0010-ARM-dts-BCM5301X-Update-Ethernet-switch-node-name.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0010-ARM-dts-BCM5301X-Update-Ethernet-switch-node-name.patch
+index 9165572b95..00a5d08f0d 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0010-ARM-dts-BCM5301X-Update-Ethernet-switch-node-name.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0010-ARM-dts-BCM5301X-Update-Ethernet-switch-node-name.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -482,7 +482,7 @@
++@@ -484,7 +484,7 @@
+  		#thermal-sensor-cells = <0>;
+  	};
+  
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0011-ARM-dts-BCM5301X-Add-a-default-compatible-for-switch.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0011-ARM-dts-BCM5301X-Add-a-default-compatible-for-switch.patch
+index bb1ca592a6..044504796c 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0011-ARM-dts-BCM5301X-Add-a-default-compatible-for-switch.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0011-ARM-dts-BCM5301X-Add-a-default-compatible-for-switch.patch
+@@ -71,7 +71,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+ +};
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -483,7 +483,7 @@
++@@ -485,7 +485,7 @@
+  	};
+  
+  	srab: ethernet-switch@18007000 {
+diff --git a/target/linux/bcm53xx/patches-5.4/034-v5.11-0012-ARM-dts-BCM5301X-Provide-defaults-ports-container-no.patch b/target/linux/bcm53xx/patches-5.4/034-v5.11-0012-ARM-dts-BCM5301X-Provide-defaults-ports-container-no.patch
+index df868ba85f..e05ce88304 100644
+--- a/target/linux/bcm53xx/patches-5.4/034-v5.11-0012-ARM-dts-BCM5301X-Provide-defaults-ports-container-no.patch
++++ b/target/linux/bcm53xx/patches-5.4/034-v5.11-0012-ARM-dts-BCM5301X-Provide-defaults-ports-container-no.patch
+@@ -155,7 +155,7 @@ Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+  			label = "lan4";
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -489,6 +489,10 @@
++@@ -491,6 +491,10 @@
+  		status = "disabled";
+  
+  		/* ports are defined in board DTS */
+diff --git a/target/linux/bcm53xx/patches-5.4/302-ARM-dts-BCM5301X-Update-Northstar-pinctrl-binding.patch b/target/linux/bcm53xx/patches-5.4/302-ARM-dts-BCM5301X-Update-Northstar-pinctrl-binding.patch
+index e1a2d4ab9b..e3ec87d4e4 100644
+--- a/target/linux/bcm53xx/patches-5.4/302-ARM-dts-BCM5301X-Update-Northstar-pinctrl-binding.patch
++++ b/target/linux/bcm53xx/patches-5.4/302-ARM-dts-BCM5301X-Update-Northstar-pinctrl-binding.patch
+@@ -9,7 +9,7 @@ Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+ 
+ --- a/arch/arm/boot/dts/bcm5301x.dtsi
+ +++ b/arch/arm/boot/dts/bcm5301x.dtsi
+-@@ -422,16 +422,12 @@
++@@ -424,16 +424,12 @@
+  		#size-cells = <1>;
+  
+  		cru@100 {
+diff --git a/target/linux/bcm63xx/patches-5.4/206-USB-EHCI-allow-limiting-ports-for-ehci-platform.patch b/target/linux/bcm63xx/patches-5.4/206-USB-EHCI-allow-limiting-ports-for-ehci-platform.patch
+index 2fa5a00212..59e832ea85 100644
+--- a/target/linux/bcm63xx/patches-5.4/206-USB-EHCI-allow-limiting-ports-for-ehci-platform.patch
++++ b/target/linux/bcm63xx/patches-5.4/206-USB-EHCI-allow-limiting-ports-for-ehci-platform.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+ 
+ --- a/drivers/usb/host/ehci-hcd.c
+ +++ b/drivers/usb/host/ehci-hcd.c
+-@@ -678,6 +678,10 @@ int ehci_setup(struct usb_hcd *hcd)
++@@ -687,6 +687,10 @@ int ehci_setup(struct usb_hcd *hcd)
+  
+  	/* cache this readonly data; minimize chip reads */
+  	ehci->hcs_params = ehci_readl(ehci, &ehci->caps->hcs_params);
+diff --git a/target/linux/bcm63xx/patches-5.4/339-MIPS-BCM63XX-add-support-for-BCM63268.patch b/target/linux/bcm63xx/patches-5.4/339-MIPS-BCM63XX-add-support-for-BCM63268.patch
+index b1831026d4..a61a96f569 100644
+--- a/target/linux/bcm63xx/patches-5.4/339-MIPS-BCM63XX-add-support-for-BCM63268.patch
++++ b/target/linux/bcm63xx/patches-5.4/339-MIPS-BCM63XX-add-support-for-BCM63268.patch
+@@ -107,7 +107,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  }
+  
+  static struct clk clk_pcie = {
+-@@ -536,6 +550,21 @@ static struct clk_lookup bcm6368_clks[]
++@@ -542,6 +556,21 @@ static struct clk_lookup bcm6368_clks[]
+  	CLKDEV_INIT(NULL, "ipsec", &clk_ipsec),
+  };
+  
+@@ -129,7 +129,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  #define HSSPI_PLL_HZ_6328	133333333
+  #define HSSPI_PLL_HZ_6362	400000000
+  
+-@@ -568,6 +597,10 @@ static int __init bcm63xx_clk_init(void)
++@@ -574,6 +603,10 @@ static int __init bcm63xx_clk_init(void)
+  	case BCM6368_CPU_ID:
+  		clkdev_add_table(bcm6368_clks, ARRAY_SIZE(bcm6368_clks));
+  		break;
+diff --git a/target/linux/bcm63xx/patches-5.4/341-MIPS-BCM63XX-add-support-for-BCM6318.patch b/target/linux/bcm63xx/patches-5.4/341-MIPS-BCM63XX-add-support-for-BCM6318.patch
+index c297321b64..48b183ac3b 100644
+--- a/target/linux/bcm63xx/patches-5.4/341-MIPS-BCM63XX-add-support-for-BCM6318.patch
++++ b/target/linux/bcm63xx/patches-5.4/341-MIPS-BCM63XX-add-support-for-BCM6318.patch
+@@ -57,7 +57,7 @@ Subject: [PATCH 51/53] MIPS: BCM63XX: add support for BCM6318
+  		mask = CKCTL_6328_HSSPI_EN;
+  	else if (BCMCPU_IS_6362())
+  		mask = CKCTL_6362_HSSPI_EN;
+-@@ -444,6 +446,19 @@ static struct clk_lookup bcm3368_clks[]
++@@ -450,6 +452,19 @@ static struct clk_lookup bcm3368_clks[]
+  	CLKDEV_INIT("bcm63xx_enet.1", "enet", &clk_enet1),
+  };
+  
+@@ -77,7 +77,7 @@ Subject: [PATCH 51/53] MIPS: BCM63XX: add support for BCM6318
+  static struct clk_lookup bcm6328_clks[] = {
+  	/* fixed rate clocks */
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+-@@ -565,6 +580,7 @@ static struct clk_lookup bcm63268_clks[]
++@@ -571,6 +586,7 @@ static struct clk_lookup bcm63268_clks[]
+  	CLKDEV_INIT(NULL, "pcie", &clk_pcie),
+  };
+  
+@@ -85,7 +85,7 @@ Subject: [PATCH 51/53] MIPS: BCM63XX: add support for BCM6318
+  #define HSSPI_PLL_HZ_6328	133333333
+  #define HSSPI_PLL_HZ_6362	400000000
+  
+-@@ -574,6 +590,10 @@ static int __init bcm63xx_clk_init(void)
++@@ -580,6 +596,10 @@ static int __init bcm63xx_clk_init(void)
+  	case BCM3368_CPU_ID:
+  		clkdev_add_table(bcm3368_clks, ARRAY_SIZE(bcm3368_clks));
+  		break;
+diff --git a/target/linux/bcm63xx/patches-5.4/389-MIPS-BCM63XX-add-clkdev-lookups-for-device-tree.patch b/target/linux/bcm63xx/patches-5.4/389-MIPS-BCM63XX-add-clkdev-lookups-for-device-tree.patch
+index fe4dbe3e13..45d4b8487c 100644
+--- a/target/linux/bcm63xx/patches-5.4/389-MIPS-BCM63XX-add-clkdev-lookups-for-device-tree.patch
++++ b/target/linux/bcm63xx/patches-5.4/389-MIPS-BCM63XX-add-clkdev-lookups-for-device-tree.patch
+@@ -9,7 +9,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+ 
+ --- a/arch/mips/bcm63xx/clk.c
+ +++ b/arch/mips/bcm63xx/clk.c
+-@@ -489,6 +489,8 @@ static struct clk_lookup bcm3368_clks[]
++@@ -495,6 +495,8 @@ static struct clk_lookup bcm3368_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+@@ -18,7 +18,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enet0", &clk_enet0),
+  	CLKDEV_INIT(NULL, "enet1", &clk_enet1),
+-@@ -505,7 +507,9 @@ static struct clk_lookup bcm6318_clks[]
++@@ -511,7 +513,9 @@ static struct clk_lookup bcm6318_clks[]
+  	/* fixed rate clocks */
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+@@ -28,7 +28,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+-@@ -519,7 +523,10 @@ static struct clk_lookup bcm6328_clks[]
++@@ -525,7 +529,10 @@ static struct clk_lookup bcm6328_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+@@ -39,7 +39,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+-@@ -532,6 +539,7 @@ static struct clk_lookup bcm6338_clks[]
++@@ -538,6 +545,7 @@ static struct clk_lookup bcm6338_clks[]
+  	/* fixed rate clocks */
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+@@ -47,7 +47,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enet0", &clk_enet0),
+  	CLKDEV_INIT(NULL, "enet1", &clk_enet1),
+-@@ -546,6 +554,7 @@ static struct clk_lookup bcm6345_clks[]
++@@ -552,6 +560,7 @@ static struct clk_lookup bcm6345_clks[]
+  	/* fixed rate clocks */
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+@@ -55,7 +55,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enet0", &clk_enet0),
+  	CLKDEV_INIT(NULL, "enet1", &clk_enet1),
+-@@ -560,6 +569,7 @@ static struct clk_lookup bcm6348_clks[]
++@@ -566,6 +575,7 @@ static struct clk_lookup bcm6348_clks[]
+  	/* fixed rate clocks */
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+@@ -63,7 +63,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enet0", &clk_enet0),
+  	CLKDEV_INIT(NULL, "enet1", &clk_enet1),
+-@@ -576,6 +586,8 @@ static struct clk_lookup bcm6358_clks[]
++@@ -582,6 +592,8 @@ static struct clk_lookup bcm6358_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+@@ -72,7 +72,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enet0", &clk_enet0),
+  	CLKDEV_INIT(NULL, "enet1", &clk_enet1),
+-@@ -595,7 +607,10 @@ static struct clk_lookup bcm6362_clks[]
++@@ -601,7 +613,10 @@ static struct clk_lookup bcm6362_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+@@ -83,7 +83,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+-@@ -611,6 +626,8 @@ static struct clk_lookup bcm6368_clks[]
++@@ -617,6 +632,8 @@ static struct clk_lookup bcm6368_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+@@ -92,7 +92,7 @@ Subject: [PATCH] MIPS: BCM63XX: add clkdev lookups for device tree
+  	/* gated clocks */
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+-@@ -625,7 +642,10 @@ static struct clk_lookup bcm63268_clks[]
++@@ -631,7 +648,10 @@ static struct clk_lookup bcm63268_clks[]
+  	CLKDEV_INIT(NULL, "periph", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.0", "refclk", &clk_periph),
+  	CLKDEV_INIT("bcm63xx_uart.1", "refclk", &clk_periph),
+diff --git a/target/linux/bcm63xx/patches-5.4/430-MIPS-BCM63XX-add-nand-clocks.patch b/target/linux/bcm63xx/patches-5.4/430-MIPS-BCM63XX-add-nand-clocks.patch
+index 883f76fe76..a8f70e3db3 100644
+--- a/target/linux/bcm63xx/patches-5.4/430-MIPS-BCM63XX-add-nand-clocks.patch
++++ b/target/linux/bcm63xx/patches-5.4/430-MIPS-BCM63XX-add-nand-clocks.patch
+@@ -24,7 +24,7 @@
+   * Internal peripheral clock
+   */
+  static struct clk clk_periph = {
+-@@ -612,6 +629,7 @@ static struct clk_lookup bcm6362_clks[]
++@@ -618,6 +635,7 @@ static struct clk_lookup bcm6362_clks[]
+  	CLKDEV_INIT("bcm63xx-hsspi.0", "pll", &clk_hsspi_pll),
+  	CLKDEV_INIT("10001000.spi", "pll", &clk_hsspi_pll),
+  	/* gated clocks */
+@@ -32,7 +32,7 @@
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+  	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
+-@@ -629,6 +647,7 @@ static struct clk_lookup bcm6368_clks[]
++@@ -635,6 +653,7 @@ static struct clk_lookup bcm6368_clks[]
+  	CLKDEV_INIT("10000100.serial", "refclk", &clk_periph),
+  	CLKDEV_INIT("10000120.serial", "refclk", &clk_periph),
+  	/* gated clocks */
+@@ -40,7 +40,7 @@
+  	CLKDEV_INIT(NULL, "enetsw", &clk_enetsw),
+  	CLKDEV_INIT(NULL, "usbh", &clk_usbh),
+  	CLKDEV_INIT(NULL, "usbd", &clk_usbd),
+-@@ -647,6 +666,7 @@ static struct clk_lookup bcm63268_clks[]
++@@ -653,6 +672,7 @@ static struct clk_lookup bcm63268_clks[]
+  	CLKDEV_INIT("bcm63xx-hsspi.0", "pll", &clk_hsspi_pll),
+  	CLKDEV_INIT("10001000.spi", "pll", &clk_hsspi_pll),
+  	/* gated clocks */
+diff --git a/target/linux/generic/backport-5.4/700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch b/target/linux/generic/backport-5.4/700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch
+index 13f0d9d000..a8181bca94 100644
+--- a/target/linux/generic/backport-5.4/700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch
++++ b/target/linux/generic/backport-5.4/700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch
+@@ -66,7 +66,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/net/core/dev.c
+ +++ b/net/core/dev.c
+-@@ -5429,8 +5429,7 @@ static inline void skb_gro_reset_offset(
++@@ -5432,8 +5432,7 @@ static inline void skb_gro_reset_offset(
+  	NAPI_GRO_CB(skb)->frag0 = NULL;
+  	NAPI_GRO_CB(skb)->frag0_len = 0;
+  
+diff --git a/target/linux/generic/backport-5.4/800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch b/target/linux/generic/backport-5.4/800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch
+index 8c18d5df6d..2133280e88 100644
+--- a/target/linux/generic/backport-5.4/800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch
++++ b/target/linux/generic/backport-5.4/800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch
+@@ -68,7 +68,7 @@ Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  	kfree(sdev->inquiry);
+  	kfree(sdev);
+  
+-@@ -883,6 +892,8 @@ static struct bin_attribute dev_attr_vpd
++@@ -891,6 +900,8 @@ static struct bin_attribute dev_attr_vpd
+  
+  sdev_vpd_pg_attr(pg83);
+  sdev_vpd_pg_attr(pg80);
+@@ -77,7 +77,7 @@ Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  
+  static ssize_t show_inquiry(struct file *filep, struct kobject *kobj,
+  			    struct bin_attribute *bin_attr,
+-@@ -1215,12 +1226,18 @@ static umode_t scsi_sdev_bin_attr_is_vis
++@@ -1223,12 +1234,18 @@ static umode_t scsi_sdev_bin_attr_is_vis
+  	struct scsi_device *sdev = to_scsi_device(dev);
+  
+  
+@@ -96,7 +96,7 @@ Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  	return S_IRUGO;
+  }
+  
+-@@ -1263,8 +1280,10 @@ static struct attribute *scsi_sdev_attrs
++@@ -1271,8 +1288,10 @@ static struct attribute *scsi_sdev_attrs
+  };
+  
+  static struct bin_attribute *scsi_sdev_bin_attrs[] = {
+diff --git a/target/linux/generic/hack-5.4/301-mips_image_cmdline_hack.patch b/target/linux/generic/hack-5.4/301-mips_image_cmdline_hack.patch
+index ada65cd2a0..eab6349e54 100644
+--- a/target/linux/generic/hack-5.4/301-mips_image_cmdline_hack.patch
++++ b/target/linux/generic/hack-5.4/301-mips_image_cmdline_hack.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
+ 
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -1159,6 +1159,10 @@ config SYNC_R4K
++@@ -1162,6 +1162,10 @@ config SYNC_R4K
+  config MIPS_MACHINE
+  	def_bool n
+  
+diff --git a/target/linux/generic/hack-5.4/661-use_fq_codel_by_default.patch b/target/linux/generic/hack-5.4/661-use_fq_codel_by_default.patch
+index bbe43d24c2..11f1a25bce 100644
+--- a/target/linux/generic/hack-5.4/661-use_fq_codel_by_default.patch
++++ b/target/linux/generic/hack-5.4/661-use_fq_codel_by_default.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/include/net/sch_generic.h
+ +++ b/include/net/sch_generic.h
+-@@ -615,12 +615,13 @@ extern struct Qdisc_ops noop_qdisc_ops;
++@@ -617,12 +617,13 @@ extern struct Qdisc_ops noop_qdisc_ops;
+  extern struct Qdisc_ops pfifo_fast_ops;
+  extern struct Qdisc_ops mq_qdisc_ops;
+  extern struct Qdisc_ops noqueue_qdisc_ops;
+diff --git a/target/linux/generic/hack-5.4/721-phy_packets.patch b/target/linux/generic/hack-5.4/721-phy_packets.patch
+index bc9b3a4783..268e9df051 100644
+--- a/target/linux/generic/hack-5.4/721-phy_packets.patch
++++ b/target/linux/generic/hack-5.4/721-phy_packets.patch
+@@ -101,7 +101,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	help
+ --- a/net/core/dev.c
+ +++ b/net/core/dev.c
+-@@ -3198,10 +3198,20 @@ static int xmit_one(struct sk_buff *skb,
++@@ -3200,10 +3200,20 @@ static int xmit_one(struct sk_buff *skb,
+  	if (dev_nit_active(dev))
+  		dev_queue_xmit_nit(skb, dev);
+  
+diff --git a/target/linux/generic/hack-5.4/902-debloat_proc.patch b/target/linux/generic/hack-5.4/902-debloat_proc.patch
+index 042588a623..198b03768b 100644
+--- a/target/linux/generic/hack-5.4/902-debloat_proc.patch
++++ b/target/linux/generic/hack-5.4/902-debloat_proc.patch
+@@ -158,7 +158,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  				IPC_SEM_IDS, sysvipc_sem_proc_show);
+ --- a/ipc/shm.c
+ +++ b/ipc/shm.c
+-@@ -144,6 +144,8 @@ pure_initcall(ipc_ns_init);
++@@ -154,6 +154,8 @@ pure_initcall(ipc_ns_init);
+  
+  void __init shm_init(void)
+  {
+diff --git a/target/linux/generic/hack-5.4/904-debloat_dma_buf.patch b/target/linux/generic/hack-5.4/904-debloat_dma_buf.patch
+index ad8636b16d..76032d9b82 100644
+--- a/target/linux/generic/hack-5.4/904-debloat_dma_buf.patch
++++ b/target/linux/generic/hack-5.4/904-debloat_dma_buf.patch
+@@ -45,7 +45,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	selftest.o \
+ --- a/drivers/dma-buf/dma-buf.c
+ +++ b/drivers/dma-buf/dma-buf.c
+-@@ -1313,4 +1313,5 @@ static void __exit dma_buf_deinit(void)
++@@ -1314,4 +1314,5 @@ static void __exit dma_buf_deinit(void)
+  	dma_buf_uninit_debugfs();
+  	kern_unmount(dma_buf_mnt);
+  }
+@@ -54,7 +54,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ +MODULE_LICENSE("GPL");
+ --- a/kernel/sched/core.c
+ +++ b/kernel/sched/core.c
+-@@ -2767,6 +2767,7 @@ int wake_up_state(struct task_struct *p,
++@@ -2770,6 +2770,7 @@ int wake_up_state(struct task_struct *p,
+  {
+  	return try_to_wake_up(p, state, 0);
+  }
+diff --git a/target/linux/generic/pending-5.4/103-MIPS-select-CPU_MIPS64-for-remaining-MIPS64-CPUs.patch b/target/linux/generic/pending-5.4/103-MIPS-select-CPU_MIPS64-for-remaining-MIPS64-CPUs.patch
+index 4e7a532156..2960c24980 100644
+--- a/target/linux/generic/pending-5.4/103-MIPS-select-CPU_MIPS64-for-remaining-MIPS64-CPUs.patch
++++ b/target/linux/generic/pending-5.4/103-MIPS-select-CPU_MIPS64-for-remaining-MIPS64-CPUs.patch
+@@ -25,7 +25,7 @@ Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+ 
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -2037,7 +2037,8 @@ config CPU_MIPS32
++@@ -2041,7 +2041,8 @@ config CPU_MIPS32
+  
+  config CPU_MIPS64
+  	bool
+diff --git a/target/linux/generic/pending-5.4/110-ehci_hcd_ignore_oc.patch b/target/linux/generic/pending-5.4/110-ehci_hcd_ignore_oc.patch
+index ce583ceac5..1d1e9dd037 100644
+--- a/target/linux/generic/pending-5.4/110-ehci_hcd_ignore_oc.patch
++++ b/target/linux/generic/pending-5.4/110-ehci_hcd_ignore_oc.patch
+@@ -17,7 +17,7 @@ Signed-off-by: Florian Fainelli <florian@openwrt.org>
+ 
+ --- a/drivers/usb/host/ehci-hcd.c
+ +++ b/drivers/usb/host/ehci-hcd.c
+-@@ -651,7 +651,7 @@ static int ehci_run (struct usb_hcd *hcd
++@@ -660,7 +660,7 @@ static int ehci_run (struct usb_hcd *hcd
+  		"USB %x.%x started, EHCI %x.%02x%s\n",
+  		((ehci->sbrn & 0xf0)>>4), (ehci->sbrn & 0x0f),
+  		temp >> 8, temp & 0xff,
+@@ -48,7 +48,7 @@ Signed-off-by: Florian Fainelli <florian@openwrt.org>
+  			/*
+ --- a/drivers/usb/host/ehci-platform.c
+ +++ b/drivers/usb/host/ehci-platform.c
+-@@ -319,6 +319,8 @@ static int ehci_platform_probe(struct pl
++@@ -325,6 +325,8 @@ static int ehci_platform_probe(struct pl
+  		hcd->has_tt = 1;
+  	if (pdata->reset_on_resume)
+  		priv->reset_on_resume = true;
+@@ -59,10 +59,10 @@ Signed-off-by: Florian Fainelli <florian@openwrt.org>
+  	if (ehci->big_endian_mmio) {
+ --- a/drivers/usb/host/ehci.h
+ +++ b/drivers/usb/host/ehci.h
+-@@ -218,6 +218,7 @@ struct ehci_hcd {			/* one per controlle
+- 	unsigned		frame_index_bug:1; /* MosChip (AKA NetMos) */
++@@ -219,6 +219,7 @@ struct ehci_hcd {			/* one per controlle
+  	unsigned		need_oc_pp_cycle:1; /* MPC834X port power */
+  	unsigned		imx28_write_fix:1; /* For Freescale i.MX28 */
++ 	unsigned		is_aspeed:1;
+ +	unsigned		ignore_oc:1;
+  
+  	/* required for usb32 quirk */
+diff --git a/target/linux/generic/pending-5.4/300-mips_expose_boot_raw.patch b/target/linux/generic/pending-5.4/300-mips_expose_boot_raw.patch
+index 7b9ae65c60..b8a9018b00 100644
+--- a/target/linux/generic/pending-5.4/300-mips_expose_boot_raw.patch
++++ b/target/linux/generic/pending-5.4/300-mips_expose_boot_raw.patch
+@@ -9,7 +9,7 @@ Acked-by: Rob Landley <rob@landley.net>
+ ---
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -1069,9 +1069,6 @@ config FW_ARC
++@@ -1072,9 +1072,6 @@ config FW_ARC
+  config ARCH_MAY_HAVE_PC_FDC
+  	bool
+  
+@@ -19,7 +19,7 @@ Acked-by: Rob Landley <rob@landley.net>
+  config CEVT_BCM1480
+  	bool
+  
+-@@ -3044,6 +3041,18 @@ choice
++@@ -3048,6 +3045,18 @@ choice
+  		bool "Extend builtin kernel arguments with bootloader arguments"
+  endchoice
+  
+diff --git a/target/linux/generic/pending-5.4/642-net-8021q-support-hardware-flow-table-offload.patch b/target/linux/generic/pending-5.4/642-net-8021q-support-hardware-flow-table-offload.patch
+index d67cad7159..cfcc28af3e 100644
+--- a/target/linux/generic/pending-5.4/642-net-8021q-support-hardware-flow-table-offload.patch
++++ b/target/linux/generic/pending-5.4/642-net-8021q-support-hardware-flow-table-offload.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  #include "vlan.h"
+  #include "vlanproc.h"
+  #include <linux/if_vlan.h>
+-@@ -744,6 +749,27 @@ static int vlan_dev_get_iflink(const str
++@@ -747,6 +752,27 @@ static int vlan_dev_get_iflink(const str
+  	return real_dev->ifindex;
+  }
+  
+@@ -49,7 +49,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  static const struct ethtool_ops vlan_ethtool_ops = {
+  	.get_link_ksettings	= vlan_ethtool_get_link_ksettings,
+  	.get_drvinfo	        = vlan_ethtool_get_drvinfo,
+-@@ -782,6 +808,9 @@ static const struct net_device_ops vlan_
++@@ -785,6 +811,9 @@ static const struct net_device_ops vlan_
+  #endif
+  	.ndo_fix_features	= vlan_dev_fix_features,
+  	.ndo_get_iflink		= vlan_dev_get_iflink,
+diff --git a/target/linux/generic/pending-5.4/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-5.4/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+index 06227cfafe..8cf36addeb 100644
+--- a/target/linux/generic/pending-5.4/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
++++ b/target/linux/generic/pending-5.4/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+@@ -157,7 +157,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	case RTN_THROW:
+  	case RTN_UNREACHABLE:
+  	default:
+-@@ -4434,6 +4453,17 @@ static int ip6_pkt_prohibit_out(struct n
++@@ -4453,6 +4472,17 @@ static int ip6_pkt_prohibit_out(struct n
+  	return ip6_pkt_drop(skb, ICMPV6_ADM_PROHIBITED, IPSTATS_MIB_OUTNOROUTES);
+  }
+  
+@@ -175,7 +175,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  /*
+   *	Allocate a dst for local (unicast / anycast) address.
+   */
+-@@ -4914,7 +4944,8 @@ static int rtm_to_fib6_config(struct sk_
++@@ -4933,7 +4963,8 @@ static int rtm_to_fib6_config(struct sk_
+  	if (rtm->rtm_type == RTN_UNREACHABLE ||
+  	    rtm->rtm_type == RTN_BLACKHOLE ||
+  	    rtm->rtm_type == RTN_PROHIBIT ||
+@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		cfg->fc_flags |= RTF_REJECT;
+  
+  	if (rtm->rtm_type == RTN_LOCAL)
+-@@ -6037,6 +6068,8 @@ static int ip6_route_dev_notify(struct n
++@@ -6056,6 +6087,8 @@ static int ip6_route_dev_notify(struct n
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
+  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
+@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
+  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
+  #endif
+-@@ -6048,6 +6081,7 @@ static int ip6_route_dev_notify(struct n
++@@ -6067,6 +6100,7 @@ static int ip6_route_dev_notify(struct n
+  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
+@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
+  #endif
+  	}
+-@@ -6240,6 +6274,8 @@ static int __net_init ip6_route_net_init
++@@ -6259,6 +6293,8 @@ static int __net_init ip6_route_net_init
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	net->ipv6.fib6_has_custom_rules = false;
+@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
+  					       sizeof(*net->ipv6.ip6_prohibit_entry),
+  					       GFP_KERNEL);
+-@@ -6250,11 +6286,21 @@ static int __net_init ip6_route_net_init
++@@ -6269,11 +6305,21 @@ static int __net_init ip6_route_net_init
+  			 ip6_template_metrics, true);
+  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->rt6i_uncached);
+  
+@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
+  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
+  			 ip6_template_metrics, true);
+-@@ -6278,6 +6324,8 @@ out:
++@@ -6297,6 +6343,8 @@ out:
+  	return ret;
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  out_ip6_prohibit_entry:
+  	kfree(net->ipv6.ip6_prohibit_entry);
+  out_ip6_null_entry:
+-@@ -6297,6 +6345,7 @@ static void __net_exit ip6_route_net_exi
++@@ -6316,6 +6364,7 @@ static void __net_exit ip6_route_net_exi
+  	kfree(net->ipv6.ip6_null_entry);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	kfree(net->ipv6.ip6_prohibit_entry);
+@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	kfree(net->ipv6.ip6_blk_hole_entry);
+  #endif
+  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
+-@@ -6374,6 +6423,9 @@ void __init ip6_route_init_special_entri
++@@ -6393,6 +6442,9 @@ void __init ip6_route_init_special_entri
+  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
+  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+diff --git a/target/linux/generic/pending-5.4/680-NET-skip-GRO-for-foreign-MAC-addresses.patch b/target/linux/generic/pending-5.4/680-NET-skip-GRO-for-foreign-MAC-addresses.patch
+index e0540866c6..b1ac7ffca0 100644
+--- a/target/linux/generic/pending-5.4/680-NET-skip-GRO-for-foreign-MAC-addresses.patch
++++ b/target/linux/generic/pending-5.4/680-NET-skip-GRO-for-foreign-MAC-addresses.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	__u16			tc_index;	/* traffic control index */
+ --- a/net/core/dev.c
+ +++ b/net/core/dev.c
+-@@ -5495,6 +5495,9 @@ static enum gro_result dev_gro_receive(s
++@@ -5498,6 +5498,9 @@ static enum gro_result dev_gro_receive(s
+  	int same_flow;
+  	int grow;
+  
+@@ -42,7 +42,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	if (netif_elide_gro(skb->dev))
+  		goto normal;
+  
+-@@ -7297,6 +7300,48 @@ static void __netdev_adjacent_dev_unlink
++@@ -7300,6 +7303,48 @@ static void __netdev_adjacent_dev_unlink
+  					   &upper_dev->adj_list.lower);
+  }
+  
+@@ -91,7 +91,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  static int __netdev_upper_dev_link(struct net_device *dev,
+  				   struct net_device *upper_dev, bool master,
+  				   void *upper_priv, void *upper_info,
+-@@ -7347,6 +7392,7 @@ static int __netdev_upper_dev_link(struc
++@@ -7350,6 +7395,7 @@ static int __netdev_upper_dev_link(struc
+  	if (ret)
+  		return ret;
+  
+@@ -99,7 +99,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	ret = call_netdevice_notifiers_info(NETDEV_CHANGEUPPER,
+  					    &changeupper_info.info);
+  	ret = notifier_to_errno(ret);
+-@@ -7440,6 +7486,7 @@ void netdev_upper_dev_unlink(struct net_
++@@ -7443,6 +7489,7 @@ void netdev_upper_dev_unlink(struct net_
+  
+  	__netdev_adjacent_dev_unlink_neighbour(dev, upper_dev);
+  
+@@ -107,7 +107,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	call_netdevice_notifiers_info(NETDEV_CHANGEUPPER,
+  				      &changeupper_info.info);
+  
+-@@ -8170,6 +8217,7 @@ int dev_set_mac_address(struct net_devic
++@@ -8173,6 +8220,7 @@ int dev_set_mac_address(struct net_devic
+  	if (err)
+  		return err;
+  	dev->addr_assign_type = NET_ADDR_SET;
+diff --git a/target/linux/generic/pending-5.4/690-net-add-support-for-threaded-NAPI-polling.patch b/target/linux/generic/pending-5.4/690-net-add-support-for-threaded-NAPI-polling.patch
+index febec868f4..d244293f4d 100644
+--- a/target/linux/generic/pending-5.4/690-net-add-support-for-threaded-NAPI-polling.patch
++++ b/target/linux/generic/pending-5.4/690-net-add-support-for-threaded-NAPI-polling.patch
+@@ -95,7 +95,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  static int netif_rx_internal(struct sk_buff *skb);
+  static int call_netdevice_notifiers_info(unsigned long val,
+-@@ -5937,6 +5938,11 @@ void __napi_schedule(struct napi_struct
++@@ -5940,6 +5941,11 @@ void __napi_schedule(struct napi_struct
+  {
+  	unsigned long flags;
+  
+@@ -107,7 +107,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	local_irq_save(flags);
+  	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+  	local_irq_restore(flags);
+-@@ -5988,6 +5994,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
++@@ -5991,6 +5997,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
+   */
+  void __napi_schedule_irqoff(struct napi_struct *n)
+  {
+@@ -119,7 +119,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+  		____napi_schedule(this_cpu_ptr(&softnet_data), n);
+  	else
+-@@ -6252,9 +6263,89 @@ static void init_gro_hash(struct napi_st
++@@ -6255,9 +6266,89 @@ static void init_gro_hash(struct napi_st
+  	napi->gro_bitmask = 0;
+  }
+  
+@@ -209,7 +209,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	INIT_LIST_HEAD(&napi->poll_list);
+  	hrtimer_init(&napi->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+  	napi->timer.function = napi_watchdog;
+-@@ -6271,6 +6362,7 @@ void netif_napi_add(struct net_device *d
++@@ -6274,6 +6365,7 @@ void netif_napi_add(struct net_device *d
+  #ifdef CONFIG_NETPOLL
+  	napi->poll_owner = -1;
+  #endif
+@@ -217,7 +217,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	set_bit(NAPI_STATE_SCHED, &napi->state);
+  	set_bit(NAPI_STATE_NPSVC, &napi->state);
+  	list_add_rcu(&napi->dev_list, &dev->napi_list);
+-@@ -6311,6 +6403,7 @@ static void flush_gro_hash(struct napi_s
++@@ -6314,6 +6406,7 @@ static void flush_gro_hash(struct napi_s
+  void netif_napi_del(struct napi_struct *napi)
+  {
+  	might_sleep();
+@@ -225,7 +225,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	if (napi_hash_del(napi))
+  		synchronize_net();
+  	list_del_init(&napi->dev_list);
+-@@ -6323,50 +6416,18 @@ EXPORT_SYMBOL(netif_napi_del);
++@@ -6326,50 +6419,18 @@ EXPORT_SYMBOL(netif_napi_del);
+  
+  static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+  {
+@@ -280,7 +280,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  	/* Some drivers may have called napi_schedule
+  	 * prior to exhausting their budget.
+-@@ -10346,6 +10407,10 @@ static int __init net_dev_init(void)
++@@ -10349,6 +10410,10 @@ static int __init net_dev_init(void)
+  		sd->backlog.weight = weight_p;
+  	}
+  
+@@ -293,7 +293,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	/* The loopback device is special if any other network devices
+ --- a/net/core/net-sysfs.c
+ +++ b/net/core/net-sysfs.c
+-@@ -442,6 +442,52 @@ static ssize_t proto_down_store(struct d
++@@ -470,6 +470,52 @@ static ssize_t proto_down_store(struct d
+  }
+  NETDEVICE_SHOW_RW(proto_down, fmt_dec);
+  
+@@ -346,7 +346,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  static ssize_t phys_port_id_show(struct device *dev,
+  				 struct device_attribute *attr, char *buf)
+  {
+-@@ -532,6 +578,7 @@ static struct attribute *net_class_attrs
++@@ -581,6 +627,7 @@ static struct attribute *net_class_attrs
+  	&dev_attr_flags.attr,
+  	&dev_attr_tx_queue_len.attr,
+  	&dev_attr_gro_flush_timeout.attr,
+diff --git a/target/linux/ipq806x/patches-5.4/0065-arm-override-compiler-flags.patch b/target/linux/ipq806x/patches-5.4/0065-arm-override-compiler-flags.patch
+index 0d2a4274c7..23c8581636 100644
+--- a/target/linux/ipq806x/patches-5.4/0065-arm-override-compiler-flags.patch
++++ b/target/linux/ipq806x/patches-5.4/0065-arm-override-compiler-flags.patch
+@@ -13,9 +13,9 @@ Signed-off-by: John Crispin <john@phrozen.org>
+ @@ -67,7 +67,7 @@ KBUILD_CFLAGS	+= $(call cc-option,-fno-i
+  # macro, but instead defines a whole series of macros which makes
+  # testing for a specific architecture or later rather impossible.
+- arch-$(CONFIG_CPU_32v7M)	=-D__LINUX_ARM_ARCH__=7 -march=armv7-m -Wa,-march=armv7-m
+--arch-$(CONFIG_CPU_32v7)		=-D__LINUX_ARM_ARCH__=7 $(call cc-option,-march=armv7-a,-march=armv5t -Wa$(comma)-march=armv7-a)
++ arch-$(CONFIG_CPU_32v7M)	=-D__LINUX_ARM_ARCH__=7 -march=armv7-m
++-arch-$(CONFIG_CPU_32v7)		=-D__LINUX_ARM_ARCH__=7 -march=armv7-a
+ +arch-$(CONFIG_CPU_32v7)		=-D__LINUX_ARM_ARCH__=7 -mcpu=cortex-a15
+- arch-$(CONFIG_CPU_32v6)		=-D__LINUX_ARM_ARCH__=6 $(call cc-option,-march=armv6,-march=armv5t -Wa$(comma)-march=armv6)
++ arch-$(CONFIG_CPU_32v6)		=-D__LINUX_ARM_ARCH__=6 -march=armv6
+  # Only override the compiler option if ARMv6. The ARMv6K extensions are
+  # always available in ARMv7
+diff --git a/target/linux/lantiq/patches-5.4/0001-MIPS-lantiq-add-pcie-driver.patch b/target/linux/lantiq/patches-5.4/0001-MIPS-lantiq-add-pcie-driver.patch
+index 702424ec45..d856e24d9f 100644
+--- a/target/linux/lantiq/patches-5.4/0001-MIPS-lantiq-add-pcie-driver.patch
++++ b/target/linux/lantiq/patches-5.4/0001-MIPS-lantiq-add-pcie-driver.patch
+@@ -5480,7 +5480,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+  	  (transaction layer end-to-end CRC checking).
+ --- a/include/linux/pci.h
+ +++ b/include/linux/pci.h
+-@@ -1390,6 +1390,8 @@ void pci_walk_bus(struct pci_bus *top, i
++@@ -1392,6 +1392,8 @@ void pci_walk_bus(struct pci_bus *top, i
+  		  void *userdata);
+  int pci_cfg_space_size(struct pci_dev *dev);
+  unsigned char pci_bus_max_busnr(struct pci_bus *bus);
+diff --git a/target/linux/lantiq/patches-5.4/0152-lantiq-VPE.patch b/target/linux/lantiq/patches-5.4/0152-lantiq-VPE.patch
+index 2aff479024..066d4313e1 100644
+--- a/target/linux/lantiq/patches-5.4/0152-lantiq-VPE.patch
++++ b/target/linux/lantiq/patches-5.4/0152-lantiq-VPE.patch
+@@ -1,6 +1,6 @@
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -2379,6 +2379,12 @@ config MIPS_VPE_LOADER
++@@ -2383,6 +2383,12 @@ config MIPS_VPE_LOADER
+  	  Includes a loader for loading an elf relocatable object
+  	  onto another VPE and running it.
+  
+diff --git a/target/linux/layerscape/patches-5.4/301-arch-0002-arm64-add-support-to-remap-kernel-cacheable-memory-t.patch b/target/linux/layerscape/patches-5.4/301-arch-0002-arm64-add-support-to-remap-kernel-cacheable-memory-t.patch
+index 4c2c487ac0..e6c96a052a 100644
+--- a/target/linux/layerscape/patches-5.4/301-arch-0002-arm64-add-support-to-remap-kernel-cacheable-memory-t.patch
++++ b/target/linux/layerscape/patches-5.4/301-arch-0002-arm64-add-support-to-remap-kernel-cacheable-memory-t.patch
+@@ -13,7 +13,7 @@ Reviewed-by: Stuart Yoder <stuart.yoder@freescale.com>
+ 
+ --- a/arch/arm64/include/asm/pgtable.h
+ +++ b/arch/arm64/include/asm/pgtable.h
+-@@ -422,6 +422,9 @@ static inline pmd_t pmd_mkdevmap(pmd_t p
++@@ -428,6 +428,9 @@ static inline pmd_t pmd_mkdevmap(pmd_t p
+  	__pgprot_modify(prot, PTE_ATTRINDX_MASK, PTE_ATTRINDX(MT_DEVICE_nGnRnE) | PTE_PXN | PTE_UXN)
+  #define pgprot_writecombine(prot) \
+  	__pgprot_modify(prot, PTE_ATTRINDX_MASK, PTE_ATTRINDX(MT_NORMAL_NC) | PTE_PXN | PTE_UXN)
+diff --git a/target/linux/layerscape/patches-5.4/301-arch-0003-arm64-pgtable-add-support-to-map-cacheable-and-non-s.patch b/target/linux/layerscape/patches-5.4/301-arch-0003-arm64-pgtable-add-support-to-map-cacheable-and-non-s.patch
+index 63366ee221..bd39eb7e14 100644
+--- a/target/linux/layerscape/patches-5.4/301-arch-0003-arm64-pgtable-add-support-to-map-cacheable-and-non-s.patch
++++ b/target/linux/layerscape/patches-5.4/301-arch-0003-arm64-pgtable-add-support-to-map-cacheable-and-non-s.patch
+@@ -11,7 +11,7 @@ Signed-off-by: Haiying Wang <Haiying.wang@freescale.com>
+ 
+ --- a/arch/arm64/include/asm/pgtable.h
+ +++ b/arch/arm64/include/asm/pgtable.h
+-@@ -425,6 +425,8 @@ static inline pmd_t pmd_mkdevmap(pmd_t p
++@@ -431,6 +431,8 @@ static inline pmd_t pmd_mkdevmap(pmd_t p
+  #define pgprot_cached(prot) \
+  	__pgprot_modify(prot, PTE_ATTRINDX_MASK, PTE_ATTRINDX(MT_NORMAL) | \
+  			PTE_PXN | PTE_UXN)
+diff --git a/target/linux/layerscape/patches-5.4/302-dts-0011-ARM-dts-accumulated-change.patch b/target/linux/layerscape/patches-5.4/302-dts-0011-ARM-dts-accumulated-change.patch
+index c49c4db2a7..6f3181d65a 100644
+--- a/target/linux/layerscape/patches-5.4/302-dts-0011-ARM-dts-accumulated-change.patch
++++ b/target/linux/layerscape/patches-5.4/302-dts-0011-ARM-dts-accumulated-change.patch
+@@ -75,7 +75,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			big-endian;
+  		};
+  
+-@@ -371,7 +372,7 @@
++@@ -338,7 +339,7 @@
+  		};
+  
+  		i2c0: i2c@2180000 {
+@@ -84,7 +84,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			#address-cells = <1>;
+  			#size-cells = <0>;
+  			reg = <0x0 0x2180000 0x0 0x10000>;
+-@@ -380,11 +381,12 @@
++@@ -347,11 +348,12 @@
+  			clocks = <&clockgen 4 1>;
+  			dma-names = "tx", "rx";
+  			dmas = <&edma0 1 39>, <&edma0 1 38>;
+@@ -98,7 +98,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			#address-cells = <1>;
+  			#size-cells = <0>;
+  			reg = <0x0 0x2190000 0x0 0x10000>;
+-@@ -393,6 +395,7 @@
++@@ -360,6 +362,7 @@
+  			clocks = <&clockgen 4 1>;
+  			dma-names = "tx", "rx";
+  			dmas = <&edma0 1 37>, <&edma0 1 36>;
+@@ -106,7 +106,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			status = "disabled";
+  		};
+  
+-@@ -579,6 +582,16 @@
++@@ -546,6 +549,16 @@
+  			status = "disabled";
+  		};
+  
+@@ -123,7 +123,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  		pwm1: pwm@29e0000 {
+  			compatible = "fsl,vf610-ftm-pwm";
+  			#pwm-cells = <3>;
+-@@ -861,6 +874,8 @@
++@@ -828,6 +841,8 @@
+  			dr_mode = "host";
+  			snps,quirk-frame-length-adjustment = <0x20>;
+  			snps,dis_rxdet_inp3_quirk;
+@@ -132,7 +132,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			snps,incr-burst-type-adjustment = <1>, <4>, <8>, <16>;
+  		};
+  
+-@@ -869,7 +884,9 @@
++@@ -836,7 +851,9 @@
+  			reg = <0x00 0x03400000 0x0 0x00010000   /* controller registers */
+  			       0x40 0x00000000 0x0 0x00002000>; /* configuration space */
+  			reg-names = "regs", "config";
+@@ -143,7 +143,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  			fsl,pcie-scfg = <&scfg 0>;
+  			#address-cells = <3>;
+  			#size-cells = <2>;
+-@@ -893,7 +910,9 @@
++@@ -860,7 +877,9 @@
+  			reg = <0x00 0x03500000 0x0 0x00010000   /* controller registers */
+  			       0x48 0x00000000 0x0 0x00002000>; /* configuration space */
+  			reg-names = "regs", "config";
+diff --git a/target/linux/layerscape/patches-5.4/302-dts-0046-ARM-dts-Fix-DWC3-IP-VBUS-glitch-issue-on-LS1021A.patch b/target/linux/layerscape/patches-5.4/302-dts-0046-ARM-dts-Fix-DWC3-IP-VBUS-glitch-issue-on-LS1021A.patch
+index de9de09913..e80fe0a45e 100644
+--- a/target/linux/layerscape/patches-5.4/302-dts-0046-ARM-dts-Fix-DWC3-IP-VBUS-glitch-issue-on-LS1021A.patch
++++ b/target/linux/layerscape/patches-5.4/302-dts-0046-ARM-dts-Fix-DWC3-IP-VBUS-glitch-issue-on-LS1021A.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Ran Wang <ran.wang_1@nxp.com>
+ 
+ --- a/arch/arm/boot/dts/ls1021a.dtsi
+ +++ b/arch/arm/boot/dts/ls1021a.dtsi
+-@@ -877,6 +877,7 @@
++@@ -844,6 +844,7 @@
+  			usb3-lpm-capable;
+  			snps,dis-u1u2-when-u3-quirk;
+  			snps,incr-burst-type-adjustment = <1>, <4>, <8>, <16>;
+diff --git a/target/linux/layerscape/patches-5.4/302-dts-0071-arm-dts-ls1021a-replace-ftm0-with-ftm_alarm0-DT-node.patch b/target/linux/layerscape/patches-5.4/302-dts-0071-arm-dts-ls1021a-replace-ftm0-with-ftm_alarm0-DT-node.patch
+index d8412c2b50..2d63cc0b55 100644
+--- a/target/linux/layerscape/patches-5.4/302-dts-0071-arm-dts-ls1021a-replace-ftm0-with-ftm_alarm0-DT-node.patch
++++ b/target/linux/layerscape/patches-5.4/302-dts-0071-arm-dts-ls1021a-replace-ftm0-with-ftm_alarm0-DT-node.patch
+@@ -24,7 +24,7 @@ Signed-off-by: Biwen Li <biwen.li@nxp.com>
+  	};
+  
+  	cpus {
+-@@ -582,16 +583,6 @@
++@@ -549,16 +550,6 @@
+  			status = "disabled";
+  		};
+  
+@@ -41,7 +41,7 @@ Signed-off-by: Biwen Li <biwen.li@nxp.com>
+  		pwm1: pwm@29e0000 {
+  			compatible = "fsl,vf610-ftm-pwm";
+  			#pwm-cells = <3>;
+-@@ -1003,5 +994,18 @@
++@@ -970,6 +961,19 @@
+  			big-endian;
+  		};
+  
+@@ -59,4 +59,5 @@ Signed-off-by: Biwen Li <biwen.li@nxp.com>
+ +			big-endian;
+ +		};
+  	};
+- };
++ 
++ 	thermal-zones {
+diff --git a/target/linux/layerscape/patches-5.4/302-dts-0087-arm-dts-ls1021a-fix-that-FlexTimer-cannot-wakeup-sys.patch b/target/linux/layerscape/patches-5.4/302-dts-0087-arm-dts-ls1021a-fix-that-FlexTimer-cannot-wakeup-sys.patch
+index f677abad87..cebd74524b 100644
+--- a/target/linux/layerscape/patches-5.4/302-dts-0087-arm-dts-ls1021a-fix-that-FlexTimer-cannot-wakeup-sys.patch
++++ b/target/linux/layerscape/patches-5.4/302-dts-0087-arm-dts-ls1021a-fix-that-FlexTimer-cannot-wakeup-sys.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Biwen Li <biwen.li@nxp.com>
+ 
+ --- a/arch/arm/boot/dts/ls1021a.dtsi
+ +++ b/arch/arm/boot/dts/ls1021a.dtsi
+-@@ -998,6 +998,12 @@
++@@ -965,6 +965,12 @@
+  			compatible = "fsl,ls1021a-rcpm", "fsl,qoriq-rcpm-2.1+";
+  			reg = <0x0 0x1ee2140 0x0 0x8>;
+  			#fsl,rcpm-wakeup-cells = <2>;
+diff --git a/target/linux/layerscape/patches-5.4/302-dts-0098-LF-403-ARM64-dts-fsl-Add-clock-names-mclk0-for-SAI-n.patch b/target/linux/layerscape/patches-5.4/302-dts-0098-LF-403-ARM64-dts-fsl-Add-clock-names-mclk0-for-SAI-n.patch
+index a6611b0b12..2cb3cfd7d8 100644
+--- a/target/linux/layerscape/patches-5.4/302-dts-0098-LF-403-ARM64-dts-fsl-Add-clock-names-mclk0-for-SAI-n.patch
++++ b/target/linux/layerscape/patches-5.4/302-dts-0098-LF-403-ARM64-dts-fsl-Add-clock-names-mclk0-for-SAI-n.patch
+@@ -15,7 +15,7 @@ Signed-off-by: Alison Wang <alison.wang@nxp.com>
+ 
+ --- a/arch/arm/boot/dts/ls1021a.dtsi
+ +++ b/arch/arm/boot/dts/ls1021a.dtsi
+-@@ -682,8 +682,9 @@
++@@ -649,8 +649,9 @@
+  			reg = <0x0 0x2b50000 0x0 0x10000>;
+  			interrupts = <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>;
+  			clocks = <&clockgen 4 1>, <&clockgen 4 1>,
+@@ -27,7 +27,7 @@ Signed-off-by: Alison Wang <alison.wang@nxp.com>
+  			dma-names = "tx", "rx";
+  			dmas = <&edma0 1 47>,
+  			       <&edma0 1 46>;
+-@@ -696,8 +697,9 @@
++@@ -663,8 +664,9 @@
+  			reg = <0x0 0x2b60000 0x0 0x10000>;
+  			interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>;
+  			clocks = <&clockgen 4 1>, <&clockgen 4 1>,
+diff --git a/target/linux/layerscape/patches-5.4/303-core-0003-cgroup-let-a-symlink-too-be-created-with-a-cftype-fi.patch b/target/linux/layerscape/patches-5.4/303-core-0003-cgroup-let-a-symlink-too-be-created-with-a-cftype-fi.patch
+index 58a7be7f7d..f7edb7411d 100644
+--- a/target/linux/layerscape/patches-5.4/303-core-0003-cgroup-let-a-symlink-too-be-created-with-a-cftype-fi.patch
++++ b/target/linux/layerscape/patches-5.4/303-core-0003-cgroup-let-a-symlink-too-be-created-with-a-cftype-fi.patch
+@@ -87,7 +87,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  }
+  
+  /**
+-@@ -3873,6 +3889,7 @@ static int cgroup_add_file(struct cgroup
++@@ -3896,6 +3912,7 @@ static int cgroup_add_file(struct cgroup
+  {
+  	char name[CGROUP_FILE_NAME_MAX];
+  	struct kernfs_node *kn;
+@@ -95,7 +95,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  	struct lock_class_key *key = NULL;
+  	int ret;
+  
+-@@ -3903,6 +3920,14 @@ static int cgroup_add_file(struct cgroup
++@@ -3926,6 +3943,14 @@ static int cgroup_add_file(struct cgroup
+  		spin_unlock_irq(&cgroup_file_kn_lock);
+  	}
+  
+diff --git a/target/linux/layerscape/patches-5.4/303-core-0004-cgroup-bfq-revert-bfq.weight-symlink-change.patch b/target/linux/layerscape/patches-5.4/303-core-0004-cgroup-bfq-revert-bfq.weight-symlink-change.patch
+index 26d64e9b60..469bbfdffa 100644
+--- a/target/linux/layerscape/patches-5.4/303-core-0004-cgroup-bfq-revert-bfq.weight-symlink-change.patch
++++ b/target/linux/layerscape/patches-5.4/303-core-0004-cgroup-bfq-revert-bfq.weight-symlink-change.patch
+@@ -89,7 +89,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  }
+  
+  /**
+-@@ -3889,7 +3873,6 @@ static int cgroup_add_file(struct cgroup
++@@ -3912,7 +3896,6 @@ static int cgroup_add_file(struct cgroup
+  {
+  	char name[CGROUP_FILE_NAME_MAX];
+  	struct kernfs_node *kn;
+@@ -97,7 +97,7 @@ Signed-off-by: Li Yang <leoyang.li@nxp.com>
+  	struct lock_class_key *key = NULL;
+  	int ret;
+  
+-@@ -3920,14 +3903,6 @@ static int cgroup_add_file(struct cgroup
++@@ -3943,14 +3926,6 @@ static int cgroup_add_file(struct cgroup
+  		spin_unlock_irq(&cgroup_file_kn_lock);
+  	}
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0238-net-mscc-ocelot-break-apart-ocelot_vlan_port_apply.patch b/target/linux/layerscape/patches-5.4/701-net-0238-net-mscc-ocelot-break-apart-ocelot_vlan_port_apply.patch
+index bb34e5db2c..f3db7da458 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0238-net-mscc-ocelot-break-apart-ocelot_vlan_port_apply.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0238-net-mscc-ocelot-break-apart-ocelot_vlan_port_apply.patch
+@@ -226,7 +226,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	return 0;
+  }
+-@@ -1306,6 +1331,7 @@ static int ocelot_port_attr_set(struct n
++@@ -1303,6 +1328,7 @@ static int ocelot_port_attr_set(struct n
+  				struct switchdev_trans *trans)
+  {
+  	struct ocelot_port *ocelot_port = netdev_priv(dev);
+@@ -234,7 +234,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int err = 0;
+  
+  	switch (attr->id) {
+-@@ -1317,8 +1343,8 @@ static int ocelot_port_attr_set(struct n
++@@ -1314,8 +1340,8 @@ static int ocelot_port_attr_set(struct n
+  		ocelot_port_attr_ageing_set(ocelot_port, attr->u.ageing_time);
+  		break;
+  	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
+@@ -245,7 +245,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		break;
+  	case SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED:
+  		ocelot_port_attr_mc_set(ocelot_port, !attr->u.mc_disabled);
+-@@ -1520,20 +1546,20 @@ static int ocelot_port_bridge_join(struc
++@@ -1517,20 +1543,20 @@ static int ocelot_port_bridge_join(struc
+  	return 0;
+  }
+  
+@@ -273,7 +273,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  }
+  
+  static void ocelot_set_aggr_pgids(struct ocelot *ocelot)
+-@@ -1687,11 +1713,8 @@ static int ocelot_netdevice_port_event(s
++@@ -1684,11 +1710,8 @@ static int ocelot_netdevice_port_event(s
+  				err = ocelot_port_bridge_join(ocelot_port,
+  							      info->upper_dev);
+  			else
+@@ -287,7 +287,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		}
+  		if (netif_is_lag_master(info->upper_dev)) {
+  			if (info->linking)
+-@@ -2009,6 +2032,7 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2006,6 +2029,7 @@ int ocelot_probe_port(struct ocelot *oce
+  {
+  	struct ocelot_port *ocelot_port;
+  	struct net_device *dev;
+@@ -295,7 +295,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int err;
+  
+  	dev = alloc_etherdev(sizeof(struct ocelot_port));
+-@@ -2044,7 +2068,15 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2041,7 +2065,15 @@ int ocelot_probe_port(struct ocelot *oce
+  	}
+  
+  	/* Basic L2 initialization */
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0240-net-mscc-ocelot-break-out-fdb-operations-into-abstra.patch b/target/linux/layerscape/patches-5.4/701-net-0240-net-mscc-ocelot-break-out-fdb-operations-into-abstra.patch
+index 118b91e700..a6f81ba84b 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0240-net-mscc-ocelot-break-out-fdb-operations-into-abstra.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0240-net-mscc-ocelot-break-out-fdb-operations-into-abstra.patch
+@@ -236,7 +236,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	return ret;
+  }
+  
+-@@ -1129,9 +1161,9 @@ static const struct net_device_ops ocelo
++@@ -1123,9 +1155,9 @@ static const struct net_device_ops ocelo
+  	.ndo_get_phys_port_name		= ocelot_port_get_phys_port_name,
+  	.ndo_set_mac_address		= ocelot_port_set_mac_address,
+  	.ndo_get_stats64		= ocelot_get_stats64,
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0241-net-mscc-ocelot-change-prototypes-of-hwtstamping-ioc.patch b/target/linux/layerscape/patches-5.4/701-net-0241-net-mscc-ocelot-change-prototypes-of-hwtstamping-ioc.patch
+index f5f1452cd6..730e6a72ce 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0241-net-mscc-ocelot-change-prototypes-of-hwtstamping-ioc.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0241-net-mscc-ocelot-change-prototypes-of-hwtstamping-ioc.patch
+@@ -57,7 +57,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		break;
+  	default:
+  		return -ERANGE;
+-@@ -1136,8 +1136,9 @@ static int ocelot_hwstamp_set(struct oce
++@@ -1130,8 +1130,9 @@ static int ocelot_hwstamp_set(struct oce
+  
+  static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+  {
+@@ -69,7 +69,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	/* The function is only used for PTP operations for now */
+  	if (!ocelot->ptp)
+-@@ -1145,9 +1146,9 @@ static int ocelot_ioctl(struct net_devic
++@@ -1139,9 +1140,9 @@ static int ocelot_ioctl(struct net_devic
+  
+  	switch (cmd) {
+  	case SIOCSHWTSTAMP:
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0242-net-mscc-ocelot-change-prototypes-of-switchdev-port-.patch b/target/linux/layerscape/patches-5.4/701-net-0242-net-mscc-ocelot-change-prototypes-of-switchdev-port-.patch
+index 5cf09039df..dc5847c528 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0242-net-mscc-ocelot-change-prototypes-of-switchdev-port-.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0242-net-mscc-ocelot-change-prototypes-of-switchdev-port-.patch
+@@ -19,7 +19,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -1285,26 +1285,20 @@ static const struct ethtool_ops ocelot_e
++@@ -1282,26 +1282,20 @@ static const struct ethtool_ops ocelot_e
+  	.get_ts_info		= ocelot_get_ts_info,
+  };
+  
+@@ -53,7 +53,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		/* Fallthrough */
+  	case BR_STATE_LEARNING:
+  		port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
+-@@ -1312,19 +1306,18 @@ static int ocelot_port_attr_stp_state_se
++@@ -1309,19 +1303,18 @@ static int ocelot_port_attr_stp_state_se
+  
+  	default:
+  		port_cfg &= ~ANA_PORT_PORT_CFG_LEARN_ENA;
+@@ -78,7 +78,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  			for (i = 0; i < ocelot->num_phys_ports; i++) {
+  				unsigned long bond_mask = ocelot->lags[i];
+-@@ -1332,7 +1325,7 @@ static int ocelot_port_attr_stp_state_se
++@@ -1329,7 +1322,7 @@ static int ocelot_port_attr_stp_state_se
+  				if (!bond_mask)
+  					continue;
+  
+@@ -87,7 +87,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  					mask &= ~bond_mask;
+  					break;
+  				}
+-@@ -1340,47 +1333,55 @@ static int ocelot_port_attr_stp_state_se
++@@ -1337,47 +1330,55 @@ static int ocelot_port_attr_stp_state_se
+  
+  			ocelot_write_rix(ocelot,
+  					 BIT(ocelot->num_phys_ports) | mask,
+@@ -162,7 +162,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  }
+  
+  static int ocelot_port_attr_set(struct net_device *dev,
+-@@ -1389,22 +1390,23 @@ static int ocelot_port_attr_set(struct n
++@@ -1386,22 +1387,23 @@ static int ocelot_port_attr_set(struct n
+  {
+  	struct ocelot_port *ocelot_port = netdev_priv(dev);
+  	struct ocelot *ocelot = ocelot_port->ocelot;
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0243-net-mscc-ocelot-refactor-struct-ocelot_port-out-of-f.patch b/target/linux/layerscape/patches-5.4/701-net-0243-net-mscc-ocelot-refactor-struct-ocelot_port-out-of-f.patch
+index 2e05090c7c..8850f57103 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0243-net-mscc-ocelot-refactor-struct-ocelot_port-out-of-f.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0243-net-mscc-ocelot-refactor-struct-ocelot_port-out-of-f.patch
+@@ -83,7 +83,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	return 0;
+  }
+-@@ -1586,11 +1586,9 @@ static int ocelot_port_obj_del(struct ne
++@@ -1583,11 +1583,9 @@ static int ocelot_port_obj_del(struct ne
+  	return ret;
+  }
+  
+@@ -96,7 +96,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	if (!ocelot->bridge_mask) {
+  		ocelot->hw_bridge_dev = bridge;
+  	} else {
+-@@ -1600,17 +1598,14 @@ static int ocelot_port_bridge_join(struc
++@@ -1597,17 +1595,14 @@ static int ocelot_port_bridge_join(struc
+  			return -ENODEV;
+  	}
+  
+@@ -116,7 +116,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	ocelot->bridge_mask &= ~BIT(port);
+  
+  	if (!ocelot->bridge_mask)
+-@@ -1679,14 +1674,12 @@ static void ocelot_setup_lag(struct ocel
++@@ -1676,14 +1671,12 @@ static void ocelot_setup_lag(struct ocel
+  	}
+  }
+  
+@@ -133,7 +133,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	rcu_read_lock();
+  	for_each_netdev_in_bond_rcu(bond, ndev) {
+-@@ -1701,17 +1694,17 @@ static int ocelot_port_lag_join(struct o
++@@ -1698,17 +1691,17 @@ static int ocelot_port_lag_join(struct o
+  	/* If the new port is the lowest one, use it as the logical port from
+  	 * now on
+  	 */
+@@ -156,7 +156,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	}
+  
+  	ocelot_setup_lag(ocelot, lag);
+-@@ -1720,34 +1713,32 @@ static int ocelot_port_lag_join(struct o
++@@ -1717,34 +1710,32 @@ static int ocelot_port_lag_join(struct o
+  	return 0;
+  }
+  
+@@ -200,7 +200,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	ocelot_set_aggr_pgids(ocelot);
+  }
+-@@ -1763,24 +1754,26 @@ static int ocelot_netdevice_port_event(s
++@@ -1760,24 +1751,26 @@ static int ocelot_netdevice_port_event(s
+  				       struct netdev_notifier_changeupper_info *info)
+  {
+  	struct ocelot_port *ocelot_port = netdev_priv(dev);
+@@ -231,7 +231,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  						      info->upper_dev);
+  		}
+  		break;
+-@@ -2138,7 +2131,7 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2135,7 +2128,7 @@ int ocelot_probe_port(struct ocelot *oce
+  		       REW_PORT_VLAN_CFG, port);
+  
+  	/* Enable vcap lookups */
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0244-net-mscc-ocelot-separate-net_device-related-items-ou.patch b/target/linux/layerscape/patches-5.4/701-net-0244-net-mscc-ocelot-separate-net_device-related-items-ou.patch
+index f582cb43cd..774e8d0bfe 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0244-net-mscc-ocelot-separate-net_device-related-items-ou.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0244-net-mscc-ocelot-separate-net_device-related-items-ou.patch
+@@ -518,7 +518,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	ppid->id_len = sizeof(ocelot->base_mac);
+  	memcpy(&ppid->id, &ocelot->base_mac, ppid->id_len);
+-@@ -1136,9 +1154,9 @@ static int ocelot_hwstamp_set(struct oce
++@@ -1130,9 +1148,9 @@ static int ocelot_hwstamp_set(struct oce
+  
+  static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+  {
+@@ -531,7 +531,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	/* The function is only used for PTP operations for now */
+  	if (!ocelot->ptp)
+-@@ -1175,8 +1193,8 @@ static const struct net_device_ops ocelo
++@@ -1169,8 +1187,8 @@ static const struct net_device_ops ocelo
+  
+  static void ocelot_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+  {
+@@ -542,7 +542,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int i;
+  
+  	if (sset != ETH_SS_STATS)
+-@@ -1230,8 +1248,9 @@ static void ocelot_check_stats_work(stru
++@@ -1224,8 +1242,9 @@ static void ocelot_check_stats_work(stru
+  static void ocelot_get_ethtool_stats(struct net_device *dev,
+  				     struct ethtool_stats *stats, u64 *data)
+  {
+@@ -554,7 +554,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int i;
+  
+  	/* check and update now */
+-@@ -1239,13 +1258,13 @@ static void ocelot_get_ethtool_stats(str
++@@ -1233,13 +1252,13 @@ static void ocelot_get_ethtool_stats(str
+  
+  	/* Copy all counters */
+  	for (i = 0; i < ocelot->num_stats; i++)
+@@ -571,7 +571,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	if (sset != ETH_SS_STATS)
+  		return -EOPNOTSUPP;
+-@@ -1255,8 +1274,8 @@ static int ocelot_get_sset_count(struct
++@@ -1249,8 +1268,8 @@ static int ocelot_get_sset_count(struct
+  static int ocelot_get_ts_info(struct net_device *dev,
+  			      struct ethtool_ts_info *info)
+  {
+@@ -582,7 +582,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	if (!ocelot->ptp)
+  		return ethtool_op_get_ts_info(dev, info);
+-@@ -1388,9 +1407,9 @@ static int ocelot_port_attr_set(struct n
++@@ -1385,9 +1404,9 @@ static int ocelot_port_attr_set(struct n
+  				const struct switchdev_attr *attr,
+  				struct switchdev_trans *trans)
+  {
+@@ -595,7 +595,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int err = 0;
+  
+  	switch (attr->id) {
+-@@ -1402,8 +1421,8 @@ static int ocelot_port_attr_set(struct n
++@@ -1399,8 +1418,8 @@ static int ocelot_port_attr_set(struct n
+  		ocelot_port_attr_ageing_set(ocelot, port, attr->u.ageing_time);
+  		break;
+  	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
+@@ -606,7 +606,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		break;
+  	case SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED:
+  		ocelot_port_attr_mc_set(ocelot, port, !attr->u.mc_disabled);
+-@@ -1468,15 +1487,17 @@ static int ocelot_port_obj_add_mdb(struc
++@@ -1465,15 +1484,17 @@ static int ocelot_port_obj_add_mdb(struc
+  				   const struct switchdev_obj_port_mdb *mdb,
+  				   struct switchdev_trans *trans)
+  {
+@@ -628,7 +628,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	mc = ocelot_multicast_get(ocelot, mdb->addr, vid);
+  	if (!mc) {
+-@@ -1500,7 +1521,7 @@ static int ocelot_port_obj_add_mdb(struc
++@@ -1497,7 +1518,7 @@ static int ocelot_port_obj_add_mdb(struc
+  		ocelot_mact_forget(ocelot, addr, vid);
+  	}
+  
+@@ -637,7 +637,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	addr[2] = mc->ports << 0;
+  	addr[1] = mc->ports << 8;
+  
+-@@ -1510,14 +1531,16 @@ static int ocelot_port_obj_add_mdb(struc
++@@ -1507,14 +1528,16 @@ static int ocelot_port_obj_add_mdb(struc
+  static int ocelot_port_obj_del_mdb(struct net_device *dev,
+  				   const struct switchdev_obj_port_mdb *mdb)
+  {
+@@ -658,7 +658,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	mc = ocelot_multicast_get(ocelot, mdb->addr, vid);
+  	if (!mc)
+-@@ -1529,7 +1552,7 @@ static int ocelot_port_obj_del_mdb(struc
++@@ -1526,7 +1549,7 @@ static int ocelot_port_obj_del_mdb(struc
+  	addr[0] = 0;
+  	ocelot_mact_forget(ocelot, addr, vid);
+  
+@@ -667,7 +667,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	if (!mc->ports) {
+  		list_del(&mc->list);
+  		devm_kfree(ocelot->dev, mc);
+-@@ -1683,9 +1706,9 @@ static int ocelot_port_lag_join(struct o
++@@ -1680,9 +1703,9 @@ static int ocelot_port_lag_join(struct o
+  
+  	rcu_read_lock();
+  	for_each_netdev_in_bond_rcu(bond, ndev) {
+@@ -679,7 +679,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	}
+  	rcu_read_unlock();
+  
+-@@ -1753,20 +1776,23 @@ static int ocelot_netdevice_port_event(s
++@@ -1750,20 +1773,23 @@ static int ocelot_netdevice_port_event(s
+  				       unsigned long event,
+  				       struct netdev_notifier_changeupper_info *info)
+  {
+@@ -707,7 +707,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  		}
+  		if (netif_is_lag_master(info->upper_dev)) {
+  			if (info->linking)
+-@@ -2082,21 +2108,23 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2079,21 +2105,23 @@ int ocelot_probe_port(struct ocelot *oce
+  		      void __iomem *regs,
+  		      struct phy_device *phy)
+  {
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0245-net-mscc-ocelot-refactor-ethtool-callbacks.patch b/target/linux/layerscape/patches-5.4/701-net-0245-net-mscc-ocelot-refactor-ethtool-callbacks.patch
+index 655f60b6d9..7b979d556b 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0245-net-mscc-ocelot-refactor-ethtool-callbacks.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0245-net-mscc-ocelot-refactor-ethtool-callbacks.patch
+@@ -13,7 +13,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -1191,10 +1191,9 @@ static const struct net_device_ops ocelo
++@@ -1185,10 +1185,9 @@ static const struct net_device_ops ocelo
+  	.ndo_do_ioctl			= ocelot_ioctl,
+  };
+  
+@@ -26,7 +26,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int i;
+  
+  	if (sset != ETH_SS_STATS)
+-@@ -1205,6 +1204,16 @@ static void ocelot_get_strings(struct ne
++@@ -1199,6 +1198,16 @@ static void ocelot_get_strings(struct ne
+  		       ETH_GSTRING_LEN);
+  }
+  
+@@ -43,7 +43,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  static void ocelot_update_stats(struct ocelot *ocelot)
+  {
+  	int i, j;
+-@@ -1245,12 +1254,8 @@ static void ocelot_check_stats_work(stru
++@@ -1239,12 +1248,8 @@ static void ocelot_check_stats_work(stru
+  			   OCELOT_STATS_CHECK_DELAY);
+  }
+  
+@@ -57,7 +57,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int i;
+  
+  	/* check and update now */
+-@@ -1261,25 +1266,37 @@ static void ocelot_get_ethtool_stats(str
++@@ -1255,25 +1260,37 @@ static void ocelot_get_ethtool_stats(str
+  		*data++ = ocelot->stats[port * ocelot->num_stats + i];
+  }
+  
+@@ -100,7 +100,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	info->phc_index = ocelot->ptp_clock ?
+  			  ptp_clock_index(ocelot->ptp_clock) : -1;
+  	info->so_timestamping |= SOF_TIMESTAMPING_TX_SOFTWARE |
+-@@ -1295,13 +1312,26 @@ static int ocelot_get_ts_info(struct net
++@@ -1292,13 +1309,26 @@ static int ocelot_get_ts_info(struct net
+  	return 0;
+  }
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0247-net-mscc-ocelot-move-port-initialization-into-separa.patch b/target/linux/layerscape/patches-5.4/701-net-0247-net-mscc-ocelot-move-port-initialization-into-separa.patch
+index 2df6afb20b..a6bbdd67fe 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0247-net-mscc-ocelot-move-port-initialization-into-separa.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0247-net-mscc-ocelot-move-port-initialization-into-separa.patch
+@@ -15,7 +15,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2135,6 +2135,28 @@ static int ocelot_init_timestamp(struct
++@@ -2132,6 +2132,28 @@ static int ocelot_init_timestamp(struct
+  	return 0;
+  }
+  
+@@ -44,7 +44,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+  		      void __iomem *regs,
+  		      struct phy_device *phy)
+-@@ -2142,7 +2164,6 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2139,7 +2161,6 @@ int ocelot_probe_port(struct ocelot *oce
+  	struct ocelot_port_private *priv;
+  	struct ocelot_port *ocelot_port;
+  	struct net_device *dev;
+@@ -52,7 +52,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int err;
+  
+  	dev = alloc_etherdev(sizeof(struct ocelot_port_private));
+-@@ -2170,32 +2191,14 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2167,32 +2188,14 @@ int ocelot_probe_port(struct ocelot *oce
+  	ocelot_mact_learn(ocelot, PGID_CPU, dev->dev_addr, ocelot_port->pvid,
+  			  ENTRYTYPE_LOCKED);
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0249-net-mscc-ocelot-initialize-list-of-multicast-address.patch b/target/linux/layerscape/patches-5.4/701-net-0249-net-mscc-ocelot-initialize-list-of-multicast-address.patch
+index ea01c8b542..b0c349ec37 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0249-net-mscc-ocelot-initialize-list-of-multicast-address.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0249-net-mscc-ocelot-initialize-list-of-multicast-address.patch
+@@ -17,7 +17,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2245,6 +2245,7 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2242,6 +2242,7 @@ int ocelot_init(struct ocelot *ocelot)
+  	if (!ocelot->stats_queue)
+  		return -ENOMEM;
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0251-net-mscc-ocelot-split-assignment-of-the-cpu-port-int.patch b/target/linux/layerscape/patches-5.4/701-net-0251-net-mscc-ocelot-split-assignment-of-the-cpu-port-int.patch
+index 4f5ab9ad5b..8fa0bca935 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0251-net-mscc-ocelot-split-assignment-of-the-cpu-port-int.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0251-net-mscc-ocelot-split-assignment-of-the-cpu-port-int.patch
+@@ -32,7 +32,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	/* Set vlan ingress filter mask to all ports but the CPU port by
+  	 * default.
+  	 */
+-@@ -2226,11 +2220,52 @@ int ocelot_probe_port(struct ocelot *oce
++@@ -2223,11 +2217,52 @@ int ocelot_probe_port(struct ocelot *oce
+  }
+  EXPORT_SYMBOL(ocelot_probe_port);
+  
+@@ -87,7 +87,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	ocelot->lags = devm_kcalloc(ocelot->dev, ocelot->num_phys_ports,
+  				    sizeof(u32), GFP_KERNEL);
+-@@ -2310,13 +2345,6 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2307,13 +2342,6 @@ int ocelot_init(struct ocelot *ocelot)
+  		ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_SRC + port);
+  	}
+  
+@@ -101,7 +101,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	/* Allow broadcast MAC frames. */
+  	for (i = ocelot->num_phys_ports + 1; i < PGID_CPU; i++) {
+  		u32 val = ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports - 1, 0));
+-@@ -2329,13 +2357,6 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2326,13 +2354,6 @@ int ocelot_init(struct ocelot *ocelot)
+  	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
+  	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0252-net-mscc-ocelot-don-t-hardcode-the-number-of-the-CPU.patch b/target/linux/layerscape/patches-5.4/701-net-0252-net-mscc-ocelot-don-t-hardcode-the-number-of-the-CPU.patch
+index aec70e6d6f..7ddc5753f6 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0252-net-mscc-ocelot-don-t-hardcode-the-number-of-the-CPU.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0252-net-mscc-ocelot-don-t-hardcode-the-number-of-the-CPU.patch
+@@ -30,7 +30,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -1383,7 +1383,7 @@ static void ocelot_bridge_stp_state_set(
++@@ -1380,7 +1380,7 @@ static void ocelot_bridge_stp_state_set(
+  	 * a source for the other ports.
+  	 */
+  	for (p = 0; p < ocelot->num_phys_ports; p++) {
+@@ -39,7 +39,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
+  
+  			for (i = 0; i < ocelot->num_phys_ports; i++) {
+-@@ -1398,15 +1398,18 @@ static void ocelot_bridge_stp_state_set(
++@@ -1395,15 +1395,18 @@ static void ocelot_bridge_stp_state_set(
+  				}
+  			}
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0255-net-mscc-ocelot-move-invariant-configs-out-of-adjust.patch b/target/linux/layerscape/patches-5.4/701-net-0255-net-mscc-ocelot-move-invariant-configs-out-of-adjust.patch
+index 8cb8a831ae..f0f4aeae5d 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0255-net-mscc-ocelot-move-invariant-configs-out-of-adjust.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0255-net-mscc-ocelot-move-invariant-configs-out-of-adjust.patch
+@@ -98,7 +98,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  }
+  
+  static void ocelot_port_adjust_link(struct net_device *dev)
+-@@ -2143,11 +2102,53 @@ static int ocelot_init_timestamp(struct
++@@ -2140,11 +2099,53 @@ static int ocelot_init_timestamp(struct
+  static void ocelot_init_port(struct ocelot *ocelot, int port)
+  {
+  	struct ocelot_port *ocelot_port = ocelot->ports[port];
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0256-net-mscc-ocelot-create-a-helper-for-changing-the-por.patch b/target/linux/layerscape/patches-5.4/701-net-0256-net-mscc-ocelot-create-a-helper-for-changing-the-por.patch
+index 0a1299dd38..13fe784f24 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0256-net-mscc-ocelot-create-a-helper-for-changing-the-por.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0256-net-mscc-ocelot-create-a-helper-for-changing-the-por.patch
+@@ -20,7 +20,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2099,11 +2099,32 @@ static int ocelot_init_timestamp(struct
++@@ -2096,11 +2096,32 @@ static int ocelot_init_timestamp(struct
+  	return 0;
+  }
+  
+@@ -54,7 +54,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	INIT_LIST_HEAD(&ocelot_port->skbs);
+  
+  	/* Basic L2 initialization */
+-@@ -2124,8 +2145,7 @@ static void ocelot_init_port(struct ocel
++@@ -2121,8 +2142,7 @@ static void ocelot_init_port(struct ocel
+  			   DEV_MAC_HDX_CFG);
+  
+  	/* Set Max Length and maximum tags allowed */
+@@ -64,7 +64,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
+  			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
+  			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
+-@@ -2135,20 +2155,6 @@ static void ocelot_init_port(struct ocel
++@@ -2132,20 +2152,6 @@ static void ocelot_init_port(struct ocel
+  	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_HIGH_CFG);
+  	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_LOW_CFG);
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0258-net-mscc-ocelot-adjust-MTU-on-the-CPU-port-in-NPI-mo.patch b/target/linux/layerscape/patches-5.4/701-net-0258-net-mscc-ocelot-adjust-MTU-on-the-CPU-port-in-NPI-mo.patch
+index 3c9d0336a4..667be87db0 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0258-net-mscc-ocelot-adjust-MTU-on-the-CPU-port-in-NPI-mo.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0258-net-mscc-ocelot-adjust-MTU-on-the-CPU-port-in-NPI-mo.patch
+@@ -22,7 +22,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2232,9 +2232,18 @@ void ocelot_set_cpu_port(struct ocelot *
++@@ -2229,9 +2229,18 @@ void ocelot_set_cpu_port(struct ocelot *
+  	 * Only one port can be an NPI at the same time.
+  	 */
+  	if (cpu < ocelot->num_phys_ports) {
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0259-net-mscc-ocelot-separate-the-implementation-of-switc.patch b/target/linux/layerscape/patches-5.4/701-net-0259-net-mscc-ocelot-separate-the-implementation-of-switc.patch
+index 50a37e5500..3a8e9d6b11 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0259-net-mscc-ocelot-separate-the-implementation-of-switc.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0259-net-mscc-ocelot-separate-the-implementation-of-switc.patch
+@@ -20,7 +20,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2271,6 +2271,14 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2268,6 +2268,14 @@ int ocelot_init(struct ocelot *ocelot)
+  	int i, ret;
+  	u32 port;
+  
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0260-net-mscc-ocelot-publish-structure-definitions-to-inc.patch b/target/linux/layerscape/patches-5.4/701-net-0260-net-mscc-ocelot-publish-structure-definitions-to-inc.patch
+index 6fbc091739..8529e9825c 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0260-net-mscc-ocelot-publish-structure-definitions-to-inc.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0260-net-mscc-ocelot-publish-structure-definitions-to-inc.patch
+@@ -195,7 +195,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static int ocelot_port_fdb_dump(struct sk_buff *skb,
+  				struct netlink_callback *cb,
+-@@ -1153,8 +1160,7 @@ static const struct net_device_ops ocelo
++@@ -1147,8 +1154,7 @@ static const struct net_device_ops ocelo
+  	.ndo_do_ioctl			= ocelot_ioctl,
+  };
+  
+@@ -205,7 +205,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	int i;
+  
+-@@ -1165,6 +1171,7 @@ static void ocelot_get_strings(struct oc
++@@ -1159,6 +1165,7 @@ static void ocelot_get_strings(struct oc
+  		memcpy(data + i * ETH_GSTRING_LEN, ocelot->stats_layout[i].name,
+  		       ETH_GSTRING_LEN);
+  }
+@@ -213,7 +213,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static void ocelot_port_get_strings(struct net_device *netdev, u32 sset,
+  				    u8 *data)
+-@@ -1216,7 +1223,7 @@ static void ocelot_check_stats_work(stru
++@@ -1210,7 +1217,7 @@ static void ocelot_check_stats_work(stru
+  			   OCELOT_STATS_CHECK_DELAY);
+  }
+  
+@@ -222,7 +222,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	int i;
+  
+-@@ -1227,6 +1234,7 @@ static void ocelot_get_ethtool_stats(str
++@@ -1221,6 +1228,7 @@ static void ocelot_get_ethtool_stats(str
+  	for (i = 0; i < ocelot->num_stats; i++)
+  		*data++ = ocelot->stats[port * ocelot->num_stats + i];
+  }
+@@ -230,7 +230,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static void ocelot_port_get_ethtool_stats(struct net_device *dev,
+  					  struct ethtool_stats *stats,
+-@@ -1239,13 +1247,14 @@ static void ocelot_port_get_ethtool_stat
++@@ -1233,13 +1241,14 @@ static void ocelot_port_get_ethtool_stat
+  	ocelot_get_ethtool_stats(ocelot, port, data);
+  }
+  
+@@ -246,7 +246,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static int ocelot_port_get_sset_count(struct net_device *dev, int sset)
+  {
+-@@ -1256,8 +1265,8 @@ static int ocelot_port_get_sset_count(st
++@@ -1250,8 +1259,8 @@ static int ocelot_port_get_sset_count(st
+  	return ocelot_get_sset_count(ocelot, port, sset);
+  }
+  
+@@ -257,7 +257,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	info->phc_index = ocelot->ptp_clock ?
+  			  ptp_clock_index(ocelot->ptp_clock) : -1;
+-@@ -1273,6 +1282,7 @@ static int ocelot_get_ts_info(struct oce
++@@ -1270,6 +1279,7 @@ static int ocelot_get_ts_info(struct oce
+  
+  	return 0;
+  }
+@@ -265,7 +265,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static int ocelot_port_get_ts_info(struct net_device *dev,
+  				   struct ethtool_ts_info *info)
+-@@ -1296,8 +1306,7 @@ static const struct ethtool_ops ocelot_e
++@@ -1293,8 +1303,7 @@ static const struct ethtool_ops ocelot_e
+  	.get_ts_info		= ocelot_port_get_ts_info,
+  };
+  
+@@ -275,7 +275,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	u32 port_cfg;
+  	int p, i;
+-@@ -1358,6 +1367,7 @@ static void ocelot_bridge_stp_state_set(
++@@ -1355,6 +1364,7 @@ static void ocelot_bridge_stp_state_set(
+  		}
+  	}
+  }
+@@ -283,7 +283,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static void ocelot_port_attr_stp_state_set(struct ocelot *ocelot, int port,
+  					   struct switchdev_trans *trans,
+-@@ -1369,11 +1379,12 @@ static void ocelot_port_attr_stp_state_s
++@@ -1366,11 +1376,12 @@ static void ocelot_port_attr_stp_state_s
+  	ocelot_bridge_stp_state_set(ocelot, port, state);
+  }
+  
+@@ -297,7 +297,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static void ocelot_port_attr_ageing_set(struct ocelot *ocelot, int port,
+  					unsigned long ageing_clock_t)
+-@@ -1604,8 +1615,8 @@ static int ocelot_port_obj_del(struct ne
++@@ -1601,8 +1612,8 @@ static int ocelot_port_obj_del(struct ne
+  	return ret;
+  }
+  
+@@ -308,7 +308,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	if (!ocelot->bridge_mask) {
+  		ocelot->hw_bridge_dev = bridge;
+-@@ -1620,9 +1631,10 @@ static int ocelot_port_bridge_join(struc
++@@ -1617,9 +1628,10 @@ static int ocelot_port_bridge_join(struc
+  
+  	return 0;
+  }
+@@ -321,7 +321,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	ocelot->bridge_mask &= ~BIT(port);
+  
+-@@ -1633,6 +1645,7 @@ static int ocelot_port_bridge_leave(stru
++@@ -1630,6 +1642,7 @@ static int ocelot_port_bridge_leave(stru
+  	ocelot_port_set_pvid(ocelot, port, 0);
+  	return ocelot_port_set_native_vlan(ocelot, port, 0);
+  }
+@@ -329,7 +329,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  static void ocelot_set_aggr_pgids(struct ocelot *ocelot)
+  {
+-@@ -2121,7 +2134,7 @@ static void ocelot_port_set_mtu(struct o
++@@ -2118,7 +2131,7 @@ static void ocelot_port_set_mtu(struct o
+  	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
+  }
+  
+@@ -338,7 +338,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	struct ocelot_port *ocelot_port = ocelot->ports[port];
+  
+-@@ -2168,6 +2181,7 @@ static void ocelot_init_port(struct ocel
++@@ -2165,6 +2178,7 @@ static void ocelot_init_port(struct ocel
+  	/* Enable vcap lookups */
+  	ocelot_vcap_enable(ocelot, port);
+  }
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0265-net-mscc-ocelot-export-ocelot_hwstamp_get-set-functi.patch b/target/linux/layerscape/patches-5.4/701-net-0265-net-mscc-ocelot-export-ocelot_hwstamp_get-set-functi.patch
+index 469eea25d5..d6b4e2bc13 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0265-net-mscc-ocelot-export-ocelot_hwstamp_get-set-functi.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0265-net-mscc-ocelot-export-ocelot_hwstamp_get-set-functi.patch
+@@ -36,7 +36,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  {
+  	struct ocelot_port *ocelot_port = ocelot->ports[port];
+  	struct hwtstamp_config cfg;
+-@@ -1120,6 +1119,7 @@ static int ocelot_hwstamp_set(struct oce
++@@ -1114,6 +1113,7 @@ static int ocelot_hwstamp_set(struct oce
+  
+  	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
+  }
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0271-net-mscc-ocelot-use-skb-queue-instead-of-skbs-list.patch b/target/linux/layerscape/patches-5.4/701-net-0271-net-mscc-ocelot-use-skb-queue-instead-of-skbs-list.patch
+index 2163c57ac2..4ed7c26770 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0271-net-mscc-ocelot-use-skb-queue-instead-of-skbs-list.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0271-net-mscc-ocelot-use-skb-queue-instead-of-skbs-list.patch
+@@ -96,7 +96,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	}
+  }
+  EXPORT_SYMBOL(ocelot_get_txtstamp);
+-@@ -2208,7 +2199,7 @@ void ocelot_init_port(struct ocelot *oce
++@@ -2205,7 +2196,7 @@ void ocelot_init_port(struct ocelot *oce
+  {
+  	struct ocelot_port *ocelot_port = ocelot->ports[port];
+  
+@@ -105,7 +105,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  
+  	/* Basic L2 initialization */
+  
+-@@ -2493,9 +2484,7 @@ EXPORT_SYMBOL(ocelot_init);
++@@ -2490,9 +2481,7 @@ EXPORT_SYMBOL(ocelot_init);
+  
+  void ocelot_deinit(struct ocelot *ocelot)
+  {
+@@ -115,7 +115,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	int i;
+  
+  	cancel_delayed_work(&ocelot->stats_work);
+-@@ -2507,14 +2496,7 @@ void ocelot_deinit(struct ocelot *ocelot
++@@ -2504,14 +2493,7 @@ void ocelot_deinit(struct ocelot *ocelot
+  
+  	for (i = 0; i < ocelot->num_phys_ports; i++) {
+  		port = ocelot->ports[i];
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0272-net-mscc-ocelot-tsn-configuration-support.patch b/target/linux/layerscape/patches-5.4/701-net-0272-net-mscc-ocelot-tsn-configuration-support.patch
+index 2bd7dfbfc7..953b479a20 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0272-net-mscc-ocelot-tsn-configuration-support.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0272-net-mscc-ocelot-tsn-configuration-support.patch
+@@ -41,7 +41,7 @@ Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+  		ocelot_write_rix(ocelot, val, ANA_PGID_PGID, i);
+  
+  	__dev_mc_sync(dev, ocelot_mc_sync, ocelot_mc_unsync);
+-@@ -2410,10 +2410,11 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2407,10 +2407,11 @@ int ocelot_init(struct ocelot *ocelot)
+  		     SYS_FRM_AGING_MAX_AGE(307692), SYS_FRM_AGING);
+  
+  	/* Setup flooding PGIDs */
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0341-LF-368-net-mscc-ocelot-add-VCAP-IS2-rule-to-trap-PTP.patch b/target/linux/layerscape/patches-5.4/701-net-0341-LF-368-net-mscc-ocelot-add-VCAP-IS2-rule-to-trap-PTP.patch
+index 18754172a5..817d449e01 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0341-LF-368-net-mscc-ocelot-add-VCAP-IS2-rule-to-trap-PTP.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0341-LF-368-net-mscc-ocelot-add-VCAP-IS2-rule-to-trap-PTP.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2340,6 +2340,20 @@ void ocelot_set_cpu_port(struct ocelot *
++@@ -2337,6 +2337,20 @@ void ocelot_set_cpu_port(struct ocelot *
+  }
+  EXPORT_SYMBOL(ocelot_set_cpu_port);
+  
+@@ -35,7 +35,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+  int ocelot_init(struct ocelot *ocelot)
+  {
+  	char queue_name[32];
+-@@ -2477,6 +2491,13 @@ int ocelot_init(struct ocelot *ocelot)
++@@ -2474,6 +2488,13 @@ int ocelot_init(struct ocelot *ocelot)
+  				"Timestamp initialization failed\n");
+  			return ret;
+  		}
+@@ -49,7 +49,7 @@ Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+  	}
+  
+  	return 0;
+-@@ -2491,6 +2512,8 @@ void ocelot_deinit(struct ocelot *ocelot
++@@ -2488,6 +2509,8 @@ void ocelot_deinit(struct ocelot *ocelot
+  	cancel_delayed_work(&ocelot->stats_work);
+  	destroy_workqueue(ocelot->stats_queue);
+  	mutex_destroy(&ocelot->stats_lock);
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0367-net-mscc-ocelot-Workaround-to-allow-traffic-to-CPU-i.patch b/target/linux/layerscape/patches-5.4/701-net-0367-net-mscc-ocelot-Workaround-to-allow-traffic-to-CPU-i.patch
+index 4e24fecfdf..8d10202ac9 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0367-net-mscc-ocelot-Workaround-to-allow-traffic-to-CPU-i.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0367-net-mscc-ocelot-Workaround-to-allow-traffic-to-CPU-i.patch
+@@ -128,7 +128,7 @@ Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -2294,6 +2294,18 @@ void ocelot_set_cpu_port(struct ocelot *
++@@ -2291,6 +2291,18 @@ void ocelot_set_cpu_port(struct ocelot *
+  			 enum ocelot_tag_prefix injection,
+  			 enum ocelot_tag_prefix extraction)
+  {
+diff --git a/target/linux/layerscape/patches-5.4/701-net-0394-drivers-net-mscc_ocelot-don-t-flood-unicast-traffic-.patch b/target/linux/layerscape/patches-5.4/701-net-0394-drivers-net-mscc_ocelot-don-t-flood-unicast-traffic-.patch
+index 12a03b0d7b..a37cf66def 100644
+--- a/target/linux/layerscape/patches-5.4/701-net-0394-drivers-net-mscc_ocelot-don-t-flood-unicast-traffic-.patch
++++ b/target/linux/layerscape/patches-5.4/701-net-0394-drivers-net-mscc_ocelot-don-t-flood-unicast-traffic-.patch
+@@ -15,7 +15,7 @@ Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
+ 
+ --- a/drivers/net/ethernet/mscc/ocelot.c
+ +++ b/drivers/net/ethernet/mscc/ocelot.c
+-@@ -1680,6 +1680,8 @@ static int ocelot_port_obj_del(struct ne
++@@ -1677,6 +1677,8 @@ static int ocelot_port_obj_del(struct ne
+  int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
+  			    struct net_device *bridge)
+  {
+@@ -24,7 +24,7 @@ Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
+  	if (!ocelot->bridge_mask) {
+  		ocelot->hw_bridge_dev = bridge;
+  	} else {
+-@@ -1691,6 +1693,12 @@ int ocelot_port_bridge_join(struct ocelo
++@@ -1688,6 +1690,12 @@ int ocelot_port_bridge_join(struct ocelo
+  
+  	ocelot->bridge_mask |= BIT(port);
+  
+diff --git a/target/linux/layerscape/patches-5.4/804-crypto-0012-MLK-19053-crypto-caam-RNG4-TRNG-errata.patch b/target/linux/layerscape/patches-5.4/804-crypto-0012-MLK-19053-crypto-caam-RNG4-TRNG-errata.patch
+index 52d15b71a6..761652ab71 100644
+--- a/target/linux/layerscape/patches-5.4/804-crypto-0012-MLK-19053-crypto-caam-RNG4-TRNG-errata.patch
++++ b/target/linux/layerscape/patches-5.4/804-crypto-0012-MLK-19053-crypto-caam-RNG4-TRNG-errata.patch
+@@ -51,7 +51,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  static int caam_get_era_from_hw(struct caam_ctrl __iomem *ctrl)
+ --- a/drivers/crypto/caam/regs.h
+ +++ b/drivers/crypto/caam/regs.h
+-@@ -492,7 +492,8 @@ struct rngtst {
++@@ -495,7 +495,8 @@ struct rngtst {
+  
+  /* RNG4 TRNG test registers */
+  struct rng4tst {
+diff --git a/target/linux/layerscape/patches-5.4/804-crypto-0016-MLKU-114-1-crypto-caam-reduce-page-0-regs-access-to-.patch b/target/linux/layerscape/patches-5.4/804-crypto-0016-MLKU-114-1-crypto-caam-reduce-page-0-regs-access-to-.patch
+index f062276254..106255449c 100644
+--- a/target/linux/layerscape/patches-5.4/804-crypto-0016-MLKU-114-1-crypto-caam-reduce-page-0-regs-access-to-.patch
++++ b/target/linux/layerscape/patches-5.4/804-crypto-0016-MLKU-114-1-crypto-caam-reduce-page-0-regs-access-to-.patch
+@@ -103,16 +103,16 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+ @@ -1099,10 +1099,10 @@ int caam_pkc_init(struct device *ctrldev
+  
+  	/* Determine public key hardware accelerator presence. */
+- 	if (priv->era < 10)
++ 	if (priv->era < 10) {
+ -		pk_inst = (rd_reg32(&priv->ctrl->perfmon.cha_num_ls) &
+ +		pk_inst = (rd_reg32(&priv->jr[0]->perfmon.cha_num_ls) &
+  			   CHA_ID_LS_PK_MASK) >> CHA_ID_LS_PK_SHIFT;
+- 	else
+--		pk_inst = rd_reg32(&priv->ctrl->vreg.pkha) & CHA_VER_NUM_MASK;
+-+		pk_inst = rd_reg32(&priv->jr[0]->vreg.pkha) & CHA_VER_NUM_MASK;
++ 	} else {
++-		pkha = rd_reg32(&priv->ctrl->vreg.pkha);
+++		pkha = rd_reg32(&priv->jr[0]->vreg.pkha);
++ 		pk_inst = pkha & CHA_VER_NUM_MASK;
+  
+- 	/* Do not register algorithms if PKHA is not present. */
+- 	if (!pk_inst)
++ 		/*
+ --- a/drivers/crypto/caam/caamrng.c
+ +++ b/drivers/crypto/caam/caamrng.c
+ @@ -363,10 +363,10 @@ int caam_rng_init(struct device *ctrldev
+diff --git a/target/linux/layerscape/patches-5.4/804-crypto-0020-MLKU-25-3-crypto-caam-add-Secure-Memory-support.patch b/target/linux/layerscape/patches-5.4/804-crypto-0020-MLKU-25-3-crypto-caam-add-Secure-Memory-support.patch
+index 91f1cebd55..db0e256ded 100644
+--- a/target/linux/layerscape/patches-5.4/804-crypto-0020-MLKU-25-3-crypto-caam-add-Secure-Memory-support.patch
++++ b/target/linux/layerscape/patches-5.4/804-crypto-0020-MLKU-25-3-crypto-caam-add-Secure-Memory-support.patch
+@@ -261,7 +261,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  
+ --- a/drivers/crypto/caam/regs.h
+ +++ b/drivers/crypto/caam/regs.h
+-@@ -382,6 +382,12 @@ struct version_regs {
++@@ -385,6 +385,12 @@ struct version_regs {
+  #define CHA_VER_VID_MD_LP512	0x1ull
+  #define CHA_VER_VID_MD_HP	0x2ull
+  
+@@ -274,7 +274,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  struct sec_vid {
+  	u16 ip_id;
+  	u8 maj_rev;
+-@@ -412,17 +418,22 @@ struct caam_perfmon {
++@@ -415,17 +421,22 @@ struct caam_perfmon {
+  #define CTPR_MS_PG_SZ_SHIFT	4
+  	u32 comp_parms_ms;	/* CTPR - Compile Parameters Register	*/
+  	u32 comp_parms_ls;	/* CTPR - Compile Parameters Register	*/
+@@ -300,7 +300,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  
+  	/* Component Instantiation Parameters			fe0-fff */
+  	u32 rtic_id;		/* RVID - RTIC Version ID	*/
+-@@ -441,6 +452,62 @@ struct caam_perfmon {
++@@ -444,6 +455,62 @@ struct caam_perfmon {
+  	u32 caam_id_ls;		/* CAAMVID - CAAM Version ID LS	*/
+  };
+  
+@@ -363,7 +363,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  /* LIODN programming for DMA configuration */
+  #define MSTRID_LOCK_LIODN	0x80000000
+  #define MSTRID_LOCK_MAKETRUSTED	0x00010000	/* only for JR masterid */
+-@@ -645,6 +712,35 @@ struct caam_ctrl {
++@@ -648,6 +715,35 @@ struct caam_ctrl {
+  #define JRSTART_JR2_START       0x00000004 /* Start Job ring 2 */
+  #define JRSTART_JR3_START       0x00000008 /* Start Job ring 3 */
+  
+@@ -399,7 +399,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  /*
+   * caam_job_ring - direct job ring setup
+   * 1-4 possible per instantiation, base + 1000/2000/3000/4000
+-@@ -815,6 +911,62 @@ struct caam_job_ring {
++@@ -818,6 +914,62 @@ struct caam_job_ring {
+  
+  #define JRCR_RESET                  0x01
+  
+diff --git a/target/linux/layerscape/patches-5.4/804-crypto-0024-MLK-19449-crypto-caam-Change-structure-type-represen.patch b/target/linux/layerscape/patches-5.4/804-crypto-0024-MLK-19449-crypto-caam-Change-structure-type-represen.patch
+index 0fb3847fda..2914f010a4 100644
+--- a/target/linux/layerscape/patches-5.4/804-crypto-0024-MLK-19449-crypto-caam-Change-structure-type-represen.patch
++++ b/target/linux/layerscape/patches-5.4/804-crypto-0024-MLK-19449-crypto-caam-Change-structure-type-represen.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+ 
+ --- a/drivers/crypto/caam/regs.h
+ +++ b/drivers/crypto/caam/regs.h
+-@@ -518,12 +518,6 @@ struct masterid {
++@@ -521,12 +521,6 @@ struct masterid {
+  	u32 liodn_ls;	/* LIODN for non-sequence and seq access */
+  };
+  
+@@ -34,7 +34,7 @@ Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
+  /* RNGB test mode (replicated twice in some configurations) */
+  /* Padded out to 0x100 */
+  struct rngtst {
+-@@ -637,7 +631,7 @@ struct caam_ctrl {
++@@ -640,7 +634,7 @@ struct caam_ctrl {
+  	u32 deco_rsr;			/* DECORSR - Deco Request Source */
+  	u32 rsvd11;
+  	u32 deco_rq;			/* DECORR - DECO Request */
+diff --git a/target/linux/layerscape/patches-5.4/804-crypto-0041-LF-292-2-crypto-caam-add-power-management.patch b/target/linux/layerscape/patches-5.4/804-crypto-0041-LF-292-2-crypto-caam-add-power-management.patch
+index f3ebbccd58..2a518790ed 100644
+--- a/target/linux/layerscape/patches-5.4/804-crypto-0041-LF-292-2-crypto-caam-add-power-management.patch
++++ b/target/linux/layerscape/patches-5.4/804-crypto-0041-LF-292-2-crypto-caam-add-power-management.patch
+@@ -558,7 +558,7 @@ Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
+  	},
+ --- a/drivers/crypto/caam/regs.h
+ +++ b/drivers/crypto/caam/regs.h
+-@@ -631,8 +631,7 @@ struct caam_ctrl {
++@@ -634,8 +634,7 @@ struct caam_ctrl {
+  	u32 deco_rsr;			/* DECORSR - Deco Request Source */
+  	u32 rsvd11;
+  	u32 deco_rq;			/* DECORR - DECO Request */
+diff --git a/target/linux/layerscape/patches-5.4/812-pcie-0004-pci-add-support-aer-pme-interrupts-with-none-MSI-MSI.patch b/target/linux/layerscape/patches-5.4/812-pcie-0004-pci-add-support-aer-pme-interrupts-with-none-MSI-MSI.patch
+index bb26cd3441..9c359d24b9 100644
+--- a/target/linux/layerscape/patches-5.4/812-pcie-0004-pci-add-support-aer-pme-interrupts-with-none-MSI-MSI.patch
++++ b/target/linux/layerscape/patches-5.4/812-pcie-0004-pci-add-support-aer-pme-interrupts-with-none-MSI-MSI.patch
+@@ -229,7 +229,7 @@ Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
+  	 * fall back to INTx or other interrupts, e.g., a system shared
+ --- a/include/linux/pci.h
+ +++ b/include/linux/pci.h
+-@@ -2022,6 +2022,7 @@ static inline void pcibios_penalize_isa_
++@@ -2024,6 +2024,7 @@ static inline void pcibios_penalize_isa_
+  int pcibios_alloc_irq(struct pci_dev *dev);
+  void pcibios_free_irq(struct pci_dev *dev);
+  resource_size_t pcibios_default_alignment(void);
+diff --git a/target/linux/layerscape/patches-5.4/820-usb-0014-MLK-17380-3-usb-move-EH-SINGLE_STEP_SET_FEATURE-impl.patch b/target/linux/layerscape/patches-5.4/820-usb-0014-MLK-17380-3-usb-move-EH-SINGLE_STEP_SET_FEATURE-impl.patch
+index d43626577b..f5bf467154 100644
+--- a/target/linux/layerscape/patches-5.4/820-usb-0014-MLK-17380-3-usb-move-EH-SINGLE_STEP_SET_FEATURE-impl.patch
++++ b/target/linux/layerscape/patches-5.4/820-usb-0014-MLK-17380-3-usb-move-EH-SINGLE_STEP_SET_FEATURE-impl.patch
+@@ -163,7 +163,7 @@ Signed-off-by: Peter Chen <peter.chen@nxp.com>
+  
+ --- a/drivers/usb/host/ehci-hcd.c
+ +++ b/drivers/usb/host/ehci-hcd.c
+-@@ -1245,6 +1245,10 @@ static const struct hc_driver ehci_hc_dr
++@@ -1254,6 +1254,10 @@ static const struct hc_driver ehci_hc_dr
+  	 * device support
+  	 */
+  	.free_dev =		ehci_remove_device,
+diff --git a/target/linux/layerscape/patches-5.4/820-usb-0015-MLK-17380-4-usb-host-xhci-add-EH-SINGLE_STEP_SET_FEA.patch b/target/linux/layerscape/patches-5.4/820-usb-0015-MLK-17380-4-usb-host-xhci-add-EH-SINGLE_STEP_SET_FEA.patch
+index 361328cf05..9dd1cf5ff5 100644
+--- a/target/linux/layerscape/patches-5.4/820-usb-0015-MLK-17380-4-usb-host-xhci-add-EH-SINGLE_STEP_SET_FEA.patch
++++ b/target/linux/layerscape/patches-5.4/820-usb-0015-MLK-17380-4-usb-host-xhci-add-EH-SINGLE_STEP_SET_FEA.patch
+@@ -24,7 +24,7 @@ Signed-off-by: Peter Chen <peter.chen@nxp.com>
+ 
+ --- a/drivers/usb/host/xhci-hub.c
+ +++ b/drivers/usb/host/xhci-hub.c
+-@@ -1420,6 +1420,15 @@ int xhci_hub_control(struct usb_hcd *hcd
++@@ -1421,6 +1421,15 @@ int xhci_hub_control(struct usb_hcd *hcd
+  			/* 4.19.6 Port Test Modes (USB2 Test Mode) */
+  			if (hcd->speed != HCD_USB2)
+  				goto error;
+diff --git a/target/linux/layerscape/patches-5.4/820-usb-0019-MLK-9829-usb-core-print-suggested-message-if-failed-.patch b/target/linux/layerscape/patches-5.4/820-usb-0019-MLK-9829-usb-core-print-suggested-message-if-failed-.patch
+index e02f08579c..6111197263 100644
+--- a/target/linux/layerscape/patches-5.4/820-usb-0019-MLK-9829-usb-core-print-suggested-message-if-failed-.patch
++++ b/target/linux/layerscape/patches-5.4/820-usb-0019-MLK-9829-usb-core-print-suggested-message-if-failed-.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Li Jun <jun.li@freescale.com>
+ 
+ --- a/drivers/usb/core/hub.c
+ +++ b/drivers/usb/core/hub.c
+-@@ -4779,7 +4779,8 @@ hub_port_init(struct usb_hub *hub, struc
++@@ -4777,7 +4777,8 @@ hub_port_init(struct usb_hub *hub, struc
+  			}
+  			if (r) {
+  				if (r != -ENODEV)
+diff --git a/target/linux/layerscape/patches-5.4/820-usb-0021-MLK-22099-usb-host-xhci-do-warm-reset-for-link-state.patch b/target/linux/layerscape/patches-5.4/820-usb-0021-MLK-22099-usb-host-xhci-do-warm-reset-for-link-state.patch
+index 00034e38f3..26c6c007fb 100644
+--- a/target/linux/layerscape/patches-5.4/820-usb-0021-MLK-22099-usb-host-xhci-do-warm-reset-for-link-state.patch
++++ b/target/linux/layerscape/patches-5.4/820-usb-0021-MLK-22099-usb-host-xhci-do-warm-reset-for-link-state.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Li Jun <jun.li@nxp.com>
+ 
+ --- a/drivers/usb/host/xhci-hub.c
+ +++ b/drivers/usb/host/xhci-hub.c
+-@@ -1738,7 +1738,8 @@ static bool xhci_port_missing_cas_quirk(
++@@ -1739,7 +1739,8 @@ static bool xhci_port_missing_cas_quirk(
+  		return false;
+  
+  	if (((portsc & PORT_PLS_MASK) != XDEV_POLLING) &&
+diff --git a/target/linux/mediatek/patches-5.4/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch b/target/linux/mediatek/patches-5.4/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
+index bd854613b7..38bb9ca46d 100644
+--- a/target/linux/mediatek/patches-5.4/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
++++ b/target/linux/mediatek/patches-5.4/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
+@@ -95,7 +95,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	}
+  
+  	netif_tx_start_all_queues(port->dev);
+-@@ -5137,8 +5141,11 @@ static void mvpp2_mac_config(struct phyl
++@@ -5125,8 +5129,11 @@ static void mvpp2_mac_config(struct phyl
+  	mvpp2_port_enable(port);
+  }
+  
+diff --git a/target/linux/mvebu/patches-5.4/001-PCI-aardvark-Wait-for-endpoint-to-be-ready-before-tr.patch b/target/linux/mvebu/patches-5.4/001-PCI-aardvark-Wait-for-endpoint-to-be-ready-before-tr.patch
+deleted file mode 100644
+index ca10ecf6b2..0000000000
+--- a/target/linux/mvebu/patches-5.4/001-PCI-aardvark-Wait-for-endpoint-to-be-ready-before-tr.patch
++++ /dev/null
+@@ -1,50 +0,0 @@
+-From f4c7d053d7f77cd5c1a1ba7c7ce085ddba13d1d7 Mon Sep 17 00:00:00 2001
+-From: Remi Pommarel <repk@triplefau.lt>
+-Date: Wed, 22 May 2019 23:33:50 +0200
+-Subject: [PATCH] PCI: aardvark: Wait for endpoint to be ready before training
+- link
+-
+-When configuring pcie reset pin from gpio (e.g. initially set by
+-u-boot) to pcie function this pin goes low for a brief moment
+-asserting the PERST# signal. Thus connected device enters fundamental
+-reset process and link configuration can only begin after a minimal
+-100ms delay (see [1]).
+-
+-Because the pin configuration comes from the "default" pinctrl it is
+-implicitly configured before the probe callback is called:
+-
+-driver_probe_device()
+-  really_probe()
+-    ...
+-    pinctrl_bind_pins() /* Here pin goes from gpio to PCIE reset
+-                           function and PERST# is asserted */
+-    ...
+-    drv->probe()
+-
+-[1] "PCI Express Base Specification", REV. 4.0
+-    PCI Express, February 19 2014, 6.6.1 Conventional Reset
+-
+-Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+-Acked-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+----
+- drivers/pci/controller/pci-aardvark.c | 8 ++++++++
+- 1 file changed, 8 insertions(+)
+-
+---- a/drivers/pci/controller/pci-aardvark.c
+-+++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -353,6 +353,14 @@ static void advk_pcie_setup_hw(struct ad
+- 	reg |= PIO_CTRL_ADDR_WIN_DISABLE;
+- 	advk_writel(pcie, reg, PIO_CTRL);
+- 
+-+	/*
+-+	 * PERST# signal could have been asserted by pinctrl subsystem before
+-+	 * probe() callback has been called, making the endpoint going into
+-+	 * fundamental reset. As required by PCI Express spec a delay for at
+-+	 * least 100ms after such a reset before link training is needed.
+-+	 */
+-+	msleep(PCI_PM_D3COLD_WAIT);
+-+
+- 	/* Start link training */
+- 	reg = advk_readl(pcie, PCIE_CORE_LINK_CTRL_STAT_REG);
+- 	reg |= PCIE_CORE_LINK_TRAINING;
+diff --git a/target/linux/mvebu/patches-5.4/016-PCI-aardvark-Train-link-immediately-after-enabling-t.patch b/target/linux/mvebu/patches-5.4/016-PCI-aardvark-Train-link-immediately-after-enabling-t.patch
+deleted file mode 100644
+index d1bfd70d30..0000000000
+--- a/target/linux/mvebu/patches-5.4/016-PCI-aardvark-Train-link-immediately-after-enabling-t.patch
++++ /dev/null
+@@ -1,60 +0,0 @@
+-From 6964494582f56a3882c2c53b0edbfe99eb32b2e1 Mon Sep 17 00:00:00 2001
+-From: =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+-Date: Thu, 30 Apr 2020 10:06:14 +0200
+-Subject: [PATCH] PCI: aardvark: Train link immediately after enabling training
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
+-
+-Adding even 100ms (PCI_PM_D3COLD_WAIT) delay between enabling link
+-training and starting link training causes detection issues with some
+-buggy cards (such as Compex WLE900VX).
+-
+-Move the code which enables link training immediately before the one
+-which starts link traning.
+-
+-This fixes detection issues of Compex WLE900VX card on Turris MOX after
+-cold boot.
+-
+-Link: https://lore.kernel.org/r/20200430080625.26070-2-pali@kernel.org
+-Fixes: f4c7d053d7f7 ("PCI: aardvark: Wait for endpoint to be ready...")
+-Tested-by: Tomasz Maciej Nowak <tmn505@gmail.com>
+-Signed-off-by: Pali Rohár <pali@kernel.org>
+-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+-Acked-by: Rob Herring <robh@kernel.org>
+-Acked-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+----
+- drivers/pci/controller/pci-aardvark.c | 15 +++++++++------
+- 1 file changed, 9 insertions(+), 6 deletions(-)
+-
+---- a/drivers/pci/controller/pci-aardvark.c
+-+++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -315,11 +315,6 @@ static void advk_pcie_setup_hw(struct ad
+- 	reg |= LANE_COUNT_1;
+- 	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+- 
+--	/* Enable link training */
+--	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+--	reg |= LINK_TRAINING_EN;
+--	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+--
+- 	/* Enable MSI */
+- 	reg = advk_readl(pcie, PCIE_CORE_CTRL2_REG);
+- 	reg |= PCIE_CORE_CTRL2_MSI_ENABLE;
+-@@ -361,7 +356,15 @@ static void advk_pcie_setup_hw(struct ad
+- 	 */
+- 	msleep(PCI_PM_D3COLD_WAIT);
+- 
+--	/* Start link training */
+-+	/* Enable link training */
+-+	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+-+	reg |= LINK_TRAINING_EN;
+-+	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+-+
+-+	/*
+-+	 * Start link training immediately after enabling it.
+-+	 * This solves problems for some buggy cards.
+-+	 */
+- 	reg = advk_readl(pcie, PCIE_CORE_LINK_CTRL_STAT_REG);
+- 	reg |= PCIE_CORE_LINK_TRAINING;
+- 	advk_writel(pcie, reg, PCIE_CORE_LINK_CTRL_STAT_REG);
+diff --git a/target/linux/mvebu/patches-5.4/017-PCI-aardvark-Improve-link-training.patch b/target/linux/mvebu/patches-5.4/017-PCI-aardvark-Improve-link-training.patch
+deleted file mode 100644
+index 85ae9cabe2..0000000000
+--- a/target/linux/mvebu/patches-5.4/017-PCI-aardvark-Improve-link-training.patch
++++ /dev/null
+@@ -1,208 +0,0 @@
+-From 43fc679ced18006b12d918d7a8a4af392b7fbfe7 Mon Sep 17 00:00:00 2001
+-From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+-Date: Thu, 30 Apr 2020 10:06:17 +0200
+-Subject: [PATCH] PCI: aardvark: Improve link training
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
+-
+-Currently the aardvark driver trains link in PCIe gen2 mode. This may
+-cause some buggy gen1 cards (such as Compex WLE900VX) to be unstable or
+-even not detected. Moreover when ASPM code tries to retrain link second
+-time, these cards may stop responding and link goes down. If gen1 is
+-used this does not happen.
+-
+-Unconditionally forcing gen1 is not a good solution since it may have
+-performance impact on gen2 cards.
+-
+-To overcome this, read 'max-link-speed' property (as defined in PCI
+-device tree bindings) and use this as max gen mode. Then iteratively try
+-link training at this mode or lower until successful. After successful
+-link training choose final controller gen based on Negotiated Link Speed
+-from Link Status register, which should match card speed.
+-
+-Link: https://lore.kernel.org/r/20200430080625.26070-5-pali@kernel.org
+-Tested-by: Tomasz Maciej Nowak <tmn505@gmail.com>
+-Signed-off-by: Pali Rohár <pali@kernel.org>
+-Signed-off-by: Marek Behún <marek.behun@nic.cz>
+-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+-Reviewed-by: Rob Herring <robh@kernel.org>
+-Acked-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+----
+- drivers/pci/controller/pci-aardvark.c | 114 ++++++++++++++++++++------
+- 1 file changed, 89 insertions(+), 25 deletions(-)
+-
+---- a/drivers/pci/controller/pci-aardvark.c
+-+++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -39,6 +39,7 @@
+- #define PCIE_CORE_LINK_CTRL_STAT_REG				0xd0
+- #define     PCIE_CORE_LINK_L0S_ENTRY				BIT(0)
+- #define     PCIE_CORE_LINK_TRAINING				BIT(5)
+-+#define     PCIE_CORE_LINK_SPEED_SHIFT				16
+- #define     PCIE_CORE_LINK_WIDTH_SHIFT				20
+- #define PCIE_CORE_ERR_CAPCTL_REG				0x118
+- #define     PCIE_CORE_ERR_CAPCTL_ECRC_CHK_TX			BIT(5)
+-@@ -206,6 +207,7 @@ struct advk_pcie {
+- 	struct mutex msi_used_lock;
+- 	u16 msi_msg;
+- 	int root_bus_nr;
+-+	int link_gen;
+- 	struct pci_bridge_emul bridge;
+- };
+- 
+-@@ -230,20 +232,16 @@ static int advk_pcie_link_up(struct advk
+- 
+- static int advk_pcie_wait_for_link(struct advk_pcie *pcie)
+- {
+--	struct device *dev = &pcie->pdev->dev;
+- 	int retries;
+- 
+- 	/* check if the link is up or not */
+- 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
+--		if (advk_pcie_link_up(pcie)) {
+--			dev_info(dev, "link up\n");
+-+		if (advk_pcie_link_up(pcie))
+- 			return 0;
+--		}
+- 
+- 		usleep_range(LINK_WAIT_USLEEP_MIN, LINK_WAIT_USLEEP_MAX);
+- 	}
+- 
+--	dev_err(dev, "link never came up\n");
+- 	return -ETIMEDOUT;
+- }
+- 
+-@@ -258,6 +256,85 @@ static void advk_pcie_wait_for_retrain(s
+- 	}
+- }
+- 
+-+static int advk_pcie_train_at_gen(struct advk_pcie *pcie, int gen)
+-+{
+-+	int ret, neg_gen;
+-+	u32 reg;
+-+
+-+	/* Setup link speed */
+-+	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+-+	reg &= ~PCIE_GEN_SEL_MSK;
+-+	if (gen == 3)
+-+		reg |= SPEED_GEN_3;
+-+	else if (gen == 2)
+-+		reg |= SPEED_GEN_2;
+-+	else
+-+		reg |= SPEED_GEN_1;
+-+	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+-+
+-+	/*
+-+	 * Enable link training. This is not needed in every call to this
+-+	 * function, just once suffices, but it does not break anything either.
+-+	 */
+-+	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+-+	reg |= LINK_TRAINING_EN;
+-+	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+-+
+-+	/*
+-+	 * Start link training immediately after enabling it.
+-+	 * This solves problems for some buggy cards.
+-+	 */
+-+	reg = advk_readl(pcie, PCIE_CORE_LINK_CTRL_STAT_REG);
+-+	reg |= PCIE_CORE_LINK_TRAINING;
+-+	advk_writel(pcie, reg, PCIE_CORE_LINK_CTRL_STAT_REG);
+-+
+-+	ret = advk_pcie_wait_for_link(pcie);
+-+	if (ret)
+-+		return ret;
+-+
+-+	reg = advk_readl(pcie, PCIE_CORE_LINK_CTRL_STAT_REG);
+-+	neg_gen = (reg >> PCIE_CORE_LINK_SPEED_SHIFT) & 0xf;
+-+
+-+	return neg_gen;
+-+}
+-+
+-+static void advk_pcie_train_link(struct advk_pcie *pcie)
+-+{
+-+	struct device *dev = &pcie->pdev->dev;
+-+	int neg_gen = -1, gen;
+-+
+-+	/*
+-+	 * Try link training at link gen specified by device tree property
+-+	 * 'max-link-speed'. If this fails, iteratively train at lower gen.
+-+	 */
+-+	for (gen = pcie->link_gen; gen > 0; --gen) {
+-+		neg_gen = advk_pcie_train_at_gen(pcie, gen);
+-+		if (neg_gen > 0)
+-+			break;
+-+	}
+-+
+-+	if (neg_gen < 0)
+-+		goto err;
+-+
+-+	/*
+-+	 * After successful training if negotiated gen is lower than requested,
+-+	 * train again on negotiated gen. This solves some stability issues for
+-+	 * some buggy gen1 cards.
+-+	 */
+-+	if (neg_gen < gen) {
+-+		gen = neg_gen;
+-+		neg_gen = advk_pcie_train_at_gen(pcie, gen);
+-+	}
+-+
+-+	if (neg_gen == gen) {
+-+		dev_info(dev, "link up at gen %i\n", gen);
+-+		return;
+-+	}
+-+
+-+err:
+-+	dev_err(dev, "link never came up\n");
+-+}
+-+
+- static void advk_pcie_setup_hw(struct advk_pcie *pcie)
+- {
+- 	u32 reg;
+-@@ -303,12 +380,6 @@ static void advk_pcie_setup_hw(struct ad
+- 		PCIE_CORE_CTRL2_TD_ENABLE;
+- 	advk_writel(pcie, reg, PCIE_CORE_CTRL2_REG);
+- 
+--	/* Set GEN2 */
+--	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+--	reg &= ~PCIE_GEN_SEL_MSK;
+--	reg |= SPEED_GEN_2;
+--	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+--
+- 	/* Set lane X1 */
+- 	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+- 	reg &= ~LANE_CNT_MSK;
+-@@ -356,20 +427,7 @@ static void advk_pcie_setup_hw(struct ad
+- 	 */
+- 	msleep(PCI_PM_D3COLD_WAIT);
+- 
+--	/* Enable link training */
+--	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+--	reg |= LINK_TRAINING_EN;
+--	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+--
+--	/*
+--	 * Start link training immediately after enabling it.
+--	 * This solves problems for some buggy cards.
+--	 */
+--	reg = advk_readl(pcie, PCIE_CORE_LINK_CTRL_STAT_REG);
+--	reg |= PCIE_CORE_LINK_TRAINING;
+--	advk_writel(pcie, reg, PCIE_CORE_LINK_CTRL_STAT_REG);
+--
+--	advk_pcie_wait_for_link(pcie);
+-+	advk_pcie_train_link(pcie);
+- 
+- 	reg = advk_readl(pcie, PCIE_CORE_CMD_STATUS_REG);
+- 	reg |= PCIE_CORE_CMD_MEM_ACCESS_EN |
+-@@ -1193,6 +1251,12 @@ static int advk_pcie_probe(struct platfo
+- 		return ret;
+- 	}
+- 
+-+	ret = of_pci_get_max_link_speed(dev->of_node);
+-+	if (ret <= 0 || ret > 3)
+-+		pcie->link_gen = 3;
+-+	else
+-+		pcie->link_gen = ret;
+-+
+- 	advk_pcie_setup_hw(pcie);
+- 
+- 	ret = advk_sw_pci_bridge_init(pcie);
+diff --git a/target/linux/mvebu/patches-5.4/018-PCI-aardvark-Issue-PERST-via-GPIO.patch b/target/linux/mvebu/patches-5.4/018-PCI-aardvark-Issue-PERST-via-GPIO.patch
+deleted file mode 100644
+index 7db1c3efa5..0000000000
+--- a/target/linux/mvebu/patches-5.4/018-PCI-aardvark-Issue-PERST-via-GPIO.patch
++++ /dev/null
+@@ -1,123 +0,0 @@
+-From 5169a9851daaa2782a7bd2bb83d5b1bd224b2879 Mon Sep 17 00:00:00 2001
+-From: =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+-Date: Thu, 30 Apr 2020 10:06:18 +0200
+-Subject: [PATCH] PCI: aardvark: Issue PERST via GPIO
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
+-
+-Add support for issuing PERST via GPIO specified in 'reset-gpios'
+-property (as described in PCI device tree bindings).
+-
+-Some buggy cards (e.g. Compex WLE900VX or WLE1216) are not detected
+-after reboot when PERST is not issued during driver initialization.
+-
+-If bootloader already enabled link training then issuing PERST has no
+-effect for some buggy cards (e.g. Compex WLE900VX) and these cards are
+-not detected. We therefore clear the LINK_TRAINING_EN register before.
+-
+-It was observed that Compex WLE900VX card needs to be in PERST reset
+-for at least 10ms if bootloader enabled link training.
+-
+-Tested on Turris MOX.
+-
+-Link: https://lore.kernel.org/r/20200430080625.26070-6-pali@kernel.org
+-Tested-by: Tomasz Maciej Nowak <tmn505@gmail.com>
+-Signed-off-by: Pali Rohár <pali@kernel.org>
+-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+-Acked-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+----
+- drivers/pci/controller/pci-aardvark.c | 43 ++++++++++++++++++++++++++-
+- 1 file changed, 42 insertions(+), 1 deletion(-)
+-
+---- a/drivers/pci/controller/pci-aardvark.c
+-+++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -9,6 +9,7 @@
+-  */
+- 
+- #include <linux/delay.h>
+-+#include <linux/gpio.h>
+- #include <linux/interrupt.h>
+- #include <linux/irq.h>
+- #include <linux/irqdomain.h>
+-@@ -17,6 +18,7 @@
+- #include <linux/init.h>
+- #include <linux/platform_device.h>
+- #include <linux/of_address.h>
+-+#include <linux/of_gpio.h>
+- #include <linux/of_pci.h>
+- 
+- #include "../pci.h"
+-@@ -209,6 +211,7 @@ struct advk_pcie {
+- 	int root_bus_nr;
+- 	int link_gen;
+- 	struct pci_bridge_emul bridge;
+-+	struct gpio_desc *reset_gpio;
+- };
+- 
+- static inline void advk_writel(struct advk_pcie *pcie, u32 val, u64 reg)
+-@@ -335,10 +338,31 @@ err:
+- 	dev_err(dev, "link never came up\n");
+- }
+- 
+-+static void advk_pcie_issue_perst(struct advk_pcie *pcie)
+-+{
+-+	u32 reg;
+-+
+-+	if (!pcie->reset_gpio)
+-+		return;
+-+
+-+	/* PERST does not work for some cards when link training is enabled */
+-+	reg = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
+-+	reg &= ~LINK_TRAINING_EN;
+-+	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+-+
+-+	/* 10ms delay is needed for some cards */
+-+	dev_info(&pcie->pdev->dev, "issuing PERST via reset GPIO for 10ms\n");
+-+	gpiod_set_value_cansleep(pcie->reset_gpio, 1);
+-+	usleep_range(10000, 11000);
+-+	gpiod_set_value_cansleep(pcie->reset_gpio, 0);
+-+}
+-+
+- static void advk_pcie_setup_hw(struct advk_pcie *pcie)
+- {
+- 	u32 reg;
+- 
+-+	advk_pcie_issue_perst(pcie);
+-+
+- 	/* Set to Direct mode */
+- 	reg = advk_readl(pcie, CTRL_CONFIG_REG);
+- 	reg &= ~(CTRL_MODE_MASK << CTRL_MODE_SHIFT);
+-@@ -421,7 +445,8 @@ static void advk_pcie_setup_hw(struct ad
+- 
+- 	/*
+- 	 * PERST# signal could have been asserted by pinctrl subsystem before
+--	 * probe() callback has been called, making the endpoint going into
+-+	 * probe() callback has been called or issued explicitly by reset gpio
+-+	 * function advk_pcie_issue_perst(), making the endpoint going into
+- 	 * fundamental reset. As required by PCI Express spec a delay for at
+- 	 * least 100ms after such a reset before link training is needed.
+- 	 */
+-@@ -1251,6 +1276,22 @@ static int advk_pcie_probe(struct platfo
+- 		return ret;
+- 	}
+- 
+-+	pcie->reset_gpio = devm_gpiod_get_from_of_node(dev, dev->of_node,
+-+						       "reset-gpios", 0,
+-+						       GPIOD_OUT_LOW,
+-+						       "pcie1-reset");
+-+	ret = PTR_ERR_OR_ZERO(pcie->reset_gpio);
+-+	if (ret) {
+-+		if (ret == -ENOENT) {
+-+			pcie->reset_gpio = NULL;
+-+		} else {
+-+			if (ret != -EPROBE_DEFER)
+-+				dev_err(dev, "Failed to get reset-gpio: %i\n",
+-+					ret);
+-+			return ret;
+-+		}
+-+	}
+-+
+- 	ret = of_pci_get_max_link_speed(dev->of_node);
+- 	if (ret <= 0 || ret > 3)
+- 		pcie->link_gen = 3;
+diff --git a/target/linux/mvebu/patches-5.4/019-PCI-aardvark-Add-PHY-support.patch b/target/linux/mvebu/patches-5.4/019-PCI-aardvark-Add-PHY-support.patch
+index 0c8357d717..525d9ec794 100644
+--- a/target/linux/mvebu/patches-5.4/019-PCI-aardvark-Add-PHY-support.patch
++++ b/target/linux/mvebu/patches-5.4/019-PCI-aardvark-Add-PHY-support.patch
+@@ -47,7 +47,7 @@ Cc: Miquèl Raynal <miquel.raynal@bootlin.com>
+  #include <linux/platform_device.h>
+  #include <linux/of_address.h>
+  #include <linux/of_gpio.h>
+-@@ -104,6 +105,8 @@
++@@ -90,6 +91,8 @@
+  #define     PCIE_CORE_CTRL2_STRICT_ORDER_ENABLE	BIT(5)
+  #define     PCIE_CORE_CTRL2_OB_WIN_ENABLE	BIT(6)
+  #define     PCIE_CORE_CTRL2_MSI_ENABLE		BIT(10)
+@@ -56,7 +56,7 @@ Cc: Miquèl Raynal <miquel.raynal@bootlin.com>
+  #define PCIE_MSG_LOG_REG			(CONTROL_BASE_ADDR + 0x30)
+  #define PCIE_ISR0_REG				(CONTROL_BASE_ADDR + 0x40)
+  #define PCIE_MSG_PM_PME_MASK			BIT(7)
+-@@ -212,6 +215,7 @@ struct advk_pcie {
++@@ -288,6 +291,7 @@ struct advk_pcie {
+  	int link_gen;
+  	struct pci_bridge_emul bridge;
+  	struct gpio_desc *reset_gpio;
+@@ -64,9 +64,9 @@ Cc: Miquèl Raynal <miquel.raynal@bootlin.com>
+  };
+  
+  static inline void advk_writel(struct advk_pcie *pcie, u32 val, u64 reg)
+-@@ -363,6 +367,11 @@ static void advk_pcie_setup_hw(struct ad
+- 
+- 	advk_pcie_issue_perst(pcie);
++@@ -481,6 +485,11 @@ static void advk_pcie_setup_hw(struct ad
++ 	u32 reg;
++ 	int i;
+  
+ +	/* Enable TX */
+ +	reg = advk_readl(pcie, PCIE_CORE_REF_CLK_REG);
+@@ -76,7 +76,7 @@ Cc: Miquèl Raynal <miquel.raynal@bootlin.com>
+  	/* Set to Direct mode */
+  	reg = advk_readl(pcie, CTRL_CONFIG_REG);
+  	reg &= ~(CTRL_MODE_MASK << CTRL_MODE_SHIFT);
+-@@ -1241,6 +1250,62 @@ out_release_res:
++@@ -1493,6 +1502,62 @@ out_release_res:
+  	return err;
+  }
+  
+@@ -139,7 +139,7 @@ Cc: Miquèl Raynal <miquel.raynal@bootlin.com>
+  static int advk_pcie_probe(struct platform_device *pdev)
+  {
+  	struct device *dev = &pdev->dev;
+-@@ -1298,6 +1363,10 @@ static int advk_pcie_probe(struct platfo
++@@ -1625,6 +1690,10 @@ static int advk_pcie_probe(struct platfo
+  	else
+  		pcie->link_gen = ret;
+  
+diff --git a/target/linux/mvebu/patches-5.4/020-arm64-dts-marvell-armada-37xx-Set-pcie_reset_pin-to-.patch b/target/linux/mvebu/patches-5.4/020-arm64-dts-marvell-armada-37xx-Set-pcie_reset_pin-to-.patch
+deleted file mode 100644
+index dd75470b4d..0000000000
+--- a/target/linux/mvebu/patches-5.4/020-arm64-dts-marvell-armada-37xx-Set-pcie_reset_pin-to-.patch
++++ /dev/null
+@@ -1,93 +0,0 @@
+-From 715878016984b2617f6c1f177c50039e12e7bd5b Mon Sep 17 00:00:00 2001
+-From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+-Date: Thu, 30 Apr 2020 10:06:23 +0200
+-Subject: [PATCH] arm64: dts: marvell: armada-37xx: Set pcie_reset_pin to gpio
+- function
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
+-
+-We found out that we are unable to control the PERST# signal via the
+-default pin dedicated to be PERST# pin (GPIO2[3] pin) on A3700 SOC when
+-this pin is in EP_PCIE1_Resetn mode. There is a register in the PCIe
+-register space called PERSTN_GPIO_EN (D0088004[3]), but changing the
+-value of this register does not change the pin output when measuring
+-with voltmeter.
+-
+-We do not know if this is a bug in the SOC, or if it works only when
+-PCIe controller is in a certain state.
+-
+-Commit f4c7d053d7f7 ("PCI: aardvark: Wait for endpoint to be ready
+-before training link") says that when this pin changes pinctrl mode
+-from EP_PCIE1_Resetn to GPIO, the PERST# signal is asserted for a brief
+-moment.
+-
+-So currently the situation is that on A3700 boards the PERST# signal is
+-asserted in U-Boot (because the code in U-Boot issues reset via this pin
+-via GPIO mode), and then in Linux by the obscure and undocumented
+-mechanism described by the above mentioned commit.
+-
+-We want to issue PERST# signal in a known way, therefore this patch
+-changes the pcie_reset_pin function from "pcie" to "gpio" and adds the
+-reset-gpios property to the PCIe node in device tree files of
+-EspressoBin and Armada 3720 Dev Board (Turris Mox device tree already
+-has this property and uDPU does not have a PCIe port).
+-
+-Signed-off-by: Marek Behún <marek.behun@nic.cz>
+-Cc: Remi Pommarel <repk@triplefau.lt>
+-Tested-by: Tomasz Maciej Nowak <tmn505@gmail.com>
+-Acked-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+----
+- arch/arm64/boot/dts/marvell/armada-3720-db.dts           | 3 +++
+- arch/arm64/boot/dts/marvell/armada-3720-espressobin.dtsi | 1 +
+- arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts   | 4 ----
+- arch/arm64/boot/dts/marvell/armada-37xx.dtsi             | 2 +-
+- 4 files changed, 5 insertions(+), 5 deletions(-)
+-
+---- a/arch/arm64/boot/dts/marvell/armada-3720-db.dts
+-+++ b/arch/arm64/boot/dts/marvell/armada-3720-db.dts
+-@@ -128,6 +128,9 @@
+- 
+- /* CON15(V2.0)/CON17(V1.4) : PCIe / CON15(V2.0)/CON12(V1.4) :mini-PCIe */
+- &pcie0 {
+-+	pinctrl-names = "default";
+-+	pinctrl-0 = <&pcie_reset_pins &pcie_clkreq_pins>;
+-+	reset-gpios = <&gpiosb 3 GPIO_ACTIVE_LOW>;
+- 	status = "okay";
+- };
+- 
+---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
+-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
+-@@ -59,6 +59,7 @@
+- 	phys = <&comphy1 0>;
+- 	pinctrl-names = "default";
+- 	pinctrl-0 = <&pcie_reset_pins &pcie_clkreq_pins>;
+-+	reset-gpios = <&gpiosb 3 GPIO_ACTIVE_LOW>;
+- };
+- 
+- /* J6 */
+---- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+-+++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+-@@ -127,10 +127,6 @@
+- 	};
+- };
+- 
+--&pcie_reset_pins {
+--	function = "gpio";
+--};
+--
+- &pcie0 {
+- 	pinctrl-names = "default";
+- 	pinctrl-0 = <&pcie_reset_pins &pcie_clkreq_pins>;
+---- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+-+++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+-@@ -318,7 +318,7 @@
+- 
+- 				pcie_reset_pins: pcie-reset-pins {
+- 					groups = "pcie1";
+--					function = "pcie";
+-+					function = "gpio";
+- 				};
+- 
+- 				pcie_clkreq_pins: pcie-clkreq-pins {
+diff --git a/target/linux/mvebu/patches-5.4/024-PCI-aardvark-Don-t-touch-PCIe-registers-if-no-card-c.patch b/target/linux/mvebu/patches-5.4/024-PCI-aardvark-Don-t-touch-PCIe-registers-if-no-card-c.patch
+index f38b6b56bb..7a8c50634f 100644
+--- a/target/linux/mvebu/patches-5.4/024-PCI-aardvark-Don-t-touch-PCIe-registers-if-no-card-c.patch
++++ b/target/linux/mvebu/patches-5.4/024-PCI-aardvark-Don-t-touch-PCIe-registers-if-no-card-c.patch
+@@ -34,8 +34,8 @@ Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+ 
+ --- a/drivers/pci/controller/pci-aardvark.c
+ +++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -725,6 +725,13 @@ static bool advk_pcie_valid_device(struc
+- 	if ((bus->number == pcie->root_bus_nr) && PCI_SLOT(devfn) != 0)
++@@ -976,6 +976,13 @@ static bool advk_pcie_valid_device(struc
++ 	if (bus->number != pcie->root_bus_nr && !advk_pcie_link_up(pcie))
+  		return false;
+  
+ +	/*
+diff --git a/target/linux/mvebu/patches-5.4/026-PCI-aardvark-Fix-initialization-with-old-Marvell-s-A.patch b/target/linux/mvebu/patches-5.4/026-PCI-aardvark-Fix-initialization-with-old-Marvell-s-A.patch
+index 117f9b3576..bcf63ab8ec 100644
+--- a/target/linux/mvebu/patches-5.4/026-PCI-aardvark-Fix-initialization-with-old-Marvell-s-A.patch
++++ b/target/linux/mvebu/patches-5.4/026-PCI-aardvark-Fix-initialization-with-old-Marvell-s-A.patch
+@@ -31,7 +31,7 @@ Cc: <stable@vger.kernel.org> # 5.8+: ea17a0f153af: phy: marvell: comphy: Convert
+ 
+ --- a/drivers/pci/controller/pci-aardvark.c
+ +++ b/drivers/pci/controller/pci-aardvark.c
+-@@ -1281,7 +1281,9 @@ static int advk_pcie_enable_phy(struct a
++@@ -1533,7 +1533,9 @@ static int advk_pcie_enable_phy(struct a
+  	}
+  
+  	ret = phy_power_on(pcie->phy);
+diff --git a/target/linux/octeontx/patches-5.4/0004-PCI-add-quirk-for-Gateworks-PLX-PEX860x-switch-with-.patch b/target/linux/octeontx/patches-5.4/0004-PCI-add-quirk-for-Gateworks-PLX-PEX860x-switch-with-.patch
+index 18b5f49073..1206561fda 100644
+--- a/target/linux/octeontx/patches-5.4/0004-PCI-add-quirk-for-Gateworks-PLX-PEX860x-switch-with-.patch
++++ b/target/linux/octeontx/patches-5.4/0004-PCI-add-quirk-for-Gateworks-PLX-PEX860x-switch-with-.patch
+@@ -22,10 +22,10 @@ Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+  #include <linux/platform_data/x86/apple.h>
+  #include <linux/pm_runtime.h>
+  #include <linux/suspend.h>
+-@@ -5783,3 +5784,34 @@ static void apex_pci_fixup_class(struct
++@@ -5790,3 +5791,34 @@ static void nvidia_ion_ahci_fixup(struct
++ 	pdev->dev_flags |= PCI_DEV_FLAGS_HAS_MSI_MASKING;
+  }
+- DECLARE_PCI_FIXUP_CLASS_HEADER(0x1ac1, 0x089a,
+- 			       PCI_CLASS_NOT_DEFINED, 8, apex_pci_fixup_class);
++ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_NVIDIA, 0x0ab8, nvidia_ion_ahci_fixup);
+ +
+ +#ifdef CONFIG_PCI_HOST_THUNDER_PEM
+ +/*
+diff --git a/target/linux/ramips/patches-5.4/0031-uvc-add-iPassion-iP2970-support.patch b/target/linux/ramips/patches-5.4/0031-uvc-add-iPassion-iP2970-support.patch
+index 306ae6cfda..f088babc4e 100644
+--- a/target/linux/ramips/patches-5.4/0031-uvc-add-iPassion-iP2970-support.patch
++++ b/target/linux/ramips/patches-5.4/0031-uvc-add-iPassion-iP2970-support.patch
+@@ -13,7 +13,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+ 
+ --- a/drivers/media/usb/uvc/uvc_driver.c
+ +++ b/drivers/media/usb/uvc/uvc_driver.c
+-@@ -2911,6 +2911,18 @@ static const struct usb_device_id uvc_id
++@@ -2916,6 +2916,18 @@ static const struct usb_device_id uvc_id
+  	  .bInterfaceSubClass	= 1,
+  	  .bInterfaceProtocol	= 0,
+  	  .driver_info		= UVC_INFO_META(V4L2_META_FMT_D4XX) },
+@@ -64,7 +64,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+  
+  #include <media/v4l2-common.h>
+  
+-@@ -1183,9 +1188,149 @@ static void uvc_video_decode_data(struct
++@@ -1188,9 +1193,149 @@ static void uvc_video_decode_data(struct
+  	uvc_urb->async_operations++;
+  }
+  
+@@ -214,7 +214,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+  	/* Mark the buffer as done if the EOF marker is set. */
+  	if (data[1] & UVC_STREAM_EOF && buf->bytesused != 0) {
+  		uvc_trace(UVC_TRACE_FRAME, "Frame complete (EOF found).\n");
+-@@ -1742,6 +1887,8 @@ static int uvc_init_video_isoc(struct uv
++@@ -1747,6 +1892,8 @@ static int uvc_init_video_isoc(struct uv
+  	if (npackets == 0)
+  		return -ENOMEM;
+  
+diff --git a/target/linux/ramips/patches-5.4/0051-serial-add-ugly-custom-baud-rate-hack.patch b/target/linux/ramips/patches-5.4/0051-serial-add-ugly-custom-baud-rate-hack.patch
+index 4822226610..7192d61323 100644
+--- a/target/linux/ramips/patches-5.4/0051-serial-add-ugly-custom-baud-rate-hack.patch
++++ b/target/linux/ramips/patches-5.4/0051-serial-add-ugly-custom-baud-rate-hack.patch
+@@ -10,7 +10,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+ 
+ --- a/drivers/tty/serial/serial_core.c
+ +++ b/drivers/tty/serial/serial_core.c
+-@@ -416,6 +416,9 @@ uart_get_baud_rate(struct uart_port *por
++@@ -423,6 +423,9 @@ uart_get_baud_rate(struct uart_port *por
+  		break;
+  	}
+  
+diff --git a/target/linux/ramips/patches-5.4/0098-disable_cm.patch b/target/linux/ramips/patches-5.4/0098-disable_cm.patch
+index 9b280aef99..1f3367568f 100644
+--- a/target/linux/ramips/patches-5.4/0098-disable_cm.patch
++++ b/target/linux/ramips/patches-5.4/0098-disable_cm.patch
+@@ -1,6 +1,6 @@
+ --- a/arch/mips/kernel/mips-cm.c
+ +++ b/arch/mips/kernel/mips-cm.c
+-@@ -233,6 +233,7 @@ int mips_cm_probe(void)
++@@ -232,6 +232,7 @@ int mips_cm_probe(void)
+  
+  	/* disable CM regions */
+  	write_gcr_reg0_base(CM_GCR_REGn_BASE_BASEADDR);
+@@ -8,7 +8,7 @@
+  	write_gcr_reg0_mask(CM_GCR_REGn_MASK_ADDRMASK);
+  	write_gcr_reg1_base(CM_GCR_REGn_BASE_BASEADDR);
+  	write_gcr_reg1_mask(CM_GCR_REGn_MASK_ADDRMASK);
+-@@ -240,7 +241,7 @@ int mips_cm_probe(void)
++@@ -239,7 +240,7 @@ int mips_cm_probe(void)
+  	write_gcr_reg2_mask(CM_GCR_REGn_MASK_ADDRMASK);
+  	write_gcr_reg3_base(CM_GCR_REGn_BASE_BASEADDR);
+  	write_gcr_reg3_mask(CM_GCR_REGn_MASK_ADDRMASK);
+diff --git a/target/linux/ramips/patches-5.4/0122-mips-ralink-enable-zboot-support.patch b/target/linux/ramips/patches-5.4/0122-mips-ralink-enable-zboot-support.patch
+index 34617898c8..86600e859e 100644
+--- a/target/linux/ramips/patches-5.4/0122-mips-ralink-enable-zboot-support.patch
++++ b/target/linux/ramips/patches-5.4/0122-mips-ralink-enable-zboot-support.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+ 
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -626,6 +626,7 @@ config RALINK
++@@ -629,6 +629,7 @@ config RALINK
+  	select SYS_SUPPORTS_32BIT_KERNEL
+  	select SYS_SUPPORTS_LITTLE_ENDIAN
+  	select SYS_SUPPORTS_MIPS16
+diff --git a/target/linux/realtek/patches-5.4/300-mips-add-rtl838x-platform.patch b/target/linux/realtek/patches-5.4/300-mips-add-rtl838x-platform.patch
+index ecc77b2a73..0130fc97de 100644
+--- a/target/linux/realtek/patches-5.4/300-mips-add-rtl838x-platform.patch
++++ b/target/linux/realtek/patches-5.4/300-mips-add-rtl838x-platform.patch
+@@ -10,7 +10,7 @@
+  platforms += sgi-ip27
+ --- a/arch/mips/Kconfig
+ +++ b/arch/mips/Kconfig
+-@@ -631,6 +631,26 @@ config RALINK
++@@ -634,6 +634,26 @@ config RALINK
+  	select ARCH_HAS_RESET_CONTROLLER
+  	select RESET_CONTROLLER
+  
+diff --git a/target/linux/realtek/patches-5.4/302-clocksource-add-rtl9300-driver.patch b/target/linux/realtek/patches-5.4/302-clocksource-add-rtl9300-driver.patch
+index 1c41db75b2..db8f22bf02 100644
+--- a/target/linux/realtek/patches-5.4/302-clocksource-add-rtl9300-driver.patch
++++ b/target/linux/realtek/patches-5.4/302-clocksource-add-rtl9300-driver.patch
+@@ -1,6 +1,6 @@
+ --- a/drivers/clocksource/Kconfig
+ +++ b/drivers/clocksource/Kconfig
+-@@ -127,6 +127,15 @@ config RDA_TIMER
++@@ -128,6 +128,15 @@ config RDA_TIMER
+  	help
+  	  Enables the support for the RDA Micro timer driver.
+  
+@@ -16,7 +16,7 @@
+  config SUN4I_TIMER
+  	bool "Sun4i timer driver" if COMPILE_TEST
+  	depends on HAS_IOMEM
+-@@ -696,5 +705,4 @@ config INGENIC_TIMER
++@@ -697,5 +706,4 @@ config INGENIC_TIMER
+  	select IRQ_DOMAIN
+  	help
+  	  Support for the timer/counter unit of the Ingenic JZ SoCs.
+-- 
+2.34.1
+
