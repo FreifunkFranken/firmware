@@ -290,7 +290,8 @@ cp_firmware() {
             filename_build=${f##*/}
             filename_build=${filename_build//openwrt/fff-${version}}
             filename_build=${filename_build//squashfs-/}
-            filename_build=${filename_build//${chipset}-${subtarget}-/}
+            filename_build=${filename_build//${chipset}-/}
+            filename_build=${filename_build//${subtarget}-/}
             cp "$f" "$imagedestpath/$filename_build"
         done
     done
