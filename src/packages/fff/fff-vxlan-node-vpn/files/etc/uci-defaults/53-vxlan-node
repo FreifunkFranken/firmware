@@ -7,6 +7,7 @@ uci batch <<EOF
  set network.vxlan0.srcportmax=8473
  set network.vxlan0.ageing=30
  set network.vxlan0.mtu=1422
+ set network.vxlan0.vid=0
 
  set network.vxbat=interface
  set network.vxbat.proto=batadv_hardif
