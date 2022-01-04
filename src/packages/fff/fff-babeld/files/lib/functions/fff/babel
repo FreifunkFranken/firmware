@@ -38,7 +38,15 @@ babel_add_peeraddr() {
 		uci add_list "$option"="$peer_ip"
 	elif router_ip=$(uci -q get gateway.meta.router_ip); then
 		# use router_ip if no peer_ip is set
-		uci add_list "$option"="$router_ip"
+		ip=$router_ip
+
+		# use only first ip
+		ip=${ip%% *}
+
+		# remove CIDR mask
+		ip=${ip%%/*}
+
+		uci add_list "$option"="$ip"
 	elif ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
 		# use client interface address (without subnet) if no router_ip is set
 		uci add_list "$option"=$(echo $ipaddr | cut -d / -f1)
