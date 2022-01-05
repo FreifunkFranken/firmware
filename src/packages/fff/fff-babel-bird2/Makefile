@@ -12,7 +12,6 @@ define Package/fff-babel-bird2
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+bird2 +bird2c +owipcalc
 	PROVIDES:=fff-babel-implementation
-	CONFLICTS:=fff-babeld
 endef
 
 define Package/fff-babel-bird2/description

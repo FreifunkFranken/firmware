@@ -13,6 +13,7 @@ define Package/fff-layer3
 	DEPENDS:=+fff-alfred-monitoring-proxy \
 	         +fff-babel \
 	         +fff-babeld \
+	         +fff-babel-bird2 \
 	         +fff-boardname \
 	         +fff-dhcp \
 	         +fff-layer3-config \

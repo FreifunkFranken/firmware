@@ -74,10 +74,12 @@ if [ -x /usr/bin/fastd ]; then
 	SYSTEM_DATA="$SYSTEM_DATA<fastd_version>$(/usr/bin/fastd -v | awk '{ print $2 }')</fastd_version>"
 fi
 
-if [ -x /usr/sbin/babeld ]; then
-	SYSTEM_DATA="$SYSTEM_DATA<babel_version>$(/usr/sbin/babeld -V 2>&1)</babel_version>"
-elif [ -x /usr/sbin/bird ]; then
-	SYSTEM_DATA="$SYSTEM_DATA<babel_version>$(/usr/sbin/bird --version 2>&1 | sed "s/BIRD version /bird-/")</babel_version>"
+if [ -e /lib/functions/fff/babel ]; then
+	. /lib/functions/fff/babel
+	babel_version=$(babel_get_version)
+	if [ $? -eq 0 ]; then
+		SYSTEM_DATA="$SYSTEM_DATA<babel_version>$babel_version</babel_version>"
+	fi
 fi
 
 # example for /etc/openwrt_release:

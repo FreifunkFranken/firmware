@@ -1,4 +1,8 @@
-. /lib/functions/fff/babeldaemon
+
+implementation=$(uci -q get babelimpl.impl.impl)
+[ -z "$implementation" ] && implementation=babeld
+
+. /lib/functions/fff/babeldaemon/$implementation
 
 babel_add_iifrules() {
 	[ "$#" -ne "1" ] && return 1
@@ -70,6 +74,43 @@ babel_add_peer6addr() {
 	else
 		return 1
 	fi
+
+	return 0
+}
+
+babel_reload() {
+	# switch implementation temporarily
+	case $implementation in
+		bird2)
+			/etc/init.d/babeld stop 2>/dev/null
+			/etc/init.d/fff-bird start
+			;;
+		babeld)
+			/etc/init.d/fff-bird stop 2>/dev/null
+			/etc/init.d/babeld start
+			;;
+	esac
+
+	# call implementation-specific reload commands
+	babel_reload_implementation
+
+	return 0
+}
+
+babel_apply() {
+	# switch implementation persistently
+	case $implementation in
+		bird2)
+			/etc/init.d/babeld disable
+			/etc/init.d/fff-bird enable
+			;;
+		babeld)
+			/etc/init.d/fff-bird disable
+			/etc/init.d/babeld enable
+			;;
+	esac
+
+	babel_apply_implementation
 
 	return 0
 }

@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+babel_get_version() {
+	/usr/sbin/babeld -V 2>&1
+}
+
 babel_add_interface() {
 	[ "$#" -ne "4" ] && return 1
 
@@ -86,11 +90,11 @@ babel_remove_custom_redistribute_filters() {
 	return 0
 }
 
-babel_apply() {
+babel_apply_implementation() {
 	uci commit babeld
 }
 
-babel_reload() {
+babel_reload_implementation() {
 	return 0
 }
 

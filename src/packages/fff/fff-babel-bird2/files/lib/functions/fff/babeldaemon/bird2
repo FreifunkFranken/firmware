@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+babel_get_version() {
+	/usr/sbin/bird --version 2>&1 | sed "s/BIRD version /bird-/"
+}
+
 babel_add_interface() {
 	[ "$#" -ne "4" ] && return 1
 
@@ -49,7 +53,7 @@ babel_remove_custom_redistribute_filters() {
 	return 0
 }
 
-babel_apply() {
+babel_apply_implementation() {
 	# error output hidden because apply might be executed without a preceding configure step.
 	if [ -d /tmp/bird/fff ]; then
 		rm -rf /etc/bird/fff
@@ -59,7 +63,7 @@ babel_apply() {
 	return 0
 }
 
-babel_reload() {
+babel_reload_implementation() {
 	/etc/init.d/fff-bird reload
 }
 
