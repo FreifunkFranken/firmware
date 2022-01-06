@@ -1,12 +1,16 @@
+. /lib/functions.sh
+
 . /lib/functions/fff/wireless
 
 configure() {
 	# get parameters
-	essid=$(uci -q get gateway.@client[0].essid)
-	chan2ghz=$(uci -q get gateway.@client[0].chan2ghz)
-	chan5ghz=$(uci -q get gateway.@client[0].chan5ghz)
-	width2ghz=$(uci -q get gateway.@client[0].width2ghz || echo 20)
-	width5ghz=$(uci -q get gateway.@client[0].width5ghz || echo 20)
+	chan2ghz=$(uci -q get gateway.@wireless[0].chan2ghz)
+	chan5ghz=$(uci -q get gateway.@wireless[0].chan5ghz)
+	width2ghz=$(uci -q get gateway.@wireless[0].width2ghz || echo 20)
+	width5ghz=$(uci -q get gateway.@wireless[0].width5ghz || echo 20)
+
+	# Get htmode
+	ht=$(uci -q get wireless.${radio}.htmode)
 
 	if [ "$width2ghz" != 20 ] && [ "$width2ghz" != 40 ]; then
 		echo "ERROR: Invalid 2.4 GHz channel width: $width2ghz. Only 20 and 40 MHz are possible."
@@ -22,56 +26,83 @@ configure() {
 		echo "WARNING: Using 40 MHz channel width on 2.4 GHz is highly discouraged and will probably result in worse throughput"
 	fi
 
-	if [ -z "$essid" ]; then
-		echo "WARNING: No ESSID set! WiFi AP is disabled"
-	fi
+	# Delete wXmesh, wXconfigap
+	uci -q del wireless.w${freq}mesh
+	uci -q del wireless.w${freq}configap
 
 	for radio in $(wifiListRadio); do
 		freq="$(wifiGetFreq $radio)"
-		disabled=1
 
-		# Delete wXmesh, wXconfigap
-		uci -q del wireless.w${freq}mesh
-		uci -q del wireless.w${freq}configap
-
-		# Get htmode
-		ht=$(uci -q get wireless.${radio}.htmode)
-
-		if [ -n "$essid" ]; then
-			# set channel and bandwidth for 5ghz
-			if [ "$freq" = "5" ]; then
-				if ! echo "$ht" | grep -q VHT && [ "$width5ghz" == 80 ]; then
-					echo "ERROR: 5 GHz radio does not support 80 MHz channel width"
-					return 1
-				fi
-
-				if [ -z "$chan5ghz" ]; then
-					echo "WARNING: No 5 GHz channel set! Disabling AP on $radio"
-				else
-					uci set wireless.${radio}.channel="$chan5ghz"
-					uci set wireless.${radio}.htmode="${ht%%HT*}HT${width5ghz}"
-					disabled=0
-				fi
+		# set channel and bandwidth for 5ghz
+		if [ "$freq" = "5" ]; then
+			if ! echo "$ht" | grep -q VHT && [ "$width5ghz" == 80 ]; then
+				echo "ERROR: 5 GHz radio does not support 80 MHz channel width"
+				return 1
 			fi
 
-			# set channel and bandwidth for 2.4ghz
-			if [ "$freq" = "2" ]; then
-				if [ -z "$chan2ghz" ]; then
-					echo "WARNING: No 2.4 GHz channel set! Disabling AP on $radio"
-				else
-					uci set wireless.${radio}.channel="$chan2ghz"
-					uci set wireless.${radio}.htmode="${ht%%HT*}HT${width2ghz}"
-					disabled=0
-				fi
+			if [ -z "$chan5ghz" ]; then
+				echo "WARNING: No 5 GHz channel set! Disabling AP on $radio"
+				uci set wireless.${radio}.disabled="1"
+			else
+				uci set wireless.${radio}.disabled="0"
+				uci set wireless.${radio}.channel="$chan5ghz"
+				uci set wireless.${radio}.htmode="${ht%%HT*}HT${width5ghz}"
 			fi
-
-			# set essid
-			uci set wireless.w${freq}ap.ssid="$essid"
 		fi
 
-		# enable or disable ap interface appropriately. The radios 'disabled'-option is not touched
-		uci set wireless.w${freq}ap.disabled="$disabled"
+		# set channel and bandwidth for 2.4ghz
+		if [ "$freq" = "2" ]; then
+			if [ -z "$chan2ghz" ]; then
+				echo "WARNING: No 2.4 GHz channel set! Disabling AP on $radio"
+				uci set wireless.${radio}.disabled="1"
+			else
+				uci set wireless.${radio}.disabled="0"
+				uci set wireless.${radio}.channel="$chan2ghz"
+				uci set wireless.${radio}.htmode="${ht%%HT*}HT${width2ghz}"
+			fi
+		fi
 	done
+
+
+	add_wifi() {
+		local name="$1"
+		essid=$(uci -q get gateway.$name.essid)
+
+		for radio in $(wifiListRadio); do
+			freq="$(wifiGetFreq $radio)"
+
+			if [ -n "$essid" ]; then
+				uci set wireless.w${freq}${name}=wifi-iface
+				uci set wireless.w${freq}${name}.device=$radio
+				uci set wireless.w${freq}${name}.network=$name
+				uci set wireless.w${freq}${name}.ifname=w${freq}${name}
+				uci set wireless.w${freq}${name}.mode=ap
+				uci set wireless.w${freq}${name}.encryption=none
+				uci set wireless.w${freq}${name}.hidden=0
+				uci set wireless.w${freq}${name}.ssid="$essid"
+			fi
+		done
+	}
+
+
+	remove_wifi() {
+		local name="$1"
+		local netname=$(uci -q get wireless.$name.network)
+
+		# only remove interfaces that disappeared from gwconfig
+		[ -n "$(uci -q get gateway.$netname.essid)" ] && return 0
+
+		uci -q del wireless.$name
+	}
+
+	config_load wireless
+	config_foreach remove_wifi wifi-iface
+
+	config_load gateway
+	config_foreach add_wifi client
+
+	# TODO: count wifi interfaces, check if count is valid
+	# TODO: check for duplicate ssids
 }
 
 apply() {
