@@ -2,59 +2,115 @@
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
+# load uci functions
+. /lib/functions.sh
+. /lib/functions/system.sh
 
 configure() {
-	# ipaddr
-	#remove old ipaddr
-	uci -q del network.client.ipaddr
-	#set new ipaddr
-	if ipaddr=$(uci -q get gateway.@client[0].ipaddr); then
-		for ip in $ipaddr; do
-			uci add_list network.client.ipaddr=$ip
-		done
-	else
-		echo "WARNING: No client ipaddr set!"
-	fi
-	#put interface routes from set addresses into fff table
-	uci set network.client.ip4table='fff'
+	add_clientif() {
+		local name="$1"
 
-	# ip6addr
-	#remove old ip6addr
-	uci -q del network.$name.ip6addr
-	#set new ip6addr
-	if ip6addr=$(uci -q get gateway.@client[0].ip6addr); then
-		for ip in $ip6addr; do
-			uci add_list network.client.ip6addr=$ip
-		done
-	else
-		# only add fdff::1/64 in case no other ipv6 subnets are available
-		uci add_list network.client.ip6addr='fdff::1/64'
-		echo "WARNING: No client ip6addr set!"
-	fi
-	#put interface routes from set addresses into fff table
-	uci set network.client.ip6table='fff'
+		uci set network.$name=interface
+		uci set network.$name.fff_clientif="1"
 
-	# dhcp
-	uci -q del dhcp.client.start
-	uci -q del dhcp.client.limit
-	if dhcp_start=$(uci -q get gateway.@client[0].dhcp_start); then
-		uci set dhcp.client=dhcp
-		uci set dhcp.client.interface=client
-		uci set dhcp.client.start=$dhcp_start
-		uci set dhcp.client.limit=$(uci -q get gateway.@client[0].dhcp_limit)
-	else
-		echo "WARNING: No DHCP range start and/or limit set!"
-	fi
+		uci set network.$name.type=bridge
+		uci set network.$name.proto=static
+		uci set network.$name.auto=1
 
-	# set interface
-	#remove all eth interfaces
-	if vlan=$(uci -q get gateway.@client[0].vlan); then
-		uci set network.client.ifname="${SWITCHDEV}.$vlan"
-	elif iface=$(uci -q get gateway.@client[0].iface); then
-		uci set network.client.ifname="$iface"
-	else
-		echo "WARNING: No Interface for client specified"
-	fi
+		[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+		uci set network.$name.macaddr="$ROUTERMAC"
+
+		# ipaddr
+		#remove old ipaddr
+		uci -q del network.$name.ipaddr
+		#set new ipaddr
+		if ipaddr=$(uci -q get gateway.$name.ipaddr); then
+			for ip in $ipaddr; do
+				uci add_list network.$name.ipaddr=$ip
+			done
+		else
+			echo "WARNING: No ipaddr for client interface \"$name\" set!"
+		fi
+		#put interface routes from set addresses into fff table
+		uci set network.$name.ip4table='fff'
+
+		# ip6addr
+		#remove old ip6addr
+		uci -q del network.$name.ip6addr
+		#set new ip6addr
+		if ip6addr=$(uci -q get gateway.$name.ip6addr); then
+			for ip in $ip6addr; do
+				uci add_list network.$name.ip6addr=$ip
+			done
+		else
+			# only add fdff::1/64 in case no other ipv6 subnets are available
+			# TODO: remove fdff
+			uci add_list network.$name.ip6addr='fdff::1/64'
+			echo "WARNING: No ip6addr for client interface \"$name\" set!"
+		fi
+
+		#put interface routes from set addresses into fff table
+		uci set network.$name.ip6table='fff'
+
+
+		# dhcp
+		uci -q set dhcp.$name=dhcp
+		uci -q set dhcp.$name.interface=$name
+		uci -q set dhcp.$name.leasetime='1h'
+
+		uci -q del dhcp.$name.start
+		uci -q del dhcp.$name.limit
+		if dhcp_start=$(uci -q get gateway.$name.dhcp_start); then
+			uci set dhcp.$name=dhcp
+			uci set dhcp.$name.start=$dhcp_start
+			uci set dhcp.$name.limit=$(uci -q get gateway.$name.dhcp_limit)
+		else
+			echo "WARNING: No DHCP range start and/or limit for client interface \"$name\" set!"
+		fi
+
+
+		# ra
+		uci -q set dhcp.$name.ra='server'
+		uci -q set dhcp.$name.ra_default='2'
+		uci -q set dhcp.$name.ra_management='0'
+		uci -q set dhcp.$name.ra_useleasetime='1'
+
+		# Work around unexpected behavior of odhcpd (see #238).
+		#
+		# This value has to be less then or equal to
+		# dhcp.$name.leasetime.
+		set dhcp.$name.preferred_lifetime='1h'
+
+	
+		# set interface
+		#remove all eth interfaces
+		if vlan=$(uci -q get gateway.$name.vlan); then
+			uci set network.$name.ifname="${SWITCHDEV}.$vlan"
+		elif iface=$(uci -q get gateway.$name.iface); then
+			uci set network.$name.ifname="$iface"
+		else
+			echo "WARNING: No ifname/vlan for client interface \"$name\" specified"
+		fi
+	}
+
+	remove_clientif() {
+		local name="$1"
+
+		# only remove interfaces created by this script
+		[ "$(uci -q get network.$name.fff_clientif)" == "1" ] || return
+
+		# only remove interfaces that disappeared from gwconfig
+		[ "$(uci -q get gateway.$name)" == "client" ] && return
+
+		uci -q del network.$name
+		uci -q del dhcp.$name
+	}
+
+	config_load network
+	config_foreach remove_clientif interface
+
+	config_load gateway
+	config_foreach add_clientif client
 
 	# stateful firewall
 	uci -q del network.client.fff_stateful_firewall

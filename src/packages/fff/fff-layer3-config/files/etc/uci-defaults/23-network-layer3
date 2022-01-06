@@ -19,10 +19,7 @@ uci batch <<-__EOF__
 	add_list network.fdff.ip6addr="fdff::$(ipMacSuffic "$ROUTERMAC")/128"
 	add_list network.fdff.ip6addr="fdff::$(ipEUISuffix "$ROUTERMAC")/128"
 
-	# Configure fdff::1/64 on the client interface, such that clients will
-	# receive router advertisements, even on an unconfigured device.
-	# This address is removed, once a proper network is assigned through the user.
-	add_list network.client.ip6addr='fdff::1/64'
+	del network.client
 __EOF__
 
 uci -q commit network

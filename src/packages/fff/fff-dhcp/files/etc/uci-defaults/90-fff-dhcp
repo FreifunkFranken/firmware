@@ -33,10 +33,6 @@ uci batch >/dev/null <<EOF
   #
   # e.g. hostname: 'router.fff.community'
   set dhcp.@dnsmasq[-1].add_local_fqdn='0'
-
-  set dhcp.client=dhcp
-  set dhcp.client.interface='client'
-  set dhcp.client.leasetime='1h'
 EOF
 
 uci commit dhcp

@@ -20,9 +20,11 @@ uci batch <<-EOF
 	set gateway.meta='gateway'
 	set gateway.meta.config_version='4'
 
-	add gateway client
-	set gateway.@client[0].chan2ghz='$chan2ghz'
-	set gateway.@client[0].chan5ghz='$chan5ghz'
+	add gateway wireless
+	set gateway.@wireless[0].chan2ghz='$chan2ghz'
+	set gateway.@wireless[0].chan5ghz='$chan5ghz'
+
+	set gateway.client=client
 
 	add gateway dns
 	add_list gateway.@dns[0].server='fd43:5602:29bd:ffff:1:1:1:1'
@@ -30,17 +32,17 @@ EOF
 
 if [ "$ONE_PORT" = "YES" ]; then
 	uci batch <<-EOF
-		set gateway.@client[0].iface='$SWITCHDEV'
+		set gateway.client.iface='$SWITCHDEV'
 	EOF
 elif [ "$TWO_PORT" = "YES" ]; then
 	uci batch <<-EOF
-		set gateway.@client[0].iface='$SWITCHDEV'
+		set gateway.client.iface='$SWITCHDEV'
 		add gateway wan
 		set gateway.@wan[0].iface='$WANDEV'
 	EOF
 elif [ "$DSA" = "1" ]; then
 	uci batch <<-EOF
-		set gateway.@client[0].vlan='1'
+		set gateway.client.vlan='1'
 		add gateway wan
 		set gateway.@wan[0].vlan='2'
 
@@ -54,7 +56,7 @@ elif [ "$DSA" = "1" ]; then
 	EOF
 else
 	uci batch <<-EOF
-		set gateway.@client[0].vlan='1'
+		set gateway.client.vlan='1'
 		add gateway wan
 		set gateway.@wan[0].vlan='2'
 
@@ -71,8 +73,8 @@ fi
 # separated from the section above for
 # a more pleasing option order in the configuration file
 uci batch <<-EOF
-	set gateway.@client[0].essid='$essid'
-	add_list gateway.@client[0].ip6addr="fdff::1/64"
+	set gateway.client.essid='$essid'
+	add_list gateway.client.ip6addr="fdff::1/64"
 EOF
 
 uci commit gateway

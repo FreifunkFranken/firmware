@@ -23,7 +23,7 @@ define Build/Compile
 endef
 
 define Package/fff-ra/install
-	$(CP) ./files/* $(1)/
+	# nothing
 endef
 
 $(eval $(call BuildPackage,fff-ra))
