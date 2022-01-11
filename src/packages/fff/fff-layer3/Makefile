@@ -37,6 +37,7 @@ define Package/fff-layer3
 	         +iptables-mod-ipopt \
 	         +iptables-mod-conntrack-extra \
 	         +mtr \
+	         +snmp-utils \
 	         +tc \
 	         +tcpdump \
 	         +vxlan
