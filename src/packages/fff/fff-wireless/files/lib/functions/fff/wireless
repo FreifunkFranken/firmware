@@ -22,9 +22,9 @@ wifiGetFreq() {
 
 	local radio=$1
 
-	# Use hwmode for switching, since this is always set by firmware (effectively hard-coded)
+	# Use uci radio band for switching, since this is always set by firmware (effectively hard-coded)
 	# Do not use channel, as this might be "auto" for both
-	[ "$(uci get "wireless.${radio}.hwmode")" = "11a" ] && echo "5" || echo "2"
+	[ "$(uci get "wireless.${radio}.band")" = "5g" ] && echo "5" || echo "2"
 	return 0
 }
 # vim: set noexpandtab:tabstop=4

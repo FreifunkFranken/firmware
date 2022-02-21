@@ -7,9 +7,9 @@ set -o pipefail
 builddir=./build
 
 # OpenWrt: package hashes correspond to core repo version
-OPENWRTREV="v21.02.1"
-PACKAGEREV="ded142471e36831d2af63c7fe5062c4367f8ccd2"
-ROUTINGREV="9e7698f20d1edf8f912fbce2f21400f3cc772b31"
+OPENWRTREV="v21.02.2"
+PACKAGEREV="b0ccc356900f6e1e1dc613d0ea980d5572f553dd"
+ROUTINGREV="10d3ffd8b30186b49538167bac1fa1bf9c88f860"
 
 # Gluon packages: master from 2020-02-04
 GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"
