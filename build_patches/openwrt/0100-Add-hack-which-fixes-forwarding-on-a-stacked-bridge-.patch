@@ -1,0 +1,32 @@
+From f53b71d2907eeb0d80e79d99fa7b756b5e5bf32b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Thu, 24 Feb 2022 00:04:47 +0100
+Subject: [PATCH] Add hack which fixes forwarding on a stacked bridge
+ configuration using DSA
+
+---
+ .../hack-5.4/999-fix-stacked-bridge-forwarding.patch | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 target/linux/generic/hack-5.4/999-fix-stacked-bridge-forwarding.patch
+
+diff --git a/target/linux/generic/hack-5.4/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-5.4/999-fix-stacked-bridge-forwarding.patch
+new file mode 100644
+index 0000000000..e1d4cb9cd5
+--- /dev/null
++++ b/target/linux/generic/hack-5.4/999-fix-stacked-bridge-forwarding.patch
+@@ -0,0 +1,12 @@
++--- a/net/bridge/br_input.c
+++++ b/net/bridge/br_input.c
++@@ -52,6 +52,9 @@ static int br_pass_frame_up(struct sk_bu
++ 		return NET_RX_DROP;
++ 	}
++ 
+++	/* remove offload flag, so upper bridges do not drop the packet */
+++	br_switchdev_frame_unmark(skb);
+++
++ 	indev = skb->dev;
++ 	skb->dev = brdev;
++ 	skb = br_handle_vlan(br, NULL, vg, skb);
+-- 
+2.35.1
+
