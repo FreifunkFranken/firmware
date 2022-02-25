@@ -231,8 +231,6 @@ else
     uci -q add_list network.client.ip6addr=$addr
 
     uci -q commit network
-
-    [ -s /etc/init.d/fff-uradvd ] && /etc/init.d/fff-uradvd restart
 fi
 
 reload_config
