@@ -172,8 +172,6 @@ else
     fi
 fi
 
-/etc/init.d/network restart
-
 if [ -n "$ETHMESHMAC" ]; then
     if uci get network.ethmesh.macaddr
     then
@@ -184,11 +182,6 @@ if [ -n "$ETHMESHMAC" ]; then
 
         uci set network.ethmesh.macaddr=$ETHMESHMAC
         uci commit network
-
-        ifconfig $SWITCHDEV.3 down
-        ifconfig $SWITCHDEV.3 hw ether $ETHMESHMAC
-        ifconfig $SWITCHDEV.3 up
-        /etc/init.d/network restart
     fi
 fi
 
@@ -202,11 +195,6 @@ if [ -n "$ROUTERMAC" ]; then
 
         uci set network.client.macaddr=$ROUTERMAC
         uci commit network
-
-        ifconfig br-client down
-        ifconfig br-client hw ether $ROUTERMAC
-        ifconfig br-client up
-        /etc/init.d/network restart
     fi
 fi
 
@@ -216,10 +204,6 @@ if [ -n "$ETH0MAC" ]; then
         NEW_MACADDR=$(cat "/sys/class/net/${ETH0MAC}/address")
         uci set network.$ETH0DEV.macaddr=$NEW_MACADDR
         uci commit network
-        ifconfig $ETH0DEV down
-        ifconfig $ETH0DEV hw ether $NEW_MACADDR
-        ifconfig $ETH0DEV up
-        /etc/init.d/network restart
 fi
 
 if uci -q get "network.client.ip6addr" > /dev/null
@@ -230,14 +214,9 @@ else
     # Some time needed :(
     sleep 5
 
-    for ip in $(ip -6 addr show br-client | awk '/fdff/{ print $2 }'); do
-        ip -6 addr del $ip dev br-client
-    done
-
     prefix="fdff::/64"
     # Set $prefix::MAC as IP
     addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
-    ip -6 addr add $addr dev br-client
 
     uci -q set network.globals.ula_prefix=$prefix
     uci -q add_list network.client.ip6addr=$addr
@@ -245,15 +224,15 @@ else
 
     # Set $prefix::1 as IP
     addr=$(owipcalc "$prefix" add ::1)
-    ip -6 addr add $addr dev br-client
     uci -q add_list network.client.ip6addr=$addr
 
     # Set $prefix::link-local as IP
     addr=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
-    ip -6 addr add $addr dev br-client
     uci -q add_list network.client.ip6addr=$addr
 
     uci -q commit network
 
     [ -s /etc/init.d/fff-uradvd ] && /etc/init.d/fff-uradvd restart
 fi
+
+reload_config
