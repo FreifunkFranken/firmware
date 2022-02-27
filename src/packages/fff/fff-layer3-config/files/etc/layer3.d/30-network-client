@@ -50,11 +50,10 @@ configure() {
 
 	# set interface
 	#remove all eth interfaces
-	ifaces=$(uci get network.client.ifname | sed 's/\beth[^ ]* *//g' | sed 's/\bswitch[^ ]* *//g')
 	if vlan=$(uci -q get gateway.@client[0].vlan); then
-		uci set network.client.ifname="${SWITCHDEV}.$vlan $ifaces"
+		uci set network.client.ifname="${SWITCHDEV}.$vlan"
 	elif iface=$(uci -q get gateway.@client[0].iface); then
-		uci set network.client.ifname="$iface $ifaces"
+		uci set network.client.ifname="$iface"
 	else
 		echo "WARNING: No Interface for client specified"
 	fi
