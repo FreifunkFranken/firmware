@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Enable RPS
+uci batch <<-__EOF__
+	set network.globals=globals
+	set network.globals.packet_steering='1'
+__EOF__
+
+uci -q commit network
