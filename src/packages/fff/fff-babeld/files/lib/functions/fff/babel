@@ -111,6 +111,33 @@ babel_add_redistribute_filter() {
 	return 0
 }
 
+babel_add_private_prefix_filter() {
+	[ "$#" -ne "1" ] && return 1
+
+	local prefix="$1"
+
+	config=$(uci add babeld filter)
+	uci set babeld.$config.type='redistribute'
+	uci set babeld.$config.ip="$prefix"
+	uci set babeld.$config.addedbyautoconfig='true'
+	uci set babeld.$config.action='deny'
+
+	# move to top, so filter rule has precedence over all other rules
+	uci reorder babeld.$config=0
+
+	config=$(uci add babeld filter)
+	uci set babeld.$config.type='redistribute'
+	uci set babeld.$config.ip="$prefix"
+	uci set babeld.$config.addedbyautoconfig='true'
+	uci set babeld.$config.local='true'
+	uci set babeld.$config.action='deny'
+
+	# move to top, so filter rule has precedence over all other rules
+	uci reorder babeld.$config=0
+
+	return 0
+}
+
 babel_remove_custom_redistribute_filters() {
 	[ "$#" -ne "0" ] && return 1
 

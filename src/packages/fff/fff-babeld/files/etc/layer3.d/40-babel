@@ -90,6 +90,13 @@ configure() {
 	for prefix in $(uci -q get gateway.@client[0].ip6addr); do
 		babel_add_redistribute_filter "$prefix"
 	done
+
+	## add deny filters for client prefixes used with snat
+	if [ "$(uci -q get gateway.@client[0].snat)" = "1" ]; then
+		for prefix in $(uci -q get gateway.@client[0].ipaddr); do
+			babel_add_private_prefix_filter "$prefix"
+		done
+	fi
 }
 
 apply() {
