@@ -24,19 +24,21 @@ done
 
 # configure vpn
 
-if [ -n "$hoodfile" ] && [ -s "$hoodfile" ] ; then
-	json_load "$(cat "$hoodfile")"
-	json_select hood
-	json_get_var id id
-	json_select ".."
-	json_select vpn
-	json_get_keys vpn_keys
-	for key in $vpn_keys; do
-		json_select $key
-		json_get_var protocol protocol
-		"${protocol}_addpeer"
-		json_select ".." # back to vpn
-	done
+if [ "$0" != "/usr/sbin/vpn-stop" ] ; then
+	if [ -n "$hoodfile" ] && [ -s "$hoodfile" ] ; then
+		json_load "$(cat "$hoodfile")"
+		json_select hood
+		json_get_var id id
+		json_select ".."
+		json_select vpn
+		json_get_keys vpn_keys
+		for key in $vpn_keys; do
+			json_select $key
+			json_get_var protocol protocol
+			"${protocol}_addpeer"
+			json_select ".." # back to vpn
+		done
+	fi
 fi
 
 # start/restart/stop vpnservices
