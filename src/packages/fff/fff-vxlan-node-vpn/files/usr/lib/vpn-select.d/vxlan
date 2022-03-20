@@ -15,7 +15,6 @@ vxlan_addpeer() {
 }
 
 vxlan_start_stop() {
-	uci commit network
 	# reload_config will not add new peers. A ifup is needed
 	ifup vxlan0
 
