@@ -1,0 +1,45 @@
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      tags: true
+
+pipeline:
+  buildall-layer3:
+    image: openwrtorg/imagebuilder
+    commands:
+      - export HOME=/home/build/openwrt
+      - sudo chown -R build:build .
+      - git config --global user.email "ci@fff.community"
+      - git config --global user.name "FFF CI"
+      - ./buildscript selectvariant layer3
+      - ./buildscript selectbsp bsp/ath79-generic.bsp
+      - ./buildscript prepare
+      - ./buildscript buildall
+
+  buildall-node:
+    image: openwrtorg/imagebuilder
+    commands:
+      - export HOME=/home/build/openwrt
+      - sudo chown -R build:build .
+      - git config --global user.email "ci@fff.community"
+      - git config --global user.name "FFF CI"
+      - ./buildscript selectvariant node
+      - ./buildscript selectbsp bsp/ath79-generic.bsp
+      - ./buildscript prepare
+      - ./buildscript buildall
+
+  distribute:
+    image: alpine/git
+    volumes:
+      - /var/lib/woodpecker/artifacts:/var/run/artifacts
+    commands:
+      - rm -rf /var/run/artifacts/$(git describe --tags)
+      - mkdir -p /var/run/artifacts/$(git describe --tags)
+      - cp -r bin/* /var/run/artifacts/$(git describe --tags)/
+      - echo
+      - echo
+      - echo "You can download the built firmware images here:"
+      - echo "https://ci.fff.community/artifacts/$(git describe --tags)"
+
+branches: [ master ]
