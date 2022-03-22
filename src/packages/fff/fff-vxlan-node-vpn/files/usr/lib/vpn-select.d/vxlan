@@ -21,6 +21,6 @@ vxlan_start_stop() {
 	# this workaround is cleaning up old fdb entries
 	# and can be removed if someday netifd will do that
 	bridge fdb show dev vxlan0 state permanent | while read mac dst ip rest ; do
-		grep -q "$ip" /etc/config/network || bridge fdb del $mac dev vxlan0 dst $ip
+		uci show network | grep -q "$ip" || bridge fdb del $mac dev vxlan0 dst $ip
 	done
 }
