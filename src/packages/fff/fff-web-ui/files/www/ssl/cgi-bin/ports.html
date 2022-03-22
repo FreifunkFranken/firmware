@@ -151,7 +151,7 @@ format_port() {
 	</fieldset>
 	</td></tr>
 <% fi %>
-<% if grep -q "ONE_PORT" "/etc/network.$board_name" || grep -q "ETHPORT" "/etc/network.$board_name" ; then %>
+<% if grep -q "ONE_PORT" "/etc/network.$board_name" ; then %>
 	<%
 		# Device has a port set by $ETHMODE
 		. /etc/network.mode

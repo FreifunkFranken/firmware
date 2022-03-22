@@ -221,7 +221,7 @@ if swconfig list | grep -q switch0 ; then
 	done
 else
 	echo "-> PORT ASSIGNMENT"
-	if grep -q "ONE_PORT" "/etc/network.$board_name" || grep -q "ETHPORT" "/etc/network.$board_name" ; then
+	if grep -q "ONE_PORT" "/etc/network.$board_name" ; then
 		# Device has a port set by $ETHMODE
 		. /etc/network.mode
 		. /etc/network.config

@@ -11,7 +11,7 @@ if [ -s /etc/network.config ] ; then
     . /etc/network.config
 else
     # Write network.config
-    if [ "$ONE_PORT" = "YES" ] || [ -n "$ETHPORT" ] ; then
+    if [ "$ONE_PORT" = "YES" ] ; then
         echo "ETHMODE='$ETHMODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
     fi
     if [ -n "$TWO_PORT" ] ; then
