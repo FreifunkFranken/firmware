@@ -2,12 +2,8 @@
 
 WANDEV=eth1
 SWITCHDEV=eth0
-WAN_PORTS=
-BATMAN_PORTS="0t"
-CLIENT_PORTS="0t"
+TWO_PORT=YES
 
 ETHMESHMAC="$(macFlipLocalBit $(cat /sys/class/net/eth0/address))"
 
 . /etc/network.mode
-
-ETHPORT=1

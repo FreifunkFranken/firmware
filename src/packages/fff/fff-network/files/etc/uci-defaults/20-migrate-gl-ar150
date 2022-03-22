@@ -1,0 +1,12 @@
+# The GL-AR150 was converted from ONEPORT to TWOPORT.
+# Copy ETHMODE to LAN1MODE ("LAN"-Port) and set LAN0MODE ("WAN"-Port) to WAN to retain the configured behaviour for upgraded devices.
+if [ -s /etc/network.config ] ; then
+	. /etc/network.config
+
+	# Ensure ETHMODE contains a sensible value. Use default behaviour (CLIENT) otherwise.
+	[ "$ETHMODE" != "BATMAN" ] && [ "$ETHMODE" != "CLIENT" ] && [ "$ETHMODE" != "WAN" ] && ETHMODE="CLIENT"
+
+	echo "LAN0MODE='WAN' # use BATMAN, CLIENT or WAN" > /etc/network.config
+	echo "LAN1MODE='$ETHMODE' # use BATMAN, CLIENT or WAN" >> /etc/network.config
+	echo "FORCEPARSE='2' # Parse at: 0=first boot only, 1=every reboot, 2=next reboot (once)" >> /etc/network.config
+fi
