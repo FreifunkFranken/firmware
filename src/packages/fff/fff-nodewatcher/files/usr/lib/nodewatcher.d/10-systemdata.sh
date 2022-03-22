@@ -116,6 +116,7 @@ fi
 # Checks if fastd is running
 vpn_active=0
 pidof fastd >/dev/null && vpn_active=1
+bridge fdb show brport vxlan0 state permanent >/dev/null && vpn_active=1
 SYSTEM_DATA="$SYSTEM_DATA<vpn_active>$vpn_active</vpn_active>"
 
 echo -n "<system_data>$SYSTEM_DATA</system_data>"
