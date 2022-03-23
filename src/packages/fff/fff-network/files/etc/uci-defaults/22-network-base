@@ -71,7 +71,7 @@ if [ "$DSA" = "1" ]; then
 			set network.${SWITCHDEV}_2.ports="$WAN_PORTS"
 		__EOF__
 	fi
-elif [ -n "$SWITCHHW" ]; then
+elif [ -n "$SWITCHHW" ] && [ -z "$ONE_PORT" ] && [ -z "$TWO_PORT" ]; then
 	uci batch <<-__EOF__
 		set network.$SWITCHDEV=switch
 		set network.$SWITCHDEV.name=$SWITCHHW
