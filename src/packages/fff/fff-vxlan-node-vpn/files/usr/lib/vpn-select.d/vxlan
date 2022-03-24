@@ -2,6 +2,7 @@ protocol=vxlan
 
 vxlan_clear() {
 	while uci -q delete network.@vxlan_peer[0]; do :; done
+	uci set network.vxlan0.vid="0"
 }
 
 vxlan_addpeer() {
