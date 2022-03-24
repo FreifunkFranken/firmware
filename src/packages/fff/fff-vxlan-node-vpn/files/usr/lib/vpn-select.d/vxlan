@@ -6,10 +6,10 @@ vxlan_clear() {
 }
 
 vxlan_addpeer() {
-	uci set network.vxlan0.vid="$id"
 	json_get_var address address
 	address=$(ping6 -w1 -c1 "$address" | awk '/from/ {print substr($4, 1, length($4)-1); exit}')
 	[ -z $address ] && return ## address not reachable
+	uci set network.vxlan0.vid="$id"
 	uci add network vxlan_peer
 	uci set network.@vxlan_peer[-1].vxlan="vxlan0"
 	uci set network.@vxlan_peer[-1].dst="$address"
