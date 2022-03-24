@@ -3,6 +3,8 @@ protocol=vxlan
 vxlan_clear() {
 	while uci -q delete network.@vxlan_peer[0]; do :; done
 	uci set network.vxlan0.vid="0"
+	uci set network.vxlan0.disabled="1"
+	uci set network.vxbat.disabled="1"
 }
 
 vxlan_addpeer() {
@@ -10,18 +12,13 @@ vxlan_addpeer() {
 	address=$(ping6 -w1 -c1 "$address" | awk '/from/ {print substr($4, 1, length($4)-1); exit}')
 	[ -z $address ] && return ## address not reachable
 	uci set network.vxlan0.vid="$id"
+	uci set network.vxlan0.disabled="0"
+	uci set network.vxbat.disabled="0"
 	uci add network vxlan_peer
 	uci set network.@vxlan_peer[-1].vxlan="vxlan0"
 	uci set network.@vxlan_peer[-1].dst="$address"
 }
 
 vxlan_start_stop() {
-	# reload_config will not add new peers. A ifup is needed
-	ifup vxlan0
-
-	# this workaround is cleaning up old fdb entries
-	# and can be removed if someday netifd will do that
-	bridge fdb show dev vxlan0 state permanent | while read mac dst ip rest ; do
-		uci show network | grep -q "$ip" || bridge fdb del $mac dev vxlan0 dst $ip
-	done
+	reload_config
 }
