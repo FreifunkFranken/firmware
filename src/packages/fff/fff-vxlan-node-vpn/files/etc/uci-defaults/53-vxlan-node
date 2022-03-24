@@ -8,9 +8,11 @@ uci batch <<EOF
  set network.vxlan0.ageing=30
  set network.vxlan0.mtu=1422
  set network.vxlan0.vid=0
+ set network.vxlan0.disabled=1
 
  set network.vxbat=interface
  set network.vxbat.proto=batadv_hardif
  set network.vxbat.master=bat0
  set network.vxbat.ifname=vxlan0
+ set network.vxbat.disabled=1
 EOF
