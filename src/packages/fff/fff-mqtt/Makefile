@@ -14,8 +14,8 @@ define Package/fff-mqtt
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:= \
 		+fff-config \
-		+libmosquitto-ssl \
-		+mosquitto-client-ssl
+		+libmosquitto-nossl \
+		+mosquitto-client-nossl
 endef
 
 define Package/fff-mqtt/description
