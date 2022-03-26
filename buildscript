@@ -126,18 +126,7 @@ prepare() {
 
     patch_target
 
-    # apply variant to ensure the included file "variant.mk"
-    # exists in builddir.
-    apply_variant
-
     update_feeds
-}
-
-apply_variant() {
-    # set the variant for this build
-    export FFF_VARIANT=$(cat selected_variant)
-    # force the reevaluation of this Makefile to make note of the new variant
-    touch ./src/packages/fff/fff/Makefile
 }
 
 update_feeds() {
@@ -174,8 +163,6 @@ update_feeds() {
 }
 
 prebuild() {
-    apply_variant
-
     #create filesdir for our config
     /bin/rm -rf "$builddir"/files
     mkdir "$builddir"/files
@@ -192,6 +179,9 @@ prebuild() {
     if [ -n "$variant" ]; then
         version="$variant-$version"
     fi
+
+    # select variant packages
+    echo "CONFIG_PACKAGE_fff-${variant}=y" >> "$builddir"/.config
 
     {
         echo "FIRMWARE_VERSION=\"$version\""
