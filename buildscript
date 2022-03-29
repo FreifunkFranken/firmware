@@ -280,8 +280,13 @@ cp_firmware() {
             filename_build=${f##*/}
             filename_build=${filename_build//openwrt/fff-${version}}
             filename_build=${filename_build//squashfs-/}
-            filename_build=${filename_build//${chipset}-/}
-            filename_build=${filename_build//${subtarget}-/}
+
+            # The x86 OpenWrt target does not have a device name,
+            # so keep the target and subtarget for identification.
+            if [ "$chipset" != "x86" ]; then
+                filename_build=${filename_build//${chipset}-/}
+                filename_build=${filename_build//${subtarget}-/}
+            fi
             cp "$f" "$imagedestpath/$filename_build"
         done
     done
