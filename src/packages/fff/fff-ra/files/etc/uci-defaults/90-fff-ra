@@ -4,6 +4,7 @@ uci batch <<EOF
 	set dhcp.client.ra='server'
 	set dhcp.client.ra_default='2'
 	set dhcp.client.ra_management='0'
+	set dhcp.client.ra_useleasetime='1'
 EOF
 
 exit 0
