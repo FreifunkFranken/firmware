@@ -2,4 +2,7 @@
 
 ln -s "$hoodfilewww" /www/hood/keyxchangev2data
 
+uci set fff.keyserver='hood'
+uci commit fff
+
 exit 0
