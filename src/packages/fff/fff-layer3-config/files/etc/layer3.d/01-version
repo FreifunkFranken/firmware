@@ -1,6 +1,6 @@
 configure() {
 	# check if gateway config exists
-	if ! uci -q show gateway > /dev/null; then
+	if ! uci show gateway > /dev/null; then
 		echo "ERROR: Gateway config could not be parsed or does not exist."
 
 		return 1
