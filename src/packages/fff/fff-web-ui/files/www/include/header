@@ -65,9 +65,12 @@ fi
 			if [ -s /tmp/isupdate ] ; then
 				VERSION=$(cat /tmp/isupdate)
 			%>
-				<table style="width: 100%;">
-					<tr>
-						<td><span style="font-size: 16pt; color:#FF0000">Es ist eine neue Firmware für deinen Freifunkrouter verfügbar.<br />Alte Version: <%= ${FIRMWARE_VERSION} %> - Neue Version: <%= ${VERSION} %> <br /><a href="upgrade.html">Firmware jetzt updaten</a></span></td>
-					</tr>
-				</table>
+				<div id="updatenotification" style="padding: 15px; margin: 4px; background-color: #cfcfcf; margin-bottom: 15px;">
+					<h3 style="font-size: 14pt; font-weight: bold; margin-bottom: 10px;">Es ist eine neue Firmware für deinen Freifunkrouter verfügbar!</h3>
+					<table style="margin-bottom: 10px;">
+					<tr><td>Installierte Version: </td><td><b><%= ${FIRMWARE_VERSION} %></b></td></tr>
+					<tr><td>Neue Version: </td><td><b><%= ${VERSION} %></b></td></tr>
+					</table>
+					<a href="https://dev.freifunk-franken.de" target="_blank">Zum Download</a> | <a href="upgrade.html">Zur Upgradeseite</a>
+				</div>
 			<% fi %>
