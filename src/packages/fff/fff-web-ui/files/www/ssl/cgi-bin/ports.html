@@ -9,8 +9,8 @@ if [ "$REQUEST_METHOD" = "POST" ] ; then
 		echo "ETHMODE=\"${POST_mode}\" # set via WebUI" >> /etc/network.config
 		sed -i '/^FORCEPARSE/d' /etc/network.config
 		echo "FORCEPARSE='2'" >> /etc/network.config
-		do_reboot=1
-		MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+		do_reconfigure=1
+		MSG='<span class="green">Port Modus wird ge&auml;ndert!</span>'
 	fi
 	if [ "$POST_change_twoport" != "" ] ; then
 		sed -i '/^.*# set via WebUI/d' /etc/network.config
@@ -18,8 +18,8 @@ if [ "$REQUEST_METHOD" = "POST" ] ; then
 		echo "LAN1MODE=\"${POST_mode1}\" # set via WebUI" >> /etc/network.config
 		sed -i '/^FORCEPARSE/d' /etc/network.config
 		echo "FORCEPARSE='2'" >> /etc/network.config
-		do_reboot=1
-		MSG='<span class="green">Port Modus ge&auml;ndert! Router startet neu...</span>'
+		do_reconfigure=1
+		MSG='<span class="green">Port Modus wird ge&auml;ndert!</span>'
 	fi
 fi
 
@@ -182,7 +182,6 @@ format_port() {
 
 				Wenn diese Einstellung ver&auml;ndert wird, wird eine evtl. vorhandene manuelle Netzwerkkonfiguration in der
 				<tt>/etc/config/network</tt> &uuml;berschrieben.<br />
-				Anschlie&szlig;end wird der Router neugestartet.
 			</td></tr>
 		</table>
 	</fieldset>
@@ -228,7 +227,6 @@ format_port() {
 
 				Wenn diese Einstellung ver&auml;ndert wird, wird eine evtl. vorhandene manuelle Netzwerkkonfiguration in der
 				<tt>/etc/config/network</tt> &uuml;berschrieben.<br />
-				Anschlie&szlig;end wird der Router neugestartet.
 			</td></tr>
 		</table>
 	</fieldset>
@@ -239,7 +237,7 @@ format_port() {
 <%in /www/include/footer %>
 <%
 # write
-if [ "$do_reboot" = "1" ] ; then
-	reboot
+if [ "$do_reconfigure" = "1" ] ; then
+	configurenetwork
 fi
 %>
