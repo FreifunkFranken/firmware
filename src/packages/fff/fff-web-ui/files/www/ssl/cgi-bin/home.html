@@ -59,8 +59,8 @@ fi
 		<tr><th>Name:</th><td><%= ${HOSTNAME} %></td></tr>
 		<tr><th>Modell:</th><td><% cat /tmp/sysinfo/model 2>/dev/null %></td></tr>
 		<tr><th>MAC-Adresse:</th><td><%= $(cat /sys/class/net/br-client/address) %></td></tr>
-		<tr><th>Bekannte Knoten:</th><td><%= $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)+1)) %></td></tr>
-		<tr><th>Nachbarknoten:</th><td><%= $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null) %></td></tr>
+		<tr><th>Bekannte Knoten:</th><td><%= $(($(batctl tg -H 2>/dev/null | cut -b 40-56 | sort | uniq | wc -l)+1)) %></td></tr>
+		<tr><th>Nachbarknoten:</th><td><%= $(batctl o -H 2>/dev/null | cut -b 40-56 | sort | uniq | wc -l) %></td></tr>
 		<tr><th>VPN via fastd:</th><td><%= ${vpn_active} %></td></tr>
 		<tr><th>fastd public key:</th><td><%= ${fastd_pub} %></td></tr>
 		<tr><th>Laufzeit:</th><td><%= ${uptime} %></td></tr>

@@ -61,8 +61,8 @@ contact="$(uci -q get "fff.system.contact")"
 							<legend>Status</legend>
 							<table>
 								<tr><th>Hood:</th><td><% echo "$hood" %></td></tr>
-								<tr><th>Bekannte Knoten:</th><td><% echo -n $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2> /dev/null)+1)) %></td></tr>
-								<tr><th>Nachbarknoten:</th><td><% echo -n $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2> /dev/null) %></td></tr>
+								<tr><th>Bekannte Knoten:</th><td><% echo -n $(($(batctl tg -H 2>/dev/null | cut -b 40-56 | sort | uniq | wc -l)+1)) %></td></tr>
+								<tr><th>Nachbarknoten:</th><td><% echo -n $(batctl o -H 2>/dev/null | cut -b 40-56 | sort | uniq | wc -l) %></td></tr>
 								<tr><th>Lokale Clients:</th><td><% echo -n $(batctl tl -H 2> /dev/null | grep -c 'W') %></td></tr>
 							</table>
 						</fieldset>
