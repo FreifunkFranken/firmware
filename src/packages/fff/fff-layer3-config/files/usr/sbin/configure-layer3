@@ -7,6 +7,7 @@
 execute_subshell() {
 	if [ $# -ne 1 ]; then
 		echo "Usage:" "$0" "<function>"
+		return 1
 	fi
 
 	for script in /etc/layer3.d/*; do
@@ -23,7 +24,7 @@ execute_subshell() {
 		if [ $? -ne 0 ]; then
 			echo
 			echo "Error when executing" "$1" "from" "$(basename "$script")"
-			exit 1
+			return 1
 		fi
 	done
 }
@@ -32,29 +33,33 @@ configure() {
 	echo "This script might remove existing vlans, interfaces, addresses, etc."
 	read -r -p "Do you really want to continue? (y/n) " response
 	if ! ( [ "$response" == "y" ] || [ "$response" == "Y" ] ); then
-		exit 1
+		return 1
 	fi
 
 	echo
-	execute_subshell configure
+	execute_subshell configure || return $?
 
-	exit 0
+	return 0
 }
 
 reload_services() {
 	execute_subshell reload
 	reload_config
+
+	return 0
 }
 
 apply_changes() {
 	execute_subshell apply
 	reload_services
-	exit 0
+
+	return 0
 }
 
 revert_changes() {
 	execute_subshell revert
-	exit 0
+
+	return 0
 }
 
 keep_changes() {
