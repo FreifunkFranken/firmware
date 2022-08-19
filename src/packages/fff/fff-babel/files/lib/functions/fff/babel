@@ -1,6 +1,6 @@
 
 implementation=$(uci -q get babelimpl.impl.impl)
-[ -z "$implementation" ] && implementation=babeld
+[ -z "$implementation" ] && implementation=bird2
 
 . /lib/functions/fff/babeldaemon/$implementation
 
