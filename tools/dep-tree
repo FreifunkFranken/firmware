@@ -31,8 +31,8 @@ write_deps() {
 	done
 }
 
-for v in $variant; do
-	defaults="$defaults fff-variant-$v"
+for v in base $variant; do
+	defaults="$defaults fff-$v"
 done
 # start tree
 for package in $defaults; do
