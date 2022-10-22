@@ -19,16 +19,16 @@ These changes are currently only done with the FritzBox 4040 in mind.
 ---
  .../linux/ipq40xx/base-files/etc/board.d/01_leds |  2 +-
  .../ipq40xx/base-files/etc/board.d/02_network    |  3 +--
+ .../ipq40xx/files-5.10/drivers/net/mdio/ar40xx.c |  2 ++
  .../drivers/net/ethernet/qualcomm/essedma/edma.h | 16 ++++++++--------
- .../linux/ipq40xx/files/drivers/net/phy/ar40xx.c |  2 ++
  ...1-dts-ipq4019-add-ethernet-essedma-node.patch |  6 +++---
  5 files changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/target/linux/ipq40xx/base-files/etc/board.d/01_leds b/target/linux/ipq40xx/base-files/etc/board.d/01_leds
-index ac11655904..147e159ea1 100755
+index 884b265dcb..77b0754635 100644
 --- a/target/linux/ipq40xx/base-files/etc/board.d/01_leds
 +++ b/target/linux/ipq40xx/base-files/etc/board.d/01_leds
-@@ -19,7 +19,7 @@ asus,rt-ac58u)
+@@ -24,7 +24,7 @@ asus,rt-ac58u)
  	;;
  avm,fritzbox-4040)
  	ucidef_set_led_wlan "wlan" "WLAN" "green:wlan" "phy0tpt" "phy1tpt"
@@ -38,10 +38,10 @@ index ac11655904..147e159ea1 100755
  	;;
  avm,fritzbox-7530 |\
 diff --git a/target/linux/ipq40xx/base-files/etc/board.d/02_network b/target/linux/ipq40xx/base-files/etc/board.d/02_network
-index 87c79db5e1..666be0d145 100755
+index 2aa4886e6a..7390769661 100644
 --- a/target/linux/ipq40xx/base-files/etc/board.d/02_network
 +++ b/target/linux/ipq40xx/base-files/etc/board.d/02_network
-@@ -58,9 +58,8 @@ ipq40xx_setup_interfaces()
+@@ -68,9 +68,8 @@ ipq40xx_setup_interfaces()
  	avm,fritzbox-4040|\
  	linksys,ea6350v3|\
  	linksys,ea8300)
@@ -52,6 +52,26 @@ index 87c79db5e1..666be0d145 100755
  		;;
  	linksys,mr8300)
  		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+diff --git a/target/linux/ipq40xx/files-5.10/drivers/net/mdio/ar40xx.c b/target/linux/ipq40xx/files-5.10/drivers/net/mdio/ar40xx.c
+index f7ce42b9ff..a8da7ac653 100644
+--- a/target/linux/ipq40xx/files-5.10/drivers/net/mdio/ar40xx.c
++++ b/target/linux/ipq40xx/files-5.10/drivers/net/mdio/ar40xx.c
+@@ -1481,6 +1481,7 @@ ar40xx_vlan_init(struct ar40xx_priv *priv)
+ 	unsigned long bmp;
+ 
+ 	/* By default Enable VLAN */
++	/*
+ 	priv->vlan = 1;
+ 	priv->vlan_table[AR40XX_LAN_VLAN] = priv->cpu_bmp | priv->lan_bmp;
+ 	priv->vlan_table[AR40XX_WAN_VLAN] = priv->cpu_bmp | priv->wan_bmp;
+@@ -1492,6 +1493,7 @@ ar40xx_vlan_init(struct ar40xx_priv *priv)
+ 	bmp = priv->wan_bmp;
+ 	for_each_set_bit(port, &bmp, AR40XX_NUM_PORTS)
+ 			priv->pvid[port] = AR40XX_WAN_VLAN;
++	*/
+ 
+ 	return 0;
+ }
 diff --git a/target/linux/ipq40xx/files/drivers/net/ethernet/qualcomm/essedma/edma.h b/target/linux/ipq40xx/files/drivers/net/ethernet/qualcomm/essedma/edma.h
 index 015e5f5026..daa60639d1 100644
 --- a/target/linux/ipq40xx/files/drivers/net/ethernet/qualcomm/essedma/edma.h
@@ -79,30 +99,10 @@ index 015e5f5026..daa60639d1 100644
  
  /* Queues exposed to linux kernel */
  #define EDMA_NETDEV_TX_QUEUE 4
-diff --git a/target/linux/ipq40xx/files/drivers/net/phy/ar40xx.c b/target/linux/ipq40xx/files/drivers/net/phy/ar40xx.c
-index 545e3985ae..28453c2363 100644
---- a/target/linux/ipq40xx/files/drivers/net/phy/ar40xx.c
-+++ b/target/linux/ipq40xx/files/drivers/net/phy/ar40xx.c
-@@ -1483,6 +1483,7 @@ ar40xx_vlan_init(struct ar40xx_priv *priv)
- 	unsigned long bmp;
- 
- 	/* By default Enable VLAN */
-+	/*
- 	priv->vlan = 1;
- 	priv->vlan_table[AR40XX_LAN_VLAN] = priv->cpu_bmp | priv->lan_bmp;
- 	priv->vlan_table[AR40XX_WAN_VLAN] = priv->cpu_bmp | priv->wan_bmp;
-@@ -1494,6 +1495,7 @@ ar40xx_vlan_init(struct ar40xx_priv *priv)
- 	bmp = priv->wan_bmp;
- 	for_each_set_bit(port, &bmp, AR40XX_NUM_PORTS)
- 			priv->pvid[port] = AR40XX_WAN_VLAN;
-+	*/
- 
- 	return 0;
- }
-diff --git a/target/linux/ipq40xx/patches-5.4/711-dts-ipq4019-add-ethernet-essedma-node.patch b/target/linux/ipq40xx/patches-5.4/711-dts-ipq4019-add-ethernet-essedma-node.patch
+diff --git a/target/linux/ipq40xx/patches-5.10/711-dts-ipq4019-add-ethernet-essedma-node.patch b/target/linux/ipq40xx/patches-5.10/711-dts-ipq4019-add-ethernet-essedma-node.patch
 index 3567eb7810..b13b312a91 100644
---- a/target/linux/ipq40xx/patches-5.4/711-dts-ipq4019-add-ethernet-essedma-node.patch
-+++ b/target/linux/ipq40xx/patches-5.4/711-dts-ipq4019-add-ethernet-essedma-node.patch
+--- a/target/linux/ipq40xx/patches-5.10/711-dts-ipq4019-add-ethernet-essedma-node.patch
++++ b/target/linux/ipq40xx/patches-5.10/711-dts-ipq4019-add-ethernet-essedma-node.patch
 @@ -36,7 +36,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  +			qcom,rx_head_buf_size = <1540>;
  +			qcom,mdio_supported;

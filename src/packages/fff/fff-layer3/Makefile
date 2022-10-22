@@ -23,10 +23,10 @@ define Package/fff-layer3
 	         +fff-ra \
 	         +fff-web-mqtt \
 	         +fff-wireguard \
-	         +arptables \
+	         +arptables-legacy \
 	         +bmon \
-	         +ebtables \
-	         +ebtables-utils \
+	         +ebtables-legacy \
+	         +ebtables-legacy-utils \
 	         +kmod-ebtables-ipv4 \
 	         +kmod-ebtables-ipv6 \
 	         +kmod-sched-cake \
@@ -39,6 +39,7 @@ define Package/fff-layer3
 	         +iptables-mod-ipopt \
 	         +iptables-mod-conntrack-extra \
 	         +mtr \
+	         +nftables \
 	         +snmp-utils \
 	         +tc \
 	         +tcpdump \
