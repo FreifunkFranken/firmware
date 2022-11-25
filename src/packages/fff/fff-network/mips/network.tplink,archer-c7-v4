@@ -1,0 +1,12 @@
+. /lib/functions/fff/network
+
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS="4 5 0t"
+WAN_PORTS="1 0t"
+BATMAN_PORTS="2 3 0t"
+
+# use mac address from phy1 with 'locally administered' bit set to '1'
+# only possible, because wXmesh is created first and therefore gets the 'universally administered address'
+
+ETHMESHMAC=$(macFlipLocalBit "$(cat /sys/class/ieee80211/phy1/macaddress)")
