@@ -1,34 +1,44 @@
-######## IN_ONLY ############
-ebtables -N IN_ONLY -P RETURN
+nft -f - <<__EOF
+table bridge filter {
+	# IN_ONLY wird angesprungen, wenn dieses Paket nur
+	# vom Gateway (also vom BATMAN) kommen darf.
+	chain IN_ONLY {
+		# -i ! bat0 --logical-in br-client -j DROP
+		iifname != "bat0" counter drop
+		counter
+	}
 
-# Daten aus dem BATMAN werden erlaubt
-# Alles ausser Daten von BATMAN werden DROP'ed
-ebtables -A IN_ONLY -i ! bat0 --logical-in br-client -j DROP
+	# OUT_ONLY wird angesprungen, wenn dieses Paket nur
+	# in Richtung Gateway (also ins BATMAN) gesendet werden darf.
+	chain OUT_ONLY {
+		# --logical-out br-client -o ! bat0 -j DROP
+		oifname != "bat0" counter drop
+		counter
+	}
 
-######## OUT_ONLY ############
-ebtables -N OUT_ONLY -P RETURN
+	# MULTICAST_OUT filtert/reduziert Multicast-Frames, die ins BATMAN gesendet werden.
+	chain MULTICAST_OUT {
+	}
 
-# Daten ins BATMAN werden erlaubt
-# Alles ausser Daten ins BATMAN werden DROP'ed
-ebtables -A OUT_ONLY --logical-out br-client -o ! bat0 -j DROP
+	chain INPUT {
+		type filter hook input priority filter; policy accept;
 
-######## MULTICAST_OUT ############
-ebtables -N MULTICAST_OUT -P DROP
+		# -d Multicast -i ! bat0 --logical-in br-client -j ACCEPT
+		iifname != "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter packets 0 bytes 0 accept
+	}
 
-######## INPUT ############
-ebtables -P INPUT ACCEPT
+	chain FORWARD {
+		type filter hook forward priority filter; policy accept;
 
-# Regelt alles was an Multicast/Broadcast von CLIENT -> KNOTEN geht bei MULTICAST_OUT
-ebtables -A INPUT -d Multicast --logical-in br-client -i ! bat0 -j ACCEPT
+		# -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
+		oifname "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter packets 0 bytes 0 jump MULTICAST_OUT
+	}
 
-######## FORWARD ############
-ebtables -P FORWARD ACCEPT
+	chain OUTPUT {
+		type filter hook output priority filter; policy accept;
 
-# Regelt alles was an Multicast/Broadcast von CLIENT -> BATMAN geht bei MULTICAST_OUT
-ebtables -A FORWARD -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
-
-######## OUTPUT ############
-ebtables -P OUTPUT ACCEPT
-
-# Regelt alles was an Multicast/Broadcast von KNOTEN -> BATMAN geht bei MULTICAST_OUT
-ebtables -A OUTPUT -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
+		# -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
+		oifname "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter jump MULTICAST_OUT
+	}
+}
+__EOF

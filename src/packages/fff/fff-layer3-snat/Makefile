@@ -13,7 +13,7 @@ define Package/fff-layer3-snat
 	DEPENDS:= \
 		+fff-firewall \
 		+fff-layer3-config \
-		+kmod-ipt-nat
+		+kmod-nft-nat
 endef
 
 define Package/fff-layer3-snat/description

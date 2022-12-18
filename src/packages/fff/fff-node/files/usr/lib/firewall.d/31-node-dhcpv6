@@ -1,5 +1,15 @@
-# Erlaube nur DHCPv6 Antworten von BATMAN -> KNOTEN
-ebtables -A INPUT -p IPv6 --ip6-proto udp --ip6-dport 546 -j IN_ONLY
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# Erlaube nur DHCPv6 Antworten von BATMAN -> KNOTEN
+		# -p IPv6 --ip6-proto udp --ip6-dport 546 -j IN_ONLY
+		ether type ip6 udp dport 546 counter jump IN_ONLY
+	}
 
-# Erlaube nur DHCPv6 Request von KNOTEN -> BATMAN
-ebtables -A OUTPUT -p IPv6 --ip6-proto udp --ip6-dport 547 -j OUT_ONLY
+	chain OUTPUT {
+		# Erlaube nur DHCPv6 Request von KNOTEN -> BATMAN
+		# -p IPv6 --ip6-proto udp --ip6-dport 547 -j OUT_ONLY
+		ether type ip6 udp dport 547 counter jump OUT_ONLY
+	}
+}
+__EOF

@@ -10,11 +10,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken firewall
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+arptables-legacy \
-			 +ebtables-legacy +ebtables-legacy-utils \
-			 +kmod-ebtables-ipv4 +kmod-ebtables-ipv6 \
-			 +iptables-mod-filter +iptables-mod-ipopt +iptables-mod-conntrack-extra \
-			 +kmod-nf-conntrack6
+	DEPENDS:=+nftables
 endef
 
 define Package/$(PKG_NAME)/description

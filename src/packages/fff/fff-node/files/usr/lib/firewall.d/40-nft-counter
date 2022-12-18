@@ -1,0 +1,15 @@
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		counter
+	}
+
+	chain FORWARD {
+		counter
+	}
+
+	chain OUTPUT {
+		counter
+	}
+}
+__EOF

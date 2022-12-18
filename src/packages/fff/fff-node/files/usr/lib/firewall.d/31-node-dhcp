@@ -1,5 +1,15 @@
-# Erlaube nur DHCP Antworten von BATMAN -> KNOTEN
-ebtables -A INPUT -p IPv4 --ip-proto udp --ip-dport 68 -j IN_ONLY
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# Erlaube nur DHCP Antworten von BATMAN -> KNOTEN
+		# -p IPv4 --ip-proto udp --ip-dport 68 -j IN_ONLY
+		ether type ip udp dport 68 counter jump IN_ONLY
+	}
 
-# Erlaube nur DHCP Request von KNOTEN -> BATMAN
-ebtables -A OUTPUT -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY
+	chain OUTPUT {
+		# Erlaube nur DHCP Request von KNOTEN -> BATMAN
+		# -p IPv4 --ip-proto udp --ip-dport 67 -j OUT_ONLY
+		ether type ip udp dport 67 counter jump OUT_ONLY
+	}
+}
+__EOF

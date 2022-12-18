@@ -1,5 +1,10 @@
 # Ensure nothing is forwarded onto WAN interface
 if [ -n "$IF_WAN" ]; then
-	iptables -A FORWARD -o $IF_WAN -j REJECT --reject-with icmp-net-unreachable
-	ip6tables -A FORWARD -o $IF_WAN -j REJECT --reject-with no-route
+	nft add table ip filter
+	nft add chain ip filter FORWARD '{ type filter hook forward priority filter; policy accept; }'
+	nft add table ip6 filter
+	nft add chain ip6 filter FORWARD '{ type filter hook forward priority filter; policy accept; }'
+
+	nft add rule ip filter FORWARD oifname "$IF_WAN" counter reject with icmp net-unreachable
+	nft add rule ip6 filter FORWARD oifname "$IF_WAN" counter reject with icmpv6 no-route
 fi

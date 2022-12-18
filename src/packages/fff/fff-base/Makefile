@@ -12,8 +12,6 @@ define Package/fff-base
 	URL:=https://www.freifunk-franken.de
 	DEFAULT:=y
 	DEPENDS:= \
-		+iptables-legacy \
-		+ip6tables-legacy \
 		+micrond \
 		+odhcp6c \
 		+fff-config \

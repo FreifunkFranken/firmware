@@ -1,2 +1,12 @@
-/usr/sbin/iptables -P FORWARD DROP
-/usr/sbin/ip6tables -P FORWARD DROP
+nft -f - <<__EOF
+table ip filter {
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+	}
+}
+table ip6 filter {
+	chain FORWARD {
+		type filter hook forward priority filter; policy drop;
+	}
+}
+__EOF

@@ -1,5 +1,15 @@
-# Erlaube router solicitation von client zu knoten
-ebtables -A INPUT -p IPv6 -i ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j ACCEPT
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# Erlaube router solicitation von client zu knoten
+		# -p IPv6 -i ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j ACCEPT
+		iifname != "bat0" ether type ip6 ip6 nexthdr icmpv6 icmpv6 type nd-router-solicit counter accept
+	}
 
-# Erlaube router advertisment von knoten zu client
-ebtables -A OUTPUT -p IPv6 -o ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j ACCEPT
+	chain OUTPUT {
+		# Erlaube router advertisment von knoten zu client
+		# -p IPv6 -o ! bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j ACCEPT
+		oifname != "bat0" ether type ip6 icmpv6 type nd-router-advert counter accept
+	}
+}
+__EOF

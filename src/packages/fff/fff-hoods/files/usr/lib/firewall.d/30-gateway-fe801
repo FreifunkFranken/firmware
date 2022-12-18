@@ -1,5 +1,15 @@
-# Erlaube nur fe80::1 von BATMAN -> CLIENT
-ebtables -A FORWARD -p IPv6 --ip6-source fe80::1 -j IN_ONLY
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# Erlaube nur fe80::1 von BATMAN -> CLIENT
+		# -p IPv6 --ip6-src fe80::1 -j IN_ONLY
+		ether type ip6 ip6 saddr fe80::1 counter jump IN_ONLY
+	}
 
-# Erlaube nur fe80::1 von KNOTEN -> CLIENT
-ebtables -A INPUT -p IPv6 --ip6-source fe80::1 -j IN_ONLY
+	chain FORWARD {
+		# Erlaube nur fe80::1 von KNOTEN -> CLIENT
+		# -p IPv6 --ip6-src fe80::1 -j IN_ONLY
+		ether type ip6 ip6 saddr fe80::1 counter jump IN_ONLY
+	}
+}
+__EOF

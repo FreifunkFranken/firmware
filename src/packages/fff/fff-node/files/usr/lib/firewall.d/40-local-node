@@ -1,11 +1,30 @@
-# No input from/to local node ip from batman
-ebtables -A INPUT --logical-in br-client -i bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
-ebtables -A INPUT --logical-in br-client -i bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# No input from/to local node ip from batman
 
-# Do not forward local node ip
-ebtables -A FORWARD --logical-out br-client -o bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
-ebtables -A FORWARD --logical-out br-client -o bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
+		# -p IPv6 -i bat0 --logical-in br-client --ip6-src fdff::1 -j DROP
+		iifname "bat0" ether type ip6 ip6 saddr fdff::1 counter drop
+		# -p IPv6 -i bat0 --logical-in br-client --ip6-dst fdff::1 -j DROP
+		iifname "bat0" ether type ip6 ip6 daddr fdff::1 counter drop
+	}
 
-# Do not output local node ip to batman
-ebtables -A OUTPUT --logical-out br-client -o bat0 -p IPv6 --ip6-destination fdff::1/128 -j DROP
-ebtables -A OUTPUT --logical-out br-client -o bat0 -p IPv6 --ip6-source fdff::1/128 -j DROP
+	chain FORWARD {
+		# Do not forward local node ip
+
+		# -p IPv6 --logical-out br-client -o bat0 --ip6-dst fdff::1 -j DROP
+		oifname "bat0" ether type ip6 ip6 daddr fdff::1 counter drop
+		# -p IPv6 --logical-out br-client -o bat0 --ip6-src fdff::1 -j DROP
+		oifname "bat0" ether type ip6 ip6 saddr fdff::1 counter drop
+	}
+
+	chain OUTPUT {
+		# Do not output local node ip to batman
+
+		# -p IPv6 --logical-out br-client -o bat0 --ip6-dst fdff::1 -j DROP
+		oifname "bat0" ether type ip6 ip6 daddr fdff::1 counter drop
+		# -p IPv6 --logical-out br-client -o bat0 --ip6-src fdff::1 -j DROP
+		oifname "bat0" ether type ip6 ip6 saddr fdff::1 counter drop
+	}
+}
+__EOF

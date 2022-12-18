@@ -1,0 +1,8 @@
+nft -f - <<__EOF
+table bridge filter {
+	chain MULTICAST_OUT {
+		# policy: DROP
+		counter drop
+	}
+}
+__EOF

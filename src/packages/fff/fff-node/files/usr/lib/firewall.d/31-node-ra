@@ -1,11 +1,23 @@
-# Erlaube nur Router-Advertisment von BATMAN -> KNOTEN
-ebtables -A INPUT -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j IN_ONLY
+nft -f - <<__EOF
+table bridge filter {
+	chain INPUT {
+		# Erlaube nur Router-Advertisment von BATMAN -> KNOTEN
+		# -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j IN_ONLY
+		ether type ip6 ip6 nexthdr icmpv6 icmpv6 type nd-router-advert counter jump IN_ONLY
 
-# Verbiete Router-Solicitation von BATMAN -> KNOTEN
-ebtables -A INPUT -p IPv6 -i bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j DROP
+		# Verbiete Router-Solicitation von BATMAN -> KNOTEN
+		# -p IPv6 -i bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j DROP
+		iifname "bat0" ether type ip6 ip6 nexthdr icmpv6 icmpv6 type nd-router-solicit counter drop
+	}
 
-# Erlaube nur Router-Solicitation von KNOTEN -> BATMAN
-ebtables -A OUTPUT -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j OUT_ONLY
+	chain OUTPUT {
+		# Erlaube nur Router-Solicitation von KNOTEN -> BATMAN
+		# -p IPv6 --ip6-proto ipv6-icmp --ip6-icmp-type router-solicitation -j OUT_ONLY
+		ether type ip6 icmpv6 type nd-router-solicit counter jump OUT_ONLY
 
-# Verbiete Router-Advertisment von KNOTEN -> BATMAN
-ebtables -A OUTPUT -p IPv6 -o bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j DROP
+		# Verbiete Router-Advertisment von KNOTEN -> BATMAN
+		# -p IPv6 -o bat0 --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j DROP
+		oifname "bat0" ether type ip6 icmpv6 type nd-router-advert counter drop
+	}
+}
+__EOF
