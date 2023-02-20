@@ -132,9 +132,14 @@ scp root@[ipv6ll%scope]:/etc/network.tl-wr1043nd-v2 /path/to/git/firmware/bsp/wr
 ```
 
 ### BSP commiten und Patch erzeugen
-Nun kann man mit `git status` die Änderungen sehen. Mit `git add` staged man diese und mit `git commit` checkt man sie ein. `git format-patch origin/HEAD` erzeugt dann aus deinen Commits ein (oder mehr) Patches. Diese schickst du dann mit `git send-email --to franken-dev@freifunk.net *.patch` an unsere Liste. Dort nimmt sich jemand die Zeit und schaut kurz drüber und wenn alles passt finden deine Änderungen in den Hauptentwicklungszweig und sind ab dann Teil der Freifunk-Franken-Firmware.
+Nun kann man mit `git status` die Änderungen sehen.
 
-### Patch schicken
+Damit man an mehreren Änderungen gleichzeitig arbeiten kann, sollte zunächst mit `git checkout -b mein-neues-feature` ein neuer Branch erzeugt werden. Dann können die Änderungen mit `git add` gestaged und danach mit `git commit` eingecheckt werden.
+
+Die so erzeugten Änderungen können dann mit einem Pull Request im [Gitea](https://git.freifunk-franken.de/freifunk-franken/firmware) submitted werden. Dafür ist ein [Account](https://docs.freifunk-franken.de/services/git.freifunk-franken/#anmeldung) nötig. Dazu muss das Firmware-Repository zunächst geforkt werden. Die SSH-Adresse des Forks (steht oben rechts) kann dann mit `git remote set-url origin gitea@git.freifunk-franken.de:meinname/firmware.git` in das lokale Repository eingetragen werden. Danach kann der weiter oben erstellte Branch mit `git push origin mein-neues-feature` in den Fork hochgeladen werden. Nun kann der Pull Request im Freifunk Franken Repository [angelegt](https://git.freifunk-franken.de/freifunk-franken/firmware/pulls) werden.
+
+Soll der Pull Request später geändert werden, dann müssen zunächst die nötigen Änderungen gemacht und danach mit `git commit --amend` in den bereits bestehenden Commit eingefügt werden. Dies kann dann mit `git push --force origin mein-neues-feature` in den Fork hochgeladen werden. Force ist hierbei nötig, da bereits bestehende Commits geändert werden. Der Pull Request wird dann automatisch aktualisiert. Um Reviews zu erleichtern sollten die Änderungen im Pull Request als Kommentar beschrieben werden.
+
 Auf der Mailingliste franken-dev@freifunk.net kannst du natürlich jederzeit Fragen stellen, falls etwas nicht klar sein sollte.
 
 ## Hinzufügen von Paketen zum Image
