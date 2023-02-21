@@ -68,5 +68,5 @@ babel_reload_implementation() {
 }
 
 babel_revert() {
-	rm -r /tmp/bird/fff
+	rm -rf /tmp/bird/fff
 }
