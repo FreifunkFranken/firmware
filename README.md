@@ -56,6 +56,10 @@ Dieses Kommando arbeitet folgendermaßen:
 ### `./buildscript updatefeeds`
 Aktualisiert die OpenWrt Feeds für zusätzliche Pakete, die in die Firmware eingebaut werden. Dabei werden die Referenzen im build/ Verzeichnis aktualisiert. Dieser Schritt wird bereits von `./buildscript prepare` übernommen, daher ist dies nur bei manuellen Änderungen der Feeds nötig.
 
+### `./buildscript clean`
+Entfernt den Inhalt der bin/ und build/ Verzeichnisse und die Feeds in src/packages/. Damit werden beim nächsten `./buildscript prepare` alle Dateien die für das Bauen der Firmware nötig sind neu heruntergeladen. Dies kann nötig sein wenn z.B. seit dem letzen build ein größerer Versionssprung in OpenWRT gemacht wurde. Wenn es Fehler beim bauen gibt, wie fehlende Dependencies o.Ä., ist ein clean mal einen Versuch wert.
+* Nach einem clean muss daher erst noch einmal `./buildscript prepare` ausgeführt werden, bevor man mit `./buildscipt build` bauen kann!
+
 ### `./buildscript build`
 Sollte man am besten mit Hilfe des Tools 'screen' oder ähnlichem laufen lassen um einen Abbruch des Builds bei Verbindungsproblemen oder ähnlichem zu verhindern.
 * prebuild
