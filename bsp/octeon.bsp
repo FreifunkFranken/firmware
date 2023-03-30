@@ -2,5 +2,5 @@ chipset=octeon
 subtarget=generic
 
 images=(
-        "openwrt-${chipset}-ubnt_edgerouter-4-*"
+        "openwrt-${chipset}-${subtarget}-ubnt_edgerouter-4-*"
        )
