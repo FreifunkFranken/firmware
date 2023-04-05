@@ -54,29 +54,28 @@ checkout_git(){
 
     local MYGIT="git -C $DIRECTORY"
     echo "checking out $REPO_URL to $DIRECTORY in version $COMMITID"
-    if [ -d "$DIRECTORY" ]; then
-        if $MYGIT remote -v | grep -q "$REPO_URL" ; then
-            echo "Right remote detected"
-            # Remove untracked files
-            $MYGIT clean -f -d
-            # Select desired commit and remove local changes (-f)
-            if ! $MYGIT checkout -f "$COMMITID" ; then
-                echo "commitid not found trying to fetch new commits"
-                $MYGIT fetch --all && $MYGIT checkout "$COMMITID"
-            fi
-        else
-            echo "wrong remote or not an git repo at all -> deleting whole directory"
-            /bin/rm -rf "$DIRECTORY"
-            #needs to be without -C!!!
-            git clone "$REPO_URL" "$DIRECTORY"
-            $MYGIT checkout "$COMMITID"
-        fi
-    else
-        echo "We need to do a fresh checkout"
-        #needs to be without -C!!!
-        git clone "$REPO_URL" "$DIRECTORY"
-        $MYGIT checkout "$COMMITID"
+    if ! $MYGIT remote -v | grep -q "$REPO_URL"; then
+        echo "we need to do a fresh clone"
+
+        /bin/rm -rf -- "$DIRECTORY"
+        mkdir "$DIRECTORY"
+
+        $MYGIT clone --progress --no-checkout --filter=blob:none "$REPO_URL" .
+        $MYGIT config gc.auto 0
+        $MYGIT config advice.detachedHead 0
     fi
+
+    echo
+
+    # Remove untracked files
+    $MYGIT clean -f -d
+    # Select desired commit and remove local changes (-f)
+    if ! $MYGIT checkout --progress --force "$COMMITID" ; then
+        echo "commitid not found trying to fetch new commits"
+        $MYGIT fetch --all && $MYGIT checkout "$COMMITID"
+    fi
+
+    echo
 }
 
 get_source() {
