@@ -1,0 +1,56 @@
+[ "$(uci -q get network.client.fff_stateful_firewall)" != 1 ] && return
+
+nft -f - << EOF
+table ip filter {
+	chain forward-client {
+		ct state {
+			established,
+			related,
+		} accept \
+		comment "accept traffic originating from clients"
+
+		ip protocol icmp icmp type {
+			echo-reply,
+			destination-unreachable,
+			echo-request,
+			time-exceeded,
+			parameter-problem,
+		} accept \
+		comment "accept icmp"
+
+		counter drop \
+		comment "drop the rest"
+	}
+	chain FORWARD {
+		type filter hook forward priority filter; policy accept;
+		oifname br-client goto forward-client
+	}
+}
+
+table ip6 filter {
+	chain forward-client {
+		ct state {
+			established,
+			related,
+		} accept \
+		comment "accept traffic originating from clients"
+
+		ip6 nexthdr icmpv6 icmpv6 type {
+			destination-unreachable,
+			packet-too-big,
+			time-exceeded,
+			parameter-problem,
+			echo-request,
+			echo-reply,
+		} accept \
+		comment "accept icmpv6 for basic ipv6 functionality"
+
+		counter drop \
+		comment "drop the rest"
+	}
+	chain FORWARD {
+		type filter hook forward priority filter; policy accept;
+		oifname br-client goto forward-client
+	}
+}
+EOF

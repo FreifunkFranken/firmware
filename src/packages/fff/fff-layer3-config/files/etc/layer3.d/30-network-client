@@ -57,6 +57,12 @@ configure() {
 	else
 		echo "WARNING: No Interface for client specified"
 	fi
+
+	# stateful firewall
+	uci -q del network.client.fff_stateful_firewall
+	if [ "$(uci -q get gateway.@client[0].stateful_firewall)" = 1 ]; then
+		uci set network.client.fff_stateful_firewall=1
+	fi
 }
 
 apply() {
