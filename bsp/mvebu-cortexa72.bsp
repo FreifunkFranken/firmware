@@ -3,4 +3,6 @@ subtarget=cortexa72
 
 images=(
         "openwrt-mvebu-cortexa72-mikrotik_rb5009-squashfs*"
+        "openwrt-mvebu-cortexa72-solidrun_clearfog-pro-squashfs*"
+        "openwrt-mvebu-cortexa72-solidrun_clearfog-base-squashfs*"
        )

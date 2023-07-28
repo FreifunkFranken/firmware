@@ -1,0 +1,24 @@
+From 6bd5ce04002fa22d7390d1a4df2696c70a7dacf8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 22 Feb 2025 17:53:30 +0100
+Subject: [PATCH] mvebu: clearfog-pro: add label-mac-device
+
+---
+ .../arch/arm64/boot/dts/marvell/cn9130-clearfog-pro.dts          | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-pro.dts b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-pro.dts
+index 15e19fb932..2d8c2289b9 100644
+--- a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-pro.dts
++++ b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-pro.dts
+@@ -28,6 +28,7 @@
+ 		ethernet1 = &cp0_eth1;
+ 		ethernet2 = &cp0_eth2;
+ 		spi1 = &cp0_spi1;
++		label-mac-device = &cp0_eth0;
+ 	};
+ 
+ 	memory@00000000 {
+-- 
+2.48.1
+

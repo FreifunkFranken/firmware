@@ -1,0 +1,5 @@
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="eth0 eth1"
+WAN_PORTS="eth2"
+DSA=1

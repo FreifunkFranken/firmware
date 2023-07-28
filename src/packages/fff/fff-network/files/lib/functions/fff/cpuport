@@ -19,6 +19,8 @@ get_cpu_port() {
 		avm,fritzbox-4040|\
 		mikrotik,rb5009|\
 		netgear,r6220|\
+		solidrun,clearfog-base|\
+		solidrun,clearfog-pro|\
 		tplink,c2600|\
 		tplink,cpe210-v2|\
 		tplink,cpe210-v3|\
