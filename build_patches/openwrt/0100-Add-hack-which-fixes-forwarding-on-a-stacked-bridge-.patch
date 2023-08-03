@@ -6,13 +6,13 @@ Subject: [PATCH] Add hack which fixes forwarding on a stacked bridge
 ---
  .../999-fix-stacked-bridge-forwarding.patch          | 12 ++++++++++++
  1 file changed, 12 insertions(+)
- create mode 100644 target/linux/generic/hack-5.10/999-fix-stacked-bridge-forwarding.patch
+ create mode 100644 target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch
 
-diff --git a/target/linux/generic/hack-5.10/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-5.10/999-fix-stacked-bridge-forwarding.patch
+diff --git a/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch
 new file mode 100644
 index 0000000000..e1d4cb9cd5
 --- /dev/null
-+++ b/target/linux/generic/hack-5.10/999-fix-stacked-bridge-forwarding.patch
++++ b/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch
 @@ -0,0 +1,12 @@
 +--- a/net/bridge/br_input.c
 ++++ b/net/bridge/br_input.c

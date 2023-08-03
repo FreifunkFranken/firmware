@@ -5,13 +5,12 @@ Subject: build: remove libustream and certs from default packages
 This effectively reverts upstream commit e79df3516d3e ("build: add
 libustream and certs to default pkgs").
 
-The libustream-wolfssl library conflicts with the libustream-mbedtls
-we are selecting in fff-web-ui and is probably much bigger.
-
 Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
+[fabian@blaese.de: Rebase onto OpenWrt 23.05]
+Signed-off-by: Fabian Bläse <fabian@blaese.de>
 
 diff --git a/include/target.mk b/include/target.mk
-index 7526224972e18148fec8a12318ca7f90a382475f..338e97f836759fc454986210e5818ad390ba6efb 100644
+index b5e3e7ff6f..2324b6cc11 100644
 --- a/include/target.mk
 +++ b/include/target.mk
 @@ -12,12 +12,10 @@ DEVICE_TYPE?=router
@@ -23,7 +22,7 @@ index 7526224972e18148fec8a12318ca7f90a382475f..338e97f836759fc454986210e5818ad3
  	fstools \
  	libc \
  	libgcc \
--	libustream-wolfssl \
+-	libustream-mbedtls \
  	logd \
  	mtd \
  	netifd \

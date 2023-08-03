@@ -6,10 +6,10 @@ This disables all OpenWrt config migration mechanisms except for
 files listed in /etc/sysupgrade.conf
 
 diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
-index 7e0a00e13b8ee4be7163936fd01a7beff0ce5c99..97f50dc83088e29fba651741fff28c70f7585b3f 100755
+index 9315091302..be8325463e 100755
 --- a/package/base-files/files/sbin/sysupgrade
 +++ b/package/base-files/files/sbin/sysupgrade
-@@ -135,14 +135,14 @@ list_static_conffiles() {
+@@ -139,14 +139,14 @@ list_static_conffiles() {
  	local filter=$1
  
  	find $(sed -ne '/^[[:space:]]*$/d; /^#/d; p' \
