@@ -14,7 +14,7 @@ ROUTINGREV="2272106e0839ee06957e88e3596489e1b510d3c2"
 # Gluon packages: master from 2020-02-04
 GLUONREV="12e41d0ff07ec54bbd67a31ab50d12ca04f2238c"
 
-OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon procps-ng procps-ng-vmstat"
+OPENWRT_PKGS="gpioctl-sysfs libugpio fastd haserl micrond mtr bmon htop sysstat procps-ng procps-ng-vmstat"
 ROUTING_PKGS="kmod-batman-adv batctl alfred babeld bird2"
 GLUON_PKGS="simple-tc uradvd"
 

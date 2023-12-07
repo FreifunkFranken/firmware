@@ -11,8 +11,10 @@ define Package/fff-extra
 	TITLE:=Freifunk-Franken gateway configuration
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+bmon \
+	         +htop \
 	         +procps-ng \
-	         +procps-ng-vmstat
+	         +procps-ng-vmstat \
+	         +sysstat
 endef
 
 define Package/fff-extra/description
