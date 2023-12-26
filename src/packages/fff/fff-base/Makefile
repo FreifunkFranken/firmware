@@ -12,6 +12,10 @@ define Package/fff-base
 	URL:=https://www.freifunk-franken.de
 	DEFAULT:=y
 	DEPENDS:= \
+		+@BUSYBOX_CONFIG_FEATURE_REVERSE_SEARCH \
+		+@BUSYBOX_CONFIG_FEATURE_TOP_SMP_CPU \
+		+@BUSYBOX_CONFIG_WATCH \
+		+@BUSYBOX_CONFIG_FEATURE_EDITING_SAVEHISTORY \
 		+micrond \
 		+odhcp6c \
 		+fff-config \
