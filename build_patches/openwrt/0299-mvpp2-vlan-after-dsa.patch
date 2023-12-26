@@ -1,0 +1,30 @@
+From fddf68b6c559df4e7b8561ea57d6e27bc4b0a8db Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Mon, 20 Nov 2023 21:28:16 +0100
+Subject: [PATCH] mvpp2: vlan after dsa
+
+---
+ .../linux/mvebu/patches-5.15/999-vlan-after-dsa.patch | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+ create mode 100644 target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
+
+diff --git a/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch b/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
+new file mode 100644
+index 0000000000..d6f241ca08
+--- /dev/null
++++ b/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
+@@ -0,0 +1,11 @@
++--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
++@@ -576,7 +576,7 @@ static void mvpp2_prs_dsa_tag_set(struct
++ 			/* Set result info bits to 'no vlans' */
++ 			mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_VLAN_NONE,
++ 						 MVPP2_PRS_RI_VLAN_MASK);
++-			mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_L2);
+++			mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_VLAN);
++ 		}
++ 
++ 		/* Mask all ports */
+-- 
+2.42.1
+

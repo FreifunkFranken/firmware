@@ -1,0 +1,1626 @@
+From ab9ea153c32fdf68240d2ad6d20523b3fd15d88d Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Sun, 30 Jan 2022 13:00:09 +0100
+Subject: [PATCH 13/18] kernel: 5.15: backport QCA8081 PHY support
+
+Backport support for the Qualcomm QCA8081 PHY as well as one pending fix.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ ...eplace-AT803X_DEVICE_ADDR-with-MDIO_.patch |  50 ++++
+ ...-v5.16-net-phy-at803x-use-phy_modify.patch |  41 +++
+ ...t-phy-at803x-improve-the-WOL-feature.patch | 110 ++++++++
+ ...-at803x-use-GENMASK-for-speed-status.patch |  45 +++
+ ...6-net-phy-at803x-add-QCA9561-support.patch |  84 ++++++
+ ...-phy-add-qca8081-ethernet-phy-driver.patch |  70 +++++
+ ...5.16-net-phy-add-qca8081-read_status.patch | 176 ++++++++++++
+ ....16-net-phy-add-qca8081-get_features.patch |  46 +++
+ ...5.16-net-phy-add-qca8081-config_aneg.patch |  62 ++++
+ ...tants-for-fast-retrain-related-regis.patch |  67 +++++
+ ...-net-phy-add-genphy_c45_fast_retrain.patch |  75 +++++
+ ...5.16-net-phy-add-qca8081-config_init.patch | 152 ++++++++++
+ ...081-soft_reset-and-enable-master-sla.patch | 107 +++++++
+ ...ca8081-master-slave-seed-value-if-li.patch |  51 ++++
+ ...5.16-net-phy-add-qca8081-cdt-feature.patch | 264 ++++++++++++++++++
+ ...a8081-with-speeds-lower-than-2.5Gb-s.patch |  84 ++++++
+ 16 files changed, 1484 insertions(+)
+ create mode 100644 target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
+ create mode 100644 target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
+ create mode 100644 target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
+ create mode 100644 target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
+ create mode 100644 target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
+ create mode 100644 target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
+ create mode 100644 target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
+ create mode 100644 target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
+ create mode 100644 target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
+ create mode 100644 target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
+ create mode 100644 target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
+ create mode 100644 target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
+ create mode 100644 target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
+ create mode 100644 target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
+ create mode 100644 target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
+ create mode 100644 target/linux/generic/pending-5.15/790-net-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
+
+diff --git a/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch b/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
+new file mode 100644
+index 0000000000..2b0b24e62c
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
+@@ -0,0 +1,50 @@
++From 157bb1293c232adb1e6f78db57e7f4f8aa853124 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:25 +0800
++Subject: [PATCH 765/778] net: phy: at803x: replace AT803X_DEVICE_ADDR with
++ MDIO_MMD_PCS
++
++Replace AT803X_DEVICE_ADDR with MDIO_MMD_PCS defined in mdio.h.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 6 +++---
++ 1 file changed, 3 insertions(+), 3 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 69da011e82c8..d0f41cdaec75 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -70,7 +70,6 @@
++ #define AT803X_CDT_STATUS_DELTA_TIME_MASK	GENMASK(7, 0)
++ #define AT803X_LED_CONTROL			0x18
++ 
++-#define AT803X_DEVICE_ADDR			0x03
++ #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
++ #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
++ #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
++@@ -338,7 +337,8 @@ static int at803x_set_wol(struct phy_device *phydev,
++ 	const u8 *mac;
++ 	int ret;
++ 	u32 value;
++-	unsigned int i, offsets[] = {
+++	unsigned int i;
+++	const unsigned int offsets[] = {
++ 		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
++ 		AT803X_LOC_MAC_ADDR_16_31_OFFSET,
++ 		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
++@@ -354,7 +354,7 @@ static int at803x_set_wol(struct phy_device *phydev,
++ 			return -EINVAL;
++ 
++ 		for (i = 0; i < 3; i++)
++-			phy_write_mmd(phydev, AT803X_DEVICE_ADDR, offsets[i],
+++			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
++ 				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
++ 
++ 		value = phy_read(phydev, AT803X_INTR_ENABLE);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch b/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
+new file mode 100644
+index 0000000000..fbd7de0519
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
+@@ -0,0 +1,41 @@
++From e75ced0692768f577ef69a6896bd146a71816205 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:26 +0800
++Subject: [PATCH 766/778] net: phy: at803x: use phy_modify()
++
++Convert at803x_set_wol to use phy_modify.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 8 ++------
++ 1 file changed, 2 insertions(+), 6 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index d0f41cdaec75..cf25cd428ffa 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -357,16 +357,12 @@ static int at803x_set_wol(struct phy_device *phydev,
++ 			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
++ 				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
++ 
++-		value = phy_read(phydev, AT803X_INTR_ENABLE);
++-		value |= AT803X_INTR_ENABLE_WOL;
++-		ret = phy_write(phydev, AT803X_INTR_ENABLE, value);
+++		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
++ 		if (ret)
++ 			return ret;
++ 		value = phy_read(phydev, AT803X_INTR_STATUS);
++ 	} else {
++-		value = phy_read(phydev, AT803X_INTR_ENABLE);
++-		value &= (~AT803X_INTR_ENABLE_WOL);
++-		ret = phy_write(phydev, AT803X_INTR_ENABLE, value);
+++		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
++ 		if (ret)
++ 			return ret;
++ 		value = phy_read(phydev, AT803X_INTR_STATUS);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch b/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
+new file mode 100644
+index 0000000000..1109e0a81e
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
+@@ -0,0 +1,110 @@
++From e452594dba41f6ed48c36b919ad7a1ff809af0f6 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:27 +0800
++Subject: [PATCH 767/778] net: phy: at803x: improve the WOL feature
++
++The wol feature is controlled by the MMD3.8012 bit5,
++need to set this bit when the wol function is enabled.
++
++The reg18 bit0 is for enabling WOL interrupt, when wol
++occurs, the wol interrupt status reg19 bit0 is set to 1.
++
++Call phy_trigger_machine if there are any other interrupt
++pending in the function set_wol.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 45 +++++++++++++++++++++++++++++++++-------
++ 1 file changed, 38 insertions(+), 7 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index cf25cd428ffa..1363f12ba659 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -70,6 +70,8 @@
++ #define AT803X_CDT_STATUS_DELTA_TIME_MASK	GENMASK(7, 0)
++ #define AT803X_LED_CONTROL			0x18
++ 
+++#define AT803X_PHY_MMD3_WOL_CTRL		0x8012
+++#define AT803X_WOL_EN				BIT(5)
++ #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
++ #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
++ #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
++@@ -335,8 +337,7 @@ static int at803x_set_wol(struct phy_device *phydev,
++ {
++ 	struct net_device *ndev = phydev->attached_dev;
++ 	const u8 *mac;
++-	int ret;
++-	u32 value;
+++	int ret, irq_enabled;
++ 	unsigned int i;
++ 	const unsigned int offsets[] = {
++ 		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
++@@ -357,18 +358,45 @@ static int at803x_set_wol(struct phy_device *phydev,
++ 			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
++ 				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
++ 
+++		/* Enable WOL function */
+++		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+++				0, AT803X_WOL_EN);
+++		if (ret)
+++			return ret;
+++		/* Enable WOL interrupt */
++ 		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
++ 		if (ret)
++ 			return ret;
++-		value = phy_read(phydev, AT803X_INTR_STATUS);
++ 	} else {
+++		/* Disable WoL function */
+++		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL,
+++				AT803X_WOL_EN, 0);
+++		if (ret)
+++			return ret;
+++		/* Disable WOL interrupt */
++ 		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
++ 		if (ret)
++ 			return ret;
++-		value = phy_read(phydev, AT803X_INTR_STATUS);
++ 	}
++ 
++-	return ret;
+++	/* Clear WOL status */
+++	ret = phy_read(phydev, AT803X_INTR_STATUS);
+++	if (ret < 0)
+++		return ret;
+++
+++	/* Check if there are other interrupts except for WOL triggered when PHY is
+++	 * in interrupt mode, only the interrupts enabled by AT803X_INTR_ENABLE can
+++	 * be passed up to the interrupt PIN.
+++	 */
+++	irq_enabled = phy_read(phydev, AT803X_INTR_ENABLE);
+++	if (irq_enabled < 0)
+++		return irq_enabled;
+++
+++	irq_enabled &= ~AT803X_INTR_ENABLE_WOL;
+++	if (ret & irq_enabled && !phy_polling_mode(phydev))
+++		phy_trigger_machine(phydev);
+++
+++	return 0;
++ }
++ 
++ static void at803x_get_wol(struct phy_device *phydev,
++@@ -379,8 +407,11 @@ static void at803x_get_wol(struct phy_device *phydev,
++ 	wol->supported = WAKE_MAGIC;
++ 	wol->wolopts = 0;
++ 
++-	value = phy_read(phydev, AT803X_INTR_ENABLE);
++-	if (value & AT803X_INTR_ENABLE_WOL)
+++	value = phy_read_mmd(phydev, MDIO_MMD_PCS, AT803X_PHY_MMD3_WOL_CTRL);
+++	if (value < 0)
+++		return;
+++
+++	if (value & AT803X_WOL_EN)
++ 		wol->wolopts |= WAKE_MAGIC;
++ }
++ 
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch b/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
+new file mode 100644
+index 0000000000..534878a266
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
+@@ -0,0 +1,45 @@
++From 3a6119df06444516c2b06e52df29561cc7820578 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:28 +0800
++Subject: [PATCH 768/778] net: phy: at803x: use GENMASK() for speed status
++
++Use GENMASK() for the current speed value.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 10 +++++-----
++ 1 file changed, 5 insertions(+), 5 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 1363f12ba659..3465f2bb6356 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -33,10 +33,10 @@
++ #define AT803X_SFC_DISABLE_JABBER		BIT(0)
++ 
++ #define AT803X_SPECIFIC_STATUS			0x11
++-#define AT803X_SS_SPEED_MASK			(3 << 14)
++-#define AT803X_SS_SPEED_1000			(2 << 14)
++-#define AT803X_SS_SPEED_100			(1 << 14)
++-#define AT803X_SS_SPEED_10			(0 << 14)
+++#define AT803X_SS_SPEED_MASK			GENMASK(15, 14)
+++#define AT803X_SS_SPEED_1000			2
+++#define AT803X_SS_SPEED_100			1
+++#define AT803X_SS_SPEED_10			0
++ #define AT803X_SS_DUPLEX			BIT(13)
++ #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
++ #define AT803X_SS_MDIX				BIT(6)
++@@ -994,7 +994,7 @@ static int at803x_read_status(struct phy_device *phydev)
++ 		if (sfc < 0)
++ 			return sfc;
++ 
++-		switch (ss & AT803X_SS_SPEED_MASK) {
+++		switch (FIELD_GET(AT803X_SS_SPEED_MASK, ss)) {
++ 		case AT803X_SS_SPEED_10:
++ 			phydev->speed = SPEED_10;
++ 			break;
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch b/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
+new file mode 100644
+index 0000000000..48fbac610a
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
+@@ -0,0 +1,84 @@
++From fada2ce09308bc79e27876b8a89c7de38265f730 Mon Sep 17 00:00:00 2001
++From: David Bauer <mail@david-bauer.net>
++Date: Wed, 6 Oct 2021 00:54:01 +0200
++Subject: [PATCH] net: phy: at803x: add QCA9561 support
++
++Add support for the embedded fast-ethernet PHY found on the QCA9561
++WiSoC platform. It supports the usual Atheros PHY featureset including
++the cable tester.
++
++Tested on a Xiaomi MiRouter 4Q (QCA9561)
++
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David Bauer <mail@david-bauer.net>
++Link: https://lore.kernel.org/r/20211005225401.10653-1-mail@david-bauer.net
++Signed-off-by: Jakub Kicinski <kuba@kernel.org>
++---
++ drivers/net/phy/at803x.c | 23 +++++++++++++++++++++--
++ 1 file changed, 21 insertions(+), 2 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 3feee4d59030..ae7e1f1c59f0 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -153,6 +153,7 @@
++ #define QCA8327_A_PHY_ID			0x004dd033
++ #define QCA8327_B_PHY_ID			0x004dd034
++ #define QCA8337_PHY_ID				0x004dd036
+++#define QCA9561_PHY_ID				0x004dd042
++ #define QCA8K_PHY_ID_MASK			0xffffffff
++ 
++ #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
++@@ -1237,7 +1238,8 @@ static int at803x_cable_test_get_status(struct phy_device *phydev,
++ 	int pair, ret;
++ 
++ 	if (phydev->phy_id == ATH9331_PHY_ID ||
++-	    phydev->phy_id == ATH8032_PHY_ID)
+++	    phydev->phy_id == ATH8032_PHY_ID ||
+++	    phydev->phy_id == QCA9561_PHY_ID)
++ 		pair_mask = 0x3;
++ 	else
++ 		pair_mask = 0xf;
++@@ -1277,7 +1279,8 @@ static int at803x_cable_test_start(struct phy_device *phydev)
++ 	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
++ 	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
++ 	if (phydev->phy_id != ATH9331_PHY_ID &&
++-	    phydev->phy_id != ATH8032_PHY_ID)
+++	    phydev->phy_id != ATH8032_PHY_ID &&
+++	    phydev->phy_id != QCA9561_PHY_ID)
++ 		phy_write(phydev, MII_CTRL1000, 0);
++ 
++ 	/* we do all the (time consuming) work later */
++@@ -1408,6 +1411,21 @@ static struct phy_driver at803x_driver[] = {
++ 	.read_status		= at803x_read_status,
++ 	.soft_reset		= genphy_soft_reset,
++ 	.config_aneg		= at803x_config_aneg,
+++}, {
+++	/* Qualcomm Atheros QCA9561 */
+++	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+++	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
+++	.suspend		= at803x_suspend,
+++	.resume			= at803x_resume,
+++	.flags			= PHY_POLL_CABLE_TEST,
+++	/* PHY_BASIC_FEATURES */
+++	.config_intr		= &at803x_config_intr,
+++	.handle_interrupt	= at803x_handle_interrupt,
+++	.cable_test_start	= at803x_cable_test_start,
+++	.cable_test_get_status	= at803x_cable_test_get_status,
+++	.read_status		= at803x_read_status,
+++	.soft_reset		= genphy_soft_reset,
+++	.config_aneg		= at803x_config_aneg,
++ }, {
++ 	/* QCA8337 */
++ 	.phy_id			= QCA8337_PHY_ID,
++@@ -1466,6 +1484,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
++ 	{ PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
++ 	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
++ 	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
+++	{ PHY_ID_MATCH_EXACT(QCA9561_PHY_ID) },
++ 	{ }
++ };
++ 
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch b/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
+new file mode 100644
+index 0000000000..1aec1eae60
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
+@@ -0,0 +1,70 @@
++From b135eb71f8b23ebfa5a1970dbdfa7834853f38b6 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:29 +0800
++Subject: [PATCH 769/778] net: phy: add qca8081 ethernet phy driver
++
++qca8081 is a single port ethernet phy chip that supports
++10/100/1000/2500 Mbps mode.
++
++Add the basic phy driver features, and reuse the at803x
++phy driver functions.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 17 ++++++++++++++++-
++ 1 file changed, 16 insertions(+), 1 deletion(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 3465f2bb6356..aae27fe3e1e1 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -158,6 +158,8 @@
++ #define ATH8035_PHY_ID				0x004dd072
++ #define AT8030_PHY_ID_MASK			0xffffffef
++ 
+++#define QCA8081_PHY_ID				0x004dd101
+++
++ #define QCA8327_A_PHY_ID			0x004dd033
++ #define QCA8327_B_PHY_ID			0x004dd034
++ #define QCA8337_PHY_ID				0x004dd036
++@@ -173,7 +175,7 @@
++ #define AT803X_KEEP_PLL_ENABLED			BIT(0)
++ #define AT803X_DISABLE_SMARTEEE			BIT(1)
++ 
++-MODULE_DESCRIPTION("Qualcomm Atheros AR803x PHY driver");
+++MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
++ MODULE_AUTHOR("Matus Ujhelyi");
++ MODULE_LICENSE("GPL");
++ 
++@@ -1591,6 +1593,18 @@ static struct phy_driver at803x_driver[] = {
++ 	.get_stats		= at803x_get_stats,
++ 	.suspend		= qca83xx_suspend,
++ 	.resume			= qca83xx_resume,
+++}, {
+++	/* Qualcomm QCA8081 */
+++	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+++	.name			= "Qualcomm QCA8081",
+++	.config_intr		= at803x_config_intr,
+++	.handle_interrupt	= at803x_handle_interrupt,
+++	.get_tunable		= at803x_get_tunable,
+++	.set_tunable		= at803x_set_tunable,
+++	.set_wol		= at803x_set_wol,
+++	.get_wol		= at803x_get_wol,
+++	.suspend		= genphy_suspend,
+++	.resume			= genphy_resume,
++ }, };
++ 
++ module_phy_driver(at803x_driver);
++@@ -1605,6 +1619,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
++ 	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
++ 	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
++ 	{ PHY_ID_MATCH_EXACT(QCA9561_PHY_ID) },
+++	{ PHY_ID_MATCH_EXACT(QCA8081_PHY_ID) },
++ 	{ }
++ };
++ 
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch b/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
+new file mode 100644
+index 0000000000..3e7572b034
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
+@@ -0,0 +1,176 @@
++From c5d98553d5b7f44d79e0b90a3d6c3256c22df939 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:30 +0800
++Subject: [PATCH 770/778] net: phy: add qca8081 read_status
++
++1. Separate the function at803x_read_specific_status from
++the at803x_read_status, since it can be reused by the
++read_status of qca8081 phy driver excepting adding the
++2500M speed.
++
++2. Add the qca8081 read_status function qca808x_read_status.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 95 ++++++++++++++++++++++++++++++----------
++ 1 file changed, 73 insertions(+), 22 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index aae27fe3e1e1..cecf78e6c643 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -41,6 +41,9 @@
++ #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
++ #define AT803X_SS_MDIX				BIT(6)
++ 
+++#define QCA808X_SS_SPEED_MASK			GENMASK(9, 7)
+++#define QCA808X_SS_SPEED_2500			4
+++
++ #define AT803X_INTR_ENABLE			0x12
++ #define AT803X_INTR_ENABLE_AUTONEG_ERR		BIT(15)
++ #define AT803X_INTR_ENABLE_SPEED_CHANGED	BIT(14)
++@@ -959,27 +962,9 @@ static void at803x_link_change_notify(struct phy_device *phydev)
++ 	}
++ }
++ 
++-static int at803x_read_status(struct phy_device *phydev)
+++static int at803x_read_specific_status(struct phy_device *phydev)
++ {
++-	int ss, err, old_link = phydev->link;
++-
++-	/* Update the link, but return if there was an error */
++-	err = genphy_update_link(phydev);
++-	if (err)
++-		return err;
++-
++-	/* why bother the PHY if nothing can have changed */
++-	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
++-		return 0;
++-
++-	phydev->speed = SPEED_UNKNOWN;
++-	phydev->duplex = DUPLEX_UNKNOWN;
++-	phydev->pause = 0;
++-	phydev->asym_pause = 0;
++-
++-	err = genphy_read_lpa(phydev);
++-	if (err < 0)
++-		return err;
+++	int ss;
++ 
++ 	/* Read the AT8035 PHY-Specific Status register, which indicates the
++ 	 * speed and duplex that the PHY is actually using, irrespective of
++@@ -990,13 +975,19 @@ static int at803x_read_status(struct phy_device *phydev)
++ 		return ss;
++ 
++ 	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
++-		int sfc;
+++		int sfc, speed;
++ 
++ 		sfc = phy_read(phydev, AT803X_SPECIFIC_FUNCTION_CONTROL);
++ 		if (sfc < 0)
++ 			return sfc;
++ 
++-		switch (FIELD_GET(AT803X_SS_SPEED_MASK, ss)) {
+++		/* qca8081 takes the different bits for speed value from at803x */
+++		if (phydev->drv->phy_id == QCA8081_PHY_ID)
+++			speed = FIELD_GET(QCA808X_SS_SPEED_MASK, ss);
+++		else
+++			speed = FIELD_GET(AT803X_SS_SPEED_MASK, ss);
+++
+++		switch (speed) {
++ 		case AT803X_SS_SPEED_10:
++ 			phydev->speed = SPEED_10;
++ 			break;
++@@ -1006,6 +997,9 @@ static int at803x_read_status(struct phy_device *phydev)
++ 		case AT803X_SS_SPEED_1000:
++ 			phydev->speed = SPEED_1000;
++ 			break;
+++		case QCA808X_SS_SPEED_2500:
+++			phydev->speed = SPEED_2500;
+++			break;
++ 		}
++ 		if (ss & AT803X_SS_DUPLEX)
++ 			phydev->duplex = DUPLEX_FULL;
++@@ -1030,6 +1024,35 @@ static int at803x_read_status(struct phy_device *phydev)
++ 		}
++ 	}
++ 
+++	return 0;
+++}
+++
+++static int at803x_read_status(struct phy_device *phydev)
+++{
+++	int err, old_link = phydev->link;
+++
+++	/* Update the link, but return if there was an error */
+++	err = genphy_update_link(phydev);
+++	if (err)
+++		return err;
+++
+++	/* why bother the PHY if nothing can have changed */
+++	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
+++		return 0;
+++
+++	phydev->speed = SPEED_UNKNOWN;
+++	phydev->duplex = DUPLEX_UNKNOWN;
+++	phydev->pause = 0;
+++	phydev->asym_pause = 0;
+++
+++	err = genphy_read_lpa(phydev);
+++	if (err < 0)
+++		return err;
+++
+++	err = at803x_read_specific_status(phydev);
+++	if (err < 0)
+++		return err;
+++
++ 	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
++ 		phy_resolve_aneg_pause(phydev);
++ 
++@@ -1434,6 +1457,33 @@ static int qca83xx_suspend(struct phy_device *phydev)
++ 	return 0;
++ }
++ 
+++static int qca808x_read_status(struct phy_device *phydev)
+++{
+++	int ret;
+++
+++	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_STAT);
+++	if (ret < 0)
+++		return ret;
+++
+++	linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->lp_advertising,
+++			ret & MDIO_AN_10GBT_STAT_LP2_5G);
+++
+++	ret = genphy_read_status(phydev);
+++	if (ret)
+++		return ret;
+++
+++	ret = at803x_read_specific_status(phydev);
+++	if (ret < 0)
+++		return ret;
+++
+++	if (phydev->link && phydev->speed == SPEED_2500)
+++		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
+++	else
+++		phydev->interface = PHY_INTERFACE_MODE_SMII;
+++
+++	return 0;
+++}
+++
++ static struct phy_driver at803x_driver[] = {
++ {
++ 	/* Qualcomm Atheros AR8035 */
++@@ -1605,6 +1655,7 @@ static struct phy_driver at803x_driver[] = {
++ 	.get_wol		= at803x_get_wol,
++ 	.suspend		= genphy_suspend,
++ 	.resume			= genphy_resume,
+++	.read_status		= qca808x_read_status,
++ }, };
++ 
++ module_phy_driver(at803x_driver);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch b/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
+new file mode 100644
+index 0000000000..7cc6a79e7b
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
+@@ -0,0 +1,46 @@
++From 0850643b203fea4106aa063f235f708f6c18b809 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:31 +0800
++Subject: [PATCH 771/778] net: phy: add qca8081 get_features
++
++Reuse the at803x phy driver get_features excepting
++adding 2500M capability.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 10 ++++++++++
++ 1 file changed, 10 insertions(+)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index cecf78e6c643..c4b7ac03cd35 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -744,6 +744,15 @@ static int at803x_get_features(struct phy_device *phydev)
++ 	if (err)
++ 		return err;
++ 
+++	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
+++		err = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
+++		if (err < 0)
+++			return err;
+++
+++		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
+++				err & MDIO_PMA_NG_EXTABLE_2_5GBT);
+++	}
+++
++ 	if (phydev->drv->phy_id != ATH8031_PHY_ID)
++ 		return 0;
++ 
++@@ -1653,6 +1662,7 @@ static struct phy_driver at803x_driver[] = {
++ 	.set_tunable		= at803x_set_tunable,
++ 	.set_wol		= at803x_set_wol,
++ 	.get_wol		= at803x_get_wol,
+++	.get_features		= at803x_get_features,
++ 	.suspend		= genphy_suspend,
++ 	.resume			= genphy_resume,
++ 	.read_status		= qca808x_read_status,
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch b/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
+new file mode 100644
+index 0000000000..2b9b2edbf8
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
+@@ -0,0 +1,62 @@
++From eedbbcef4c38b9987afd5307cb4db43012aca6dc Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:32 +0800
++Subject: [PATCH 772/778] net: phy: add qca8081 config_aneg
++
++Reuse at803x phy driver config_aneg excepting
++adding 2500M auto-negotiation.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 26 +++++++++++++++++++++++++-
++ 1 file changed, 25 insertions(+), 1 deletion(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index c4b7ac03cd35..70c1025e8e5d 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -1109,7 +1109,30 @@ static int at803x_config_aneg(struct phy_device *phydev)
++ 			return ret;
++ 	}
++ 
++-	return genphy_config_aneg(phydev);
+++	/* Do not restart auto-negotiation by setting ret to 0 defautly,
+++	 * when calling __genphy_config_aneg later.
+++	 */
+++	ret = 0;
+++
+++	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
+++		int phy_ctrl = 0;
+++
+++		/* The reg MII_BMCR also needs to be configured for force mode, the
+++		 * genphy_config_aneg is also needed.
+++		 */
+++		if (phydev->autoneg == AUTONEG_DISABLE)
+++			genphy_c45_pma_setup_forced(phydev);
+++
+++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->advertising))
+++			phy_ctrl = MDIO_AN_10GBT_CTRL_ADV2_5G;
+++
+++		ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
+++				MDIO_AN_10GBT_CTRL_ADV2_5G, phy_ctrl);
+++		if (ret < 0)
+++			return ret;
+++	}
+++
+++	return __genphy_config_aneg(phydev, ret);
++ }
++ 
++ static int at803x_get_downshift(struct phy_device *phydev, u8 *d)
++@@ -1663,6 +1686,7 @@ static struct phy_driver at803x_driver[] = {
++ 	.set_wol		= at803x_set_wol,
++ 	.get_wol		= at803x_get_wol,
++ 	.get_features		= at803x_get_features,
+++	.config_aneg		= at803x_config_aneg,
++ 	.suspend		= genphy_suspend,
++ 	.resume			= genphy_resume,
++ 	.read_status		= qca808x_read_status,
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch b/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
+new file mode 100644
+index 0000000000..31c08efc85
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
+@@ -0,0 +1,67 @@
++From b49201b26348c478e7efe820d3b68bc87041d66e Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:33 +0800
++Subject: [PATCH 773/778] net: phy: add constants for fast retrain related
++ register
++
++Add the constants for 2.5G fast retrain capability
++in 10G AN control register, fast retrain status and
++control register and THP bypass register into mdio.h.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ include/uapi/linux/mdio.h | 9 +++++++++
++ 1 file changed, 9 insertions(+)
++
++diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
++index bdf77dffa5a4..c54e6eae5366 100644
++--- a/include/uapi/linux/mdio.h
+++++ b/include/uapi/linux/mdio.h
++@@ -53,12 +53,14 @@
++ #define MDIO_AN_EEE_LPABLE	61	/* EEE link partner ability */
++ #define MDIO_AN_EEE_ADV2	62	/* EEE advertisement 2 */
++ #define MDIO_AN_EEE_LPABLE2	63	/* EEE link partner ability 2 */
+++#define MDIO_AN_CTRL2		64	/* AN THP bypass request control */
++ 
++ /* Media-dependent registers. */
++ #define MDIO_PMA_10GBT_SWAPPOL	130	/* 10GBASE-T pair swap & polarity */
++ #define MDIO_PMA_10GBT_TXPWR	131	/* 10GBASE-T TX power control */
++ #define MDIO_PMA_10GBT_SNR	133	/* 10GBASE-T SNR margin, lane A.
++ 					 * Lanes B-D are numbered 134-136. */
+++#define MDIO_PMA_10GBR_FSRT_CSR	147	/* 10GBASE-R fast retrain status and control */
++ #define MDIO_PMA_10GBR_FECABLE	170	/* 10GBASE-R FEC ability */
++ #define MDIO_PCS_10GBX_STAT1	24	/* 10GBASE-X PCS status 1 */
++ #define MDIO_PCS_10GBRT_STAT1	32	/* 10GBASE-R/-T PCS status 1 */
++@@ -239,6 +241,9 @@
++ #define MDIO_PMA_10GBR_FECABLE_ABLE	0x0001	/* FEC ability */
++ #define MDIO_PMA_10GBR_FECABLE_ERRABLE	0x0002	/* FEC error indic. ability */
++ 
+++/* PMA 10GBASE-R Fast Retrain status and control register. */
+++#define MDIO_PMA_10GBR_FSRT_ENABLE	0x0001	/* Fast retrain enable */
+++
++ /* PCS 10GBASE-R/-T status register 1. */
++ #define MDIO_PCS_10GBRT_STAT1_BLKLK	0x0001	/* Block lock attained */
++ 
++@@ -247,6 +252,7 @@
++ #define MDIO_PCS_10GBRT_STAT2_BER	0x3f00
++ 
++ /* AN 10GBASE-T control register. */
+++#define MDIO_AN_10GBT_CTRL_ADVFSRT2_5G	0x0020	/* Advertise 2.5GBASE-T fast retrain */
++ #define MDIO_AN_10GBT_CTRL_ADV2_5G	0x0080	/* Advertise 2.5GBASE-T */
++ #define MDIO_AN_10GBT_CTRL_ADV5G	0x0100	/* Advertise 5GBASE-T */
++ #define MDIO_AN_10GBT_CTRL_ADV10G	0x1000	/* Advertise 10GBASE-T */
++@@ -289,6 +295,9 @@
++ #define MDIO_EEE_2_5GT		0x0001	/* 2.5GT EEE cap */
++ #define MDIO_EEE_5GT		0x0002	/* 5GT EEE cap */
++ 
+++/* AN MultiGBASE-T AN control 2 */
+++#define MDIO_AN_THP_BP2_5GT	0x0008	/* 2.5GT THP bypass request */
+++
++ /* 2.5G/5G Extended abilities register. */
++ #define MDIO_PMA_NG_EXTABLE_2_5GBT	0x0001	/* 2.5GBASET ability */
++ #define MDIO_PMA_NG_EXTABLE_5GBT	0x0002	/* 5GBASET ability */
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch b/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
+new file mode 100644
+index 0000000000..0cf37833f6
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
+@@ -0,0 +1,75 @@
++From 95a73ac1f54b2ad307c525e48757da22bb3e81e7 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:34 +0800
++Subject: [PATCH 774/778] net: phy: add genphy_c45_fast_retrain
++
++Add generic fast retrain auto-negotiation function for C45 PHYs.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/phy-c45.c | 34 ++++++++++++++++++++++++++++++++++
++ include/linux/phy.h       |  1 +
++ 2 files changed, 35 insertions(+)
++
++diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
++index c617dbcad6ea..b01180e1f578 100644
++--- a/drivers/net/phy/phy-c45.c
+++++ b/drivers/net/phy/phy-c45.c
++@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable)
++ }
++ EXPORT_SYMBOL_GPL(genphy_c45_loopback);
++ 
+++/**
+++ * genphy_c45_fast_retrain - configure fast retrain registers
+++ * @phydev: target phy_device struct
+++ *
+++ * Description: If fast-retrain is enabled, we configure PHY as
+++ *   advertising fast retrain capable and THP Bypass Request, then
+++ *   enable fast retrain. If it is not enabled, we configure fast
+++ *   retrain disabled.
+++ */
+++int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable)
+++{
+++	int ret;
+++
+++	if (!enable)
+++		return phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
+++				MDIO_PMA_10GBR_FSRT_ENABLE);
+++
+++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported)) {
+++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_10GBT_CTRL,
+++				MDIO_AN_10GBT_CTRL_ADVFSRT2_5G);
+++		if (ret)
+++			return ret;
+++
+++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_CTRL2,
+++				MDIO_AN_THP_BP2_5GT);
+++		if (ret)
+++			return ret;
+++	}
+++
+++	return phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FSRT_CSR,
+++			MDIO_PMA_10GBR_FSRT_ENABLE);
+++}
+++EXPORT_SYMBOL_GPL(genphy_c45_fast_retrain);
+++
++ struct phy_driver genphy_c45_driver = {
++ 	.phy_id         = 0xffffffff,
++ 	.phy_id_mask    = 0xffffffff,
++diff --git a/include/linux/phy.h b/include/linux/phy.h
++index 736e1d1a47c4..04e90423fa88 100644
++--- a/include/linux/phy.h
+++++ b/include/linux/phy.h
++@@ -1584,6 +1584,7 @@ int genphy_c45_config_aneg(struct phy_device *phydev);
++ int genphy_c45_loopback(struct phy_device *phydev, bool enable);
++ int genphy_c45_pma_resume(struct phy_device *phydev);
++ int genphy_c45_pma_suspend(struct phy_device *phydev);
+++int genphy_c45_fast_retrain(struct phy_device *phydev, bool enable);
++ 
++ /* Generic C45 PHY driver */
++ extern struct phy_driver genphy_c45_driver;
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch b/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
+new file mode 100644
+index 0000000000..9c27de67b3
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
+@@ -0,0 +1,152 @@
++From 6b81737634ba49859b6c042f1315f479cecb9b06 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:35 +0800
++Subject: [PATCH 775/778] net: phy: add qca8081 config_init
++
++Add the qca8081 phy driver config_init function, which includes:
++1. Enable fast restrain.
++2. Add 802.3az configurations.
++3. Initialize ADC threshold as 100mv.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 107 +++++++++++++++++++++++++++++++++++++++
++ 1 file changed, 107 insertions(+)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 70c1025e8e5d..da710523b7c4 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -178,6 +178,51 @@
++ #define AT803X_KEEP_PLL_ENABLED			BIT(0)
++ #define AT803X_DISABLE_SMARTEEE			BIT(1)
++ 
+++/* ADC threshold */
+++#define QCA808X_PHY_DEBUG_ADC_THRESHOLD		0x2c80
+++#define QCA808X_ADC_THRESHOLD_MASK		GENMASK(7, 0)
+++#define QCA808X_ADC_THRESHOLD_80MV		0
+++#define QCA808X_ADC_THRESHOLD_100MV		0xf0
+++#define QCA808X_ADC_THRESHOLD_200MV		0x0f
+++#define QCA808X_ADC_THRESHOLD_300MV		0xff
+++
+++/* CLD control */
+++#define QCA808X_PHY_MMD3_ADDR_CLD_CTRL7		0x8007
+++#define QCA808X_8023AZ_AFE_CTRL_MASK		GENMASK(8, 4)
+++#define QCA808X_8023AZ_AFE_EN			0x90
+++
+++/* AZ control */
+++#define QCA808X_PHY_MMD3_AZ_TRAINING_CTRL	0x8008
+++#define QCA808X_MMD3_AZ_TRAINING_VAL		0x1c32
+++
+++#define QCA808X_PHY_MMD1_MSE_THRESHOLD_20DB	0x8014
+++#define QCA808X_MSE_THRESHOLD_20DB_VALUE	0x529
+++
+++#define QCA808X_PHY_MMD1_MSE_THRESHOLD_17DB	0x800E
+++#define QCA808X_MSE_THRESHOLD_17DB_VALUE	0x341
+++
+++#define QCA808X_PHY_MMD1_MSE_THRESHOLD_27DB	0x801E
+++#define QCA808X_MSE_THRESHOLD_27DB_VALUE	0x419
+++
+++#define QCA808X_PHY_MMD1_MSE_THRESHOLD_28DB	0x8020
+++#define QCA808X_MSE_THRESHOLD_28DB_VALUE	0x341
+++
+++#define QCA808X_PHY_MMD7_TOP_OPTION1		0x901c
+++#define QCA808X_TOP_OPTION1_DATA		0x0
+++
+++#define QCA808X_PHY_MMD3_DEBUG_1		0xa100
+++#define QCA808X_MMD3_DEBUG_1_VALUE		0x9203
+++#define QCA808X_PHY_MMD3_DEBUG_2		0xa101
+++#define QCA808X_MMD3_DEBUG_2_VALUE		0x48ad
+++#define QCA808X_PHY_MMD3_DEBUG_3		0xa103
+++#define QCA808X_MMD3_DEBUG_3_VALUE		0x1698
+++#define QCA808X_PHY_MMD3_DEBUG_4		0xa105
+++#define QCA808X_MMD3_DEBUG_4_VALUE		0x8001
+++#define QCA808X_PHY_MMD3_DEBUG_5		0xa106
+++#define QCA808X_MMD3_DEBUG_5_VALUE		0x1111
+++#define QCA808X_PHY_MMD3_DEBUG_6		0xa011
+++#define QCA808X_MMD3_DEBUG_6_VALUE		0x5f85
+++
++ MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
++ MODULE_AUTHOR("Matus Ujhelyi");
++ MODULE_LICENSE("GPL");
++@@ -1489,6 +1534,67 @@ static int qca83xx_suspend(struct phy_device *phydev)
++ 	return 0;
++ }
++ 
+++static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
+++{
+++	int ret;
+++
+++	/* Enable fast retrain */
+++	ret = genphy_c45_fast_retrain(phydev, true);
+++	if (ret)
+++		return ret;
+++
+++	phy_write_mmd(phydev, MDIO_MMD_AN, QCA808X_PHY_MMD7_TOP_OPTION1,
+++			QCA808X_TOP_OPTION1_DATA);
+++	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, QCA808X_PHY_MMD1_MSE_THRESHOLD_20DB,
+++			QCA808X_MSE_THRESHOLD_20DB_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, QCA808X_PHY_MMD1_MSE_THRESHOLD_17DB,
+++			QCA808X_MSE_THRESHOLD_17DB_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, QCA808X_PHY_MMD1_MSE_THRESHOLD_27DB,
+++			QCA808X_MSE_THRESHOLD_27DB_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, QCA808X_PHY_MMD1_MSE_THRESHOLD_28DB,
+++			QCA808X_MSE_THRESHOLD_28DB_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_1,
+++			QCA808X_MMD3_DEBUG_1_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_4,
+++			QCA808X_MMD3_DEBUG_4_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_5,
+++			QCA808X_MMD3_DEBUG_5_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_3,
+++			QCA808X_MMD3_DEBUG_3_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_6,
+++			QCA808X_MMD3_DEBUG_6_VALUE);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_DEBUG_2,
+++			QCA808X_MMD3_DEBUG_2_VALUE);
+++
+++	return 0;
+++}
+++
+++static int qca808x_config_init(struct phy_device *phydev)
+++{
+++	int ret;
+++
+++	/* Active adc&vga on 802.3az for the link 1000M and 100M */
+++	ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, QCA808X_PHY_MMD3_ADDR_CLD_CTRL7,
+++			QCA808X_8023AZ_AFE_CTRL_MASK, QCA808X_8023AZ_AFE_EN);
+++	if (ret)
+++		return ret;
+++
+++	/* Adjust the threshold on 802.3az for the link 1000M */
+++	ret = phy_write_mmd(phydev, MDIO_MMD_PCS,
+++			QCA808X_PHY_MMD3_AZ_TRAINING_CTRL, QCA808X_MMD3_AZ_TRAINING_VAL);
+++	if (ret)
+++		return ret;
+++
+++	/* Config the fast retrain for the link 2500M */
+++	ret = qca808x_phy_fast_retrain_config(phydev);
+++	if (ret)
+++		return ret;
+++
+++	/* Configure adc threshold as 100mv for the link 10M */
+++	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
+++			QCA808X_ADC_THRESHOLD_MASK, QCA808X_ADC_THRESHOLD_100MV);
+++}
+++
++ static int qca808x_read_status(struct phy_device *phydev)
++ {
++ 	int ret;
++@@ -1690,6 +1796,7 @@ static struct phy_driver at803x_driver[] = {
++ 	.suspend		= genphy_suspend,
++ 	.resume			= genphy_resume,
++ 	.read_status		= qca808x_read_status,
+++	.config_init		= qca808x_config_init,
++ }, };
++ 
++ module_phy_driver(at803x_driver);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch b/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
+new file mode 100644
+index 0000000000..bf34b4bdfb
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
+@@ -0,0 +1,107 @@
++From 939ca53160bd3eb1044447099981f2de15347b24 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:36 +0800
++Subject: [PATCH 776/778] net: phy: add qca8081 soft_reset and enable
++ master/slave seed
++
++qca8081 phy is a single port phy, configure
++phy the lower seed value to make it linked as slave
++mode easier.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 48 ++++++++++++++++++++++++++++++++++++++++
++ 1 file changed, 48 insertions(+)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index da710523b7c4..1418db4f2091 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -223,6 +223,12 @@
++ #define QCA808X_PHY_MMD3_DEBUG_6		0xa011
++ #define QCA808X_MMD3_DEBUG_6_VALUE		0x5f85
++ 
+++/* master/slave seed config */
+++#define QCA808X_PHY_DEBUG_LOCAL_SEED		9
+++#define QCA808X_MASTER_SLAVE_SEED_ENABLE	BIT(1)
+++#define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
+++#define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
+++
++ MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
++ MODULE_AUTHOR("Matus Ujhelyi");
++ MODULE_LICENSE("GPL");
++@@ -1569,6 +1575,26 @@ static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
++ 	return 0;
++ }
++ 
+++static int qca808x_phy_ms_random_seed_set(struct phy_device *phydev)
+++{
+++	u16 seed_value = (prandom_u32() % QCA808X_MASTER_SLAVE_SEED_RANGE);
+++
+++	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
+++			QCA808X_MASTER_SLAVE_SEED_CFG,
+++			FIELD_PREP(QCA808X_MASTER_SLAVE_SEED_CFG, seed_value));
+++}
+++
+++static int qca808x_phy_ms_seed_enable(struct phy_device *phydev, bool enable)
+++{
+++	u16 seed_enable = 0;
+++
+++	if (enable)
+++		seed_enable = QCA808X_MASTER_SLAVE_SEED_ENABLE;
+++
+++	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
+++			QCA808X_MASTER_SLAVE_SEED_ENABLE, seed_enable);
+++}
+++
++ static int qca808x_config_init(struct phy_device *phydev)
++ {
++ 	int ret;
++@@ -1590,6 +1616,16 @@ static int qca808x_config_init(struct phy_device *phydev)
++ 	if (ret)
++ 		return ret;
++ 
+++	/* Configure lower ramdom seed to make phy linked as slave mode */
+++	ret = qca808x_phy_ms_random_seed_set(phydev);
+++	if (ret)
+++		return ret;
+++
+++	/* Enable seed */
+++	ret = qca808x_phy_ms_seed_enable(phydev, true);
+++	if (ret)
+++		return ret;
+++
++ 	/* Configure adc threshold as 100mv for the link 10M */
++ 	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
++ 			QCA808X_ADC_THRESHOLD_MASK, QCA808X_ADC_THRESHOLD_100MV);
++@@ -1622,6 +1658,17 @@ static int qca808x_read_status(struct phy_device *phydev)
++ 	return 0;
++ }
++ 
+++static int qca808x_soft_reset(struct phy_device *phydev)
+++{
+++	int ret;
+++
+++	ret = genphy_soft_reset(phydev);
+++	if (ret < 0)
+++		return ret;
+++
+++	return qca808x_phy_ms_seed_enable(phydev, true);
+++}
+++
++ static struct phy_driver at803x_driver[] = {
++ {
++ 	/* Qualcomm Atheros AR8035 */
++@@ -1797,6 +1844,7 @@ static struct phy_driver at803x_driver[] = {
++ 	.resume			= genphy_resume,
++ 	.read_status		= qca808x_read_status,
++ 	.config_init		= qca808x_config_init,
+++	.soft_reset		= qca808x_soft_reset,
++ }, };
++ 
++ module_phy_driver(at803x_driver);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch b/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
+new file mode 100644
+index 0000000000..1f614e99a4
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
+@@ -0,0 +1,51 @@
++From 2413dabe7f4a55ccf5876daeec8f7be5b651f1ab Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:37 +0800
++Subject: [PATCH 777/778] net: phy: adjust qca8081 master/slave seed value if
++ link down
++
++1. The master/slave seed needs to be updated when the link can't
++be created.
++
++2. The case where two qca8081 PHYs are connected each other and
++master/slave seed is generated as the same value also needs
++to be considered, so adding this code change into read_status
++instead of link_change_notify.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 16 ++++++++++++++++
++ 1 file changed, 16 insertions(+)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 1418db4f2091..00733badcda5 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -1655,6 +1655,22 @@ static int qca808x_read_status(struct phy_device *phydev)
++ 	else
++ 		phydev->interface = PHY_INTERFACE_MODE_SMII;
++ 
+++	/* generate seed as a lower random value to make PHY linked as SLAVE easily,
+++	 * except for master/slave configuration fault detected.
+++	 * the reason for not putting this code into the function link_change_notify is
+++	 * the corner case where the link partner is also the qca8081 PHY and the seed
+++	 * value is configured as the same value, the link can't be up and no link change
+++	 * occurs.
+++	 */
+++	if (!phydev->link) {
+++		if (phydev->master_slave_state == MASTER_SLAVE_STATE_ERR) {
+++			qca808x_phy_ms_seed_enable(phydev, false);
+++		} else {
+++			qca808x_phy_ms_random_seed_set(phydev);
+++			qca808x_phy_ms_seed_enable(phydev, true);
+++		}
+++	}
+++
++ 	return 0;
++ }
++ 
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch b/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
+new file mode 100644
+index 0000000000..d49fb2f566
+--- /dev/null
++++ b/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
+@@ -0,0 +1,264 @@
++From c8f6335ebcb32c29abbde0e6849b48be04c0fe13 Mon Sep 17 00:00:00 2001
++From: Luo Jie <luoj@codeaurora.org>
++Date: Sun, 24 Oct 2021 16:27:38 +0800
++Subject: [PATCH 778/778] net: phy: add qca8081 cdt feature
++
++To perform CDT of qca8081 phy:
++1. disable hibernation.
++2. force phy working in MDI mode.
++3. force phy working in 1000BASE-T mode.
++4. configure the related thresholds.
++
++Signed-off-by: Luo Jie <luoj@codeaurora.org>
++Reviewed-by: Andrew Lunn <andrew@lunn.ch>
++Signed-off-by: David S. Miller <davem@davemloft.net>
++---
++ drivers/net/phy/at803x.c | 194 ++++++++++++++++++++++++++++++++++++++-
++ 1 file changed, 191 insertions(+), 3 deletions(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 00733badcda5..f1cbe1f6ddec 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -229,6 +229,32 @@
++ #define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
++ #define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
++ 
+++/* Hibernation yields lower power consumpiton in contrast with normal operation mode.
+++ * when the copper cable is unplugged, the PHY enters into hibernation mode in about 10s.
+++ */
+++#define QCA808X_DBG_AN_TEST			0xb
+++#define QCA808X_HIBERNATION_EN			BIT(15)
+++
+++#define QCA808X_CDT_ENABLE_TEST			BIT(15)
+++#define QCA808X_CDT_INTER_CHECK_DIS		BIT(13)
+++#define QCA808X_CDT_LENGTH_UNIT			BIT(10)
+++
+++#define QCA808X_MMD3_CDT_STATUS			0x8064
+++#define QCA808X_MMD3_CDT_DIAG_PAIR_A		0x8065
+++#define QCA808X_MMD3_CDT_DIAG_PAIR_B		0x8066
+++#define QCA808X_MMD3_CDT_DIAG_PAIR_C		0x8067
+++#define QCA808X_MMD3_CDT_DIAG_PAIR_D		0x8068
+++#define QCA808X_CDT_DIAG_LENGTH			GENMASK(7, 0)
+++
+++#define QCA808X_CDT_CODE_PAIR_A			GENMASK(15, 12)
+++#define QCA808X_CDT_CODE_PAIR_B			GENMASK(11, 8)
+++#define QCA808X_CDT_CODE_PAIR_C			GENMASK(7, 4)
+++#define QCA808X_CDT_CODE_PAIR_D			GENMASK(3, 0)
+++#define QCA808X_CDT_STATUS_STAT_FAIL		0
+++#define QCA808X_CDT_STATUS_STAT_NORMAL		1
+++#define QCA808X_CDT_STATUS_STAT_OPEN		2
+++#define QCA808X_CDT_STATUS_STAT_SHORT		3
+++
++ MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
++ MODULE_AUTHOR("Matus Ujhelyi");
++ MODULE_LICENSE("GPL");
++@@ -1319,8 +1345,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
++ {
++ 	u16 cdt;
++ 
++-	cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
++-	      AT803X_CDT_ENABLE_TEST;
+++	/* qca8081 takes the different bit 15 to enable CDT test */
+++	if (phydev->drv->phy_id == QCA8081_PHY_ID)
+++		cdt = QCA808X_CDT_ENABLE_TEST |
+++			QCA808X_CDT_LENGTH_UNIT |
+++			QCA808X_CDT_INTER_CHECK_DIS;
+++	else
+++		cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
+++			AT803X_CDT_ENABLE_TEST;
++ 
++ 	return phy_write(phydev, AT803X_CDT, cdt);
++ }
++@@ -1328,10 +1360,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
++ static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
++ {
++ 	int val, ret;
+++	u16 cdt_en;
+++
+++	if (phydev->drv->phy_id == QCA8081_PHY_ID)
+++		cdt_en = QCA808X_CDT_ENABLE_TEST;
+++	else
+++		cdt_en = AT803X_CDT_ENABLE_TEST;
++ 
++ 	/* One test run takes about 25ms */
++ 	ret = phy_read_poll_timeout(phydev, AT803X_CDT, val,
++-				    !(val & AT803X_CDT_ENABLE_TEST),
+++				    !(val & cdt_en),
++ 				    30000, 100000, true);
++ 
++ 	return ret < 0 ? ret : 0;
++@@ -1685,6 +1723,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
++ 	return qca808x_phy_ms_seed_enable(phydev, true);
++ }
++ 
+++static bool qca808x_cdt_fault_length_valid(int cdt_code)
+++{
+++	switch (cdt_code) {
+++	case QCA808X_CDT_STATUS_STAT_SHORT:
+++	case QCA808X_CDT_STATUS_STAT_OPEN:
+++		return true;
+++	default:
+++		return false;
+++	}
+++}
+++
+++static int qca808x_cable_test_result_trans(int cdt_code)
+++{
+++	switch (cdt_code) {
+++	case QCA808X_CDT_STATUS_STAT_NORMAL:
+++		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
+++	case QCA808X_CDT_STATUS_STAT_SHORT:
+++		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
+++	case QCA808X_CDT_STATUS_STAT_OPEN:
+++		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
+++	case QCA808X_CDT_STATUS_STAT_FAIL:
+++	default:
+++		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
+++	}
+++}
+++
+++static int qca808x_cdt_fault_length(struct phy_device *phydev, int pair)
+++{
+++	int val;
+++	u32 cdt_length_reg = 0;
+++
+++	switch (pair) {
+++	case ETHTOOL_A_CABLE_PAIR_A:
+++		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_A;
+++		break;
+++	case ETHTOOL_A_CABLE_PAIR_B:
+++		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_B;
+++		break;
+++	case ETHTOOL_A_CABLE_PAIR_C:
+++		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_C;
+++		break;
+++	case ETHTOOL_A_CABLE_PAIR_D:
+++		cdt_length_reg = QCA808X_MMD3_CDT_DIAG_PAIR_D;
+++		break;
+++	default:
+++		return -EINVAL;
+++	}
+++
+++	val = phy_read_mmd(phydev, MDIO_MMD_PCS, cdt_length_reg);
+++	if (val < 0)
+++		return val;
+++
+++	return (FIELD_GET(QCA808X_CDT_DIAG_LENGTH, val) * 824) / 10;
+++}
+++
+++static int qca808x_cable_test_start(struct phy_device *phydev)
+++{
+++	int ret;
+++
+++	/* perform CDT with the following configs:
+++	 * 1. disable hibernation.
+++	 * 2. force PHY working in MDI mode.
+++	 * 3. for PHY working in 1000BaseT.
+++	 * 4. configure the threshold.
+++	 */
+++
+++	ret = at803x_debug_reg_mask(phydev, QCA808X_DBG_AN_TEST, QCA808X_HIBERNATION_EN, 0);
+++	if (ret < 0)
+++		return ret;
+++
+++	ret = at803x_config_mdix(phydev, ETH_TP_MDI);
+++	if (ret < 0)
+++		return ret;
+++
+++	/* Force 1000base-T needs to configure PMA/PMD and MII_BMCR */
+++	phydev->duplex = DUPLEX_FULL;
+++	phydev->speed = SPEED_1000;
+++	ret = genphy_c45_pma_setup_forced(phydev);
+++	if (ret < 0)
+++		return ret;
+++
+++	ret = genphy_setup_forced(phydev);
+++	if (ret < 0)
+++		return ret;
+++
+++	/* configure the thresholds for open, short, pair ok test */
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8074, 0xc040);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8076, 0xc040);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8077, 0xa060);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x8078, 0xc050);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807a, 0xc060);
+++	phy_write_mmd(phydev, MDIO_MMD_PCS, 0x807e, 0xb060);
+++
+++	return 0;
+++}
+++
+++static int qca808x_cable_test_get_status(struct phy_device *phydev, bool *finished)
+++{
+++	int ret, val;
+++	int pair_a, pair_b, pair_c, pair_d;
+++
+++	*finished = false;
+++
+++	ret = at803x_cdt_start(phydev, 0);
+++	if (ret)
+++		return ret;
+++
+++	ret = at803x_cdt_wait_for_completion(phydev);
+++	if (ret)
+++		return ret;
+++
+++	val = phy_read_mmd(phydev, MDIO_MMD_PCS, QCA808X_MMD3_CDT_STATUS);
+++	if (val < 0)
+++		return val;
+++
+++	pair_a = FIELD_GET(QCA808X_CDT_CODE_PAIR_A, val);
+++	pair_b = FIELD_GET(QCA808X_CDT_CODE_PAIR_B, val);
+++	pair_c = FIELD_GET(QCA808X_CDT_CODE_PAIR_C, val);
+++	pair_d = FIELD_GET(QCA808X_CDT_CODE_PAIR_D, val);
+++
+++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A,
+++				qca808x_cable_test_result_trans(pair_a));
+++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_B,
+++				qca808x_cable_test_result_trans(pair_b));
+++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_C,
+++				qca808x_cable_test_result_trans(pair_c));
+++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_D,
+++				qca808x_cable_test_result_trans(pair_d));
+++
+++	if (qca808x_cdt_fault_length_valid(pair_a))
+++		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A,
+++				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_A));
+++	if (qca808x_cdt_fault_length_valid(pair_b))
+++		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B,
+++				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_B));
+++	if (qca808x_cdt_fault_length_valid(pair_c))
+++		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C,
+++				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_C));
+++	if (qca808x_cdt_fault_length_valid(pair_d))
+++		ethnl_cable_test_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D,
+++				qca808x_cdt_fault_length(phydev, ETHTOOL_A_CABLE_PAIR_D));
+++
+++	*finished = true;
+++
+++	return 0;
+++}
+++
++ static struct phy_driver at803x_driver[] = {
++ {
++ 	/* Qualcomm Atheros AR8035 */
++@@ -1848,6 +2033,7 @@ static struct phy_driver at803x_driver[] = {
++ 	/* Qualcomm QCA8081 */
++ 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
++ 	.name			= "Qualcomm QCA8081",
+++	.flags			= PHY_POLL_CABLE_TEST,
++ 	.config_intr		= at803x_config_intr,
++ 	.handle_interrupt	= at803x_handle_interrupt,
++ 	.get_tunable		= at803x_get_tunable,
++@@ -1861,6 +2047,8 @@ static struct phy_driver at803x_driver[] = {
++ 	.read_status		= qca808x_read_status,
++ 	.config_init		= qca808x_config_init,
++ 	.soft_reset		= qca808x_soft_reset,
+++	.cable_test_start	= qca808x_cable_test_start,
+++	.cable_test_get_status	= qca808x_cable_test_get_status,
++ }, };
++ 
++ module_phy_driver(at803x_driver);
++-- 
++2.34.1
++
+diff --git a/target/linux/generic/pending-5.15/790-net-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch b/target/linux/generic/pending-5.15/790-net-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
+new file mode 100644
+index 0000000000..2bec96d306
+--- /dev/null
++++ b/target/linux/generic/pending-5.15/790-net-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
+@@ -0,0 +1,84 @@
++From patchwork Sun Jan 30 10:25:28 2022
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Jonathan McDowell <noodles@earth.li>
++X-Patchwork-Id: 12729797
++X-Patchwork-Delegate: kuba@kernel.org
++Return-Path: <netdev-owner@kernel.org>
++X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
++	aws-us-west-2-korg-lkml-1.web.codeaurora.org
++Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
++	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD5EC433EF
++	for <netdev@archiver.kernel.org>; Sun, 30 Jan 2022 10:55:25 +0000 (UTC)
++Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
++        id S240477AbiA3KzX (ORCPT <rfc822;netdev@archiver.kernel.org>);
++        Sun, 30 Jan 2022 05:55:23 -0500
++Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
++        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
++        with ESMTP id S239076AbiA3KzV (ORCPT
++        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jan 2022 05:55:21 -0500
++X-Greylist: delayed 1780 seconds by postgrey-1.37 at
++ lindbergh.monkeyblade.net; Sun, 30 Jan 2022 02:55:21 PST
++Received: from the.earth.li (the.earth.li
++ [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
++        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAD9C061714;
++        Sun, 30 Jan 2022 02:55:21 -0800 (PST)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
++        s=the;
++ h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender:
++        Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date
++        :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
++        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
++        List-Owner:List-Archive;
++ bh=zynwQsXAChbzANQqprwMGE7qGv9t50Oo07QICLYU9a0=; b=Z
++        K8tRPtlmUhokQQlgSXpHDLec4xjYjkTQl6oFZ1GPCWgQy2YyrGnhNmtUr8GG4q3NR0jhiKh9A2y61
++        pfq1eOPalgLqQ47fxD6JmCK8r/Sb6cXRKYN3OZ8NiEC9yhT8uxEqYe1tTUJL6RVfepb6+yFT5sp2Y
++        Osx4iy/QAibB+/8I6lhU5Tb35eztlYgE+/Mky3gIAhyM5kvHjcj4/S6i6Sw2UW27P3tuvH0JetOT6
++        OFx58fSC5azHX6pNGqx+Na+tHVtfBMkIiOpdumXyswfZDNqGvg6eXTMPsSZUJ269N1dkqPLBB7Mwz
++        jtBcyMpAaEbN7MJWuh2h0DMYmTymlFFrg==;
++Received: from noodles by the.earth.li with local (Exim 4.94.2)
++        (envelope-from <noodles@earth.li>)
++        id 1nE7Oi-00A0XI-KA; Sun, 30 Jan 2022 10:25:28 +0000
++Date: Sun, 30 Jan 2022 10:25:28 +0000
++From: Jonathan McDowell <noodles@earth.li>
++To: Andrew Lunn <andrew@lunn.ch>,
++        Heiner Kallweit <hkallweit1@gmail.com>,
++        Russell King <linux@armlinux.org.uk>,
++        David Miller <davem@davemloft.net>,
++        Jakub Kicinski <kuba@kernel.org>, Luo Jie <luoj@codeaurora.org>
++Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
++        Robert Marko <robimarko@gmail.com>
++Subject: [PATCH net] net: phy: Fix qca8081 with speeds lower than 2.5Gb/s
++Message-ID: <YfZnmMteVry/A1XR@earth.li>
++MIME-Version: 1.0
++Content-Disposition: inline
++Precedence: bulk
++List-ID: <netdev.vger.kernel.org>
++X-Mailing-List: netdev@vger.kernel.org
++X-Patchwork-Delegate: kuba@kernel.org
++
++A typo in qca808x_read_status means we try to set SMII mode on the port
++rather than SGMII when the link speed is not 2.5Gb/s. This results in no
++traffic due to the mismatch in configuration between the phy and the
++mac.
++
++Fixes: 79c7bc0521545 ("net: phy: add qca8081 read_status")
++Signed-off-by: Jonathan McDowell <noodles@earth.li>
++---
++ drivers/net/phy/at803x.c | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 5b6c0d120e09..7077e3a92d31 100644
++--- a/drivers/net/phy/at803x.c
+++++ b/drivers/net/phy/at803x.c
++@@ -1691,7 +1691,7 @@ static int qca808x_read_status(struct phy_device *phydev)
++ 	if (phydev->link && phydev->speed == SPEED_2500)
++ 		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
++ 	else
++-		phydev->interface = PHY_INTERFACE_MODE_SMII;
+++		phydev->interface = PHY_INTERFACE_MODE_SGMII;
++ 
++ 	/* generate seed as a lower random value to make PHY linked as SLAVE easily,
++ 	 * except for master/slave configuration fault detected.
+-- 
+2.42.1
+

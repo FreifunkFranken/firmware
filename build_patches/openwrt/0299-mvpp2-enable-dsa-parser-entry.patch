@@ -1,0 +1,41 @@
+From 4540ecce14d98e8c06a9bff6307bfaaf4074f99e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 18 Nov 2023 23:30:43 +0100
+Subject: [PATCH] mvpp2: enable dsa parser entry
+
+---
+ .../999-mvpp2-enable-dsa-parser-entry.patch   | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
+
+diff --git a/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch b/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
+new file mode 100644
+index 0000000000..fe5c2657d9
+--- /dev/null
++++ b/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
+@@ -0,0 +1,22 @@
++--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++@@ -4757,7 +4757,7 @@ static int mvpp2_open(struct net_device
++ 		netdev_err(dev, "mvpp2_prs_mac_da_accept own addr failed\n");
++ 		return err;
++ 	}
++-	err = mvpp2_prs_tag_mode_set(port->priv, port->id, MVPP2_TAG_TYPE_MH);
+++	err = mvpp2_prs_tag_mode_set(port->priv, port->id, MVPP2_TAG_TYPE_DSA);
++ 	if (err) {
++ 		netdev_err(dev, "mvpp2_prs_tag_mode_set failed\n");
++ 		return err;
++--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
++@@ -1260,7 +1260,7 @@ static void mvpp2_prs_dsa_init(struct mv
++ 
++ 	/* Shift 0 bytes */
++ 	mvpp2_prs_sram_shift_set(&pe, 0, MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
++-	mvpp2_prs_shadow_set(priv, pe.index, MVPP2_PRS_LU_MAC);
+++	mvpp2_prs_shadow_set(priv, pe.index, MVPP2_PRS_LU_DSA);
++ 
++ 	/* Clear all sram ai bits for next iteration */
++ 	mvpp2_prs_sram_ai_update(&pe, 0, MVPP2_PRS_SRAM_AI_MASK);
+-- 
+2.42.1
+

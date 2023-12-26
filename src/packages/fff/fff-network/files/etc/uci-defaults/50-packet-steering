@@ -1,6 +1,11 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Skip devices which are capable of RSS
+if [ $(uci get board.model.name) = "mikrotik,rb5009" ]; then
+	exit 0
+fi
+
 # Enable RPS
 uci batch <<-__EOF__
 	set network.globals=globals

@@ -1,0 +1,890 @@
+From 68fc4f780968f0f76bc6eebda329b525542ccd5e Mon Sep 17 00:00:00 2001
+From: Stijn Segers <foss@volatilesystems.org>
+Date: Sat, 26 Aug 2023 12:35:10 +0200
+Subject: [PATCH 18/18] kernel: 5.15: refresh RB5009UG patches
+
+Signed-off-by: Stijn Segers <foss@volatilesystems.org>
+---
+ ...eplace-AT803X_DEVICE_ADDR-with-MDIO_.patch |  9 ++------
+ ...-v5.16-net-phy-at803x-use-phy_modify.patch |  7 +------
+ ...t-phy-at803x-improve-the-WOL-feature.patch | 11 +++-------
+ ...-at803x-use-GENMASK-for-speed-status.patch |  7 +------
+ ...6-net-phy-at803x-add-QCA9561-support.patch | 21 +++++++------------
+ ...-phy-add-qca8081-ethernet-phy-driver.patch |  9 ++------
+ ...5.16-net-phy-add-qca8081-read_status.patch | 17 ++++++---------
+ ....16-net-phy-add-qca8081-get_features.patch |  9 ++------
+ ...5.16-net-phy-add-qca8081-config_aneg.patch |  9 ++------
+ ...tants-for-fast-retrain-related-regis.patch |  5 -----
+ ...-net-phy-add-genphy_c45_fast_retrain.patch | 11 ++--------
+ ...5.16-net-phy-add-qca8081-config_init.patch |  9 ++------
+ ...081-soft_reset-and-enable-master-sla.patch | 13 ++++--------
+ ...ca8081-master-slave-seed-value-if-li.patch |  7 +------
+ ...5.16-net-phy-add-qca8081-cdt-feature.patch | 15 +++++--------
+ ...a8081-with-speeds-lower-than-2.5Gb-s.patch |  4 +---
+ ...-01-net-phy-at803x-add-fiber-support.patch | 20 ++++++++----------
+ ...y-at803x-support-downstream-SFP-cage.patch |  4 ++--
+ ...LL-pointer-dereference-on-AR9331-PHY.patch |  8 +++----
+ ...ix-error-return-code-in-at803x_probe.patch |  2 +-
+ ...x-add-Amethyst-specific-SMI-GPIO-fun.patch | 15 +++----------
+ 21 files changed, 60 insertions(+), 152 deletions(-)
+
+diff --git a/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch b/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
+index 2b0b24e62c..5678f064bd 100644
+--- a/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
++++ b/target/linux/generic/backport-5.15/765-v5.16-net-phy-at803x-replace-AT803X_DEVICE_ADDR-with-MDIO_.patch
+@@ -14,8 +14,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 6 +++---
+  1 file changed, 3 insertions(+), 3 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 69da011e82c8..d0f41cdaec75 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -70,7 +70,6 @@
+@@ -26,7 +24,7 @@ index 69da011e82c8..d0f41cdaec75 100644
+  #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
+  #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
+  #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
+-@@ -338,7 +337,8 @@ static int at803x_set_wol(struct phy_device *phydev,
++@@ -337,7 +336,8 @@ static int at803x_set_wol(struct phy_dev
+  	const u8 *mac;
+  	int ret;
+  	u32 value;
+@@ -36,7 +34,7 @@ index 69da011e82c8..d0f41cdaec75 100644
+  		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
+  		AT803X_LOC_MAC_ADDR_16_31_OFFSET,
+  		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
+-@@ -354,7 +354,7 @@ static int at803x_set_wol(struct phy_device *phydev,
++@@ -353,7 +353,7 @@ static int at803x_set_wol(struct phy_dev
+  			return -EINVAL;
+  
+  		for (i = 0; i < 3; i++)
+@@ -45,6 +43,3 @@ index 69da011e82c8..d0f41cdaec75 100644
+  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+  
+  		value = phy_read(phydev, AT803X_INTR_ENABLE);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch b/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
+index fbd7de0519..be1befa69d 100644
+--- a/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
++++ b/target/linux/generic/backport-5.15/766-v5.16-net-phy-at803x-use-phy_modify.patch
+@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 8 ++------
+  1 file changed, 2 insertions(+), 6 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index d0f41cdaec75..cf25cd428ffa 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -357,16 +357,12 @@ static int at803x_set_wol(struct phy_device *phydev,
++@@ -356,16 +356,12 @@ static int at803x_set_wol(struct phy_dev
+  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
+  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+  
+@@ -36,6 +34,3 @@ index d0f41cdaec75..cf25cd428ffa 100644
+  		if (ret)
+  			return ret;
+  		value = phy_read(phydev, AT803X_INTR_STATUS);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch b/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
+index 1109e0a81e..e6edf2ce21 100644
+--- a/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
++++ b/target/linux/generic/backport-5.15/767-v5.16-net-phy-at803x-improve-the-WOL-feature.patch
+@@ -19,8 +19,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 45 +++++++++++++++++++++++++++++++++-------
+  1 file changed, 38 insertions(+), 7 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index cf25cd428ffa..1363f12ba659 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -70,6 +70,8 @@
+@@ -32,7 +30,7 @@ index cf25cd428ffa..1363f12ba659 100644
+  #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
+  #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
+  #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
+-@@ -335,8 +337,7 @@ static int at803x_set_wol(struct phy_device *phydev,
++@@ -334,8 +336,7 @@ static int at803x_set_wol(struct phy_dev
+  {
+  	struct net_device *ndev = phydev->attached_dev;
+  	const u8 *mac;
+@@ -42,7 +40,7 @@ index cf25cd428ffa..1363f12ba659 100644
+  	unsigned int i;
+  	const unsigned int offsets[] = {
+  		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
+-@@ -357,18 +358,45 @@ static int at803x_set_wol(struct phy_device *phydev,
++@@ -356,18 +357,45 @@ static int at803x_set_wol(struct phy_dev
+  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
+  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+  
+@@ -91,7 +89,7 @@ index cf25cd428ffa..1363f12ba659 100644
+  }
+  
+  static void at803x_get_wol(struct phy_device *phydev,
+-@@ -379,8 +407,11 @@ static void at803x_get_wol(struct phy_device *phydev,
++@@ -378,8 +406,11 @@ static void at803x_get_wol(struct phy_de
+  	wol->supported = WAKE_MAGIC;
+  	wol->wolopts = 0;
+  
+@@ -105,6 +103,3 @@ index cf25cd428ffa..1363f12ba659 100644
+  		wol->wolopts |= WAKE_MAGIC;
+  }
+  
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch b/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
+index 534878a266..f8420c8d1f 100644
+--- a/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
++++ b/target/linux/generic/backport-5.15/768-v5.16-net-phy-at803x-use-GENMASK-for-speed-status.patch
+@@ -12,8 +12,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 10 +++++-----
+  1 file changed, 5 insertions(+), 5 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 1363f12ba659..3465f2bb6356 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -33,10 +33,10 @@
+@@ -31,7 +29,7 @@ index 1363f12ba659..3465f2bb6356 100644
+  #define AT803X_SS_DUPLEX			BIT(13)
+  #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
+  #define AT803X_SS_MDIX				BIT(6)
+-@@ -994,7 +994,7 @@ static int at803x_read_status(struct phy_device *phydev)
++@@ -985,7 +985,7 @@ static int at803x_read_status(struct phy
+  		if (sfc < 0)
+  			return sfc;
+  
+@@ -40,6 +38,3 @@ index 1363f12ba659..3465f2bb6356 100644
+  		case AT803X_SS_SPEED_10:
+  			phydev->speed = SPEED_10;
+  			break;
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch b/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
+index 48fbac610a..68e7eae7bb 100644
+--- a/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
++++ b/target/linux/generic/backport-5.15/769-0-v5.16-net-phy-at803x-add-QCA9561-support.patch
+@@ -17,11 +17,9 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  drivers/net/phy/at803x.c | 23 +++++++++++++++++++++--
+  1 file changed, 21 insertions(+), 2 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 3feee4d59030..ae7e1f1c59f0 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -153,6 +153,7 @@
++@@ -161,6 +161,7 @@
+  #define QCA8327_A_PHY_ID			0x004dd033
+  #define QCA8327_B_PHY_ID			0x004dd034
+  #define QCA8337_PHY_ID				0x004dd036
+@@ -29,7 +27,7 @@ index 3feee4d59030..ae7e1f1c59f0 100644
+  #define QCA8K_PHY_ID_MASK			0xffffffff
+  
+  #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
+-@@ -1237,7 +1238,8 @@ static int at803x_cable_test_get_status(struct phy_device *phydev,
++@@ -1263,7 +1264,8 @@ static int at803x_cable_test_get_status(
+  	int pair, ret;
+  
+  	if (phydev->phy_id == ATH9331_PHY_ID ||
+@@ -39,7 +37,7 @@ index 3feee4d59030..ae7e1f1c59f0 100644
+  		pair_mask = 0x3;
+  	else
+  		pair_mask = 0xf;
+-@@ -1277,7 +1279,8 @@ static int at803x_cable_test_start(struct phy_device *phydev)
++@@ -1303,7 +1305,8 @@ static int at803x_cable_test_start(struc
+  	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
+  	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
+  	if (phydev->phy_id != ATH9331_PHY_ID &&
+@@ -49,11 +47,10 @@ index 3feee4d59030..ae7e1f1c59f0 100644
+  		phy_write(phydev, MII_CTRL1000, 0);
+  
+  	/* we do all the (time consuming) work later */
+-@@ -1408,6 +1411,21 @@ static struct phy_driver at803x_driver[] = {
+- 	.read_status		= at803x_read_status,
++@@ -1516,6 +1519,21 @@ static struct phy_driver at803x_driver[]
+  	.soft_reset		= genphy_soft_reset,
+  	.config_aneg		= at803x_config_aneg,
+-+}, {
++ }, {
+ +	/* Qualcomm Atheros QCA9561 */
+ +	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+ +	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
+@@ -68,10 +65,11 @@ index 3feee4d59030..ae7e1f1c59f0 100644
+ +	.read_status		= at803x_read_status,
+ +	.soft_reset		= genphy_soft_reset,
+ +	.config_aneg		= at803x_config_aneg,
+- }, {
+++}, {
+  	/* QCA8337 */
+  	.phy_id			= QCA8337_PHY_ID,
+-@@ -1466,6 +1484,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
++ 	.phy_id_mask		= QCA8K_PHY_ID_MASK,
++@@ -1576,6 +1594,7 @@ static struct mdio_device_id __maybe_unu
+  	{ PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
+@@ -79,6 +77,3 @@ index 3feee4d59030..ae7e1f1c59f0 100644
+  	{ }
+  };
+  
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch b/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
+index 1aec1eae60..0b09503898 100644
+--- a/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
++++ b/target/linux/generic/backport-5.15/769-v5.16-net-phy-add-qca8081-ethernet-phy-driver.patch
+@@ -16,8 +16,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 17 ++++++++++++++++-
+  1 file changed, 16 insertions(+), 1 deletion(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 3465f2bb6356..aae27fe3e1e1 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -158,6 +158,8 @@
+@@ -38,7 +36,7 @@ index 3465f2bb6356..aae27fe3e1e1 100644
+  MODULE_AUTHOR("Matus Ujhelyi");
+  MODULE_LICENSE("GPL");
+  
+-@@ -1591,6 +1593,18 @@ static struct phy_driver at803x_driver[] = {
++@@ -1581,6 +1583,18 @@ static struct phy_driver at803x_driver[]
+  	.get_stats		= at803x_get_stats,
+  	.suspend		= qca83xx_suspend,
+  	.resume			= qca83xx_resume,
+@@ -57,7 +55,7 @@ index 3465f2bb6356..aae27fe3e1e1 100644
+  }, };
+  
+  module_phy_driver(at803x_driver);
+-@@ -1605,6 +1619,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
++@@ -1595,6 +1609,7 @@ static struct mdio_device_id __maybe_unu
+  	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(QCA9561_PHY_ID) },
+@@ -65,6 +63,3 @@ index 3465f2bb6356..aae27fe3e1e1 100644
+  	{ }
+  };
+  
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch b/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
+index 3e7572b034..bbaf30eeb8 100644
+--- a/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
++++ b/target/linux/generic/backport-5.15/770-v5.16-net-phy-add-qca8081-read_status.patch
+@@ -17,8 +17,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 95 ++++++++++++++++++++++++++++++----------
+  1 file changed, 73 insertions(+), 22 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index aae27fe3e1e1..cecf78e6c643 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -41,6 +41,9 @@
+@@ -31,7 +29,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  #define AT803X_INTR_ENABLE			0x12
+  #define AT803X_INTR_ENABLE_AUTONEG_ERR		BIT(15)
+  #define AT803X_INTR_ENABLE_SPEED_CHANGED	BIT(14)
+-@@ -959,27 +962,9 @@ static void at803x_link_change_notify(struct phy_device *phydev)
++@@ -951,27 +954,9 @@ static void at803x_link_change_notify(st
+  	}
+  }
+  
+@@ -61,7 +59,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  
+  	/* Read the AT8035 PHY-Specific Status register, which indicates the
+  	 * speed and duplex that the PHY is actually using, irrespective of
+-@@ -990,13 +975,19 @@ static int at803x_read_status(struct phy_device *phydev)
++@@ -982,13 +967,19 @@ static int at803x_read_status(struct phy
+  		return ss;
+  
+  	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
+@@ -83,7 +81,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  		case AT803X_SS_SPEED_10:
+  			phydev->speed = SPEED_10;
+  			break;
+-@@ -1006,6 +997,9 @@ static int at803x_read_status(struct phy_device *phydev)
++@@ -998,6 +989,9 @@ static int at803x_read_status(struct phy
+  		case AT803X_SS_SPEED_1000:
+  			phydev->speed = SPEED_1000;
+  			break;
+@@ -93,7 +91,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  		}
+  		if (ss & AT803X_SS_DUPLEX)
+  			phydev->duplex = DUPLEX_FULL;
+-@@ -1030,6 +1024,35 @@ static int at803x_read_status(struct phy_device *phydev)
++@@ -1022,6 +1016,35 @@ static int at803x_read_status(struct phy
+  		}
+  	}
+  
+@@ -129,7 +127,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
+  		phy_resolve_aneg_pause(phydev);
+  
+-@@ -1434,6 +1457,33 @@ static int qca83xx_suspend(struct phy_device *phydev)
++@@ -1426,6 +1449,33 @@ static int qca83xx_suspend(struct phy_de
+  	return 0;
+  }
+  
+@@ -163,7 +161,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  static struct phy_driver at803x_driver[] = {
+  {
+  	/* Qualcomm Atheros AR8035 */
+-@@ -1605,6 +1655,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1595,6 +1645,7 @@ static struct phy_driver at803x_driver[]
+  	.get_wol		= at803x_get_wol,
+  	.suspend		= genphy_suspend,
+  	.resume			= genphy_resume,
+@@ -171,6 +169,3 @@ index aae27fe3e1e1..cecf78e6c643 100644
+  }, };
+  
+  module_phy_driver(at803x_driver);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch b/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
+index 7cc6a79e7b..1408a2a403 100644
+--- a/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
++++ b/target/linux/generic/backport-5.15/771-v5.16-net-phy-add-qca8081-get_features.patch
+@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 10 ++++++++++
+  1 file changed, 10 insertions(+)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index cecf78e6c643..c4b7ac03cd35 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -744,6 +744,15 @@ static int at803x_get_features(struct phy_device *phydev)
++@@ -726,6 +726,15 @@ static int at803x_get_features(struct ph
+  	if (err)
+  		return err;
+  
+@@ -33,7 +31,7 @@ index cecf78e6c643..c4b7ac03cd35 100644
+  	if (phydev->drv->phy_id != ATH8031_PHY_ID)
+  		return 0;
+  
+-@@ -1653,6 +1662,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1643,6 +1652,7 @@ static struct phy_driver at803x_driver[]
+  	.set_tunable		= at803x_set_tunable,
+  	.set_wol		= at803x_set_wol,
+  	.get_wol		= at803x_get_wol,
+@@ -41,6 +39,3 @@ index cecf78e6c643..c4b7ac03cd35 100644
+  	.suspend		= genphy_suspend,
+  	.resume			= genphy_resume,
+  	.read_status		= qca808x_read_status,
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch b/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
+index 2b9b2edbf8..ebf524bcf4 100644
+--- a/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
++++ b/target/linux/generic/backport-5.15/772-v5.16-net-phy-add-qca8081-config_aneg.patch
+@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 26 +++++++++++++++++++++++++-
+  1 file changed, 25 insertions(+), 1 deletion(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index c4b7ac03cd35..70c1025e8e5d 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -1109,7 +1109,30 @@ static int at803x_config_aneg(struct phy_device *phydev)
++@@ -1101,7 +1101,30 @@ static int at803x_config_aneg(struct phy
+  			return ret;
+  	}
+  
+@@ -49,7 +47,7 @@ index c4b7ac03cd35..70c1025e8e5d 100644
+  }
+  
+  static int at803x_get_downshift(struct phy_device *phydev, u8 *d)
+-@@ -1663,6 +1686,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1653,6 +1676,7 @@ static struct phy_driver at803x_driver[]
+  	.set_wol		= at803x_set_wol,
+  	.get_wol		= at803x_get_wol,
+  	.get_features		= at803x_get_features,
+@@ -57,6 +55,3 @@ index c4b7ac03cd35..70c1025e8e5d 100644
+  	.suspend		= genphy_suspend,
+  	.resume			= genphy_resume,
+  	.read_status		= qca808x_read_status,
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch b/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
+index 31c08efc85..bddbdb9f87 100644
+--- a/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
++++ b/target/linux/generic/backport-5.15/773-v5-16-net-phy-add-constants-for-fast-retrain-related-regis.patch
+@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  include/uapi/linux/mdio.h | 9 +++++++++
+  1 file changed, 9 insertions(+)
+ 
+-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+-index bdf77dffa5a4..c54e6eae5366 100644
+ --- a/include/uapi/linux/mdio.h
+ +++ b/include/uapi/linux/mdio.h
+ @@ -53,12 +53,14 @@
+@@ -62,6 +60,3 @@ index bdf77dffa5a4..c54e6eae5366 100644
+  /* 2.5G/5G Extended abilities register. */
+  #define MDIO_PMA_NG_EXTABLE_2_5GBT	0x0001	/* 2.5GBASET ability */
+  #define MDIO_PMA_NG_EXTABLE_5GBT	0x0002	/* 5GBASET ability */
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch b/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
+index 0cf37833f6..8aca8c1925 100644
+--- a/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
++++ b/target/linux/generic/backport-5.15/774-v5.16-net-phy-add-genphy_c45_fast_retrain.patch
+@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  include/linux/phy.h       |  1 +
+  2 files changed, 35 insertions(+)
+ 
+-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+-index c617dbcad6ea..b01180e1f578 100644
+ --- a/drivers/net/phy/phy-c45.c
+ +++ b/drivers/net/phy/phy-c45.c
+-@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable)
++@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_devic
+  }
+  EXPORT_SYMBOL_GPL(genphy_c45_loopback);
+  
+@@ -58,11 +56,9 @@ index c617dbcad6ea..b01180e1f578 100644
+  struct phy_driver genphy_c45_driver = {
+  	.phy_id         = 0xffffffff,
+  	.phy_id_mask    = 0xffffffff,
+-diff --git a/include/linux/phy.h b/include/linux/phy.h
+-index 736e1d1a47c4..04e90423fa88 100644
+ --- a/include/linux/phy.h
+ +++ b/include/linux/phy.h
+-@@ -1584,6 +1584,7 @@ int genphy_c45_config_aneg(struct phy_device *phydev);
++@@ -1624,6 +1624,7 @@ int genphy_c45_config_aneg(struct phy_de
+  int genphy_c45_loopback(struct phy_device *phydev, bool enable);
+  int genphy_c45_pma_resume(struct phy_device *phydev);
+  int genphy_c45_pma_suspend(struct phy_device *phydev);
+@@ -70,6 +66,3 @@ index 736e1d1a47c4..04e90423fa88 100644
+  
+  /* Generic C45 PHY driver */
+  extern struct phy_driver genphy_c45_driver;
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch b/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
+index 9c27de67b3..6d2aae0d97 100644
+--- a/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
++++ b/target/linux/generic/backport-5.15/775-v5.16-net-phy-add-qca8081-config_init.patch
+@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 107 +++++++++++++++++++++++++++++++++++++++
+  1 file changed, 107 insertions(+)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 70c1025e8e5d..da710523b7c4 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -178,6 +178,51 @@
+@@ -71,7 +69,7 @@ index 70c1025e8e5d..da710523b7c4 100644
+  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
+  MODULE_AUTHOR("Matus Ujhelyi");
+  MODULE_LICENSE("GPL");
+-@@ -1489,6 +1534,67 @@ static int qca83xx_suspend(struct phy_device *phydev)
++@@ -1481,6 +1526,67 @@ static int qca83xx_suspend(struct phy_de
+  	return 0;
+  }
+  
+@@ -139,7 +137,7 @@ index 70c1025e8e5d..da710523b7c4 100644
+  static int qca808x_read_status(struct phy_device *phydev)
+  {
+  	int ret;
+-@@ -1690,6 +1796,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1680,6 +1786,7 @@ static struct phy_driver at803x_driver[]
+  	.suspend		= genphy_suspend,
+  	.resume			= genphy_resume,
+  	.read_status		= qca808x_read_status,
+@@ -147,6 +145,3 @@ index 70c1025e8e5d..da710523b7c4 100644
+  }, };
+  
+  module_phy_driver(at803x_driver);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch b/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
+index bf34b4bdfb..6ddbad3a06 100644
+--- a/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
++++ b/target/linux/generic/backport-5.15/776-v5.16-net-phy-add-qca8081-soft_reset-and-enable-master-sla.patch
+@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 48 ++++++++++++++++++++++++++++++++++++++++
+  1 file changed, 48 insertions(+)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index da710523b7c4..1418db4f2091 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -223,6 +223,12 @@
+@@ -32,7 +30,7 @@ index da710523b7c4..1418db4f2091 100644
+  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
+  MODULE_AUTHOR("Matus Ujhelyi");
+  MODULE_LICENSE("GPL");
+-@@ -1569,6 +1575,26 @@ static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
++@@ -1561,6 +1567,26 @@ static int qca808x_phy_fast_retrain_conf
+  	return 0;
+  }
+  
+@@ -59,7 +57,7 @@ index da710523b7c4..1418db4f2091 100644
+  static int qca808x_config_init(struct phy_device *phydev)
+  {
+  	int ret;
+-@@ -1590,6 +1616,16 @@ static int qca808x_config_init(struct phy_device *phydev)
++@@ -1582,6 +1608,16 @@ static int qca808x_config_init(struct ph
+  	if (ret)
+  		return ret;
+  
+@@ -76,7 +74,7 @@ index da710523b7c4..1418db4f2091 100644
+  	/* Configure adc threshold as 100mv for the link 10M */
+  	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
+  			QCA808X_ADC_THRESHOLD_MASK, QCA808X_ADC_THRESHOLD_100MV);
+-@@ -1622,6 +1658,17 @@ static int qca808x_read_status(struct phy_device *phydev)
++@@ -1614,6 +1650,17 @@ static int qca808x_read_status(struct ph
+  	return 0;
+  }
+  
+@@ -94,7 +92,7 @@ index da710523b7c4..1418db4f2091 100644
+  static struct phy_driver at803x_driver[] = {
+  {
+  	/* Qualcomm Atheros AR8035 */
+-@@ -1797,6 +1844,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1787,6 +1834,7 @@ static struct phy_driver at803x_driver[]
+  	.resume			= genphy_resume,
+  	.read_status		= qca808x_read_status,
+  	.config_init		= qca808x_config_init,
+@@ -102,6 +100,3 @@ index da710523b7c4..1418db4f2091 100644
+  }, };
+  
+  module_phy_driver(at803x_driver);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch b/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
+index 1f614e99a4..c0ed0d770a 100644
+--- a/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
++++ b/target/linux/generic/backport-5.15/777-v5.16-net-phy-adjust-qca8081-master-slave-seed-value-if-li.patch
+@@ -19,11 +19,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 16 ++++++++++++++++
+  1 file changed, 16 insertions(+)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 1418db4f2091..00733badcda5 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -1655,6 +1655,22 @@ static int qca808x_read_status(struct phy_device *phydev)
++@@ -1647,6 +1647,22 @@ static int qca808x_read_status(struct ph
+  	else
+  		phydev->interface = PHY_INTERFACE_MODE_SMII;
+  
+@@ -46,6 +44,3 @@ index 1418db4f2091..00733badcda5 100644
+  	return 0;
+  }
+  
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch b/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
+index d49fb2f566..ecdc902dfd 100644
+--- a/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
++++ b/target/linux/generic/backport-5.15/778-v5.16-net-phy-add-qca8081-cdt-feature.patch
+@@ -16,8 +16,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 194 ++++++++++++++++++++++++++++++++++++++-
+  1 file changed, 191 insertions(+), 3 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 00733badcda5..f1cbe1f6ddec 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -229,6 +229,32 @@
+@@ -53,7 +51,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
+  MODULE_AUTHOR("Matus Ujhelyi");
+  MODULE_LICENSE("GPL");
+-@@ -1319,8 +1345,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
++@@ -1311,8 +1337,14 @@ static int at803x_cdt_start(struct phy_d
+  {
+  	u16 cdt;
+  
+@@ -70,7 +68,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  
+  	return phy_write(phydev, AT803X_CDT, cdt);
+  }
+-@@ -1328,10 +1360,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
++@@ -1320,10 +1352,16 @@ static int at803x_cdt_start(struct phy_d
+  static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
+  {
+  	int val, ret;
+@@ -88,7 +86,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  				    30000, 100000, true);
+  
+  	return ret < 0 ? ret : 0;
+-@@ -1685,6 +1723,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
++@@ -1677,6 +1715,153 @@ static int qca808x_soft_reset(struct phy
+  	return qca808x_phy_ms_seed_enable(phydev, true);
+  }
+  
+@@ -242,7 +240,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  static struct phy_driver at803x_driver[] = {
+  {
+  	/* Qualcomm Atheros AR8035 */
+-@@ -1848,6 +2033,7 @@ static struct phy_driver at803x_driver[] = {
++@@ -1838,6 +2023,7 @@ static struct phy_driver at803x_driver[]
+  	/* Qualcomm QCA8081 */
+  	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+  	.name			= "Qualcomm QCA8081",
+@@ -250,7 +248,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  	.config_intr		= at803x_config_intr,
+  	.handle_interrupt	= at803x_handle_interrupt,
+  	.get_tunable		= at803x_get_tunable,
+-@@ -1861,6 +2047,8 @@ static struct phy_driver at803x_driver[] = {
++@@ -1851,6 +2037,8 @@ static struct phy_driver at803x_driver[]
+  	.read_status		= qca808x_read_status,
+  	.config_init		= qca808x_config_init,
+  	.soft_reset		= qca808x_soft_reset,
+@@ -259,6 +257,3 @@ index 00733badcda5..f1cbe1f6ddec 100644
+  }, };
+  
+  module_phy_driver(at803x_driver);
+--- 
+-2.34.1
+-
+diff --git a/target/linux/generic/backport-5.15/778-v5.17-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch b/target/linux/generic/backport-5.15/778-v5.17-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
+index 1d8e7997fd..566be8f958 100644
+--- a/target/linux/generic/backport-5.15/778-v5.17-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
++++ b/target/linux/generic/backport-5.15/778-v5.17-net-phy-Fix-qca8081-with-speeds-lower-than-2.5Gb-s.patch
+@@ -20,11 +20,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 26 +++++++++++++-------------
+  1 file changed, 13 insertions(+), 13 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 5b6c0d120e09e2..29aa811af430f0 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -1688,19 +1688,19 @@ static int qca808x_read_status(struct phy_device *phydev)
++@@ -1680,19 +1680,19 @@ static int qca808x_read_status(struct ph
+  	if (ret < 0)
+  		return ret;
+  
+diff --git a/target/linux/generic/backport-5.15/778-v5.18-01-net-phy-at803x-add-fiber-support.patch b/target/linux/generic/backport-5.15/778-v5.18-01-net-phy-at803x-add-fiber-support.patch
+index 989dc06ca6..46bbfa0cae 100644
+--- a/target/linux/generic/backport-5.15/778-v5.18-01-net-phy-at803x-add-fiber-support.patch
++++ b/target/linux/generic/backport-5.15/778-v5.18-01-net-phy-at803x-add-fiber-support.patch
+@@ -20,8 +20,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  drivers/net/phy/at803x.c | 76 +++++++++++++++++++++++++++++++++++-----
+  1 file changed, 67 insertions(+), 9 deletions(-)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 052b2eb9f101f..3f3d4c164df40 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+ @@ -51,6 +51,8 @@
+@@ -61,7 +59,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	struct regulator_dev *vddio_rdev;
+  	struct regulator_dev *vddh_rdev;
+  	struct regulator *vddio;
+-@@ -784,7 +798,33 @@ static int at803x_probe(struct phy_device *phydev)
++@@ -784,7 +798,33 @@ static int at803x_probe(struct phy_devic
+  			return ret;
+  	}
+  
+@@ -95,7 +93,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  }
+  
+  static void at803x_remove(struct phy_device *phydev)
+-@@ -797,6 +837,7 @@ static void at803x_remove(struct phy_device *phydev)
++@@ -797,6 +837,7 @@ static void at803x_remove(struct phy_dev
+  
+  static int at803x_get_features(struct phy_device *phydev)
+  {
+@@ -103,7 +101,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	int err;
+  
+  	err = genphy_read_abilities(phydev);
+-@@ -823,12 +864,13 @@ static int at803x_get_features(struct phy_device *phydev)
++@@ -823,12 +864,13 @@ static int at803x_get_features(struct ph
+  	 * As a result of that, ESTATUS_1000_XFULL is set
+  	 * to 1 even when operating in copper TP mode.
+  	 *
+@@ -122,7 +120,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	return 0;
+  }
+  
+-@@ -892,15 +934,18 @@ static int at8031_pll_config(struct phy_device *phydev)
++@@ -892,15 +934,18 @@ static int at8031_pll_config(struct phy_
+  
+  static int at803x_config_init(struct phy_device *phydev)
+  {
+@@ -144,7 +142,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  		phy_unlock_mdio_bus(phydev);
+  		if (ret)
+  			return ret;
+-@@ -959,6 +1004,7 @@ static int at803x_ack_interrupt(struct phy_device *phydev)
++@@ -959,6 +1004,7 @@ static int at803x_ack_interrupt(struct p
+  
+  static int at803x_config_intr(struct phy_device *phydev)
+  {
+@@ -152,7 +150,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	int err;
+  	int value;
+  
+-@@ -975,6 +1021,10 @@ static int at803x_config_intr(struct phy_device *phydev)
++@@ -975,6 +1021,10 @@ static int at803x_config_intr(struct phy
+  		value |= AT803X_INTR_ENABLE_DUPLEX_CHANGED;
+  		value |= AT803X_INTR_ENABLE_LINK_FAIL;
+  		value |= AT803X_INTR_ENABLE_LINK_SUCCESS;
+@@ -163,7 +161,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  
+  		err = phy_write(phydev, AT803X_INTR_ENABLE, value);
+  	} else {
+-@@ -1107,8 +1157,12 @@ static int at803x_read_specific_status(struct phy_device *phydev)
++@@ -1107,8 +1157,12 @@ static int at803x_read_specific_status(s
+  
+  static int at803x_read_status(struct phy_device *phydev)
+  {
+@@ -176,7 +174,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	/* Update the link, but return if there was an error */
+  	err = genphy_update_link(phydev);
+  	if (err)
+-@@ -1162,6 +1216,7 @@ static int at803x_config_mdix(struct phy_device *phydev, u8 ctrl)
++@@ -1162,6 +1216,7 @@ static int at803x_config_mdix(struct phy
+  
+  static int at803x_config_aneg(struct phy_device *phydev)
+  {
+@@ -184,7 +182,7 @@ index 052b2eb9f101f..3f3d4c164df40 100644
+  	int ret;
+  
+  	ret = at803x_config_mdix(phydev, phydev->mdix_ctrl);
+-@@ -1178,6 +1233,9 @@ static int at803x_config_aneg(struct phy_device *phydev)
++@@ -1178,6 +1233,9 @@ static int at803x_config_aneg(struct phy
+  			return ret;
+  	}
+  
+diff --git a/target/linux/generic/backport-5.15/778-v5.18-02-net-phy-at803x-support-downstream-SFP-cage.patch b/target/linux/generic/backport-5.15/778-v5.18-02-net-phy-at803x-support-downstream-SFP-cage.patch
+index 8393cb32e8..3205cd5b5c 100644
+--- a/target/linux/generic/backport-5.15/778-v5.18-02-net-phy-at803x-support-downstream-SFP-cage.patch
++++ b/target/linux/generic/backport-5.15/778-v5.18-02-net-phy-at803x-support-downstream-SFP-cage.patch
+@@ -25,7 +25,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  #include <dt-bindings/net/qca-ar803x.h>
+  
+  #define AT803X_SPECIFIC_FUNCTION_CONTROL	0x10
+-@@ -555,6 +557,55 @@ static int at8031_register_regulators(st
++@@ -664,6 +666,55 @@ static int at8031_register_regulators(st
+  	return 0;
+  }
+  
+@@ -81,7 +81,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  static int at803x_parse_dt(struct phy_device *phydev)
+  {
+  	struct device_node *node = phydev->mdio.dev.of_node;
+-@@ -662,6 +713,11 @@ static int at803x_parse_dt(struct phy_de
++@@ -771,6 +822,11 @@ static int at803x_parse_dt(struct phy_de
+  			phydev_err(phydev, "failed to get VDDIO regulator\n");
+  			return PTR_ERR(priv->vddio);
+  		}
+diff --git a/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch b/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
+index 0ac5fda4a0..5829b05d2c 100644
+--- a/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
++++ b/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
+@@ -46,11 +46,9 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
+  drivers/net/phy/at803x.c | 6 ++++++
+  1 file changed, 6 insertions(+)
+ 
+-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+-index 6a467e7817a6a..59fe356942b51 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
++@@ -2059,6 +2059,8 @@ static struct phy_driver at803x_driver[]
+  	/* ATHEROS AR9331 */
+  	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
+  	.name			= "Qualcomm Atheros AR9331 built-in PHY",
+@@ -59,7 +57,7 @@ index 6a467e7817a6a..59fe356942b51 100644
+  	.suspend		= at803x_suspend,
+  	.resume			= at803x_resume,
+  	.flags			= PHY_POLL_CABLE_TEST,
+-@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
++@@ -2074,6 +2076,8 @@ static struct phy_driver at803x_driver[]
+  	/* Qualcomm Atheros QCA9561 */
+  	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+  	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
+@@ -68,7 +66,7 @@ index 6a467e7817a6a..59fe356942b51 100644
+  	.suspend		= at803x_suspend,
+  	.resume			= at803x_resume,
+  	.flags			= PHY_POLL_CABLE_TEST,
+-@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
++@@ -2138,6 +2142,8 @@ static struct phy_driver at803x_driver[]
+  	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+  	.name			= "Qualcomm QCA8081",
+  	.flags			= PHY_POLL_CABLE_TEST,
+diff --git a/target/linux/generic/backport-5.15/778-v5.18-04-net-phy-at803x-fix-error-return-code-in-at803x_probe.patch b/target/linux/generic/backport-5.15/778-v5.18-04-net-phy-at803x-fix-error-return-code-in-at803x_probe.patch
+index cdae5b4ca4..f3aaff34ae 100644
+--- a/target/linux/generic/backport-5.15/778-v5.18-04-net-phy-at803x-fix-error-return-code-in-at803x_probe.patch
++++ b/target/linux/generic/backport-5.15/778-v5.18-04-net-phy-at803x-fix-error-return-code-in-at803x_probe.patch
+@@ -17,7 +17,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ 
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -749,8 +749,10 @@ static int at803x_probe(struct phy_devic
++@@ -858,8 +858,10 @@ static int at803x_probe(struct phy_devic
+  		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
+  		int mode_cfg;
+  
+diff --git a/target/linux/mvebu/patches-5.15/706-net-dsa-mv88e6xxx-add-Amethyst-specific-SMI-GPIO-fun.patch b/target/linux/mvebu/patches-5.15/706-net-dsa-mv88e6xxx-add-Amethyst-specific-SMI-GPIO-fun.patch
+index 248b8b9d6c..e5c605c40f 100644
+--- a/target/linux/mvebu/patches-5.15/706-net-dsa-mv88e6xxx-add-Amethyst-specific-SMI-GPIO-fun.patch
++++ b/target/linux/mvebu/patches-5.15/706-net-dsa-mv88e6xxx-add-Amethyst-specific-SMI-GPIO-fun.patch
+@@ -22,11 +22,9 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
+  drivers/net/dsa/mv88e6xxx/global2_scratch.c | 31 +++++++++++++++++++++
+  3 files changed, 37 insertions(+), 1 deletion(-)
+ 
+-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+-index 43d126628610..b3803101d612 100644
+ --- a/drivers/net/dsa/mv88e6xxx/chip.c
+ +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+-@@ -3409,7 +3409,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
++@@ -3424,7 +3424,10 @@ static int mv88e6xxx_mdio_register(struc
+  
+  	if (external) {
+  		mv88e6xxx_reg_lock(chip);
+@@ -38,11 +36,9 @@ index 43d126628610..b3803101d612 100644
+  		mv88e6xxx_reg_unlock(chip);
+  
+  		if (err)
+-diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
+-index f3e27573a386..e0649f21f28e 100644
+ --- a/drivers/net/dsa/mv88e6xxx/global2.h
+ +++ b/drivers/net/dsa/mv88e6xxx/global2.h
+-@@ -370,6 +370,8 @@ extern const struct mv88e6xxx_gpio_ops mv88e6352_gpio_ops;
++@@ -371,6 +371,8 @@ extern const struct mv88e6xxx_gpio_ops m
+  
+  int mv88e6xxx_g2_scratch_gpio_set_smi(struct mv88e6xxx_chip *chip,
+  				      bool external);
+@@ -51,11 +47,9 @@ index f3e27573a386..e0649f21f28e 100644
+  int mv88e6xxx_g2_atu_stats_set(struct mv88e6xxx_chip *chip, u16 kind, u16 bin);
+  int mv88e6xxx_g2_atu_stats_get(struct mv88e6xxx_chip *chip, u16 *stats);
+  
+-diff --git a/drivers/net/dsa/mv88e6xxx/global2_scratch.c b/drivers/net/dsa/mv88e6xxx/global2_scratch.c
+-index eda710062933..dc3f4645fa52 100644
+ --- a/drivers/net/dsa/mv88e6xxx/global2_scratch.c
+ +++ b/drivers/net/dsa/mv88e6xxx/global2_scratch.c
+-@@ -289,3 +289,34 @@ int mv88e6xxx_g2_scratch_gpio_set_smi(struct mv88e6xxx_chip *chip,
++@@ -289,3 +289,34 @@ int mv88e6xxx_g2_scratch_gpio_set_smi(st
+  
+  	return mv88e6xxx_g2_scratch_write(chip, misc_cfg, val);
+  }
+@@ -90,6 +84,3 @@ index eda710062933..dc3f4645fa52 100644
+ +
+ +	return mv88e6xxx_g2_scratch_write(chip, misc_cfg, val);
+ +}
+--- 
+-2.34.1
+-
+-- 
+2.42.1
+

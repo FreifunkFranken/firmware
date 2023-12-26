@@ -1,0 +1,70 @@
+From d1b6214aadbce601ebf54e8f673bbf427b4e33ec Mon Sep 17 00:00:00 2001
+From: Serhii Serhieiev <adron@mstnt.com>
+Date: Wed, 9 Feb 2022 09:32:30 +0200
+Subject: [PATCH 02/18] mvebu: add aux-loader2 support
+
+This auxiliary bootloader implements the ability to run the OpenWrt Linux kernel(FIT image)
+from the RouterBOOT. The thing is that RouterBOOT is able to load ONLY program code in ELF format.
+To bypass this restriction, the auxiliary bootloader extends the capabilities of the RouterBOOT -
+by adding support for loading system from FIT images.
+
+Source code is available under GPLv2: https://github.com/adron-s/aux-loader2
+
+Signed-off-by: Serhii Serhieiev <adron@mstnt.com>
+[fabian@blaese.de: Remove aux-loader blob, as it is only required for initial installation]
+Signed-off-by: Fabian Bläse <fabian@blaese.de>
+---
+ target/linux/mvebu/image/Makefile           |  12 ++++++++++++
+ target/linux/mvebu/image/cortexa72.mk       |  19 +++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/target/linux/mvebu/image/Makefile b/target/linux/mvebu/image/Makefile
+index 57129d2dcb..180b909cbd 100644
+--- a/target/linux/mvebu/image/Makefile
++++ b/target/linux/mvebu/image/Makefile
+@@ -162,6 +162,12 @@ define Build/uDPU-firmware
+ 		-f $(KDIR_TMP)/$(DEVICE_IMG_PREFIX)-firmware.tgz -C $@-fw .
+ endef
+ 
++define Device/FitImageLzma
++  KERNEL_SUFFIX := -fit-uImage.itb
++  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(DEVICE_DTS).dtb | pad-to 64k
++  KERNEL_NAME := Image
++endef
++
+ define Device/Default
+   PROFILES := Default
+   DEVICE_DTS = $$(SOC)-$(lastword $(subst _, ,$(1)))
+diff --git a/target/linux/mvebu/image/cortexa72.mk b/target/linux/mvebu/image/cortexa72.mk
+index 7f344f1de2..fc4712a597 100644
+--- a/target/linux/mvebu/image/cortexa72.mk
++++ b/target/linux/mvebu/image/cortexa72.mk
+@@ -52,6 +52,25 @@ define Device/marvell_macchiatobin-singleshot
+ endef
+ TARGET_DEVICES += marvell_macchiatobin-singleshot
+ 
++define Device/mikrotik_rb5009
++  DEVICE_DTS := armada-7040-rb5009
++  DEVICE_DTS_DIR := $(DTS_DIR)/marvell
++  $(call Device/FitImageLzma)
++  DEVICE_VENDOR := MikroTik
++  DEVICE_MODEL := RB5009
++  SOC := armada-7040
++  KERNEL_LOADADDR := 0x22000000
++  KERNEL_INITRAMFS = $$(KERNEL)
++  KERNEL_INITRAMFS_SUFFIX := -fit-uImage.elf
++  BLOCKSIZE := 64k
++  IMAGE_SIZE := 15360k
++  IMAGES := sysupgrade.bin
++  IMAGE/sysupgrade.bin := append-kernel | pad-to $$(BLOCKSIZE) | \
++  	append-rootfs | pad-rootfs | check-size | append-metadata
++  DEVICE_PACKAGES += kmod-i2c-gpio
++endef
++TARGET_DEVICES += mikrotik_rb5009
++
+ define Device/marvell_clearfog-gt-8k
+   $(call Device/Default-arm64)
+   DEVICE_VENDOR := SolidRun
+-- 
+2.42.1
+

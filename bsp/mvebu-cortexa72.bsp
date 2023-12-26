@@ -1,0 +1,6 @@
+chipset=mvebu
+subtarget=cortexa72
+
+images=(
+        "openwrt-mvebu-cortexa72-mikrotik_rb5009-squashfs*"
+       )

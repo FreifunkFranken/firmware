@@ -1,0 +1,6 @@
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="p2 p3 p4 p5 p6 p7 p8 sfp"
+WAN_PORTS="p1"
+DSA=1
+ROUTERMAC=$(cat /sys/class/net/p1/address)

@@ -1,0 +1,32 @@
+From daf670f8f34df3169d64f1d9e45453c3b0f61185 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Mon, 14 Mar 2022 18:55:25 +0100
+Subject: [PATCH 07/18] mvebu: rb5009: add SFP GPIO pins
+
+After finally being able to trace them out using a breakout lets add the
+required SFP GPIO pins.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ .../files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+index 5535f8ad89..0babac6f08 100644
+--- a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
++++ b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+@@ -70,6 +70,11 @@
+ 	sfp: sfp {
+ 		compatible = "sff,sfp";
+ 		i2c-bus = <&sfp_i2c>;
++		mod-def0-gpios = <&cp0_gpio1 11 GPIO_ACTIVE_LOW>;
++		los-gpios = <&cp0_gpio1 2 GPIO_ACTIVE_HIGH>;
++		tx-fault-gpios = <&cp0_gpio1 6 GPIO_ACTIVE_HIGH>;
++		tx-disable-gpios = <&cp0_gpio1 5 GPIO_ACTIVE_HIGH>;
++		rate-select0-gpios = <&cp0_gpio1 3 GPIO_ACTIVE_HIGH>;
+ 	};
+ };
+ 
+-- 
+2.42.1
+

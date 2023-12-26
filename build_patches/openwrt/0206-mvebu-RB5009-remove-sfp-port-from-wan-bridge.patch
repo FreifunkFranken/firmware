@@ -1,0 +1,29 @@
+From de0624d0317cd14d6eba6b239457de6f2596d1e7 Mon Sep 17 00:00:00 2001
+From: Serhii Serhieiev <adron@mstnt.com>
+Date: Tue, 15 Feb 2022 07:35:09 +0200
+Subject: [PATCH 06/18] mvebu: RB5009: remove sfp port from wan bridge
+
+The presence of two bridges leads to a conflict between vlans
+and Wan ports become inoperative.
+
+Signed-off-by: Serhii Serhieiev <adron@mstnt.com>
+---
+ target/linux/mvebu/cortexa72/base-files/etc/board.d/02_network | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/target/linux/mvebu/cortexa72/base-files/etc/board.d/02_network b/target/linux/mvebu/cortexa72/base-files/etc/board.d/02_network
+index ccb89add24..e1703029be 100644
+--- a/target/linux/mvebu/cortexa72/base-files/etc/board.d/02_network
++++ b/target/linux/mvebu/cortexa72/base-files/etc/board.d/02_network
+@@ -33,7 +33,7 @@ marvell,armada8040-clearfog-gt-8k)
+ 	ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 eth2" "eth0 eth1"
+ 	;;
+ mikrotik,rb5009)
+-	ucidef_set_interfaces_lan_wan "p2 p3 p4 p5 p6 p7 p8" "sfp p1"
++	ucidef_set_interfaces_lan_wan "p2 p3 p4 p5 p6 p7 p8 sfp" "p1"
+ 	;;
+ *)
+ 	ucidef_set_interface_lan "eth0"
+-- 
+2.42.1
+

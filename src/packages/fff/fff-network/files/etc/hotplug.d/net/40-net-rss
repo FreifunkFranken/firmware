@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0
+
+if [ $(uci get board.model.name) = "mikrotik,rb5009" ]; then
+	ethtool -K eth0 receive-hashing on
+fi

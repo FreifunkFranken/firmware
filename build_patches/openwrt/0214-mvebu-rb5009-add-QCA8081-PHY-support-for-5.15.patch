@@ -1,0 +1,29 @@
+From 211bc4d66dd5b1c17ad85ed1a51bf202aa8c62b5 Mon Sep 17 00:00:00 2001
+From: Stijn Segers <foss@volatilesystems.org>
+Date: Sun, 18 Sep 2022 17:07:22 +0200
+Subject: [PATCH 14/18] mvebu: rb5009: add QCA8081 PHY support for 5.15
+
+The required DT nodes area already in adrons's RB5009 DTS, so we
+only need to enable the relevant kernel symbol in 5.15.
+
+Robimarko's tree use the 'qca8081' label whereas adrons's uses
+the more generic 'switch0phy9' one.
+---
+ target/linux/mvebu/cortexa72/config-5.15 | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/target/linux/mvebu/cortexa72/config-5.15 b/target/linux/mvebu/cortexa72/config-5.15
+index 5d7b5594aa..29d9ee3556 100644
+--- a/target/linux/mvebu/cortexa72/config-5.15
++++ b/target/linux/mvebu/cortexa72/config-5.15
+@@ -36,6 +36,7 @@ CONFIG_ARM_GIC_V3_ITS_PCI=y
+ # CONFIG_ARM_PL172_MPMC is not set
+ CONFIG_ARM_PSCI_FW=y
+ CONFIG_ARM_SBSA_WATCHDOG=y
++CONFIG_AT803X_PHY=y
+ CONFIG_AUDIT_ARCH_COMPAT_GENERIC=y
+ CONFIG_CC_HAVE_STACKPROTECTOR_SYSREG=y
+ # CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND is not set
+-- 
+2.42.1
+

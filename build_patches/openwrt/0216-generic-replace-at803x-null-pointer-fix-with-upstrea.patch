@@ -1,0 +1,70 @@
+From fa76a94d8c10d66f0204500e3cb86969b6ba4bd7 Mon Sep 17 00:00:00 2001
+From: Stijn Segers <foss@volatilesystems.org>
+Date: Sat, 26 Aug 2023 12:13:58 +0200
+Subject: [PATCH 16/18] generic: replace at803x null pointer fix with upstream
+ one
+
+Signed-off-by: Stijn Segers <foss@volatilesystems.org>
+---
+ ...LL-pointer-dereference-on-AR9331-PHY.patch | 27 +++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+diff --git a/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch b/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
+index 53d6325c49..0ac5fda4a0 100644
+--- a/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
++++ b/target/linux/generic/backport-5.15/778-v5.18-03-net-phy-at803x-fix-NULL-pointer-dereference-on-AR9331-PHY.patch
+@@ -1,8 +1,10 @@
+-From 9926de7315be3d606cc011a305ad9adb9e8e14c9 Mon Sep 17 00:00:00 2001
++From 66fa352215e8455ba2e5f33793535795bd3e36ca Mon Sep 17 00:00:00 2001
+ From: Oleksij Rempel <o.rempel@pengutronix.de>
+ Date: Sat, 18 Jun 2022 14:23:33 +0200
+ Subject: [PATCH] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
+ 
++[ Upstream commit 9926de7315be3d606cc011a305ad9adb9e8e14c9 ]
++
+ Latest kernel will explode on the PHY interrupt config, since it depends
+ now on allocated priv. So, run probe to allocate priv to fix it.
+ 
+@@ -39,13 +41,16 @@ Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
+ Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+ Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+ Signed-off-by: David S. Miller <davem@davemloft.net>
++Signed-off-by: Sasha Levin <sashal@kernel.org>
+ ---
+  drivers/net/phy/at803x.c | 6 ++++++
+  1 file changed, 6 insertions(+)
+ 
++diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
++index 6a467e7817a6a..59fe356942b51 100644
+ --- a/drivers/net/phy/at803x.c
+ +++ b/drivers/net/phy/at803x.c
+-@@ -1592,6 +1592,8 @@ static struct phy_driver at803x_driver[]
++@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
+  	/* ATHEROS AR9331 */
+  	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
+  	.name			= "Qualcomm Atheros AR9331 built-in PHY",
+@@ -54,3 +59,21 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+  	.suspend		= at803x_suspend,
+  	.resume			= at803x_resume,
+  	.flags			= PHY_POLL_CABLE_TEST,
++@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
++ 	/* Qualcomm Atheros QCA9561 */
++ 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
++ 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
+++	.probe			= at803x_probe,
+++	.remove			= at803x_remove,
++ 	.suspend		= at803x_suspend,
++ 	.resume			= at803x_resume,
++ 	.flags			= PHY_POLL_CABLE_TEST,
++@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
++ 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
++ 	.name			= "Qualcomm QCA8081",
++ 	.flags			= PHY_POLL_CABLE_TEST,
+++	.probe			= at803x_probe,
+++	.remove			= at803x_remove,
++ 	.config_intr		= at803x_config_intr,
++ 	.handle_interrupt	= at803x_handle_interrupt,
++ 	.get_tunable		= at803x_get_tunable,
+-- 
+2.42.1
+
