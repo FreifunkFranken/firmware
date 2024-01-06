@@ -1,0 +1,18 @@
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 6 Jan 2024 13:24:58 +0100
+Subject: [PATCH] bird: disable unnecessary protocols
+
+diff --git a/bird2/Makefile b/bird2/Makefile
+index 9fd0031..dc827b0 100644
+--- a/bird2/Makefile
++++ b/bird2/Makefile
+@@ -97,7 +97,7 @@ protocols, telling BIRD to show various information, telling it to show
+ a routing table filtered by a filter, or asking BIRD to reconfigure.
+ endef
+ 
+-CONFIGURE_ARGS += --disable-libssh
++CONFIGURE_ARGS += --disable-libssh --with-protocols="babel pipe radv static"
+ 
+ define Package/bird2/conffiles
+ /etc/bird.conf
+
