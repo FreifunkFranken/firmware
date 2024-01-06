@@ -12,7 +12,6 @@ define Package/fff-layer3
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:=+fff-alfred-monitoring-proxy \
 	         +fff-babel \
-	         +fff-babeld \
 	         +fff-babel-bird2 \
 	         +fff-boardname \
 	         +fff-dhcp \
