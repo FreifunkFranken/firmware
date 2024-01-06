@@ -1,0 +1,25 @@
+From 19e4f5bdf7de5364c0d58e741f733dfc057d0952 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 6 Jan 2024 14:34:15 +0100
+Subject: [PATCH] Remove unnecessary dependency
+
+---
+ package/network/utils/wireguard-tools/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/package/network/utils/wireguard-tools/Makefile b/package/network/utils/wireguard-tools/Makefile
+index 5b1fab057d..24fff3725e 100644
+--- a/package/network/utils/wireguard-tools/Makefile
++++ b/package/network/utils/wireguard-tools/Makefile
+@@ -35,8 +35,6 @@ define Package/wireguard-tools
+   MAINTAINER:=Jason A. Donenfeld <Jason@zx2c4.com>
+   TITLE:=WireGuard userspace control program (wg)
+   DEPENDS:= \
+-	  +@BUSYBOX_CONFIG_IP \
+-	  +@BUSYBOX_CONFIG_FEATURE_IP_LINK \
+ 	  +kmod-wireguard
+ endef
+ 
+-- 
+2.43.0
+
