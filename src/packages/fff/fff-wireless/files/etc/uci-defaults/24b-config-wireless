@@ -10,7 +10,7 @@ case "$BOARD" in
 		uci set wireless.radio0.antenna_gain=9
 		uci commit wireless
 		;;
-	ubnt,unifi)
+	ubnt,unifi-ap)
 		# No support for Unifi AP Pro!
 		uci set wireless.radio0.antenna_gain=3
 		uci commit wireless

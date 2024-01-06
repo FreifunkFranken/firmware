@@ -20,6 +20,6 @@ images=("openwrt-${chipset}-${subtarget}-glinet_gl-ar150-squashfs-*"
         "openwrt-${chipset}-${subtarget}-tplink_tl-wr1043nd-v4-squashfs-*"
         "openwrt-${chipset}-${subtarget}-tplink_tl-wr1043n-v5-squashfs-*"
         "openwrt-${chipset}-${subtarget}-ubnt_nanostation-loco-m-xw-squashfs-*"
-        "openwrt-${chipset}-${subtarget}-ubnt_unifi-squashfs-*"
+        "openwrt-${chipset}-${subtarget}-ubnt_unifi-ap-squashfs-*"
         "openwrt-${chipset}-${subtarget}-ubnt_unifiac-mesh-squashfs-*"
         )

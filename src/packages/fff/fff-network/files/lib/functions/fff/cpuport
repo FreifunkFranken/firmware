@@ -22,7 +22,7 @@ get_cpu_port() {
 		ubnt,edgerouter-x|\
 		ubnt,edgerouter-x-sfp|\
 		ubnt,nanostation-loco-m-xw|\
-		ubnt,unifi|\
+		ubnt,unifi-ap|\
 		ubnt,unifiac-mesh|\
 		x86_64|\
 		xiaomi,mi-router-4a-gigabit)
