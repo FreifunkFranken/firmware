@@ -10,6 +10,7 @@ define Package/fff-extra
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken gateway configuration
 	URL:=https://www.freifunk-franken.de
+	DEPENDS:=+bmon
 endef
 
 define Package/fff-extra/description

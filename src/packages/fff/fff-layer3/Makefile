@@ -22,7 +22,6 @@ define Package/fff-layer3
 	         +fff-ra \
 	         +fff-web-mqtt \
 	         +fff-wireguard \
-	         +bmon \
 	         +kmod-sched-cake \
 	         +gre \
 	         +@PACKAGE_grev4 \
