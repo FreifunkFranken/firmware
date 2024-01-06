@@ -33,7 +33,7 @@ define Package/fff-layer3
 	         +nftables \
 	         +snmp-utils \
 	         +tc \
-	         +tcpdump \
+	         +tcpdump-mini \
 	         +vxlan
 endef
 
