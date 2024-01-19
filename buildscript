@@ -381,8 +381,12 @@ buildall() {
 }
 
 if [ "$(/usr/bin/id -u)" -eq 0 ]; then
-    echo "WARNING: buildscript is running as root"
-    echo "WARNING: build may fail at a later stage"
+    TPUT=$(command -v tput || echo ":")
+    textWarn="$($TPUT bold setaf 1)" # bold + red
+    textReset="$($TPUT sgr0)"        # be a good citizen
+
+    printf "${textWarn}WARNING: buildscript is running as root${textReset}\n"
+    printf "${textWarn}WARNING: build may fail at a later stage${textReset}\n"
 fi
 
 if [ "$1" != "selectbsp" -a "$1" != "selectvariant" ]; then
