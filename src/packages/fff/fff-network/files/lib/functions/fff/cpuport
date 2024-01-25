@@ -15,6 +15,7 @@ get_cpu_port() {
 		xiaomi,mi-router-4a-100m)
 			CPUPORT="6t"
 			;;
+		avm,fritzbox-4040|\
 		netgear,r6220|\
 		tplink,cpe210-v2|\
 		tplink,cpe210-v3|\
