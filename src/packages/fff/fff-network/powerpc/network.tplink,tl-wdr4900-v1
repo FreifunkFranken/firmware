@@ -1,10 +1,11 @@
 . /lib/functions/fff/network
 
-WANDEV=eth0
-SWITCHDEV=eth0
-CLIENT_PORTS="0t 4 5"
-WAN_PORTS="0t 1"
-BATMAN_PORTS="0t 2 3"
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="lan3 lan4"
+WAN_PORTS="wan"
+BATMAN_PORTS="lan1 lan2"
+DSA=1
 
 # use mac address from phy1 with 'locally administered' bit set to '1'
 # only possible, because wXmesh is created first and therefore gets the 'universally administered address'
