@@ -82,12 +82,12 @@ babel_reload() {
 	# switch implementation temporarily
 	case $implementation in
 		bird2)
-			/etc/init.d/babeld stop 2>/dev/null
-			/etc/init.d/fff-bird start
+			[ -f /etc/init.d/babeld ] && /etc/init.d/babeld stop 2>/dev/null
+			[ -f /etc/init.d/fff-bird ] && /etc/init.d/fff-bird start
 			;;
 		babeld)
-			/etc/init.d/fff-bird stop 2>/dev/null
-			/etc/init.d/babeld start
+			[ -f /etc/init.d/fff-bird ] && /etc/init.d/fff-bird stop 2>/dev/null
+			[ -f /etc/init.d/babeld ] && /etc/init.d/babeld start
 			;;
 	esac
 
@@ -101,12 +101,12 @@ babel_apply() {
 	# switch implementation persistently
 	case $implementation in
 		bird2)
-			/etc/init.d/babeld disable
-			/etc/init.d/fff-bird enable
+			[ -f /etc/init.d/babeld ] && /etc/init.d/babeld disable
+			[ -f /etc/init.d/fff-bird ] && /etc/init.d/fff-bird enable
 			;;
 		babeld)
-			/etc/init.d/fff-bird disable
-			/etc/init.d/babeld enable
+			[ -f /etc/init.d/fff-bird ] && /etc/init.d/fff-bird disable
+			[ -f /etc/init.d/babeld ] && /etc/init.d/babeld enable
 			;;
 	esac
 
