@@ -4,7 +4,7 @@ clone:
     settings:
       tags: true
 
-pipeline:
+steps:
   buildall-layer3:
     image: openwrtorg/imagebuilder
     commands:
@@ -42,4 +42,5 @@ pipeline:
       - echo "You can download the built firmware images here:"
       - echo "https://ci.fff.community/artifacts/$(git describe --tags)"
 
-branches: [ master ]
+when:
+  branch: [ master ]
