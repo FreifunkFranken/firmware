@@ -10,7 +10,8 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken firewall
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+nftables
+	DEPENDS:=+kmod-nft-bridge \
+	         +nftables
 endef
 
 define Package/$(PKG_NAME)/description

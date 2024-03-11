@@ -4,7 +4,7 @@ table bridge filter {
 	# vom Gateway (also vom BATMAN) kommen darf.
 	chain IN_ONLY {
 		# -i ! bat0 --logical-in br-client -j DROP
-		iifname != "bat0" counter drop
+		iifname != "bat0" ibrname "br-client" counter drop
 		counter
 	}
 
@@ -12,7 +12,7 @@ table bridge filter {
 	# in Richtung Gateway (also ins BATMAN) gesendet werden darf.
 	chain OUT_ONLY {
 		# --logical-out br-client -o ! bat0 -j DROP
-		oifname != "bat0" counter drop
+		oifname != "bat0" obrname "br-client" counter drop
 		counter
 	}
 
@@ -24,21 +24,21 @@ table bridge filter {
 		type filter hook input priority filter; policy accept;
 
 		# -d Multicast -i ! bat0 --logical-in br-client -j ACCEPT
-		iifname != "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter packets 0 bytes 0 accept
+		iifname != "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 ibrname "br-client" counter packets 0 bytes 0 accept
 	}
 
 	chain FORWARD {
 		type filter hook forward priority filter; policy accept;
 
 		# -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
-		oifname "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter packets 0 bytes 0 jump MULTICAST_OUT
+		oifname "bat0" obrname "br-client" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter packets 0 bytes 0 jump MULTICAST_OUT
 	}
 
 	chain OUTPUT {
 		type filter hook output priority filter; policy accept;
 
 		# -d Multicast --logical-out br-client -o bat0 -j MULTICAST_OUT
-		oifname "bat0" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter jump MULTICAST_OUT
+		oifname "bat0" obrname "br-client" ether daddr & 01:00:00:00:00:00 == 01:00:00:00:00:00 counter jump MULTICAST_OUT
 	}
 }
 __EOF
