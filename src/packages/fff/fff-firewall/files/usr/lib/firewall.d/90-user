@@ -1,0 +1,1 @@
+nft -f /etc/nftables-fff.conf

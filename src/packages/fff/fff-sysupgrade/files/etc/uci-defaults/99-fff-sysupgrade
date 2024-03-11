@@ -12,6 +12,7 @@ cat > /etc/sysupgrade.conf <<-__EOF__
 /etc/config/fff
 /etc/config/gateway
 /etc/hoodfile
+/etc/nftables-fff.conf
 __EOF__
 
 exit 0
