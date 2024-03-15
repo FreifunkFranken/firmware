@@ -36,7 +36,8 @@ get_port_order() {
 		tplink,cpe510-v1)
 			PORTORDER="5 4"
 			;;
-		xiaomi,mi-router-4a-100m)
+		xiaomi,mi-router-4a-100m|\
+		xiaomi,mi-router-4a-100m-intl)
 			PORTORDER="0 2 4"
 			;;
 	esac

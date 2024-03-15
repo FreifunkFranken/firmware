@@ -1,0 +1,7 @@
+. /lib/functions/fff/network
+
+WANDEV=eth0
+SWITCHDEV=eth0
+CLIENT_PORTS="6t 4"
+WAN_PORTS="6t 0"
+BATMAN_PORTS="6t 2"
