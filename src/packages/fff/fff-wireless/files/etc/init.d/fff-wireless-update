@@ -1,0 +1,21 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+boot() {
+	# first we disable the init.d
+	/etc/init.d/fff-wireless-update disable
+	# we must delete the symlink manually
+	rm -f /etc/rc.d/S99fff-wireless-update
+
+	# Starting with OpenWrt 23.05, reload_config does not
+	# properly start the wifi access point on some devices.
+	# This seems to be an issue with the reloading of hostapd,
+	# which throws errors, but does not restart hostapd.
+	# see https://git.freifunk-franken.de/freifunk-franken/firmware/issues/319
+	#
+	# workaround: manually restart wifi completely
+	# after any automatic post-update configuration (fff-layer3-config, ...)
+	sleep 20
+	wifi
+}
