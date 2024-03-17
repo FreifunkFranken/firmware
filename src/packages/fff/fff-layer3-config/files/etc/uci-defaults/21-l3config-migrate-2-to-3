@@ -7,7 +7,7 @@
 BOARD="$(uci get board.model.name)"
 
 # only migrate appropriate config versions
-[ "$(uci -q get gateway.meta.config_version)" = "2" ] || exit 1
+[ "$(uci -q get gateway.meta.config_version)" = "2" ] || exit 0
 
 translate_ports() {
 	local vlan="$1"
@@ -74,3 +74,5 @@ esac
 
 uci set gateway.meta.config_version='3'
 uci commit gateway
+
+exit 0
