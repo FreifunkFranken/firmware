@@ -48,19 +48,12 @@ for filename in $(grep 'up\|unknown' /sys/class/net/*/operstate); do
 
 	interface_data=$interface_data"<$iface><name>$iface</name>$addrs<traffic_rx>$traffic_rx</traffic_rx><traffic_tx>$traffic_tx</traffic_tx>"
 
-	interface_data=$interface_data$(iwconfig "${iface}" 2>/dev/null | awk -F':' '
-		/Mode/{ split($2, m, " "); printf "<wlan_mode>"m[1]"</wlan_mode>" }
-		/Cell/{ split($0, c, " "); printf "<wlan_bssid>"c[5]"</wlan_bssid>" }
-		/ESSID/ { split($0, e, "\""); printf "<wlan_essid>"e[2]"</wlan_essid>" }
-		/Freq/{ split($3, f, " "); printf "<wlan_frequency>"f[1]f[2]"</wlan_frequency>" }
-		/Tx-Power/{ split($0, p, "="); sub(/[[:space:]]*$/, "", p[2]); printf "<wlan_tx_power>"p[2]"</wlan_tx_power>" }
-	')
-
 	interface_data=$interface_data$(iw dev "${iface}" info 2>/dev/null | awk '
 		/ssid/{ split($0, s, " "); printf "<wlan_ssid>"s[2]"</wlan_ssid>" }
 		/type/ { split($0, t, " "); printf "<wlan_type>"t[2]"</wlan_type>" }
 		/channel/{ split($0, c, " "); printf "<wlan_channel>"c[2]"</wlan_channel>" }
 		/width/{ split($0, w, ": "); sub(/ .*/, "", w[2]); printf "<wlan_width>"w[2]"</wlan_width>" }
+		/txpower/{ sub(/\.../, "", $2); print "<wlan_tx_power>"$2" dBm</wlan_tx_power>" }
 	')
 
 	interface_data=$interface_data"</$iface>"
