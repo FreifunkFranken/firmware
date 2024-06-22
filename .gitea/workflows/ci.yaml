@@ -1,0 +1,174 @@
+name: Freifunk Franken Firmware CI
+run-name: Freifunk Firmware
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+env:
+  TERM: xterm-256color
+
+jobs:
+  Build-Firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get build name
+        run: echo "FFF_BUILD_NAME=$(git describe --tags --dirty)" >> $GITHUB_ENV
+
+      - name: Prepare build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion libssl-dev rsync python3-distutils
+          git config --global user.email "act@ci.fff.community"
+          git config --global user.name "FFF CI act_runner"
+
+
+      - name: Prepare layer3 firmware build
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectvariant layer3
+          ./buildscript selectbsp bsp/ath79-generic.bsp
+          ./buildscript prepare
+
+      - name: Build layer3 firmware for ath79-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ath79-generic.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for ipq40xx-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ipq40xx-generic.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for ipq806x-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ipq806x-generic.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for mpc85xx-p1010
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/mpc85xx-p1010.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for mvebu-cortexa72
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/mvebu-cortexa72.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for octeon
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/octeon.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for ramips-mt7621
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ramips-mt7621.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for ramips-mt76x8
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ramips-mt76x8.bsp
+          ./buildscript build
+      - name: Build layer3 firmware for x86-64
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/x86-64.bsp
+          ./buildscript build
+
+      - name: Upload layer3 artifacts
+        #uses: actions/upload-artifact@v4
+        uses: christopherhx/gitea-upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: fff-layer3-${{ env.FFF_BUILD_NAME }}
+          path: ${{ gitea.workspace }}/bin/layer3
+
+
+      - name: Prepare node firmware build
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectvariant node
+          ./buildscript selectbsp bsp/ath79-generic.bsp
+          ./buildscript prepare
+  
+      - name: Build node firmware for ath79-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ath79-generic.bsp
+          ./buildscript build
+      - name: Build node firmware for ipq40xx-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ipq40xx-generic.bsp
+          ./buildscript build
+      - name: Build node firmware for ipq806x-generic
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ipq806x-generic.bsp
+          ./buildscript build
+      - name: Build node firmware for mpc85xx-p1010
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/mpc85xx-p1010.bsp
+          ./buildscript build
+      - name: Build node firmware for mvebu-cortexa72
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/mvebu-cortexa72.bsp
+          ./buildscript build
+      - name: Build node firmware for octeon
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/octeon.bsp
+          ./buildscript build
+      - name: Build node firmware for ramips-mt7621
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ramips-mt7621.bsp
+          ./buildscript build
+      - name: Build node firmware for ramips-mt76x8
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/ramips-mt76x8.bsp
+          ./buildscript build
+      - name: Build node firmware for x86-64
+        continue-on-error: true
+        run: |
+          cd ${{ gitea.workspace }}
+          ./buildscript selectbsp bsp/x86-64.bsp
+          ./buildscript build
+
+      - name: Upload node artifacts
+        #uses: actions/upload-artifact@v4
+        uses: christopherhx/gitea-upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: fff-node-${{ env.FFF_BUILD_NAME }}
+          path: ${{ gitea.workspace }}/bin/node
