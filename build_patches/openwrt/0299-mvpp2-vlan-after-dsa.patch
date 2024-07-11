@@ -1,18 +1,18 @@
-From fddf68b6c559df4e7b8561ea57d6e27bc4b0a8db Mon Sep 17 00:00:00 2001
+From e56df0174af07abeb599fd52c566f8d1ba1e7165 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Mon, 20 Nov 2023 21:28:16 +0100
-Subject: [PATCH] mvpp2: vlan after dsa
+Subject: [PATCH 9/9] mvpp2: vlan after dsa
 
 ---
- .../linux/mvebu/patches-5.15/999-vlan-after-dsa.patch | 11 +++++++++++
+ .../linux/mvebu/patches-6.6/999-vlan-after-dsa.patch  | 11 +++++++++++
  1 file changed, 11 insertions(+)
- create mode 100644 target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
+ create mode 100644 target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
 
-diff --git a/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch b/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
+diff --git a/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch b/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
 new file mode 100644
-index 0000000000..d6f241ca08
+index 00000000000..d6f241ca085
 --- /dev/null
-+++ b/target/linux/mvebu/patches-5.15/999-vlan-after-dsa.patch
++++ b/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
 @@ -0,0 +1,11 @@
 +--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
 ++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
@@ -26,5 +26,5 @@ index 0000000000..d6f241ca08
 + 
 + 		/* Mask all ports */
 -- 
-2.42.1
+2.45.2
 

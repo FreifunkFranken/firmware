@@ -1,18 +1,18 @@
-From 4540ecce14d98e8c06a9bff6307bfaaf4074f99e Mon Sep 17 00:00:00 2001
+From 216f1cf8f8ce54964791e90604dfa17ed5689add Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Sat, 18 Nov 2023 23:30:43 +0100
-Subject: [PATCH] mvpp2: enable dsa parser entry
+Subject: [PATCH 8/9] mvpp2: enable dsa parser entry
 
 ---
  .../999-mvpp2-enable-dsa-parser-entry.patch   | 22 +++++++++++++++++++
  1 file changed, 22 insertions(+)
- create mode 100644 target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
+ create mode 100644 target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
 
-diff --git a/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch b/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
+diff --git a/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch b/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
 new file mode 100644
-index 0000000000..fe5c2657d9
+index 00000000000..fe5c2657d9a
 --- /dev/null
-+++ b/target/linux/mvebu/patches-5.15/999-mvpp2-enable-dsa-parser-entry.patch
++++ b/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
 @@ -0,0 +1,22 @@
 +--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 ++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
@@ -37,5 +37,5 @@ index 0000000000..fe5c2657d9
 + 	/* Clear all sram ai bits for next iteration */
 + 	mvpp2_prs_sram_ai_update(&pe, 0, MVPP2_PRS_SRAM_AI_MASK);
 -- 
-2.42.1
+2.45.2
 

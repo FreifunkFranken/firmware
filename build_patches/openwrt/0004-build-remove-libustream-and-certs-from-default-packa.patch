@@ -1,6 +1,10 @@
+From e02361b7c96fbfbd1fda768aaccf7ee24a2bfff3 Mon Sep 17 00:00:00 2001
 From: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 Date: Wed, 10 Feb 2021 19:12:59 +0100
-Subject: build: remove libustream and certs from default packages
+Subject: [PATCH 4/9] build: remove libustream and certs from default packages
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 This effectively reverts upstream commit e79df3516d3e ("build: add
 libustream and certs to default pkgs").
@@ -8,13 +12,16 @@ libustream and certs to default pkgs").
 Signed-off-by: Adrian Schmutzler <freifunk@adrianschmutzler.de>
 [fabian@blaese.de: Rebase onto OpenWrt 23.05]
 Signed-off-by: Fabian Bläse <fabian@blaese.de>
+---
+ include/target.mk | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/include/target.mk b/include/target.mk
-index b5e3e7ff6f..2324b6cc11 100644
+index 0108bced99..1447278ed9 100644
 --- a/include/target.mk
 +++ b/include/target.mk
-@@ -12,12 +12,10 @@ DEVICE_TYPE?=router
- # Default packages - the really basic set
+@@ -20,12 +20,10 @@ DEVICE_TYPE?=router
+ ##
  DEFAULT_PACKAGES:=\
  	base-files \
 -	ca-bundle \
@@ -26,3 +33,6 @@ index b5e3e7ff6f..2324b6cc11 100644
  	logd \
  	mtd \
  	netifd \
+-- 
+2.45.2
+

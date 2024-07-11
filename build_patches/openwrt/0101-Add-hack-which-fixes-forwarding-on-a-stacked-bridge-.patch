@@ -1,0 +1,51 @@
+From 3989fcbea2a1f8fc142aad74739c118be0476bff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Thu, 11 Jul 2024 23:42:16 +0200
+Subject: [PATCH] fix stacked bridge forwarding
+
+---
+ .../hack-6.1/999-fix-stacked-bridge-forwarding.patch | 12 ++++++++++++
+ .../hack-6.6/999-fix-stacked-bridge-forwarding.patch | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
+ create mode 100644 target/linux/generic/hack-6.1/999-fix-stacked-bridge-forwarding.patch
+ create mode 100644 target/linux/generic/hack-6.6/999-fix-stacked-bridge-forwarding.patch
+
+diff --git a/target/linux/generic/hack-6.1/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-6.1/999-fix-stacked-bridge-forwarding.patch
+new file mode 100644
+index 00000000000..e1d4cb9cd50
+--- /dev/null
++++ b/target/linux/generic/hack-6.1/999-fix-stacked-bridge-forwarding.patch
+@@ -0,0 +1,12 @@
++--- a/net/bridge/br_input.c
+++++ b/net/bridge/br_input.c
++@@ -52,6 +52,9 @@ static int br_pass_frame_up(struct sk_bu
++ 		return NET_RX_DROP;
++ 	}
++ 
+++	/* remove offload flag, so upper bridges do not drop the packet */
+++	br_switchdev_frame_unmark(skb);
+++
++ 	indev = skb->dev;
++ 	skb->dev = brdev;
++ 	skb = br_handle_vlan(br, NULL, vg, skb);
+diff --git a/target/linux/generic/hack-6.6/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-6.6/999-fix-stacked-bridge-forwarding.patch
+new file mode 100644
+index 00000000000..e1d4cb9cd50
+--- /dev/null
++++ b/target/linux/generic/hack-6.6/999-fix-stacked-bridge-forwarding.patch
+@@ -0,0 +1,12 @@
++--- a/net/bridge/br_input.c
+++++ b/net/bridge/br_input.c
++@@ -52,6 +52,9 @@ static int br_pass_frame_up(struct sk_bu
++ 		return NET_RX_DROP;
++ 	}
++ 
+++	/* remove offload flag, so upper bridges do not drop the packet */
+++	br_switchdev_frame_unmark(skb);
+++
++ 	indev = skb->dev;
++ 	skb->dev = brdev;
++ 	skb = br_handle_vlan(br, NULL, vg, skb);
+-- 
+2.45.2
+

@@ -3,7 +3,7 @@ Date: Sat, 6 Jan 2024 13:24:58 +0100
 Subject: [PATCH] bird: disable unnecessary protocols
 
 diff --git a/bird2/Makefile b/bird2/Makefile
-index 9fd0031..dc827b0 100644
+index ec9c12c..6f17463 100644
 --- a/bird2/Makefile
 +++ b/bird2/Makefile
 @@ -97,7 +97,7 @@ protocols, telling BIRD to show various information, telling it to show

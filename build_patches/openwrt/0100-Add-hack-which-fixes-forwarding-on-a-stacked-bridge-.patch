@@ -1,6 +1,7 @@
+From eb32f9ff9a5106c1b44634ca7300f76be0d817f2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Thu, 24 Feb 2022 00:04:47 +0100
-Subject: [PATCH] Add hack which fixes forwarding on a stacked bridge
+Subject: [PATCH 7/9] Add hack which fixes forwarding on a stacked bridge
  configuration using DSA
 
 ---
@@ -10,7 +11,7 @@ Subject: [PATCH] Add hack which fixes forwarding on a stacked bridge
 
 diff --git a/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch b/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch
 new file mode 100644
-index 0000000000..e1d4cb9cd5
+index 00000000000..e1d4cb9cd50
 --- /dev/null
 +++ b/target/linux/generic/hack-5.15/999-fix-stacked-bridge-forwarding.patch
 @@ -0,0 +1,12 @@
@@ -26,4 +27,6 @@ index 0000000000..e1d4cb9cd5
 + 	indev = skb->dev;
 + 	skb->dev = brdev;
 + 	skb = br_handle_vlan(br, NULL, vg, skb);
+-- 
+2.45.2
 
