@@ -24,6 +24,7 @@ uci batch >/dev/null <<EOF
   set dhcp.@dnsmasq[-1].readethers='1'
   set dhcp.@dnsmasq[-1].leasefile='/tmp/dhcp.leases'
   set dhcp.@dnsmasq[-1].noresolv='1'
+  set dhcp.@dnsmasq[-1].localuse='0'
   set dhcp.@dnsmasq[-1].localservice='1'
 
   # do not generate A or AAAA records for the routers hostname,
