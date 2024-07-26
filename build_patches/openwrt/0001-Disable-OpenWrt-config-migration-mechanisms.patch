@@ -6,8 +6,8 @@ Subject: [PATCH 1/9] Disable OpenWrt config migration mechanisms
 This disables all OpenWrt config migration mechanisms except for
 files listed in /etc/sysupgrade.conf
 ---
- package/base-files/files/sbin/sysupgrade | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ package/base-files/files/sbin/sysupgrade | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
 diff --git a/package/base-files/files/sbin/sysupgrade b/package/base-files/files/sbin/sysupgrade
 index 611d8830bfd..e1706d66fdf 100755
@@ -30,6 +30,31 @@ index 611d8830bfd..e1706d66fdf 100755
  		sort -u > "$file"
  	return 0
  }
+@@ -244,7 +244,6 @@ include /lib/upgrade
+ 
+ create_backup_archive() {
+ 	local conf_tar="$1"
+-	local disabled
+ 	local err
+ 
+ 	[ "$(rootfs_type)" = "tmpfs" ] && {
+@@ -264,16 +263,6 @@ create_backup_archive() {
+ 	{
+ 		local ret=0
+ 
+-		if [ $ret -eq 0 ]; then
+-			for service in /etc/init.d/*; do
+-				if ! $service enabled; then
+-				disabled="$disabled$service disable\n"
+-				fi
+-			done
+-			disabled="$disabled\nexit 0"
+-			tar_print_member "/etc/uci-defaults/10_disable_services" "$(echo -e $disabled)" || ret=1
+-		fi
+-
+ 		# Part of archive with installed packages info
+ 		if [ $ret -eq 0 ]; then
+ 			if [ "$SAVE_INSTALLED_PKGS" -eq 1 ]; then
 -- 
 2.45.2
 
