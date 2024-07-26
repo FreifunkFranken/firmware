@@ -37,21 +37,26 @@ index 66c74451f0..5535f8ad89 100644
  			partition@7 {
 -				compatible = "denx,fit";
 -				label = "firmware";
-+				label = "kernel";
++				label = "kernel_legacy";
  				reg = <0x100000 0xf00000>;
  			};
  			partition@8 {
-@@ -158,13 +157,8 @@
+@@ -158,13 +157,18 @@
  			#size-cells = <1>;
  
  			partition@0 {
 -				label = "RouterBoard NAND Boot";
--				reg = <0x0 0x800000>;
--			};
--
--			partition@800000 {
++				label = "JFFS2";
+ 				reg = <0x0 0x800000>;
+ 			};
+ 
+ 			partition@800000 {
 -				label = "RouterBoard NAND Main";
--				reg = <0x800000 0x3f800000>;
++				label = "ubi_new";
+ 				reg = <0x800000 0x3f800000>;
++			};
++
++			partition@1 {
 +				label = "ubi";
 +				reg = <0x0 0x40000000>;
  			};
