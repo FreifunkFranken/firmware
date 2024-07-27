@@ -1,0 +1,57 @@
+From 0ca1ea0017d1afa143734855117186c9db68a5a8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 27 Jul 2024 14:08:09 +0200
+Subject: [PATCH] rb5009 poe spi
+
+---
+ .../boot/dts/marvell/armada-7040-rb5009.dts   | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+index 8cd744f64d..6c3ce847aa 100644
+--- a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
++++ b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+@@ -382,3 +382,40 @@
+ 		};
+ 	};
+ };
++
++&cp0_pinctrl {
++	cp0_spi1_pins: cp0-spi1-pins {
++		// Mikrotik defines SPI1 with mpp50 as CS0 and then additionally sets mpp8 as CS for the PoE driver via GPIO. We just want the hardware to handle CS0 on mpp8
++		marvell,pins = "mpp47", "mpp48", "mpp49", "mpp8";
++		//marvell,pins = "mpp47", "mpp48", "mpp49", "mpp50";
++		marvell,function = "spi1";
++	};
++
++	/*cp0_spi1_poe_cs_pins: cp0-spi1-poe-cs-pins {
++		marvell,pins = "mpp8";
++		marcell,function = "gpio";
++	};*/
++};
++
++&cp0_spi1 {
++	status = "okay";
++
++	pinctrl-0 = <&cp0_spi1_pins>;
++	pinctrl-names = "default";
++
++	spidev@0 {
++		compatible = "rohm,dh2228fv";
++		//compatible = "linux,spidev";
++		reg = <0>;
++		spi-max-frequency = <2000000>;
++	};
++};
++
++&cp0_gpio1 {
++	enable-poe-power {
++		gpio-hog;
++		gpios = <8 GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "enable PoE chip";
++	};
++};
+-- 
+2.45.2
+
