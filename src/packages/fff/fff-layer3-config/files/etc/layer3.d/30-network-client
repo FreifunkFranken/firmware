@@ -21,7 +21,7 @@ configure() {
 	# ip6addr
 	#remove old ip6addr
 	for ip in $(uci -q get network.client.ip6addr); do
-		if echo "$ip" | grep -v -e "fdff:" -e "fe80::1/64" > /dev/null; then
+		if echo "$ip" | grep -v -e "fe80::1/64" > /dev/null; then
 			uci del_list network.client.ip6addr="$ip"
 		fi
 	done
@@ -31,6 +31,8 @@ configure() {
 			uci add_list network.client.ip6addr=$ip
 		done
 	else
+		# only add fdff::1/64 in case no other ipv6 subnets are available
+		uci add_list network.client.ip6addr='fdff::1/64'
 		echo "WARNING: No client ip6addr set!"
 	fi
 	#put interface routes from set addresses into fff table
