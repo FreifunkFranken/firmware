@@ -14,6 +14,9 @@ BOARD="$(uci get board.model.name)"
 
 # Add basic network configuration
 uci batch <<-__EOF__
+	del network.globals
+	set network.globals=globals
+
 	set network.loopback='interface'
 	set network.loopback.ifname='lo'
 	set network.loopback.proto='static'
@@ -29,7 +32,6 @@ uci batch <<-__EOF__
 	set network.client.type='bridge'
 	set network.client.auto='1'
 	set network.client.proto=static
-	add_list network.client.ip6addr='fdff::1/64'
 
 	set network.wan='interface'
 	set network.wan.proto='none'
@@ -123,24 +125,6 @@ fi
 if [ -n "$ROUTERMAC" ]; then
 	uci set network.client.macaddr=$ROUTERMAC
 fi
-
-
-prefix="fdff::/128"
-
-# Set $prefix::1 as IP
-addr1=$(owipcalc "$prefix" add ::1)
-# Set $prefix::MAC as IP
-addr2=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
-# Set $prefix::EUI64 as IP
-addr3=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
-
-uci batch <<-__EOF__
-	del network.globals
-	set network.globals=globals
-	add_list network.fdff.ip6addr="${addr1}/128"
-	add_list network.fdff.ip6addr="${addr2}/128"
-	add_list network.fdff.ip6addr="${addr3}/128"
-__EOF__
 
 
 uci -q commit network
