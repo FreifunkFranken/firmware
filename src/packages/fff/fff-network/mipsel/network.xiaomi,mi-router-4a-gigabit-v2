@@ -1,0 +1,6 @@
+WANDEV=switch0
+SWITCHDEV=switch0
+CLIENT_PORTS="lan2"
+WAN_PORTS="wan"
+BATMAN_PORTS="lan1"
+DSA=1

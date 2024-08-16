@@ -1,0 +1,36 @@
+From bed33fd410b918de42765a1080d2aca63745bb20 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Fri, 16 Aug 2024 23:05:05 +0200
+Subject: [PATCH] ramips: mt7621: swap incorrectly labeled lan ports on Xiaomi
+ Mi Router 4A Gigabit v2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Fabian Bläse <fabian@blaese.de>
+---
+ .../ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit-v2.dts      | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit-v2.dts b/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit-v2.dts
+index 67ff6ea11e..d52864cec9 100644
+--- a/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit-v2.dts
++++ b/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit-v2.dts
+@@ -62,12 +62,12 @@
+ 	ports {
+ 		port@1 {
+ 			status = "okay";
+-			label = "lan1";
++			label = "lan2";
+ 		};
+ 
+ 		port@2 {
+ 			status = "okay";
+-			label = "lan2";
++			label = "lan1";
+ 		};
+ 
+ 		wan: port@3 {
+-- 
+2.46.0
+

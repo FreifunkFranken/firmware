@@ -6,4 +6,5 @@ images=(
         "openwrt-ramips-mt7621-ubnt_edgerouter-x-squashfs-*"
         "openwrt-ramips-mt7621-ubnt_edgerouter-x-sfp-squashfs-*"
         "openwrt-ramips-mt7621-xiaomi_mi-router-4a-gigabit-squashfs-*"
+        "openwrt-ramips-mt7621-xiaomi_mi-router-4a-gigabit-v2-squashfs-*"
        )
