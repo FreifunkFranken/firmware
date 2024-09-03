@@ -100,7 +100,6 @@ get_source() {
             # Patches for feeds are stored in known directories like feed_patches/$NAME/
             for PATCH in $(ls ../../feed_patches/${NAME}/*.patch 2>/dev/null); do
                 if [ -s "$PATCH" ] ; then
-                    echo "Applying $PATCH"
                     git -C "$NAME" am --whitespace=nowarn "../$PATCH"
                 else
                     echo "Empty patch $PATCH ignored."
@@ -115,8 +114,7 @@ get_source() {
 
 patch_target() {
     for patch in $(ls "$PWD"/build_patches/openwrt/*.patch 2>/dev/null); do
-        echo "Applying $patch:"
-        patch --no-backup-if-mismatch -p1 -d "$builddir" -i "$patch"
+        git -C "$builddir" am --whitespace=nowarn "$patch"
     done
 }
 
