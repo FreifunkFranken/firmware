@@ -9,24 +9,15 @@ BOARD="$(uci get board.model.name)"
 
 [ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
-prefix="fdff::/128"
-
-# Set $prefix::1 as IP
-addr1=$(owipcalc "$prefix" add ::1)
-# Set $prefix::MAC as IP
-addr2=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
-# Set $prefix::EUI64 as IP
-addr3=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
-
 uci batch <<-__EOF__
 	set network.fdff='interface'
 	set network.fdff.ifname='lo'
 	set network.fdff.proto='static'
 	set network.fdff.ip6deprecated='1'
 
-	add_list network.fdff.ip6addr="${addr1}/128"
-	add_list network.fdff.ip6addr="${addr2}/128"
-	add_list network.fdff.ip6addr="${addr3}/128"
+	add_list network.fdff.ip6addr="fdff::1/128"
+	add_list network.fdff.ip6addr="fdff::$(ipMacSuffic "$ROUTERMAC")/128"
+	add_list network.fdff.ip6addr="fdff::$(ipEUISuffix "$ROUTERMAC")/128"
 
 	# Configure fdff::1/64 on the client interface, such that clients will
 	# receive router advertisements, even on an unconfigured device.
