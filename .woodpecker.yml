@@ -5,11 +5,14 @@ clone:
       tags: true
 
 steps:
-  buildall-layer3:
-    image: openwrtorg/imagebuilder
+  clone:
+    image: alpine/git
     commands:
-      - export HOME=/home/build/openwrt
-      - sudo chown -R build:build .
+      - chown -R 1000:1000 "$CI_WORKSPACE"
+  buildall-layer3:
+    image: openwrt/imagebuilder
+    commands:
+      - export HOME=$(mktemp -d)
       - git config --global user.email "ci@fff.community"
       - git config --global user.name "FFF CI"
       - ./buildscript selectvariant layer3
@@ -18,10 +21,9 @@ steps:
       - ./buildscript buildall
 
   buildall-node:
-    image: openwrtorg/imagebuilder
+    image: openwrt/imagebuilder
     commands:
-      - export HOME=/home/build/openwrt
-      - sudo chown -R build:build .
+      - export HOME=$(mktemp -d)
       - git config --global user.email "ci@fff.community"
       - git config --global user.name "FFF CI"
       - ./buildscript selectvariant node
