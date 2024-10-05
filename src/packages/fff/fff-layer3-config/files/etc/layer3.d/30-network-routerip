@@ -4,12 +4,15 @@ configure() {
 	local router_ip
 	local router_ip6
 
-	# clean old addresses
-	uci -q del network.loopback.ipaddr
-	uci -q del network.loopback.ip6addr
+	# prepare routerip config
+	uci -q set network.routerip=interface
+	uci -q set network.routerip.ifname='lo'
+	uci -q set network.routerip.proto='static'
 
-	# remove netmask entry that ships by default
-	uci -q del network.loopback.netmask
+
+	# clean old addresses
+	uci -q del network.routerip.ipaddr
+	uci -q del network.routerip.ip6addr
 
 	# clean old rules
 	remove_rules() {
@@ -30,7 +33,7 @@ configure() {
 	# add router_ip
 	router_ip=$(uci -q get gateway.meta.router_ip)
 	for ip in $router_ip; do
-		uci -q add_list network.loopback.ipaddr="$ip"
+		uci -q add_list network.routerip.ipaddr="$ip"
 
 		# CIDR notation required
 		case $ip in
@@ -53,7 +56,7 @@ configure() {
 	# add router_ip6
 	router_ip6=$(uci -q get gateway.meta.router_ip6)
 	for ip in $router_ip6; do
-		uci -q add_list network.loopback.ip6addr="$ip"
+		uci -q add_list network.routerip.ip6addr="$ip"
 
 		# CIDR notation required
 		case $ip in
