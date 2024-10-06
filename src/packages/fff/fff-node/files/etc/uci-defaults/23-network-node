@@ -25,6 +25,10 @@ uci batch <<-__EOF__
 	add_list network.client.ip6addr="${addr2}"
 	add_list network.client.ip6addr="${addr3}"
 	set network.client.proto=static
+
+	set network.ethmesh='interface'
+	set network.ethmesh.proto='batadv_hardif'
+	set network.ethmesh.master='bat0'
 __EOF__
 
 

@@ -46,10 +46,6 @@ uci batch <<-__EOF__
 	set network.wan6.reqprefix='no'
 	set network.wan6.sourcefilter='0'
 	set network.wan6.ifname='@wan'
-
-	set network.ethmesh='interface'
-	set network.ethmesh.proto='batadv_hardif'
-	set network.ethmesh.master='bat0'
 __EOF__
 
 SWITCHHW=$(swconfig list | awk '{ print $4 }')
