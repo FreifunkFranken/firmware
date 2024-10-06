@@ -20,7 +20,7 @@ configure() {
 
 	# ip6addr
 	#remove old ip6addr
-	uci del network.client.ip6addr
+	uci -q del network.$name.ip6addr
 	#set new ip6addr
 	if ip6addr=$(uci -q get gateway.@client[0].ip6addr); then
 		for ip in $ip6addr; do
