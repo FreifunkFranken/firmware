@@ -1,0 +1,2003 @@
+From 768cceb48af050151b60439ac59d1a8e08ec0de9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Wed, 16 Oct 2024 12:44:54 +0200
+Subject: [PATCH] Switch from ath10k-ct to ath10k by default
+
+---
+ target/linux/ath79/image/common-ubnt.mk     |   2 +-
+ target/linux/ath79/image/generic-tp-link.mk |  96 +++++------
+ target/linux/ath79/image/generic-ubnt.mk    |  24 +--
+ target/linux/ath79/image/generic.mk         | 172 ++++++++++----------
+ target/linux/ath79/image/mikrotik.mk        |  10 +-
+ target/linux/ath79/image/nand.mk            |  28 ++--
+ target/linux/ath79/image/tiny-tp-link.mk    |   2 +-
+ target/linux/ipq40xx/Makefile               |   4 +-
+ target/linux/ipq40xx/image/generic.mk       |  36 ++--
+ target/linux/ipq40xx/image/mikrotik.mk      |   8 +-
+ target/linux/ipq806x/Makefile               |   2 +-
+ target/linux/ipq806x/image/chromium.mk      |   2 +-
+ target/linux/ipq806x/image/generic.mk       |  58 +++----
+ target/linux/ipq807x/image/generic.mk       |   4 +-
+ target/linux/lantiq/image/vr9.mk            |   2 +-
+ target/linux/mpc85xx/image/p1020.mk         |   2 +-
+ target/linux/mvebu/image/cortexa9.mk        |   2 +-
+ 17 files changed, 227 insertions(+), 227 deletions(-)
+
+diff --git a/target/linux/ath79/image/common-ubnt.mk b/target/linux/ath79/image/common-ubnt.mk
+index f44e06e110..4170f83051 100644
+--- a/target/linux/ath79/image/common-ubnt.mk
++++ b/target/linux/ath79/image/common-ubnt.mk
+@@ -125,7 +125,7 @@ define Device/ubnt_unifiac
+   DEVICE_VENDOR := Ubiquiti
+   SOC := qca9563
+   IMAGE_SIZE := 15488k
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+ endef
+ 
+ define Device/ubnt-unifi-jffs2
+diff --git a/target/linux/ath79/image/generic-tp-link.mk b/target/linux/ath79/image/generic-tp-link.mk
+index cfabc89b8d..f360a7715b 100644
+--- a/target/linux/ath79/image/generic-tp-link.mk
++++ b/target/linux/ath79/image/generic-tp-link.mk
+@@ -6,8 +6,8 @@ define Device/tplink_archer-a7-v5
+   IMAGE_SIZE := 15104k
+   DEVICE_MODEL := Archer A7
+   DEVICE_VARIANT := v5
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := ARCHER-A7-V5
+ endef
+ TARGET_DEVICES += tplink_archer-a7-v5
+@@ -18,8 +18,8 @@ define Device/tplink_archer-a9-v6
+   IMAGE_SIZE := 15360k
+   DEVICE_MODEL := Archer A9
+   DEVICE_VARIANT := v6
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca9984-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca9984
+   TPLINK_BOARD_ID := ARCHER-A9-V6
+ endef
+ TARGET_DEVICES += tplink_archer-a9-v6
+@@ -30,7 +30,7 @@ define Device/tplink_archer-c2-v3
+   IMAGE_SIZE := 7808k
+   DEVICE_MODEL := Archer C2
+   DEVICE_VARIANT := v3
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9887
+   TPLINK_BOARD_ID := ARCHER-C2-V3
+ endef
+ TARGET_DEVICES += tplink_archer-c2-v3
+@@ -42,7 +42,7 @@ define Device/tplink_archer-c25-v1
+   DEVICE_MODEL := Archer C25
+   DEVICE_VARIANT := v1
+   TPLINK_BOARD_ID := ARCHER-C25-V1
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9887
+   SUPPORTED_DEVICES += archer-c25-v1
+ endef
+ TARGET_DEVICES += tplink_archer-c25-v1
+@@ -52,8 +52,8 @@ define Device/tplink_archer-c5-v1
+   SOC := qca9558
+   DEVICE_MODEL := Archer C5
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_HWID := 0xc5000001
+   SUPPORTED_DEVICES += archer-c5
+ endef
+@@ -66,7 +66,7 @@ define Device/tplink_archer-c58-v1
+   DEVICE_MODEL := Archer C58
+   DEVICE_VARIANT := v1
+   TPLINK_BOARD_ID := ARCHER-C58-V1
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += archer-c58-v1
+ endef
+ TARGET_DEVICES += tplink_archer-c58-v1
+@@ -78,8 +78,8 @@ define Device/tplink_archer-c59-v1
+   DEVICE_MODEL := Archer C59
+   DEVICE_VARIANT := v1
+   TPLINK_BOARD_ID := ARCHER-C59-V1
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += archer-c59-v1
+ endef
+ TARGET_DEVICES += tplink_archer-c59-v1
+@@ -91,8 +91,8 @@ define Device/tplink_archer-c59-v2
+   DEVICE_MODEL := Archer C59
+   DEVICE_VARIANT := v2
+   TPLINK_BOARD_ID := ARCHER-C59-V2
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += archer-c59-v2
+ endef
+ TARGET_DEVICES += tplink_archer-c59-v2
+@@ -104,7 +104,7 @@ define Device/tplink_archer-c6-v2
+   DEVICE_MODEL := Archer C6
+   DEVICE_VARIANT := v2 (EU/RU/JP)
+   TPLINK_BOARD_ID := ARCHER-C6-V2
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += tplink_archer-c6-v2
+ 
+@@ -118,7 +118,7 @@ define Device/tplink_archer-c6-v2-us
+   DEVICE_ALT0_MODEL := Archer A6
+   DEVICE_ALT0_VARIANT := v2 (US/TW)
+   TPLINK_BOARD_ID := ARCHER-C6-V2-US
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += tplink_archer-c6-v2-us
+ 
+@@ -129,7 +129,7 @@ define Device/tplink_archer-c60-v1
+   DEVICE_MODEL := Archer C60
+   DEVICE_VARIANT := v1
+   TPLINK_BOARD_ID := ARCHER-C60-V1
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += archer-c60-v1
+ endef
+ TARGET_DEVICES += tplink_archer-c60-v1
+@@ -141,7 +141,7 @@ define Device/tplink_archer-c60-v2
+   DEVICE_MODEL := Archer C60
+   DEVICE_VARIANT := v2
+   TPLINK_BOARD_ID := ARCHER-C60-V2
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += archer-c60-v2
+ endef
+ TARGET_DEVICES += tplink_archer-c60-v2
+@@ -153,7 +153,7 @@ define Device/tplink_archer-c60-v3
+   DEVICE_MODEL := Archer C60
+   DEVICE_VARIANT := v3
+   TPLINK_BOARD_ID := ARCHER-C60-V3
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += tplink_archer-c60-v3
+ 
+@@ -173,8 +173,8 @@ define Device/tplink_archer-c7-v2
+   SOC := qca9558
+   DEVICE_MODEL := Archer C7
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_HWID := 0xc7000002
+   SUPPORTED_DEVICES += archer-c7
+   IMAGES += factory-us.bin factory-eu.bin
+@@ -189,8 +189,8 @@ define Device/tplink_archer-c7-v4
+   IMAGE_SIZE := 15104k
+   DEVICE_MODEL := Archer C7
+   DEVICE_VARIANT := v4
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := ARCHER-C7-V4
+   SUPPORTED_DEVICES += archer-c7-v4
+ endef
+@@ -202,8 +202,8 @@ define Device/tplink_archer-c7-v5
+   IMAGE_SIZE := 15360k
+   DEVICE_MODEL := Archer C7
+   DEVICE_VARIANT := v5
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := ARCHER-C7-V5
+   SUPPORTED_DEVICES += archer-c7-v5
+ endef
+@@ -215,7 +215,7 @@ define Device/tplink_archer-d50-v1
+   DEVICE_MODEL := Archer D50
+   DEVICE_VARIANT := v1
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++	kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   IMAGE_SIZE := 7808k
+   TPLINK_HWID := 0xC1200001
+   TPLINK_HWREV := 0x00000046
+@@ -231,7 +231,7 @@ define Device/tplink_archer-d7-v1
+   DEVICE_MODEL := Archer D7
+   DEVICE_VARIANT := v1
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+-	kmod-ath10k-ct ath10k-firmware-qca988x-ct
++	kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+   TPLINK_HWID := 0x89300001
+   TPLINK_HWREV := 0x0000002D
+@@ -246,7 +246,7 @@ define Device/tplink_archer-d7b-v1
+   DEVICE_MODEL := Archer D7b
+   DEVICE_VARIANT := v1
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+-	kmod-ath10k-ct ath10k-firmware-qca988x-ct
++	kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 16000k
+   TPLINK_HWID := 0x89300001
+   TPLINK_HWREV := 0x0000003D
+@@ -386,7 +386,7 @@ define Device/tplink_cpe710-v1
+   IMAGE_SIZE := 15680k
+   DEVICE_MODEL := CPE710
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := CPE710V1
+ endef
+ TARGET_DEVICES += tplink_cpe710-v1
+@@ -406,7 +406,7 @@ define Device/tplink_eap225-outdoor-v1
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225-Outdoor
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := EAP225-OUTDOOR-V1
+ endef
+ TARGET_DEVICES += tplink_eap225-outdoor-v1
+@@ -417,7 +417,7 @@ define Device/tplink_eap225-outdoor-v3
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225-Outdoor
+   DEVICE_VARIANT := v3
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := EAP225-V3
+ endef
+ TARGET_DEVICES += tplink_eap225-outdoor-v3
+@@ -428,7 +428,7 @@ define Device/tplink_eap225-v1
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := EAP225-V1
+ endef
+ TARGET_DEVICES += tplink_eap225-v1
+@@ -439,7 +439,7 @@ define Device/tplink_eap225-v3
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225
+   DEVICE_VARIANT := v3
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := EAP225-V3
+ endef
+ TARGET_DEVICES += tplink_eap225-v3
+@@ -450,7 +450,7 @@ define Device/tplink_eap225-v4
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225
+   DEVICE_VARIANT := v4
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := EAP225-V3
+ endef
+ TARGET_DEVICES += tplink_eap225-v4
+@@ -461,7 +461,7 @@ define Device/tplink_eap225-wall-v2
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP225-Wall
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   TPLINK_BOARD_ID := EAP225-WALL-V2
+ endef
+ TARGET_DEVICES += tplink_eap225-wall-v2
+@@ -472,7 +472,7 @@ define Device/tplink_eap245-v1
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := EAP245
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := EAP245-V1
+ endef
+ TARGET_DEVICES += tplink_eap245-v1
+@@ -486,7 +486,7 @@ define Device/tplink_eap245-v3
+   DEVICE_ALT0_VENDOR := $$(DEVICE_VENDOR)
+   DEVICE_ALT0_MODEL := EAP265 HD
+   DEVICE_ALT0_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca99x0-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca99x0
+   TPLINK_BOARD_ID := EAP245-V3
+ endef
+ TARGET_DEVICES += tplink_eap245-v3
+@@ -497,7 +497,7 @@ define Device/tplink_deco-m4r-v1
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := Deco M4R
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   SUPPORTED_DEVICES += deco-m4r-v1
+   TPLINK_BOARD_ID := DECO-M4R-V1
+ endef
+@@ -509,7 +509,7 @@ define Device/tplink_deco-s4-v2
+   IMAGE_SIZE := 13824k
+   DEVICE_MODEL := Deco S4
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct uencrypt-mbedtls
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888 uencrypt-mbedtls
+   SUPPORTED_DEVICES += deco-s4-v2
+   TPLINK_BOARD_ID := DECO-S4-V2
+ endef
+@@ -521,7 +521,7 @@ define Device/tplink_re350k-v1
+   IMAGE_SIZE := 13760k
+   DEVICE_MODEL := RE350K
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := RE350K-V1
+ endef
+ TARGET_DEVICES += tplink_re350k-v1
+@@ -530,7 +530,7 @@ define Device/tplink_rex5x-v1
+   $(Device/tplink-safeloader)
+   SOC := qca9558
+   IMAGE_SIZE := 6016k
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ 
+ define Device/tplink_re355-v1
+@@ -557,7 +557,7 @@ define Device/tplink_re450-v2
+   IMAGE_SIZE := 6016k
+   DEVICE_MODEL := RE450
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := RE450-V2
+   LOADER_TYPE := elf
+ endef
+@@ -569,7 +569,7 @@ define Device/tplink_re450-v3
+   IMAGE_SIZE := 7808k
+   DEVICE_MODEL := RE450
+   DEVICE_VARIANT := v3
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := RE450-V3
+   LOADER_TYPE := elf
+ endef
+@@ -581,7 +581,7 @@ define Device/tplink_re455-v1
+   IMAGE_SIZE := 7808k
+   DEVICE_MODEL := RE455
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   TPLINK_BOARD_ID := RE455-V1
+   LOADER_TYPE := elf
+ endef
+@@ -606,7 +606,7 @@ define Device/tplink_tl-wa1201-v2
+   DEVICE_MODEL := TL-WA1201
+   DEVICE_VARIANT := v2
+   TPLINK_BOARD_ID := TL-WA1201-V2
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += tplink_tl-wa1201-v2
+ 
+@@ -681,8 +681,8 @@ define Device/tplink_tl-wdr7500-v3
+   SOC := qca9558
+   DEVICE_MODEL := TL-WDR7500
+   DEVICE_VARIANT := v3
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   TPLINK_HWID := 0x75000003
+   SUPPORTED_DEVICES += archer-c7
+ endef
+@@ -693,7 +693,7 @@ define Device/tplink_tl-wpa8630-v1
+   SOC := qca9563
+   DEVICE_MODEL := TL-WPA8630
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   TPLINK_HWID := 0x86300001
+   SUPPORTED_DEVICES += tl-wpa8630
+ endef
+@@ -888,7 +888,7 @@ define Device/tplink_tl-wr902ac-v1
+   DEVICE_MODEL := TL-WR902AC
+   DEVICE_VARIANT := v1
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport \
+-	kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct \
++	kmod-ath10k-smallbuffers ath10k-firmware-qca9887 \
+ 	-swconfig -uboot-envtools
+   TPLINK_BOARD_ID := TL-WR902AC-V1
+   IMAGE_SIZE := 7360k
+diff --git a/target/linux/ath79/image/generic-ubnt.mk b/target/linux/ath79/image/generic-ubnt.mk
+index 1d464361a0..ce9ec0902f 100644
+--- a/target/linux/ath79/image/generic-ubnt.mk
++++ b/target/linux/ath79/image/generic-ubnt.mk
+@@ -5,7 +5,7 @@ define Device/ubnt_aircube-ac
+   SOC := ar9342
+   DEVICE_MODEL := airCube AC
+   UBNT_CHIP := ar9342
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_aircube-ac
+ 
+@@ -21,7 +21,7 @@ TARGET_DEVICES += ubnt_aircube-isp
+ define Device/ubnt_bullet-ac
+   $(Device/ubnt-2wa)
+   DEVICE_MODEL := Bullet AC
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_bullet-ac
+ 
+@@ -53,7 +53,7 @@ TARGET_DEVICES += ubnt_edgeswitch-8xp
+ define Device/ubnt_lap-120
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := LiteAP ac (LAP-120)
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_lap-120
+ 
+@@ -61,7 +61,7 @@ define Device/ubnt_litebeam-ac-gen2
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := LiteBeam AC
+   DEVICE_VARIANT := Gen2
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_litebeam-ac-gen2
+ 
+@@ -69,7 +69,7 @@ define Device/ubnt_nanobeam-ac
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := NanoBeam AC
+   DEVICE_VARIANT := Gen1
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_nanobeam-ac
+ 
+@@ -77,7 +77,7 @@ define Device/ubnt_nanobeam-ac-gen2
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := NanoBeam AC
+   DEVICE_VARIANT := Gen2
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_nanobeam-ac-gen2
+ 
+@@ -86,7 +86,7 @@ define Device/ubnt_nanobeam-ac-xc
+   SOC := qca9558
+   DEVICE_MODEL := NanoBeam AC
+   DEVICE_VARIANT := Gen1 (XC)
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_nanobeam-ac-xc
+ 
+@@ -101,14 +101,14 @@ TARGET_DEVICES += ubnt_nanobeam-m5-xw
+ define Device/ubnt_nanostation-ac
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := Nanostation AC
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_nanostation-ac
+ 
+ define Device/ubnt_nanostation-ac-loco
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := Nanostation AC loco
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_nanostation-ac-loco
+ 
+@@ -133,7 +133,7 @@ define Device/ubnt_powerbeam-5ac-500
+   SOC := qca9558
+   DEVICE_MODEL := PowerBeam 5AC
+   DEVICE_VARIANT := 500
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_powerbeam-5ac-500
+ 
+@@ -141,7 +141,7 @@ define Device/ubnt_powerbeam-5ac-gen2
+   $(Device/ubnt-wa)
+   DEVICE_MODEL := PowerBeam 5AC
+   DEVICE_VARIANT := Gen2
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct rssileds
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x rssileds
+ endef
+ TARGET_DEVICES += ubnt_powerbeam-5ac-gen2
+ 
+@@ -175,7 +175,7 @@ define Device/ubnt_rocket-5ac-lite
+   SOC := qca9558
+   DEVICE_MODEL := Rocket 5AC
+   DEVICE_VARIANT := Lite
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += ubnt_rocket-5ac-lite
+ 
+diff --git a/target/linux/ath79/image/generic.mk b/target/linux/ath79/image/generic.mk
+index f264c14314..d4385c24aa 100644
+--- a/target/linux/ath79/image/generic.mk
++++ b/target/linux/ath79/image/generic.mk
+@@ -266,7 +266,7 @@ define Device/airtight_c-75
+   DEVICE_ALT0_MODEL := C-75
+   DEVICE_ALT1_VENDOR := WatchGuard
+   DEVICE_ALT1_MODEL := AP320
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k kmod-usb2
+   IMAGE_SIZE := 32320k
+   KERNEL_SIZE := 15936k
+ endef
+@@ -345,7 +345,7 @@ define Device/allnet_all-wap02860ac
+   SOC := qca9558
+   DEVICE_VENDOR := ALLNET
+   DEVICE_MODEL := ALL-WAP02860AC
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := senao-allwap02860ac
+@@ -368,7 +368,7 @@ define Device/araknis_an-500-ap-i-ac
+   SOC := qca9557
+   DEVICE_VENDOR := Araknis
+   DEVICE_MODEL := AN-500-AP-I-AC
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := senao-generic-v1-an500
+@@ -380,7 +380,7 @@ define Device/araknis_an-700-ap-i-ac
+   SOC := qca9558
+   DEVICE_VENDOR := Araknis
+   DEVICE_MODEL := AN-700-AP-I-AC
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := senao-generic-v1-an700
+@@ -452,7 +452,7 @@ define Device/asus_pl-ac56
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += asus_pl-ac56
+ 
+@@ -464,7 +464,7 @@ define Device/asus_rp-ac51
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct \
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888 \
+ 	-swconfig
+ endef
+ TARGET_DEVICES += asus_rp-ac51
+@@ -477,7 +477,7 @@ define Device/asus_rp-ac66
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct \
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca988x \
+ 	rssileds -swconfig
+ endef
+ TARGET_DEVICES += asus_rp-ac66
+@@ -514,8 +514,8 @@ define Device/avm_fritz1750e
+   SOC := qca9556
+   IMAGE_SIZE := 15232k
+   DEVICE_MODEL := FRITZ!WLAN Repeater 1750E
+-  DEVICE_PACKAGES += rssileds kmod-ath10k-ct-smallbuffers \
+-	ath10k-firmware-qca988x-ct -swconfig
++  DEVICE_PACKAGES += rssileds kmod-ath10k-smallbuffers \
++	ath10k-firmware-qca988x -swconfig
+ endef
+ TARGET_DEVICES += avm_fritz1750e
+ 
+@@ -552,8 +552,8 @@ define Device/avm_fritzdvbc
+   SOC := qca9556
+   IMAGE_SIZE := 15232k
+   DEVICE_MODEL := FRITZ!WLAN Repeater DVB-C
+-  DEVICE_PACKAGES += rssileds kmod-ath10k-ct-smallbuffers \
+-	ath10k-firmware-qca988x-ct -swconfig
++  DEVICE_PACKAGES += rssileds kmod-ath10k-smallbuffers \
++	ath10k-firmware-qca988x -swconfig
+ endef
+ TARGET_DEVICES += avm_fritzdvbc
+ 
+@@ -562,7 +562,7 @@ define Device/belkin_f9x-v2
+   SOC := qca9558
+   DEVICE_VENDOR := Belkin
+   IMAGE_SIZE := 14464k
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2 \
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-usb2 \
+ 	kmod-usb3 kmod-usb-ledtrig-usbport
+   LOADER_FLASH_OFFS := 0x50000
+   KERNEL := kernel-bin | append-dtb | lzma | uImage lzma -M 0x4f4b4c49
+@@ -713,8 +713,8 @@ define Device/comfast_cf-e313ac
+   SOC := qca9531
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-E313AC
+-  DEVICE_PACKAGES := rssileds kmod-ath10k-ct-smallbuffers \
+-	ath10k-firmware-qca9888-ct -swconfig -uboot-envtools
++  DEVICE_PACKAGES := rssileds kmod-ath10k-smallbuffers \
++	ath10k-firmware-qca9888 -swconfig -uboot-envtools
+   IMAGE_SIZE := 7936k
+ endef
+ TARGET_DEVICES += comfast_cf-e313ac
+@@ -733,8 +733,8 @@ define Device/comfast_cf-e375ac
+   SOC := qca9563
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-E375AC
+-  DEVICE_PACKAGES := kmod-ath10k-ct \
+-	ath10k-firmware-qca9888-ct -uboot-envtools
++  DEVICE_PACKAGES := kmod-ath10k \
++	ath10k-firmware-qca9888 -uboot-envtools
+   IMAGE_SIZE := 16000k
+ endef
+ TARGET_DEVICES += comfast_cf-e375ac
+@@ -753,7 +753,7 @@ define Device/comfast_cf-e560ac
+   SOC := qca9531
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-E560AC
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9888
+   IMAGE_SIZE := 16128k
+ endef
+ TARGET_DEVICES += comfast_cf-e560ac
+@@ -762,7 +762,7 @@ define Device/comfast_cf-ew72
+   SOC := qca9531
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-EW72
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct \
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9888 \
+ 	-uboot-envtools -swconfig
+   IMAGE_SIZE := 16192k
+ endef
+@@ -773,7 +773,7 @@ define Device/comfast_cf-wr650ac-v1
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-WR650AC
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 16128k
+ endef
+ TARGET_DEVICES += comfast_cf-wr650ac-v1
+@@ -783,7 +783,7 @@ define Device/comfast_cf-wr650ac-v2
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-WR650AC
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 16000k
+ endef
+ TARGET_DEVICES += comfast_cf-wr650ac-v2
+@@ -793,7 +793,7 @@ define Device/comfast_cf-wr752ac-v1
+   DEVICE_VENDOR := COMFAST
+   DEVICE_MODEL := CF-WR752AC
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct \
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9888 \
+ 	-uboot-envtools
+   IMAGE_SIZE := 16192k
+ endef
+@@ -858,7 +858,7 @@ define Device/devolo_dlan-pro-1200plus-ac
+   SOC := ar9344
+   DEVICE_VENDOR := devolo
+   DEVICE_MODEL := dLAN pro 1200+ WiFi ac
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15872k
+ endef
+ TARGET_DEVICES += devolo_dlan-pro-1200plus-ac
+@@ -866,7 +866,7 @@ TARGET_DEVICES += devolo_dlan-pro-1200plus-ac
+ define Device/devolo_wifi-pro
+   SOC := qca9558
+   DEVICE_VENDOR := devolo
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+ endef
+ 
+@@ -905,7 +905,7 @@ define Device/devolo_dvl1750x
+   SOC := qca9558
+   DEVICE_VENDOR := devolo
+   DEVICE_MODEL := WiFi pro 1750x
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += devolo_dvl1750x
+@@ -914,7 +914,7 @@ define Device/devolo_magic-2-wifi
+   SOC := ar9344
+   DEVICE_VENDOR := devolo
+   DEVICE_MODEL := Magic 2 WiFi
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15872k
+ endef
+ TARGET_DEVICES += devolo_magic-2-wifi
+@@ -974,7 +974,7 @@ define Device/dlink_dap-2660-a1
+   DEVICE_VENDOR := D-Link
+   DEVICE_MODEL := DAP-2660
+   DEVICE_VARIANT := A1
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 15232k
+   DAP_SIGNATURE := wapac09_dkbs_dap2660
+ endef
+@@ -986,7 +986,7 @@ define Device/dlink_dap-2680-a1
+   DEVICE_VENDOR := D-Link
+   DEVICE_MODEL := DAP-2680
+   DEVICE_VARIANT := A1
+-  DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca9984 kmod-ath10k
+   IMAGE_SIZE := 15232k
+   DAP_SIGNATURE := wapac36_dkbs_dap2680
+ endef
+@@ -998,7 +998,7 @@ define Device/dlink_dap-2695-a1
+   DEVICE_VENDOR := D-Link
+   DEVICE_MODEL := DAP-2695
+   DEVICE_VARIANT := A1
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 15360k
+   DAP_SIGNATURE := wapac02_dkbs_dap2695
+   SUPPORTED_DEVICES += dap-2695-a1
+@@ -1022,7 +1022,7 @@ define Device/dlink_dap-3662-a1
+   DEVICE_VENDOR := D-Link
+   DEVICE_MODEL := DAP-3662
+   DEVICE_VARIANT := A1
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 15296k
+   DAP_SIGNATURE := wapac11_dkbs_dap3662
+ endef
+@@ -1140,21 +1140,21 @@ endef
+ define Device/dlink_dir-842-c1
+   $(Device/dlink_dir-842-c)
+   DEVICE_VARIANT := C1
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += dlink_dir-842-c1
+ 
+ define Device/dlink_dir-842-c2
+   $(Device/dlink_dir-842-c)
+   DEVICE_VARIANT := C2
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += dlink_dir-842-c2
+ 
+ define Device/dlink_dir-842-c3
+   $(Device/dlink_dir-842-c)
+   DEVICE_VARIANT := C3
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += dlink_dir-842-c3
+ 
+@@ -1164,7 +1164,7 @@ define Device/dlink_dir-859-ax
+   DEVICE_VENDOR := D-Link
+   DEVICE_MODEL := DIR-859
+   IMAGE_SIZE := 15872k
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   SEAMA_SIGNATURE := wrgac37_dlink.2013gui_dir859
+ endef
+ 
+@@ -1187,7 +1187,7 @@ define Device/dlink_dir-869-a1
+   DEVICE_MODEL := DIR-869
+   DEVICE_VARIANT := A1
+   IMAGE_SIZE := 15872k
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   SEAMA_SIGNATURE := wrgac54_dlink.2015_dir869
+   SUPPORTED_DEVICES += dir-869-a1
+ endef
+@@ -1204,7 +1204,7 @@ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+ 	pad-to 2 | edimax-header -b -s CSYS -m RN68 -f 0x70000 -S 0x01100000 | \
+ 	elecom-product-header WRC-1750GHBK2 | check-size
+ endif
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += elecom_wrc-1750ghbk2-i
+ 
+@@ -1245,7 +1245,7 @@ define Device/engenius_eap1200h
+   SOC := qca9557
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EAP1200H
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := ar71xx-generic-eap1200h
+@@ -1257,7 +1257,7 @@ define Device/engenius_eap1750h
+   SOC := qca9558
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EAP1750H
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := ar71xx-generic-eap1750h
+@@ -1291,7 +1291,7 @@ define Device/engenius_ecb1200
+   SOC := qca9557
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := ECB1200
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 15680k
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -1304,7 +1304,7 @@ define Device/engenius_ecb1750
+   SOC := qca9558
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := ECB1750
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 15680k
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -1343,7 +1343,7 @@ define Device/engenius_enstationac-v1
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EnStationAC
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct rssileds
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k rssileds
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := ar71xx-generic-enstationac
+@@ -1354,7 +1354,7 @@ define Device/engenius_epg5000
+   SOC := qca9558
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EPG5000
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k kmod-usb2
+   IMAGE_SIZE := 14656k
+   IMAGES += factory.dlf
+   IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -1368,7 +1368,7 @@ define Device/engenius_esr1200
+   SOC := qca9557
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := ESR1200
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k kmod-usb2
+   IMAGE_SIZE := 14656k
+   IMAGES += factory.dlf
+   IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -1382,7 +1382,7 @@ define Device/engenius_esr1750
+   SOC := qca9558
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := ESR1750
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k kmod-usb2
+   IMAGE_SIZE := 14656k
+   IMAGES += factory.dlf
+   IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -1410,7 +1410,7 @@ define Device/engenius_ews511ap
+   SOC := qca9531
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EWS511AP
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887
+   IMAGE_SIZE := 16000k
+ endef
+ TARGET_DEVICES += engenius_ews511ap
+@@ -1420,7 +1420,7 @@ define Device/engenius_ews660ap
+   SOC := qca9558
+   DEVICE_VENDOR := EnGenius
+   DEVICE_MODEL := EWS660AP
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := ar71xx-generic-ews660ap
+@@ -1451,7 +1451,7 @@ define Device/extreme-networks_ws-ap3805i
+   BLOCKSIZE := 256k
+   DEVICE_VENDOR := Extreme Networks
+   DEVICE_MODEL := WS-AP3805i
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 29440k
+ endef
+ TARGET_DEVICES += extreme-networks_ws-ap3805i
+@@ -1533,7 +1533,7 @@ define Device/glinet_gl-ar750
+   SOC := qca9531
+   DEVICE_VENDOR := GL.iNet
+   DEVICE_MODEL := GL-AR750
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9887
+   IMAGE_SIZE := 16000k
+   SUPPORTED_DEVICES += gl-ar750
+ endef
+@@ -1571,7 +1571,7 @@ define Device/glinet_gl-x750
+   SOC := qca9531
+   DEVICE_VENDOR := GL.iNet
+   DEVICE_MODEL := GL-X750
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca9887
+   IMAGE_SIZE := 16000k
+ endef
+ TARGET_DEVICES += glinet_gl-x750
+@@ -1631,7 +1631,7 @@ define Device/huawei_ap5030dn
+   SOC := qca9550
+   DEVICE_VENDOR := Huawei
+   DEVICE_MODEL := AP5030DN
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   LOADER_TYPE := bin
+   LOADER_FLASH_OFFS := 0x111DC0
+   KERNEL_SIZE := 15360k
+@@ -1661,7 +1661,7 @@ define Device/iodata_wn-ac1167dgr
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs | check-size | \
+ 	senao-header -r 0x30a -p 0x61 -t 2
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += iodata_wn-ac1167dgr
+ 
+@@ -1674,7 +1674,7 @@ define Device/iodata_wn-ac1600dgr
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs | check-size | \
+ 	senao-header -r 0x30a -p 0x60 -t 2 -v 200
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += iodata_wn-ac1600dgr
+ 
+@@ -1687,7 +1687,7 @@ define Device/iodata_wn-ac1600dgr2
+   IMAGE/dgr2-dgr3-factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs | check-size | \
+ 	senao-header -r 0x30a -p 0x60 -t 2 -v 200
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += iodata_wn-ac1600dgr2
+ 
+@@ -1742,7 +1742,7 @@ define Device/joyit_jt-or750i
+   SOC := qca9531
+   DEVICE_VENDOR := Joy-IT
+   DEVICE_MODEL := JT-OR750i
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887
+   IMAGE_SIZE := 16000k
+ endef
+ TARGET_DEVICES += joyit_jt-or750i
+@@ -1840,7 +1840,7 @@ define Device/nec_wx1200cr
+   IMAGE/default := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-rootfs
+   IMAGE/sysupgrade.bin := $$(IMAGE/default) | seama | pad-rootfs | \
+ 	check-size | append-metadata
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+ endef
+ 
+ define Device/nec_wf1200cr
+@@ -1878,7 +1878,7 @@ define Device/nec_wg800hp
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs | check-size | \
+ 	xor-image -p 6A57190601121E4C004C1E1201061957 -x | nec-fw LASER_ATERM
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct-full-htt
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers ath10k-firmware-qca9887-full-htt
+ endef
+ TARGET_DEVICES += nec_wg800hp
+ 
+@@ -1896,7 +1896,7 @@ define Device/netgear_ex7300
+ 	netgear-rootfs | pad-rootfs
+   IMAGE/sysupgrade.bin := $$(IMAGE/default) | check-size | append-metadata
+   IMAGE/factory.img := $$(IMAGE/default) | netgear-dni | check-size
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca99x0-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca99x0
+   SUPPORTED_DEVICES += netgear,ex6400
+ endef
+ TARGET_DEVICES += netgear_ex7300
+@@ -1925,7 +1925,7 @@ define Device/netgear_ex7300-v2
+ 	netgear-rootfs | pad-rootfs
+   IMAGE/sysupgrade.bin := $$(IMAGE/default) | check-size | append-metadata
+   IMAGE/factory.img := $$(IMAGE/default) | check-size | netgear-dni
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9984-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9984
+ endef
+ TARGET_DEVICES += netgear_ex7300-v2
+ 
+@@ -2059,7 +2059,7 @@ define Device/ocedo_koala
+   SOC := qca9558
+   DEVICE_VENDOR := Ocedo
+   DEVICE_MODEL := Koala
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   SUPPORTED_DEVICES += koala
+   IMAGE_SIZE := 14848k
+ endef
+@@ -2077,7 +2077,7 @@ define Device/ocedo_ursus
+   SOC := qca9558
+   DEVICE_VENDOR := Ocedo
+   DEVICE_MODEL := Ursus
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 14848k
+ endef
+ TARGET_DEVICES += ocedo_ursus
+@@ -2122,7 +2122,7 @@ define Device/openmesh_a40
+   $(Device/openmesh_common_64k)
+   SOC := qca9558
+   DEVICE_MODEL := A40
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-usb2
+   OPENMESH_CE_TYPE := A60
+   SUPPORTED_DEVICES += a40
+ endef
+@@ -2132,7 +2132,7 @@ define Device/openmesh_a60
+   $(Device/openmesh_common_64k)
+   SOC := qca9558
+   DEVICE_MODEL := A60
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-usb2
+   OPENMESH_CE_TYPE := A60
+   SUPPORTED_DEVICES += a60
+ endef
+@@ -2183,7 +2183,7 @@ define Device/openmesh_mr1750-v1
+   SOC := qca9558
+   DEVICE_MODEL := MR1750
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+   OPENMESH_CE_TYPE := MR1750
+   SUPPORTED_DEVICES += mr1750
+ endef
+@@ -2194,7 +2194,7 @@ define Device/openmesh_mr1750-v2
+   SOC := qca9558
+   DEVICE_MODEL := MR1750
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+   OPENMESH_CE_TYPE := MR1750
+   SUPPORTED_DEVICES += mr1750v2
+ endef
+@@ -2293,7 +2293,7 @@ define Device/openmesh_om5p-ac-v1
+   SOC := qca9558
+   DEVICE_MODEL := OM5P-AC
+   DEVICE_VARIANT := v1
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+   OPENMESH_CE_TYPE := OM5PAC
+   SUPPORTED_DEVICES += om5p-ac
+ endef
+@@ -2304,7 +2304,7 @@ define Device/openmesh_om5p-ac-v2
+   SOC := qca9558
+   DEVICE_MODEL := OM5P-AC
+   DEVICE_VARIANT := v2
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+   OPENMESH_CE_TYPE := OM5PAC
+   SUPPORTED_DEVICES += om5p-acv2
+ endef
+@@ -2354,7 +2354,7 @@ define Device/phicomm_k2t
+   IMAGE_SIZE := 15744k
+   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
+ 	check-size | append-metadata
+-  DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k-smallbuffers ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += phicomm_k2t
+ 
+@@ -2453,7 +2453,7 @@ define Device/qihoo_c301
+   SOC := ar9344
+   DEVICE_VENDOR := Qihoo
+   DEVICE_MODEL := C301
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct \
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x \
+ 	uboot-envtools
+   IMAGE_SIZE := 15744k
+   SEAMA_SIGNATURE := wrgac26_qihoo360_360rg
+@@ -2465,7 +2465,7 @@ define Device/qxwlan_e1700ac-v2
+   SOC := qca9563
+   DEVICE_VENDOR := Qxwlan
+   DEVICE_MODEL := E1700AC
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+   SUPPORTED_DEVICES += e1700ac-v2
+ endef
+ 
+@@ -2531,7 +2531,7 @@ define Device/qxwlan_e600gac-v2
+   SOC := qca9531
+   DEVICE_VENDOR := Qxwlan
+   DEVICE_MODEL := E600GAC
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887
+   SUPPORTED_DEVICES += e600gac-v2
+ endef
+ 
+@@ -2697,7 +2697,7 @@ define Device/sitecom_wlr-7100
+   SOC := ar1022
+   DEVICE_VENDOR := Sitecom
+   DEVICE_MODEL := WLR-7100
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct-smallbuffers kmod-usb2
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k-smallbuffers kmod-usb2
+   IMAGES += factory.dlf
+   IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 	append-rootfs | pad-rootfs | check-size | \
+@@ -2712,7 +2712,7 @@ define Device/sitecom_wlr-8100
+   DEVICE_MODEL := WLR-8100
+   DEVICE_ALT0_VENDOR := Sitecom
+   DEVICE_ALT0_MODEL := X8 AC1750
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct kmod-usb2 kmod-usb3
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k kmod-usb2 kmod-usb3
+   SUPPORTED_DEVICES += wlr8100
+   IMAGES += factory.dlf
+   IMAGE/factory.dlf := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+@@ -2726,7 +2726,7 @@ define Device/sophos_ap15
+   SOC := qca9558
+   DEVICE_VENDOR := Sophos
+   DEVICE_MODEL := AP15
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += sophos_ap15
+@@ -2735,7 +2735,7 @@ define Device/sophos_ap55
+   SOC := qca9558
+   DEVICE_VENDOR := Sophos
+   DEVICE_MODEL := AP55
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x kmod-usb2
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += sophos_ap55
+@@ -2744,7 +2744,7 @@ define Device/sophos_ap55c
+   SOC := qca9558
+   DEVICE_VENDOR := Sophos
+   DEVICE_MODEL := AP55C
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += sophos_ap55c
+@@ -2753,7 +2753,7 @@ define Device/sophos_ap100
+   SOC := qca9558
+   DEVICE_VENDOR := Sophos
+   DEVICE_MODEL := AP100
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x kmod-usb2
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += sophos_ap100
+@@ -2762,7 +2762,7 @@ define Device/sophos_ap100c
+   SOC := qca9558
+   DEVICE_VENDOR := Sophos
+   DEVICE_MODEL := AP100C
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15936k
+ endef
+ TARGET_DEVICES += sophos_ap100c
+@@ -2865,7 +2865,7 @@ define Device/trendnet_tew-823dru
+   DEVICE_VENDOR := Trendnet
+   DEVICE_MODEL := TEW-823DRU
+   DEVICE_VARIANT := v1.0R
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+   SUPPORTED_DEVICES += tew-823dru
+   IMAGE_SIZE := 15296k
+   IMAGES := factory.bin sysupgrade.bin
+@@ -2920,7 +2920,7 @@ define Device/watchguard_ap300
+   SOC := qca9558
+   DEVICE_VENDOR := WatchGuard
+   DEVICE_MODEL := AP300
+-  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
++  DEVICE_PACKAGES := ath10k-firmware-qca988x kmod-ath10k
+   IMAGE_SIZE := 11584k
+   LOADER_FLASH_OFFS := 0x220000
+   SENAO_IMGNAME := senao-ap300
+@@ -2983,7 +2983,7 @@ define Device/xiaomi_aiot-ac2350
+   SOC := qca9563
+   DEVICE_VENDOR := Xiaomi
+   DEVICE_MODEL := AIoT AC2350
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9984-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9984
+   IMAGE_SIZE := 14336k
+ endef
+ TARGET_DEVICES += xiaomi_aiot-ac2350
+@@ -3000,7 +3000,7 @@ define Device/yuncore_a770
+   SOC := qca9531
+   DEVICE_VENDOR := YunCore
+   DEVICE_MODEL := A770
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887
+   IMAGE_SIZE := 16000k
+   IMAGES += tftp.bin
+   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+@@ -3011,7 +3011,7 @@ define Device/yuncore_a782
+   SOC := qca9563
+   DEVICE_VENDOR := YunCore
+   DEVICE_MODEL := A782
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   IMAGE_SIZE := 16000k
+   IMAGES += tftp.bin
+   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+@@ -3032,7 +3032,7 @@ define Device/yuncore_xd3200
+   SOC := qca9563
+   DEVICE_VENDOR := YunCore
+   DEVICE_MODEL := XD3200
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 16000k
+   IMAGES += tftp.bin
+   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+@@ -3043,7 +3043,7 @@ define Device/yuncore_xd4200
+   SOC := qca9563
+   DEVICE_VENDOR := YunCore
+   DEVICE_MODEL := XD4200
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   IMAGE_SIZE := 16000k
+   IMAGES += tftp.bin
+   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+@@ -3105,8 +3105,8 @@ define Device/zyxel_nwa1123-ac
+   DEVICE_MODEL := NWA1123
+   DEVICE_VARIANT := AC
+   ZYXEL_MODEL_STRING := AAOX
+-  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k-smallbuffers \
++	ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += zyxel_nwa1123-ac
+ 
+@@ -3123,7 +3123,7 @@ define Device/zyxel_nbg6616
+   DEVICE_VENDOR := ZyXEL
+   DEVICE_MODEL := NBG6616
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-rtc-pcf8563 \
+-	kmod-ath10k-ct ath10k-firmware-qca988x-ct
++	kmod-ath10k ath10k-firmware-qca988x
+   IMAGE_SIZE := 15232k
+   RAS_BOARD := NBG6616
+   RAS_ROOTFS_SIZE := 14464k
+diff --git a/target/linux/ath79/image/mikrotik.mk b/target/linux/ath79/image/mikrotik.mk
+index 683e9a3330..7d23444a31 100644
+--- a/target/linux/ath79/image/mikrotik.mk
++++ b/target/linux/ath79/image/mikrotik.mk
+@@ -32,7 +32,7 @@ define Device/mikrotik_routerboard-921gs-5hpacd-15s
+   $(Device/mikrotik_nand)
+   SOC := qca9558
+   DEVICE_MODEL := RouterBOARD 921GS-5HPacD-15s (mANTBox 15s)
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-i2c-gpio \
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-i2c-gpio \
+ 	kmod-sfp
+   SUPPORTED_DEVICES += rb-921gs-5hpacd-r2
+ endef
+@@ -42,7 +42,7 @@ define Device/mikrotik_routerboard-922uags-5hpacd
+   $(Device/mikrotik_nand)
+   SOC := qca9558
+   DEVICE_MODEL := RouterBOARD 922UAGS-5HPacD
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2 \
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-usb2 \
+ 	kmod-i2c-gpio kmod-sfp
+   SUPPORTED_DEVICES += rb-922uags-5hpacd
+ endef
+@@ -79,7 +79,7 @@ define Device/mikrotik_routerboard-952ui-5ac2nd
+   $(Device/mikrotik_nor)
+   SOC := qca9533
+   DEVICE_MODEL := RouterBOARD 952Ui-5ac2nD (hAP ac lite)
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca9887
+   IMAGE_SIZE := 16256k
+   SUPPORTED_DEVICES += rb-952ui-5ac2nd
+ endef
+@@ -89,7 +89,7 @@ define Device/mikrotik_routerboard-962uigs-5hact2hnt
+   $(Device/mikrotik_nor)
+   SOC := qca9558
+   DEVICE_MODEL := RouterBOARD 962UiGS-5HacT2HnT (hAP ac)
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2 \
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x kmod-usb2 \
+ 	kmod-i2c-gpio kmod-sfp
+   IMAGE_SIZE := 16256k
+   SUPPORTED_DEVICES += rb-962uigs-5hact2hnt
+@@ -144,7 +144,7 @@ define Device/mikrotik_routerboard-wap-g-5hact2hnd
+   SOC := qca9556
+   DEVICE_MODEL := RouterBOARD wAP G-5HacT2HnD (wAP AC)
+   IMAGE_SIZE := 16256k
+-  DEVICE_PACKAGES += kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k-smallbuffers ath10k-firmware-qca988x
+   SUPPORTED_DEVICES += rb-wapg-5hact2hnd
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-wap-g-5hact2hnd
+diff --git a/target/linux/ath79/image/nand.mk b/target/linux/ath79/image/nand.mk
+index e4ee555451..6c69222d52 100644
+--- a/target/linux/ath79/image/nand.mk
++++ b/target/linux/ath79/image/nand.mk
+@@ -84,7 +84,7 @@ define Device/domywifi_dw33d
+   DEVICE_VENDOR := DomyWifi
+   DEVICE_MODEL := DW33D
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-storage kmod-usb-ledtrig-usbport \
+-	kmod-ath10k-ct ath10k-firmware-qca988x-ct
++	kmod-ath10k ath10k-firmware-qca988x
+   KERNEL_SIZE := 5120k
+   IMAGE_SIZE := 98304k
+   BLOCKSIZE := 128k
+@@ -103,7 +103,7 @@ define Device/dongwon_dw02-412h
+   DEVICE_MODEL := DW02-412H
+   DEVICE_ALT0_VENDOR := KT
+   DEVICE_ALT0_MODEL := GiGA WiFi home
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k ath10k-firmware-qca988x
+   KERNEL_SIZE := 8192k
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+@@ -165,7 +165,7 @@ define Device/glinet_gl-ar750s-common
+   SOC := qca9563
+   DEVICE_VENDOR := GL.iNet
+   DEVICE_MODEL := GL-AR750S
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct kmod-usb2 \
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887 kmod-usb2 \
+ 	kmod-usb-storage block-mount
+   IMAGE_SIZE := 16000k
+ endef
+@@ -190,7 +190,7 @@ define Device/glinet_gl-e750
+   SOC := qca9531
+   DEVICE_VENDOR := GL.iNet
+   DEVICE_MODEL := GL-E750
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct kmod-usb2
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9887 kmod-usb2
+   SUPPORTED_DEVICES += gl-e750
+   KERNEL_SIZE := 4096k
+   IMAGE_SIZE := 131072k
+@@ -224,7 +224,7 @@ define Device/glinet_gl-x1200-common
+   SOC := qca9563
+   DEVICE_VENDOR := GL.iNet
+   DEVICE_MODEL := GL-X1200
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct-htt kmod-usb2 \
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888-htt kmod-usb2 \
+ 	kmod-usb-storage block-mount kmod-usb-net-qmi-wwan uqmi
+   IMAGE_SIZE := 16000k
+ endef
+@@ -326,7 +326,7 @@ define Device/netgear_r6100
+   NETGEAR_BOARD_ID := R6100
+   NETGEAR_HW_ID := 29764434+0+128+128+2x2+2x2
+   $(Device/netgear_ath79_nand)
+-  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += netgear_r6100
+ 
+@@ -402,7 +402,7 @@ TARGET_DEVICES += netgear_wndr4500-v3
+ define Device/zte_mf28x_common
+   SOC := qca9563
+   DEVICE_VENDOR := ZTE
+-  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-ath10k
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   KERNEL_SIZE := 4096k
+@@ -417,7 +417,7 @@ define Device/zte_mf281
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | \
+ 	check-size
+-  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-rndis \
++  DEVICE_PACKAGES += ath10k-firmware-qca9888 kmod-usb-net-rndis \
+ 	kmod-usb-acm comgt-ncm
+ endef
+ TARGET_DEVICES += zte_mf281
+@@ -425,7 +425,7 @@ TARGET_DEVICES += zte_mf281
+ define Device/zte_mf282
+   $(Device/zte_mf28x_common)
+   DEVICE_MODEL := MF282
+-  DEVICE_PACKAGES += ath10k-firmware-qca988x-ct kmod-usb-net-qmi-wwan \
++  DEVICE_PACKAGES += ath10k-firmware-qca988x kmod-usb-net-qmi-wwan \
+ 	kmod-usb-serial-option uqmi
+ endef
+ TARGET_DEVICES += zte_mf282
+@@ -433,7 +433,7 @@ TARGET_DEVICES += zte_mf282
+ define Device/zte_mf286
+   $(Device/zte_mf28x_common)
+   DEVICE_MODEL := MF286
+-  DEVICE_PACKAGES += ath10k-firmware-qca988x-ct ath10k-firmware-qca9888-ct \
++  DEVICE_PACKAGES += ath10k-firmware-qca988x ath10k-firmware-qca9888 \
+ 	kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+ endef
+ TARGET_DEVICES += zte_mf286
+@@ -441,7 +441,7 @@ TARGET_DEVICES += zte_mf286
+ define Device/zte_mf286a
+   $(Device/zte_mf28x_common)
+   DEVICE_MODEL := MF286A
+-  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-qmi-wwan \
++  DEVICE_PACKAGES += ath10k-firmware-qca9888 kmod-usb-net-qmi-wwan \
+ 	kmod-usb-serial-option uqmi
+ endef
+ TARGET_DEVICES += zte_mf286a
+@@ -449,7 +449,7 @@ TARGET_DEVICES += zte_mf286a
+ define Device/zte_mf286r
+   $(Device/zte_mf28x_common)
+   DEVICE_MODEL := MF286R
+-  DEVICE_PACKAGES += ath10k-firmware-qca9888-ct kmod-usb-net-rndis kmod-usb-acm \
++  DEVICE_PACKAGES += ath10k-firmware-qca9888 kmod-usb-net-rndis kmod-usb-acm \
+ 	comgt-ncm
+ endef
+ TARGET_DEVICES += zte_mf286r
+@@ -458,8 +458,8 @@ define Device/zyxel_nbg6716
+   SOC := qca9558
+   DEVICE_VENDOR := ZyXEL
+   DEVICE_MODEL := NBG6716
+-  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k-ct \
+-	ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ledtrig-usbport kmod-ath10k \
++	ath10k-firmware-qca988x
+   RAS_BOARD := NBG6716
+   RAS_ROOTFS_SIZE := 29696k
+   RAS_VERSION := "OpenWrt Linux-$(LINUX_VERSION)"
+diff --git a/target/linux/ath79/image/tiny-tp-link.mk b/target/linux/ath79/image/tiny-tp-link.mk
+index 93cbc7d148..254b64d2f4 100644
+--- a/target/linux/ath79/image/tiny-tp-link.mk
++++ b/target/linux/ath79/image/tiny-tp-link.mk
+@@ -228,7 +228,7 @@ define Device/tplink_tl-wpa8630p-v2
+   SOC := qca9563
+   DEVICE_MODEL := TL-WPA8630P
+   IMAGE_SIZE := 6016k
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca9888
+   DEVICE_COMPAT_VERSION := 2.0
+   DEVICE_COMPAT_MESSAGE := The flash erase blocksize has changed to 4k from the 64k in previous versions, \
+     so the JFFS2 settings partition MUST be reformatted to avoid data corruption. \
+diff --git a/target/linux/ipq40xx/Makefile b/target/linux/ipq40xx/Makefile
+index 53b2f909ae..f90ce33482 100644
+--- a/target/linux/ipq40xx/Makefile
++++ b/target/linux/ipq40xx/Makefile
+@@ -16,8 +16,8 @@ include $(INCLUDE_DIR)/target.mk
+ DEFAULT_PACKAGES += \
+ 	kmod-usb-dwc3-qcom \
+ 	kmod-leds-gpio kmod-gpio-button-hotplug \
+-	kmod-ath10k-ct wpad-basic-mbedtls \
+-	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019-ct \
++	kmod-ath10k wpad-basic-mbedtls \
++	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019 \
+ 	uboot-envtools
+ 
+ $(eval $(call BuildTarget))
+diff --git a/target/linux/ipq40xx/image/generic.mk b/target/linux/ipq40xx/image/generic.mk
+index 33141f7949..e9b6ca3352 100644
+--- a/target/linux/ipq40xx/image/generic.mk
++++ b/target/linux/ipq40xx/image/generic.mk
+@@ -203,7 +203,7 @@ define Device/asus_map-ac2200
+ 	DEVICE_VENDOR := ASUS
+ 	DEVICE_MODEL := Lyra (MAP-AC2200)
+ 	SOC := qcom-ipq4019
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct kmod-ath3k
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 kmod-ath3k
+ endef
+ TARGET_DEVICES += asus_map-ac2200
+ 
+@@ -232,7 +232,7 @@ define Device/asus_rt-ac42u
+ #	Rather, this device is a/k/a RT-AC42U
+ #	But we'll go with what the vendor firmware has...
+ 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC82U')
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-usb-ledtrig-usbport
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 kmod-usb-ledtrig-usbport
+ endef
+ TARGET_DEVICES += asus_rt-ac42u
+ 
+@@ -253,7 +253,7 @@ define Device/asus_rt-ac58u
+ #	to add a version... or we are very careful not to add '\0' into that
+ #	string and call it a day.... Yeah, we do the latter!
+ 	UIMAGE_NAME:=$(shell echo -e '\03\01\01\01RT-AC58U')
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers \
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers \
+ 		kmod-usb-ledtrig-usbport
+ endef
+ TARGET_DEVICES += asus_rt-ac58u
+@@ -299,7 +299,7 @@ define Device/avm_fritzrepeater-3000
+ 	DEVICE_VENDOR := AVM
+ 	DEVICE_MODEL := FRITZ!Repeater 3000
+ 	SOC := qcom-ipq4019
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct fritz-caldata fritz-tffs-nand
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 fritz-caldata fritz-tffs-nand
+ endef
+ TARGET_DEVICES += avm_fritzrepeater-3000
+ 
+@@ -309,7 +309,7 @@ define Device/buffalo_wtr-m2133hp
+ 	DEVICE_VENDOR := Buffalo
+ 	DEVICE_MODEL := WTR-M2133HP
+ 	SOC := qcom-ipq4019
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ endef
+@@ -475,7 +475,7 @@ define Device/engenius_eap2200
+ 	SOC := qcom-ipq4019
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 -kmod-ath10k kmod-ath10k-smallbuffers
+ endef
+ # Missing DSA Setup
+ #TARGET_DEVICES += engenius_eap2200
+@@ -558,7 +558,7 @@ define Device/ezviz_cs-w3-wd1200g-eup
+ 	SOC := qcom-ipq4018
+ 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
+ 		append-metadata
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers
+ 	DEVICE_COMPAT_VERSION := 2.0
+ 	DEVICE_COMPAT_MESSAGE := uboot's bootcmd has to be updated (see wiki). \
+ 		Upgrade via sysupgrade mechanism is not possible.
+@@ -618,7 +618,7 @@ define Device/glinet_gl-b2200
+ 		pad-to 33792k | append-rootfs |\
+ 		append-metadata | gzip
+ 	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct \
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 \
+ 		kmod-fs-ext4 kmod-mmc kmod-spi-dev mkf2fs e2fsprogs kmod-fs-f2fs
+ endef
+ TARGET_DEVICES += glinet_gl-b2200
+@@ -699,7 +699,7 @@ define Device/linksys_ea8300
+ 	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=EA8300
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct kmod-usb-ledtrig-usbport
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 kmod-usb-ledtrig-usbport
+ endef
+ TARGET_DEVICES += linksys_ea8300
+ 
+@@ -716,7 +716,7 @@ define Device/linksys_mr8300
+ 	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MR8300
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct kmod-usb-ledtrig-usbport
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 kmod-usb-ledtrig-usbport
+ endef
+ TARGET_DEVICES += linksys_mr8300
+ 
+@@ -733,7 +733,7 @@ define Device/linksys_whw03v2
+ 	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=WHW03v2
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct kmod-leds-pca963x kmod-spi-dev kmod-bluetooth
++	DEVICE_PACKAGES := ath10k-firmware-qca9888 kmod-leds-pca963x kmod-spi-dev kmod-bluetooth
+ endef
+ TARGET_DEVICES += linksys_whw03v2
+ 
+@@ -772,7 +772,7 @@ define Device/meraki_common
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	DEVICE_DTS_LOADADDR := 0x89000000
+-	DEVICE_PACKAGES := ath10k-firmware-qca9887-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9887
+ endef
+ 
+ define Device/meraki_mr33
+@@ -833,7 +833,7 @@ define Device/netgear_orbi
+ 		append-rootfs | pad-rootfs | netgear-dni
+ 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | \
+ 		sysupgrade-tar rootfs=$$$$@ | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct e2fsprogs kmod-fs-ext4 losetup
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 e2fsprogs kmod-fs-ext4 losetup
+ endef
+ 
+ define Device/netgear_rbx50
+@@ -924,7 +924,7 @@ define Device/openmesh_a62
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin := append-rootfs | pad-rootfs | openmesh-image ce_type=A62
+ 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += openmesh_a62
+ 
+@@ -992,7 +992,7 @@ define Device/plasmacloud_pa2200
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin := append-rootfs | pad-rootfs | openmesh-image ce_type=PA2200
+ 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9888
+ endef
+ TARGET_DEVICES += plasmacloud_pa2200
+ 
+@@ -1150,7 +1150,7 @@ define Device/zte_mf18a
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	KERNEL_IN_UBI := 1
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += zte_mf18a
+ 
+@@ -1210,7 +1210,7 @@ TARGET_DEVICES += zte_mf287pro
+ define Device/zte_mf289f
+ 	$(call Device/zte_mf28x_common)
+ 	DEVICE_MODEL := MF289F
+-	DEVICE_PACKAGES += ipq-wifi-zte_mf289f ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES += ipq-wifi-zte_mf289f ath10k-firmware-qca9984
+ endef
+ TARGET_DEVICES += zte_mf289f
+ 
+@@ -1244,7 +1244,7 @@ define Device/zyxel_wre6606
+ 	SOC := qcom-ipq4018
+ 	IMAGE_SIZE := 13184k
+ 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | check-size | append-metadata
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers
+ endef
+ # Missing DSA Setup
+ #TARGET_DEVICES += zyxel_wre6606
+diff --git a/target/linux/ipq40xx/image/mikrotik.mk b/target/linux/ipq40xx/image/mikrotik.mk
+index f0e1f1aad3..1934405d72 100644
+--- a/target/linux/ipq40xx/image/mikrotik.mk
++++ b/target/linux/ipq40xx/image/mikrotik.mk
+@@ -24,7 +24,7 @@ define Device/mikrotik_cap-ac
+ 	$(call Device/mikrotik_nor)
+ 	DEVICE_MODEL := cAP ac
+ 	SOC := qcom-ipq4018
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers
+ endef
+ TARGET_DEVICES += mikrotik_cap-ac
+ 
+@@ -32,7 +32,7 @@ define Device/mikrotik_hap-ac2
+ 	$(call Device/mikrotik_nor)
+ 	DEVICE_MODEL := hAP ac2
+ 	SOC := qcom-ipq4018
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers
+ endef
+ TARGET_DEVICES += mikrotik_hap-ac2
+ 
+@@ -59,7 +59,7 @@ define Device/mikrotik_lhgg-60ad
+ 	$(call Device/mikrotik_nor)
+ 	DEVICE_MODEL := Wireless Wire Dish LHGG-60ad
+ 	DEVICE_DTS := qcom-ipq4019-lhgg-60ad
+-	DEVICE_PACKAGES += -kmod-ath10k-ct -ath10k-firmware-qca4019-ct kmod-wil6210
++	DEVICE_PACKAGES += -kmod-ath10k -ath10k-firmware-qca4019 kmod-wil6210
+ endef
+ TARGET_DEVICES += mikrotik_lhgg-60ad
+ 
+@@ -75,7 +75,7 @@ define Device/mikrotik_wap-ac
+ 	$(call Device/mikrotik_nor)
+ 	DEVICE_MODEL := wAP ac
+ 	SOC := qcom-ipq4018
+-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
++	DEVICE_PACKAGES := -kmod-ath10k kmod-ath10k-smallbuffers
+ endef
+ TARGET_DEVICES += mikrotik_wap-ac
+ 
+diff --git a/target/linux/ipq806x/Makefile b/target/linux/ipq806x/Makefile
+index 057446f755..8f990ab91a 100644
+--- a/target/linux/ipq806x/Makefile
++++ b/target/linux/ipq806x/Makefile
+@@ -20,7 +20,7 @@ DEFAULT_PACKAGES += \
+ 	kmod-ata-ahci kmod-ata-ahci-platform \
+ 	kmod-usb-ohci kmod-usb2 kmod-usb-ledtrig-usbport \
+ 	kmod-phy-qcom-ipq806x-usb kmod-usb3 kmod-usb-dwc3-qcom \
+-	kmod-ath10k-ct wpad-basic-mbedtls \
++	kmod-ath10k wpad-basic-mbedtls \
+ 	uboot-envtools
+ 
+ $(eval $(call BuildTarget))
+diff --git a/target/linux/ipq806x/image/chromium.mk b/target/linux/ipq806x/image/chromium.mk
+index ba98929976..1a745c7746 100644
+--- a/target/linux/ipq806x/image/chromium.mk
++++ b/target/linux/ipq806x/image/chromium.mk
+@@ -38,7 +38,7 @@ define Device/OnhubImage
+ 	# Note: Chromium/Depthcharge-based bootloaders insert a reserved-memory
+ 	# ramoops node into the Device Tree automatically, so we can use
+ 	# kmod-ramoops.
+-	DEVICE_PACKAGES := ath10k-firmware-qca988x-ct e2fsprogs kmod-fs-ext4 losetup \
++	DEVICE_PACKAGES := ath10k-firmware-qca988x e2fsprogs kmod-fs-ext4 losetup \
+ 			   partx-utils mkf2fs kmod-fs-f2fs \
+ 			   ucode kmod-google-firmware kmod-tpm-i2c-infineon \
+ 			   kmod-sound-soc-ipq8064-storm kmod-usb-storage \
+diff --git a/target/linux/ipq806x/image/generic.mk b/target/linux/ipq806x/image/generic.mk
+index aac0a2c8fa..2635da81f1 100644
+--- a/target/linux/ipq806x/image/generic.mk
++++ b/target/linux/ipq806x/image/generic.mk
+@@ -73,7 +73,7 @@ define Device/arris_tr4400-v2
+ 	SOC := qcom-ipq8065
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 ath10k-firmware-qca99x0
+ 	KERNEL_IN_UBI := 1
+ endef
+ TARGET_DEVICES += arris_tr4400-v2
+@@ -86,7 +86,7 @@ define Device/askey_rt4230w-rev6
+ 	SOC := qcom-ipq8065
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984
+ 	KERNEL_IN_UBI := 1
+ endef
+ TARGET_DEVICES += askey_rt4230w-rev6
+@@ -100,7 +100,7 @@ define Device/asrock_g10
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	KERNEL_SIZE := 5332k
+-	DEVICE_PACKAGES := kmod-i2c-gpio ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := kmod-i2c-gpio ath10k-firmware-qca99x0
+ 	IMAGE/nand-factory.bin := append-ubi | edimax-header RN67
+ endef
+ TARGET_DEVICES += asrock_g10
+@@ -116,7 +116,7 @@ define Device/buffalo_wxr-2533dhp
+ 	KERNEL_IN_UBI := 1
+ 	IMAGE/sysupgrade.bin := append-rootfs | buffalo-rootfs-cksum | \
+ 		sysupgrade-tar rootfs=$$$$@ | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += buffalo_wxr-2533dhp
+ 
+@@ -141,7 +141,7 @@ define Device/edgecore_ecw5410
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	DEVICE_DTS_CONFIG := config@v2.0-ap160
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984
+ endef
+ TARGET_DEVICES += edgecore_ecw5410
+ 
+@@ -161,7 +161,7 @@ define Device/linksys_ea7500-v1
+ 	IMAGES := factory.bin sysupgrade.bin
+ 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
+ 		append-ubi | pad-to $$$$(PAGESIZE)
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += linksys_ea7500-v1
+ 
+@@ -182,7 +182,7 @@ define Device/linksys_ea8500
+ 	IMAGES += factory.bin
+ 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
+ 		append-ubi
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += linksys_ea8500
+ 
+@@ -197,8 +197,8 @@ define Device/meraki_mr42
+ 	DEVICE_PACKAGES := -swconfig -kmod-ata-ahci -kmod-ata-ahci-platform \
+ 		-kmod-usb-ohci -kmod-usb2 -kmod-usb-ledtrig-usbport \
+ 		-kmod-phy-qcom-ipq806x-usb -kmod-usb3 -kmod-usb-dwc3-qcom \
+-		-uboot-envtools ath10k-firmware-qca9887-ct \
+-		ath10k-firmware-qca99x0-ct kmod-eeprom-at24 kmod-hwmon-ina2xx \
++		-uboot-envtools ath10k-firmware-qca9887 \
++		ath10k-firmware-qca99x0 kmod-eeprom-at24 kmod-hwmon-ina2xx \
+ 		kmod-leds-tlc591xx
+ endef
+ TARGET_DEVICES += meraki_mr42
+@@ -215,8 +215,8 @@ define Device/meraki_mr52
+ 	DEVICE_PACKAGES := -swconfig -kmod-ata-ahci -kmod-ata-ahci-platform \
+ 		-kmod-usb-ohci -kmod-usb2 -kmod-usb-ledtrig-usbport \
+ 		-kmod-phy-qcom-ipq806x-usb -kmod-usb3 -kmod-usb-dwc3-qcom \
+-		-uboot-envtools ath10k-firmware-qca9887-ct \
+-		ath10k-firmware-qca9984-ct kmod-eeprom-at24 kmod-hwmon-ina2xx \
++		-uboot-envtools ath10k-firmware-qca9887 \
++		ath10k-firmware-qca9984 kmod-eeprom-at24 kmod-hwmon-ina2xx \
+ 		kmod-leds-tlc591xx
+ endef
+ TARGET_DEVICES += meraki_mr52
+@@ -230,7 +230,7 @@ define Device/nec_wg2600hp
+ 	BOARD_NAME := wg2600hp
+ 	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
+ 		pad-rootfs | append-metadata
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += nec_wg2600hp
+ 
+@@ -246,7 +246,7 @@ define Device/nec_wg2600hp3
+ 	DEVICE_PACKAGES := -kmod-ata-ahci -kmod-ata-ahci-platform \
+ 		-kmod-usb-ohci -kmod-usb2 -kmod-usb-ledtrig-usbport \
+ 		-kmod-phy-qcom-ipq806x-usb -kmod-usb3 -kmod-usb-dwc3-qcom \
+-		ath10k-firmware-qca9984-ct
++		ath10k-firmware-qca9984
+ endef
+ TARGET_DEVICES += nec_wg2600hp3
+ 
+@@ -262,7 +262,7 @@ define Device/netgear_d7800
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := d7800
+ 	SUPPORTED_DEVICES += d7800
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ 	DEVICE_COMPAT_VERSION := 2.0
+ 	DEVICE_COMPAT_MESSAGE := Sysupgrade does not work due to rootfs ubi partition size change. \
+ 		Use factory image with the TFTP recovery flash routine.
+@@ -282,7 +282,7 @@ define Device/netgear_r7500
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := r7500
+ 	SUPPORTED_DEVICES += r7500
+-	DEVICE_PACKAGES := ath10k-firmware-qca988x-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += netgear_r7500
+ 
+@@ -299,8 +299,8 @@ define Device/netgear_r7500v2
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := r7500v2
+ 	SUPPORTED_DEVICES += r7500v2
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct \
+-		ath10k-firmware-qca988x-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0 \
++		ath10k-firmware-qca988x
+ endef
+ TARGET_DEVICES += netgear_r7500v2
+ 
+@@ -316,7 +316,7 @@ define Device/netgear_r7800
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := r7800
+ 	SUPPORTED_DEVICES += r7800
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ramoops
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 kmod-ramoops
+ endef
+ TARGET_DEVICES += netgear_r7800
+ 
+@@ -330,7 +330,7 @@ define Device/netgear_xr500
+ 	NETGEAR_HW_ID := 29764958+0+256+512+4x4+4x4+cascade
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ramoops
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 kmod-ramoops
+ endef
+ TARGET_DEVICES += netgear_xr500
+ 
+@@ -344,7 +344,7 @@ define Device/nokia_ac400i
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := ac400i
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984
+ endef
+ TARGET_DEVICES += nokia_ac400i
+ 
+@@ -361,7 +361,7 @@ define Device/qcom_ipq8064-ap148
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := ap148
+ 	SUPPORTED_DEVICES += ap148
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += qcom_ipq8064-ap148
+ 
+@@ -377,7 +377,7 @@ define Device/qcom_ipq8064-ap148-legacy
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := ap148
+ 	SUPPORTED_DEVICES := qcom,ipq8064-ap148 ap148
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += qcom_ipq8064-ap148-legacy
+ 
+@@ -392,7 +392,7 @@ define Device/qcom_ipq8064-ap161
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := ap161
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += qcom_ipq8064-ap161
+ 
+@@ -404,7 +404,7 @@ define Device/qcom_ipq8064-db149
+ 	DEVICE_DTS := qcom-ipq8064-db149
+ 	KERNEL_INSTALL := 1
+ 	BOARD_NAME := db149
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ endef
+ TARGET_DEVICES += qcom_ipq8064-db149
+ 
+@@ -420,7 +420,7 @@ define Device/tplink_ad7200
+ 	BLOCKSIZE := 128k
+ 	PAGESIZE := 2048
+ 	TPLINK_BOARD_ID := AD7200
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct kmod-ramoops kmod-wil6210
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0 kmod-ramoops kmod-wil6210
+ endef
+ TARGET_DEVICES += tplink_ad7200
+ 
+@@ -435,7 +435,7 @@ define Device/tplink_c2600
+ 	BOARD_NAME := c2600
+ 	SUPPORTED_DEVICES += c2600
+ 	TPLINK_BOARD_ID := C2600
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct kmod-ramoops
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0 kmod-ramoops
+ endef
+ TARGET_DEVICES += tplink_c2600
+ 
+@@ -452,7 +452,7 @@ define Device/tplink_vr2600v
+ 	PAGESIZE := 2048
+ 	BOARD_NAME := vr2600v
+ 	SUPPORTED_DEVICES += vr2600v
+-	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca99x0
+ 	IMAGE/sysupgrade.bin := pad-extra 512 | append-kernel | \
+ 		append-rootfs | pad-rootfs | append-metadata
+ endef
+@@ -465,7 +465,7 @@ define Device/ubnt_unifi-ac-hd
+ 	SOC := qcom-ipq8064
+ 	BLOCKSIZE := 64k
+ 	IMAGE_SIZE := 14784k
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
++	DEVICE_PACKAGES := ath10k-firmware-qca9984
+ 	IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+ 		append-rootfs | pad-rootfs | check-size | append-metadata
+ endef
+@@ -482,7 +482,7 @@ define Device/zyxel_nbg6817
+ 	RAS_ROOTFS_SIZE := 20934k
+ 	RAS_VERSION := "V1.99(OWRT.9999)C0"
+ 	SUPPORTED_DEVICES += nbg6817
+-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct e2fsprogs \
++	DEVICE_PACKAGES := ath10k-firmware-qca9984 e2fsprogs \
+ 		kmod-fs-ext4 losetup
+ 	$(call Device/ZyXELImage)
+ endef
+diff --git a/target/linux/ipq807x/image/generic.mk b/target/linux/ipq807x/image/generic.mk
+index d1ada0edfa..fe109f0fa3 100644
+--- a/target/linux/ipq807x/image/generic.mk
++++ b/target/linux/ipq807x/image/generic.mk
+@@ -138,7 +138,7 @@ define Device/xiaomi_ax3600
+ 	DEVICE_DTS_CONFIG := config@ac04
+ 	SOC := ipq8071
+ 	KERNEL_SIZE := 36608k
+-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
++	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-smallbuffers ath10k-firmware-qca9887
+ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+ 	ARTIFACTS := initramfs-factory.ubi
+ 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+@@ -157,7 +157,7 @@ define Device/xiaomi_ax9000
+ 	SOC := ipq8072
+ 	KERNEL_SIZE := 57344k
+ 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 \
+-	kmod-ath10k-ct ath10k-firmware-qca9887-ct
++	kmod-ath10k ath10k-firmware-qca9887
+ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+ 	ARTIFACTS := initramfs-factory.ubi
+ 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+diff --git a/target/linux/lantiq/image/vr9.mk b/target/linux/lantiq/image/vr9.mk
+index 3c05636f56..b7e0b860e9 100644
+--- a/target/linux/lantiq/image/vr9.mk
++++ b/target/linux/lantiq/image/vr9.mk
+@@ -216,7 +216,7 @@ define Device/bt_homehub-v5a
+   DEVICE_VARIANT := Type A
+   BOARD_NAME := BTHOMEHUBV5A
+   DEVICE_PACKAGES := kmod-ath9k kmod-owl-loader \
+-	kmod-ath10k-ct ath10k-firmware-qca988x-ct wpad-basic-mbedtls kmod-usb-dwc2
++	kmod-ath10k ath10k-firmware-qca988x wpad-basic-mbedtls kmod-usb-dwc2
+   SUPPORTED_DEVICES += BTHOMEHUBV5A
+ endef
+ TARGET_DEVICES += bt_homehub-v5a
+diff --git a/target/linux/mpc85xx/image/p1020.mk b/target/linux/mpc85xx/image/p1020.mk
+index 1ec90a233d..1297c71a21 100644
+--- a/target/linux/mpc85xx/image/p1020.mk
++++ b/target/linux/mpc85xx/image/p1020.mk
+@@ -75,7 +75,7 @@ TARGET_DEVICES += enterasys_ws-ap3710i
+ define Device/extreme-networks_ws-ap3825i
+   DEVICE_VENDOR := Extreme Networks
+   DEVICE_MODEL := WS-AP3825i
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
++  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+   BLOCKSIZE := 128k
+   KERNEL_NAME := simpleImage.ws-ap3825i
+   KERNEL_ENTRY := 0x1000000
+diff --git a/target/linux/mvebu/image/cortexa9.mk b/target/linux/mvebu/image/cortexa9.mk
+index 248f1cd6fd..0b97efe710 100644
+--- a/target/linux/mvebu/image/cortexa9.mk
++++ b/target/linux/mvebu/image/cortexa9.mk
+@@ -86,7 +86,7 @@ define Device/cznic_turris-omnia
+   KERNEL_INITRAMFS := kernel-bin | gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
+   DEVICE_PACKAGES :=  \
+     mkf2fs e2fsprogs kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 \
+-    wpad-basic-mbedtls kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
++    wpad-basic-mbedtls kmod-ath9k kmod-ath10k ath10k-firmware-qca988x \
+     partx-utils kmod-i2c-mux-pca954x kmod-leds-turris-omnia
+   IMAGES := $$(DEVICE_IMG_PREFIX)-sysupgrade.img.gz omnia-medkit-$$(DEVICE_IMG_PREFIX)-initramfs.tar.gz
+   IMAGE/$$(DEVICE_IMG_PREFIX)-sysupgrade.img.gz := boot-scr | boot-img | sdcard-img | gzip | append-metadata
+-- 
+2.47.0
+
