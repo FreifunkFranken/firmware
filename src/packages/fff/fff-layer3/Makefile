@@ -28,7 +28,6 @@ define Package/fff-layer3
 	         +@PACKAGE_grev6 \
 	         +iperf3 \
 	         +ip-full \
-	         +mtr \
 	         +nftables \
 	         +snmp-utils \
 	         +tc \

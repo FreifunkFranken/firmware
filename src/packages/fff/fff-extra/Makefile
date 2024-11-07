@@ -13,6 +13,7 @@ define Package/fff-extra
 	DEPENDS:=+bmon \
 	         +ethtool-full \
 	         +htop \
+	         +mtr \
 	         +procps-ng \
 	         +procps-ng-vmstat \
 	         +sysstat
