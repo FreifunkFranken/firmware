@@ -1,10 +1,33 @@
-if [ "$(uci -q get network.client.fff_snat)" = '1' ]; then
-	nft add table ip mangle
-	nft add chain ip mangle PREROUTING '{ type filter hook prerouting priority mangle; policy accept; }'
+# load uci functions
+. /lib/functions.sh
+. /lib/functions/system.sh
 
-	nft add table ip nat
-	nft add chain ip nat POSTROUTING '{ type nat hook postrouting priority srcnat; policy accept; }'
 
-	nft add rule ip mangle PREROUTING iifname "br-client" counter mark set 0x736e6174
-	nft add rule ip nat POSTROUTING meta mark 0x736e6174 counter snat ip to $(uci -q get network.client.fff_snat_sourceip)
-fi
+NAT_BASE_MARK=0x736e6174
+NAT_GLOBAL=0
+
+
+add_snat() {
+	local name="$1"
+
+	if [ "$(uci -q get network.$name.fff_snat)" = '1' ]; then
+		# create tables if at least one SNAT entry is present
+		if [ "$NAT_GLOBAL" == 0 ]; then
+			nft add table ip mangle
+			nft add chain ip mangle PREROUTING '{ type filter hook prerouting priority mangle; policy accept; }'
+
+			nft add table ip nat
+			nft add chain ip nat POSTROUTING '{ type nat hook postrouting priority srcnat; policy accept; }'
+
+			# semantically wrong. Only works, because all fff_snat_sourceip are identical by design.
+			nft add rule ip nat POSTROUTING meta mark "$NAT_BASE_MARK" counter snat ip to $(uci -q get network.$name.fff_snat_sourceip)
+
+			NAT_GLOBAL=1
+		fi
+
+		nft add rule ip mangle PREROUTING iifname "br-$name" counter mark set "$NAT_BASE_MARK"
+	fi
+}
+
+config_load network
+config_foreach add_snat interface
