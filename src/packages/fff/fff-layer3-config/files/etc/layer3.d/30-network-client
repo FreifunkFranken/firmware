@@ -20,6 +20,16 @@ configure() {
 		[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 		uci set network.$name.macaddr="$ROUTERMAC"
 
+		# rules
+		rule=$(uci -q add network rule)
+		uci -q set network.$rule.in="$name"
+		uci -q set network.$rule.lookup=10
+		uci -q set network.$rule.priority=31
+		rule=$(uci -q add network rule6)
+		uci -q set network.$rule.in="$name"
+		uci -q set network.$rule.lookup=10
+		uci -q set network.$rule.priority=31
+
 		# ipaddr
 		#remove old ipaddr
 		uci -q del network.$name.ipaddr
