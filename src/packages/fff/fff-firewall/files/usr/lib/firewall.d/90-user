@@ -1,1 +1,3 @@
-nft -f /etc/nftables-fff.conf
+USER_NFT="/etc/nftables-fff.conf"
+
+[ -f "$USER_NFT" ] &&  nft -f "$USER_NFT"
