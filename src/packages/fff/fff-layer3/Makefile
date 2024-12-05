@@ -10,12 +10,12 @@ define Package/fff-layer3
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken gateway configuration
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+fff-alfred-monitoring-proxy \
-	         +fff-babel \
+	DEPENDS:=+fff-babel \
 	         +fff-babel-bird2 \
 	         +fff-boardname \
 	         +fff-dhcp \
 	         +fff-layer3-config \
+			 +fff-layer3-nodewatcher \
 	         +fff-layer3-snat \
 	         +fff-mqtt-monitoring \
 	         +fff-network \

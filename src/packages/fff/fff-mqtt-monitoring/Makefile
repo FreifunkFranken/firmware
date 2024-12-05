@@ -13,10 +13,9 @@ define Package/fff-mqtt-monitoring
 	TITLE:=Freifunk-Franken mqtt configuration
 	URL:=https://www.freifunk-franken.de
 	DEPENDS:= \
-		+alfred-json \
 		+fff-mqtt \
-		+micrond \
-		+fff-alfred
+		+fff-nodewatcher \
+		+micrond
 endef
 
 define Package/fff-mqtt-monitoring/description

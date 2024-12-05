@@ -1,7 +1,0 @@
-#!/bin/ash
-
-api_url="https://monitoring.freifunk-franken.de/api/alfred2"
-fetch_id="64"
-
-/bin/alfred-json -r "$fetch_id" | \
-    /usr/bin/curl -k -sS -H "Content-type: application/json; charset=UTF-8" --data-binary @- "$api_url"

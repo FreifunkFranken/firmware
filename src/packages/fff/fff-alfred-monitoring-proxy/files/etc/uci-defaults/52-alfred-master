@@ -1,5 +1,0 @@
-uci set "alfred.alfred.mode=master"
-
-uci commit alfred
-
-exit 0

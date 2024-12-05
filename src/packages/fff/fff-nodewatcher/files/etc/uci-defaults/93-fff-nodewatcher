@@ -4,7 +4,6 @@ touch /etc/config/nodewatcher
 
 uci batch >/dev/null <<EOF
   add nodewatcher script
-  set nodewatcher.@script[-1].data_file='/tmp/crawldata/node.data'
   set nodewatcher.@script[-1].status_text_file='/tmp/status.txt'
   set nodewatcher.@script[-1].disabled='0'
   add nodewatcher network

@@ -1,15 +1,21 @@
 #!/bin/sh
+
+set -e
+set -o pipefail
+
 . /lib/functions/system.sh
 
 BOARD="$(uci get board.model.name)"
 . /etc/network.$BOARD
 
 [ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
-
 MACADDR=$(echo $ROUTERMAC | /bin/sed 's/://g')
 
-fetch_id="64"
+test -f /tmp/started || exit 1
+
+DATA=$(printf '{"%s": "%s"}' "$MACADDR" "$(/usr/sbin/nodewatcher)")
+
 if [ -n "$(uci -q get fff.mqtt.server)" ] ; then
-	mosquitto_pub -h "$(uci get fff.mqtt.server)" -p 1883 -t /monitoring/v1/$MACADDR -m "$(/bin/alfred-json -r "$fetch_id")"
+	mosquitto_pub -h "$(uci get fff.mqtt.server)" -p 1883 -t /monitoring/v1/$MACADDR -m "$DATA"
 fi
 

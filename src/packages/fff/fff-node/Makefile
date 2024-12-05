@@ -10,7 +10,8 @@ define Package/fff-node
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken node configuration
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+fff-batman-adv \
+	DEPENDS:=+fff-alfred \
+	         +fff-batman-adv \
 	         +fff-fastd \
 	         +fff-vxlan-node-vpn \
 	         +fff-firewall \

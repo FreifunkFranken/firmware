@@ -3,7 +3,7 @@
 #
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 
-test -f /tmp/started || exit
+test -f /tmp/started || exit 1
 
 # Allow only one instance
 lockfile="/var/lock/${0##*/}.lock"
@@ -16,8 +16,6 @@ trap "lock -u \"$lockfile\"" INT TERM EXIT
 [ -s /etc/config/nodewatcher ] || exit 1
 [ "$(uci get nodewatcher.@script[0].disabled)" = "1" ] && exit 0
 
-SCRIPT_DATA_FILE=$(uci get nodewatcher.@script[0].data_file)
-
 debug() {
 	(>&2 echo "nodewatcher: $1")
 }
@@ -25,8 +23,6 @@ debug() {
 #This method generates the crawl data XML file that is being fetched by netmon
 #and provided by a small local httpd
 crawl() {
-	debug "Putting all information into a XML-File and save it at $SCRIPT_DATA_FILE"
-
 	DATA="<?xml version='1.0' standalone='yes'?><data>"
 
 	for f in /usr/lib/nodewatcher.d/*.sh; do
@@ -40,10 +36,7 @@ crawl() {
 
 	DATA="$DATA</data>"
 
-	#write data to xml file that provides the data on httpd
-	SCRIPT_DATA_DIR=$(dirname "$SCRIPT_DATA_FILE")
-	test -d "$SCRIPT_DATA_DIR" || mkdir -p "$SCRIPT_DATA_DIR"
-	echo "$DATA" | gzip | tee "$SCRIPT_DATA_FILE" | alfred -s 64
+	echo "$DATA"
 }
 
 LANG=C

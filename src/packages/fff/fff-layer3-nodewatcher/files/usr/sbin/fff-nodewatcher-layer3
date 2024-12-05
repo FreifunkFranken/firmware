@@ -1,0 +1,18 @@
+#!/bin/ash
+
+set -e
+set -o pipefail
+
+. /lib/functions/system.sh
+
+api_url="https://monitoring.freifunk-franken.de/api/alfred2"
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+MACADDR=$(echo $ROUTERMAC | /bin/sed 's/://g')
+
+test -f /tmp/started || exit 1
+
+printf '{"%s": "%s"}' "$MACADDR" "$(/usr/sbin/nodewatcher)" | \
+    /usr/bin/curl -k -sS -H "Content-type: application/json; charset=UTF-8" --data-binary @- "$api_url"

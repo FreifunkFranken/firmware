@@ -10,7 +10,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken Alfred
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+alfred
+	DEPENDS:=+fff-nodewatcher +alfred +micrond
 endef
 
 define Package/$(PKG_NAME)/description

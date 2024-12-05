@@ -1,0 +1,9 @@
+#!/bin/ash
+
+set -e
+set -o pipefail
+
+
+test -f /tmp/started || exit 1
+
+/usr/sbin/nodewatcher | gzip | alfred -s 64
