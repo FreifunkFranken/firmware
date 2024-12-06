@@ -18,8 +18,6 @@ uci batch <<-__EOF__
 	add_list network.fdff.ip6addr="fdff::1/128"
 	add_list network.fdff.ip6addr="fdff::$(ipMacSuffic "$ROUTERMAC")/128"
 	add_list network.fdff.ip6addr="fdff::$(ipEUISuffix "$ROUTERMAC")/128"
-
-	del network.client
 __EOF__
 
 uci -q commit network

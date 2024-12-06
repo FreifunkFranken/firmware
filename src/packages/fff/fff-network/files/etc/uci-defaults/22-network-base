@@ -28,12 +28,6 @@ uci batch <<-__EOF__
 	set network.fdff.proto='static'
 	set network.fdff.ip6deprecated='1'
 
-	set network.client='interface'
-	set network.client.type='bridge'
-	set network.client.auto='1'
-	set network.client.proto=static
-	set network.client.fff_clientif='1'
-
 	set network.wan='interface'
 	set network.wan.proto='none'
 	set network.wan.ifname="$WANDEV"
@@ -57,16 +51,6 @@ if [ "$DSA" = "1" ]; then
 		set network.$SWITCHDEV.type=bridge
 		# temporary workaround for netifd bug present in OpenWrt 21.02.0 (FS#4104)
 		set network.$SWITCHDEV.bridge_empty='1'
-
-		set network.${SWITCHDEV}_1=bridge-vlan
-		set network.${SWITCHDEV}_1.device=$SWITCHDEV
-		set network.${SWITCHDEV}_1.vlan=1
-		set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
-
-		set network.${SWITCHDEV}_3=bridge-vlan
-		set network.${SWITCHDEV}_3.device=$SWITCHDEV
-		set network.${SWITCHDEV}_3.vlan=3
-		set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
 	__EOF__
 
 	if [ "$WANDEV" = "$SWITCHDEV" ] || ! [ -z "$WAN_PORTS" ]; then
@@ -84,16 +68,6 @@ elif [ -n "$SWITCHHW" ] && [ -z "$ONE_PORT" ] && [ -z "$TWO_PORT" ]; then
 		set network.$SWITCHDEV.enable=1
 		set network.$SWITCHDEV.reset=1
 		set network.$SWITCHDEV.enable_vlan=1
-
-		set network.${SWITCHDEV}_1=switch_vlan
-		set network.${SWITCHDEV}_1.device=$SWITCHHW
-		set network.${SWITCHDEV}_1.vlan=1
-		set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
-
-		set network.${SWITCHDEV}_3=switch_vlan
-		set network.${SWITCHDEV}_3.device=$SWITCHHW
-		set network.${SWITCHDEV}_3.vlan=3
-		set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
 	__EOF__
 
 	if [ "$WANDEV" = "$SWITCHDEV" ] || [ -n "$WAN_PORTS" ]; then
@@ -107,21 +81,9 @@ elif [ -n "$SWITCHHW" ] && [ -z "$ONE_PORT" ] && [ -z "$TWO_PORT" ]; then
 fi
 
 if [ -n "$SWITCHHW" ] || [ "$DSA" = "1" ]; then
-	uci set network.client.ifname="$SWITCHDEV.1 bat0"
-	uci set network.ethmesh.ifname="$SWITCHDEV.3"
-
 	if [ "$WANDEV" = "$SWITCHDEV" ]; then
 		uci set network.wan.ifname=$WANDEV.2
 	fi
 fi
-
-if [ -n "$ETHMESHMAC" ]; then
-	uci set network.ethmesh.macaddr=$ETHMESHMAC
-fi
-
-if [ -n "$ROUTERMAC" ]; then
-	uci set network.client.macaddr=$ROUTERMAC
-fi
-
 
 uci -q commit network

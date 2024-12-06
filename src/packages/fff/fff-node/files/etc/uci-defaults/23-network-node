@@ -9,6 +9,67 @@ BOARD="$(uci get board.model.name)"
 
 [ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
+
+# Add client network configuration
+uci batch <<-__EOF__
+	set network.globals.ula_prefix=$prefix
+
+	set network.client='interface'
+	set network.client.type='bridge'
+	set network.client.auto='1'
+	set network.client.proto=static
+	set network.client.fff_clientif='1'
+
+	add_list network.client.ip6addr="${addr1}"
+	add_list network.client.ip6addr="${addr2}"
+	add_list network.client.ip6addr="${addr3}"
+
+	set network.ethmesh='interface'
+	set network.ethmesh.proto='batadv_hardif'
+	set network.ethmesh.master='bat0'
+__EOF__
+
+SWITCHHW=$(swconfig list | awk '{ print $4 }')
+if [ "$DSA" = "1" ]; then
+	uci batch <<-__EOF__
+		set network.${SWITCHDEV}_1=bridge-vlan
+		set network.${SWITCHDEV}_1.device=$SWITCHDEV
+		set network.${SWITCHDEV}_1.vlan=1
+		set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
+
+		set network.${SWITCHDEV}_3=bridge-vlan
+		set network.${SWITCHDEV}_3.device=$SWITCHDEV
+		set network.${SWITCHDEV}_3.vlan=3
+		set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
+	__EOF__
+elif [ -n "$SWITCHHW" ] && [ -z "$ONE_PORT" ] && [ -z "$TWO_PORT" ]; then
+	uci batch <<-__EOF__
+		set network.${SWITCHDEV}_1=switch_vlan
+		set network.${SWITCHDEV}_1.device=$SWITCHHW
+		set network.${SWITCHDEV}_1.vlan=1
+		set network.${SWITCHDEV}_1.ports="$CLIENT_PORTS"
+
+		set network.${SWITCHDEV}_3=switch_vlan
+		set network.${SWITCHDEV}_3.device=$SWITCHHW
+		set network.${SWITCHDEV}_3.vlan=3
+		set network.${SWITCHDEV}_3.ports="$BATMAN_PORTS"
+	__EOF__
+fi
+
+if [ -n "$SWITCHHW" ] || [ "$DSA" = "1" ]; then
+	uci set network.client.ifname="$SWITCHDEV.1 bat0"
+	uci set network.ethmesh.ifname="$SWITCHDEV.3"
+fi
+
+if [ -n "$ETHMESHMAC" ]; then
+	uci set network.ethmesh.macaddr=$ETHMESHMAC
+fi
+
+if [ -n "$ROUTERMAC" ]; then
+	uci set network.client.macaddr=$ROUTERMAC
+fi
+
+
 prefix="fdff::/64"
 
 # Set $prefix::1 as IP
@@ -19,16 +80,6 @@ addr2=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
 addr3=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
 
 uci batch <<-__EOF__
-	set network.globals.ula_prefix=$prefix
-
-	add_list network.client.ip6addr="${addr1}"
-	add_list network.client.ip6addr="${addr2}"
-	add_list network.client.ip6addr="${addr3}"
-	set network.client.proto=static
-
-	set network.ethmesh='interface'
-	set network.ethmesh.proto='batadv_hardif'
-	set network.ethmesh.master='bat0'
 __EOF__
 
 
