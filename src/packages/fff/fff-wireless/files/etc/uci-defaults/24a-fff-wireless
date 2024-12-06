@@ -28,45 +28,6 @@ configWifiDevice() {
 		set wireless.${radio}.htmode='${htmode}'
 		set wireless.${radio}.country='DE'
 		set wireless.${radio}.disabled='0'
-
-		set wireless.w${freq}ap='wifi-iface'
-		set wireless.w${freq}ap.device='${radio}'
-		set wireless.w${freq}ap.network='client'
-		set wireless.w${freq}ap.ifname='w${freq}ap'
-		set wireless.w${freq}ap.mode='ap'
-		set wireless.w${freq}ap.ssid='noservice.freifunk'
-		set wireless.w${freq}ap.encryption='none'
-		set wireless.w${freq}ap.hidden='0'
-		set wireless.w${freq}ap.disabled='0'
-
-		set network.w${freq}mesh='interface'
-		set network.w${freq}mesh.mtu='1560'
-		set network.w${freq}mesh.proto='batadv_hardif'
-		set network.w${freq}mesh.master='bat0'
-
-		set wireless.w${freq}mesh='wifi-iface'
-		set wireless.w${freq}mesh.device='${radio}'
-		set wireless.w${freq}mesh.network='w${freq}mesh'
-		set wireless.w${freq}mesh.ifname='w${freq}mesh'
-		set wireless.w${freq}mesh.mode='mesh'
-		set wireless.w${freq}mesh.mesh_id='nomesh.freifunk'
-		set wireless.w${freq}mesh.encryption='none'
-		set wireless.w${freq}mesh.mesh_fwding=0
-		set wireless.w${freq}mesh.disabled='0'
-
-		set network.configap${freq}=interface
-		set network.configap${freq}.proto='static'
-		set network.configap${freq}.ip6addr='fe80::1/64'
-
-		set wireless.w${freq}configap='wifi-iface'
-		set wireless.w${freq}configap.device='${radio}'
-		set wireless.w${freq}configap.network='configap${freq}'
-		set wireless.w${freq}configap.ifname='w${freq}configap'
-		set wireless.w${freq}configap.mode='ap'
-		set wireless.w${freq}configap.ssid='config.franken.freifunk.net'
-		set wireless.w${freq}configap.encryption='none'
-		set wireless.w${freq}configap.hidden='1'
-		set wireless.w${freq}configap.disabled='1'
 	__EOF__
 }
 
@@ -74,11 +35,10 @@ configWifiDevice() {
 config_load wireless
 config_foreach removeWifiIface wifi-iface
 
-# Set up WiFi devices and interfaces, but leave the latter disabled
+# Set up WiFi devices
 config_load wireless
 config_foreach configWifiDevice wifi-device
 
-uci commit network
 uci commit wireless
 
 exit 0
