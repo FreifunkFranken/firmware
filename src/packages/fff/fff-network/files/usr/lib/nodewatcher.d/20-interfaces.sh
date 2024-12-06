@@ -3,8 +3,21 @@
 #
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 
+. /lib/functions/system.sh
+
 IFACEBLACKLIST=$(uci get nodewatcher.@network[0].iface_blacklist)
-IPWHITELIST=$(uci get nodewatcher.@network[0].ip_whitelist)
+IPWHITELIST=""
+
+whitelist_add_if() {
+	local name="$1"
+
+	[ "$(uci -q get network.$name.fff_clientif)" = "1" ] || return
+
+	IPWHITELIST="$IPWHITELIST br-$name"
+}
+
+config_load network
+config_foreach whitelist_add_if interface
 
 debug() {
 	(>&2 echo "nodewatcher: $1")

@@ -32,6 +32,7 @@ uci batch <<-__EOF__
 	set network.client.type='bridge'
 	set network.client.auto='1'
 	set network.client.proto=static
+	set network.client.fff_clientif='1'
 
 	set network.wan='interface'
 	set network.wan.proto='none'
