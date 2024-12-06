@@ -1,0 +1,13 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Reapply gateway settings, if configuration succeeds
+if yes | configure-layer3 -c; then
+	configure-layer3 -a
+	exit 0
+else
+	# TODO: failsafe, if configuration does not succeed.
+	configure-layer3 -r
+fi
+
+exit 0
