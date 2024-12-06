@@ -1,5 +1,12 @@
 #!/bin/sh
-MACADDR=$(cat /sys/class/net/br-client/address | /bin/sed 's/://g')
+. /lib/functions/system.sh
+
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+
+MACADDR=$(echo $ROUTERMAC | /bin/sed 's/://g')
 
 fetch_id="64"
 if [ -n "$(uci -q get fff.mqtt.server)" ] ; then

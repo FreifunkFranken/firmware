@@ -12,6 +12,9 @@ HOSTNAME=$(uci -q get 'fff.system.hostname')
 hood="$(uci -q get "system.@system[0].hood")"
 hoodid="$(uci -q get "system.@system[0].hoodid")"
 
+. /etc/network.$board_name
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+
 format_state() {
 	batmanports=$(swconfig dev switch0 vlan 3 show | grep 'ports:')
 	clientports=$(swconfig dev switch0 vlan 1 show | grep 'ports:')
@@ -94,7 +97,7 @@ echo ""
 echo "-> SYSTEM"
 echo "Name: ${HOSTNAME}"
 echo "Modell: $(cat /tmp/sysinfo/model 2>/dev/null)"
-echo "MAC-Adresse: $(cat /sys/class/net/br-client/address)"
+echo "MAC-Adresse: $ROUTERMAC"
 echo "Bekannte Knoten: $(($(batctl tg -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)+1))"
 echo "Nachbarknoten: $(batctl o -H | cut -b 40-56 | sort | uniq | wc -l 2>/dev/null)"
 echo "VPN via fastd: ${vpn_active}"

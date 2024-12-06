@@ -4,8 +4,12 @@
 echo -en "Content-Type: text/html\r\n\r\n"
 HOSTNAME="$(uci -q get "fff.system.hostname")"
 hood="$(uci -q get "system.@system[0].hood")"
+board_name=$(uci -q get board.model.name)
 
-MAC="$(uci -q get network.client.macaddr)"
+. /etc/network.$board_name
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+MAC="$ROUTERMAC"
+
 lat="$(uci -q get "fff.system.latitude")"
 lon="$(uci -q get "fff.system.longitude")"
 contact="$(uci -q get "fff.system.contact")"

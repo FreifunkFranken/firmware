@@ -3,6 +3,14 @@
 #
 # Netmon Nodewatcher (C) 2010-2012 Freifunk Oldenburg
 
+. /lib/functions/system.sh
+
+BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
+
+[ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
+
+
 SCRIPT_STATUS_FILE=$(uci get nodewatcher.@script[0].status_text_file)
 SCRIPT_VERSION=$(cat /etc/nodewatcher_version)
 
@@ -15,7 +23,7 @@ debug "Collecting basic system status data"
 SYSTEM_DATA="<status>online</status>"
 
 hostname="$(cat /proc/sys/kernel/hostname)"
-mac=$(awk '{ mac=toupper($1); gsub(":", "", mac); print mac }' /sys/class/net/br-client/address 2>/dev/null)
+mac=$(echo "$ROUTERMAC" | awk '{ mac=toupper($1); gsub(":", "", mac); print mac }')
 [ "$hostname" = "OpenWrt" ] && hostname="$mac"
 [ "$hostname" = "FFF" ] && hostname="$mac"
 SYSTEM_DATA="$SYSTEM_DATA<hostname>$hostname</hostname>"
