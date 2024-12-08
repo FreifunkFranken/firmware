@@ -1,0 +1,62 @@
+From eefc5d186a79b9cbba427b6ad13237b7cedf346b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Sat, 7 Dec 2024 20:46:50 +0100
+Subject: [PATCH] bird: Babel: fix seqno wrapping
+
+---
+ ...-fix-seqno-wrapping-on-seqno-request.patch | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 bird2/patches/0001-Babel-fix-seqno-wrapping-on-seqno-request.patch
+
+diff --git a/bird2/patches/0001-Babel-fix-seqno-wrapping-on-seqno-request.patch b/bird2/patches/0001-Babel-fix-seqno-wrapping-on-seqno-request.patch
+new file mode 100644
+index 0000000..832e1f5
+--- /dev/null
++++ b/bird2/patches/0001-Babel-fix-seqno-wrapping-on-seqno-request.patch
+@@ -0,0 +1,43 @@
++From 8472a4616726f80d9cfa1a35314ebe30786897ce Mon Sep 17 00:00:00 2001
++From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
++Date: Sat, 7 Dec 2024 19:23:41 +0100
++Subject: [PATCH] Babel: fix seqno wrapping on seqno request
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++The Babel seqno wraps around when reaching its maximum value
++(UINT16_MAX). When comparing seqnos, this has to be taken into account.
++Therefore, plain number comparisons do not work.
++
++In a previous attempt to fix the wrapping behavior, one particular
++comparison was missed. This causes the seqno of originated babel routes
++to not wrap, but remain at UINT16_MAX indefinitely, resulting in slow
++route propagation on topology changes.
++
++Make use of the previously introduced gt_mod64k macro to compare seqnos
++correctly.
++
++Fixes: 3e7e4a71868bc519aacc0eb785471b46fc345a5c
++
++Signed-off-by: Fabian Bläse <fabian@blaese.de>
++---
++ proto/babel/babel.c | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++diff --git a/proto/babel/babel.c b/proto/babel/babel.c
++index fe5c0599..b94b96d9 100644
++--- a/proto/babel/babel.c
+++++ b/proto/babel/babel.c
++@@ -1015,7 +1015,7 @@ babel_send_update_(struct babel_iface *ifa, btime changed, struct fib *rtable)
++ 
++     /* Our own seqno might have changed, in which case we update the routes we
++        originate. */
++-    if ((e->router_id == p->router_id) && (e->seqno < p->update_seqno))
+++    if ((e->router_id == p->router_id) && (gt_mod64k(p->update_seqno, e->seqno)))
++     {
++       e->seqno = p->update_seqno;
++       e->updated = current_time();
++-- 
++2.47.1
++
+-- 
+2.47.1
+
