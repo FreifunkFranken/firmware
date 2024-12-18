@@ -46,7 +46,7 @@ index 66c74451f0..5535f8ad89 100644
  
  			partition@0 {
 -				label = "RouterBoard NAND Boot";
-+				label = "JFFS2";
++				label = "YAFFS";
  				reg = <0x0 0x800000>;
  			};
  
