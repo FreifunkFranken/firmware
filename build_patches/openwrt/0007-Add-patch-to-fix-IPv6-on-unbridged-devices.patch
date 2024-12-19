@@ -1,0 +1,75 @@
+From b2af27726b7951638b3ca64a2299f2ab12c6696a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Thu, 19 Dec 2024 22:32:34 +0100
+Subject: [PATCH] Add patch to fix IPv6 on unbridged devices
+
+---
+ ...01-Restore-disable-ipv6-sysctl-after.patch | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 package/network/config/netifd/patches/0001-Restore-disable-ipv6-sysctl-after.patch
+
+diff --git a/package/network/config/netifd/patches/0001-Restore-disable-ipv6-sysctl-after.patch b/package/network/config/netifd/patches/0001-Restore-disable-ipv6-sysctl-after.patch
+new file mode 100644
+index 0000000000..62d6a21cbb
+--- /dev/null
++++ b/package/network/config/netifd/patches/0001-Restore-disable-ipv6-sysctl-after.patch
+@@ -0,0 +1,56 @@
++From 7fdd42e516f30b70d29645526576a88f28778f10 Mon Sep 17 00:00:00 2001
++From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
++Date: Fri, 15 Nov 2024 22:12:36 +0100
++Subject: [PATCH] Restore disable_ipv6 sysctl after removing a device from
++ bridge or bond
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++If a device is added to a bond or bridge, the disable_ipv6 sysctl is
++set, so that no link local addresses are present on the slave devices.
++
++However, the disable_ipv6 sysctl is not restored after removing the
++device from the bridge or bond. Therefore, no IPv6 link local addresses
++are added and autoconfiguration does not work.
++
++Set the disable_ipv6 to '0' on device removal from bridge or bond.
++
++Signed-off-by: Fabian Bläse <fabian@blaese.de>
++---
++ bonding.c | 5 +++++
++ bridge.c  | 5 +++++
++ 2 files changed, 10 insertions(+)
++
++diff --git a/bonding.c b/bonding.c
++index 3b25751..7daf0fd 100644
++--- a/bonding.c
+++++ b/bonding.c
++@@ -170,6 +170,11 @@ bonding_disable_port(struct bonding_port *bp, bool keep_dev)
++ 	if (!keep_dev)
++ 		device_release(&bp->dev);
++ 
+++	if (bp->dev.dev->settings.flags & DEV_OPT_IPV6) {
+++		bp->dev.dev->settings.ipv6 = 1;
+++		bp->dev.dev->settings.flags &= ~DEV_OPT_IPV6;
+++	}
+++
++ 	return 0;
++ }
++ 
++diff --git a/bridge.c b/bridge.c
++index 2128ec7..70ece78 100644
++--- a/bridge.c
+++++ b/bridge.c
++@@ -327,6 +327,11 @@ bridge_disable_member(struct bridge_member *bm, bool keep_dev)
++ 	if (!keep_dev)
++ 		device_release(&bm->dev);
++ 
+++	if (bm->dev.dev->settings.flags & DEV_OPT_IPV6) {
+++		bm->dev.dev->settings.ipv6 = 1;
+++		bm->dev.dev->settings.flags &= ~DEV_OPT_IPV6;
+++	}
+++
++ 	device_broadcast_event(&bst->dev, DEV_EVENT_TOPO_CHANGE);
++ 
++ 	return 0;
+-- 
+2.47.1
+
