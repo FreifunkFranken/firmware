@@ -26,6 +26,7 @@ uci batch >/dev/null <<EOF
   set dhcp.@dnsmasq[-1].noresolv='1'
   set dhcp.@dnsmasq[-1].localuse='0'
   set dhcp.@dnsmasq[-1].localservice='1'
+  set dhcp.@dnsmasq[-1].addnhosts='/etc/nhosts.fff'
 
   # do not generate A or AAAA records for the routers hostname,
   # because this might interfere with upstream records.
