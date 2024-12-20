@@ -1,0 +1,38 @@
+From 16c47c23dfd53778a2143e3d0891b6aeb31b0d4b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Fri, 20 Dec 2024 10:38:31 +0100
+Subject: [PATCH] mvebu: rb5009: add label-mac-device
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add the label-mac-device alias.
+
+Signed-off-by: Fabian Bläse <fabian@blaese.de>
+Link: https://github.com/openwrt/openwrt/pull/17313
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ .../arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts         | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+index dfbf3af137c114..306f84a516fdd5 100644
+--- a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
++++ b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+@@ -26,6 +26,7 @@
+ 		led-failsafe = &led_user;
+ 		led-running = &led_user;
+ 		led-upgrade = &led_user;
++		label-mac-device = &p1;
+ 	};
+ 
+ 	usb3_vbus: regulator-usb3-vbus0 {
+@@ -322,7 +323,7 @@
+ 				nvmem-cell-names = "mac-address";
+ 			};
+ 
+-			port@9 {
++			p1: port@9 {
+ 				reg = <9>;
+ 				label = "p1";
+ 				phy-mode = "sgmii";
