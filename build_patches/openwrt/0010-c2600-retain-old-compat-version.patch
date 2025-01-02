@@ -1,0 +1,24 @@
+From 5561d5eccccc4aaa35780f8e170e65d9bef9fa88 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
+Date: Thu, 2 Jan 2025 21:00:04 +0100
+Subject: [PATCH] c2600: retain old compat version
+
+---
+ target/linux/ipq806x/image/generic.mk | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/target/linux/ipq806x/image/generic.mk b/target/linux/ipq806x/image/generic.mk
+index 0055e6231e..2505b90f50 100644
+--- a/target/linux/ipq806x/image/generic.mk
++++ b/target/linux/ipq806x/image/generic.mk
+@@ -529,7 +529,6 @@ TARGET_DEVICES += tplink_ad7200
+ 
+ define Device/tplink_c2600
+ 	$(call Device/TpSafeImage)
+-	$(Device/dsa-migration)
+ 	DEVICE_VENDOR := TP-Link
+ 	DEVICE_MODEL := Archer C2600
+ 	DEVICE_VARIANT := v1
+-- 
+2.47.1
+
