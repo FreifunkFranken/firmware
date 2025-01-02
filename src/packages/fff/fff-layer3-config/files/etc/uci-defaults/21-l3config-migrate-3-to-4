@@ -5,6 +5,7 @@
 
 
 BOARD="$(uci get board.model.name)"
+. /etc/network.$BOARD
 
 # only migrate appropriate config versions
 [ "$(uci -q get gateway.meta.config_version)" = "3" ] || exit 0
@@ -55,12 +56,61 @@ translate_ports() {
 	uci set gateway.$vlan.ports="$newports"
 }
 
+move_wifi_to_dedicated_section() {
+	chan2ghz=$(uci -q get gateway.@client[0].chan2ghz && uci -q del gateway.@client[0].chan2ghz)
+	chan5ghz=$(uci -q get gateway.@client[0].chan5ghz && uci -q del gateway.@client[0].chan5ghz)
+	width2ghz=$(uci -q get gateway.@client[0].width2ghz && uci -q del gateway.@client[0].width2ghz)
+	width5ghz=$(uci -q get gateway.@client[0].width5ghz && uci -q del gateway.@client[0].width5ghz)
+
+	# return early if no option is set
+	if [ -z "$chan2ghz" ] && [ -z "$chan5ghz" ] && [ -z "$width2ghz" ] && [ -z "$width5ghz" ]; then
+		return
+	fi
+
+	uci -q get gateway.@wireless[0] || uci add gateway wireless
+
+	[ -n "$chan2ghz" ] && uci set gateway.@wireless[0].chan2ghz="$chan2ghz"
+	[ -n "$chan5ghz" ] && uci set gateway.@wireless[0].chan5ghz="$chan5ghz"
+	[ -n "$width2ghz" ] && uci set gateway.@wireless[0].width2ghz="$width2ghz"
+	[ -n "$width5ghz" ] && uci set gateway.@wireless[0].width5ghz="$width5ghz"
+}
+
+# previously, the configuration of a wan interface had a pre-layer3 default,
+# that was NOT overwritten if no wan section has been configured by the user.
+# With config version '4' this behavior changes: if no wan section is configured,
+# no wan interface will be created. To prevent legacy configurations from breaking,
+# create the default wan section, if none was specified by the user.
+create_default_wan_section() {
+	# return early if wan section is already explicitly defined
+	if uci -q get gateway.@wan[0]; then
+		return
+	fi
+
+	if [ "$ONE_PORT" = "YES" ]; then
+		# ONE_PORT devices did not have an WAN Port configured by default
+		:
+	elif [ "$TWO_PORT" = "YES" ]; then
+		uci add gateway wan
+		uci set gateway.@wan[0].iface='$WANDEV'
+	elif [ "$DSA" = "1" ]; then
+		uci add gateway wan
+		uci set gateway.@wan[0].vlan='2'
+	else
+		uci add gateway wan
+		uci set gateway.@wan[0].vlan='2'
+	fi
+}
+
+
 case "$BOARD" in
 	tplink,c2600)
 		config_load gateway
 		config_foreach translate_ports vlan
 		;;
 esac
+
+move_wifi_to_dedicated_section
+create_default_wan_section
 
 uci set gateway.meta.config_version='4'
 uci commit gateway
