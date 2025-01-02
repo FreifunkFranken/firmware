@@ -8,7 +8,7 @@ configure() {
 	elif iface=$(uci -q get gateway.@wan[0].iface); then
 		uci set network.wan.ifname="$iface"
 	else
-		echo "WARNING: No vlan/interface for WAN specified. The default setting won't be overwritten."
+		uci del network.wan.ifname
 	fi
 }
 
