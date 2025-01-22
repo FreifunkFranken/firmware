@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+cat <<-__EOF__ >/etc/rc.local
+#!/bin/sh
 # Put your custom commands here that should be executed once
 # the system init finished. By default this file does nothing.
 
@@ -11,3 +15,4 @@ sleep 3
 touch /tmp/started
 
 exit 0
+__EOF__
