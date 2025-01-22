@@ -17,6 +17,7 @@ get_cpu_port() {
 			CPUPORT="6t"
 			;;
 		avm,fritzbox-4040|\
+		mikrotik,rb5009|\
 		netgear,r6220|\
 		tplink,c2600|\
 		tplink,cpe210-v2|\
