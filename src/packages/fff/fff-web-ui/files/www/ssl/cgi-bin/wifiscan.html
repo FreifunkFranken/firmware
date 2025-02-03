@@ -6,16 +6,16 @@
 <fieldset>
 	<legend>Wifi Scan</legend>
 	<table class="wifitable">
-		<tr>
-			<th>Name</th>
-			<th>Frequenz</th>
-			<th>Signal</th>
-			<th>MAC</th>
-		</tr>
 
 <%
-iw dev w2mesh scan | sed 's/^BSS/\nBSS/g' |\
-	awk -v RS='' '{r = gensub(/.*BSS ([0-9a-f:]*)?.*freq: ([0-9]*).*signal: (-[0-9]*\.[0-9]*) dBm.*SSID: ([^\n]*).*/, "<!-- \\3 --><tr><td>\\4</td><td>\\2 MHz</td><td>\\3 dBm</td><td>\\1</td></tr>", "g"); print r;}' | sort -n | sed 's#&#\&amp;#'
+# Find one interface for each phy-radio
+for interface in $(iw dev | grep -A1 '^phy' | awk '/Interface/ {print $2}'); do
+echo "<tr><th>Scan via interface $interface</th></tr>"
+echo "<tr><th>Name</th><th>Frequenz</th><th>Channel</th><th>Signal</th><th>MAC</th></tr>"
+
+iw dev $interface scan | sed 's/^BSS/\nBSS/g' |\
+	awk -v RS='' '{r = gensub(/.*BSS ([0-9a-f:]*)?.*freq: ([0-9]*).*signal: (-[0-9]*\.[0-9]*) dBm.*SSID: ([^\n]*).*primary channel: ([0-9]*).*/, "<!-- \\3 --><tr><td>\\4</td><td>\\2 MHz</td><td style='text-align:center'>\\5</td><td>\\3 dBm</td><td>\\1</td></tr>", "g"); print r;}' | sort -n | sed 's#&#\&amp;#'
+done
 	# The HTML comment contains the signal quality to allow sorting
 %>
 	</table>
