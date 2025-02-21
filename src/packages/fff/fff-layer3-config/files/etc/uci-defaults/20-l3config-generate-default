@@ -48,11 +48,11 @@ elif [ "$DSA" = "1" ]; then
 
 		set gateway.1=vlan
 		set gateway.1.comment='client'
-		set gateway.1.ports='$BATMAN_PORTS:* $CLIENT_PORTS:*'
+		set gateway.1.ports='$(for port in $BATMAN_PORTS $CLIENT_PORTS; do printf "${port}:* "; done | xargs)'
 
 		set gateway.2=vlan
 		set gateway.2.comment='wan'
-		set gateway.2.ports='$WAN_PORTS:*'
+		set gateway.2.ports='$(for port in $WAN_PORTS; do printf "${port}:* "; done | xargs)'
 	EOF
 else
 	uci batch <<-EOF
