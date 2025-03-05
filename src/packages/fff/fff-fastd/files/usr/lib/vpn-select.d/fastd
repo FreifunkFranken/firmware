@@ -24,6 +24,6 @@ fastd_start_stop() {
 	if ls /etc/fastd/fff/peers/* &>/dev/null; then
 		/etc/init.d/fastd reload
 	else
-		/etc/init.d/fastd stop
+		/etc/init.d/fastd running && /etc/init.d/fastd stop
 	fi
 }
