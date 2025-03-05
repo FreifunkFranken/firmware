@@ -199,32 +199,26 @@ if [ -s "$hoodfiletmp" ]; then
 		# incorrect syntax here. Both the old, incorrect and
 		# the correct syntax work with this fix.
 		prefix="$(echo "$prefix" | sed -e 's,\([^:]\):/,\1::/,')"
-
+		prefix_spec="${prefix%:*::/64}::/48"
 		mac=$(cat "/sys/class/net/br-client/address")
 		addr=$(owipcalc "$prefix" add "::$(ipMacSuffix "$mac")")
 		addr_eui=$(owipcalc "$prefix" add "::$(ipEUISuffix "$mac")")
 		for ip in $(ip -6 addr show dev br-client | grep inet6 | grep -v -e " $addr" -e " $addr_eui" -e " fe80::" -e " fdff::" | cut -f6 -d " "); do
 			ip -6 addr del "$ip" dev br-client
 		done
-		if ! ( ip -6 addr show dev br-client | grep -q "$addr" ) ; then
-			ip -6 addr add "$addr" dev br-client
-			echo "Set ULA address to br-client: $addr"
-		else
-			echo "Address already set."
-		fi
-		# Set $prefix::link-local as IP
-		if ! ( ip -6 addr show dev br-client | grep -q "$addr_eui" ) ; then
-			ip -6 addr add "$addr_eui" dev br-client
-			echo "Set ULA EUI-64 address to br-client: $addr_eui"
-		else
-			echo "Address already set."
-		fi
-		if ! ( ip -6 route show dev br-client | grep -q "fc00::" ) ; then
-			ip -6 route add fc00::/7 via fe80::1 dev br-client
-			echo "Set ULA route to br-client."
-		else
-			echo "Route already set."
-		fi
+		for route in $(ip -6 route | grep via.*br-client | grep -v -e "fc00::/7" -e "$prefix_spec" | cut -d " " -f1 ); do
+                        ip route del "$route" dev br-client
+		done
+
+		# set ULA addresses and routes
+		ip -6 addr replace "$addr" dev br-client
+		echo "Set ULA address to br-client: $addr"
+		ip -6 addr replace "$addr_eui" dev br-client
+		echo "Set ULA EUI-64 address to br-client: $addr_eui"
+		ip -6 route replace fc00::/7 via fe80::1 dev br-client
+		# set a more specific route via br-client
+		ip -6 route replace "${prefix_spec}" via fe80::1 dev br-client
+		echo "Set ULA route to br-client."
 	fi
 	json_select ".." # back to root
 else
