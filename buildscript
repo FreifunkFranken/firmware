@@ -177,9 +177,6 @@ prebuild() {
         version="$variant-$version"
     fi
 
-    # select variant packages
-    echo "CONFIG_PACKAGE_fff-${variant}=y" >> "$builddir"/.config
-
     {
         echo "FIRMWARE_VERSION=\"$version\""
         echo "VARIANT=\"$variant\""
@@ -196,6 +193,15 @@ prebuild() {
 
 build() {
     prebuild
+
+    # select variant packages
+    variant=$(cat selected_variant)
+    echo "CONFIG_PACKAGE_fff-${variant}=y" >> "$builddir"/.config
+
+    opath=$(pwd)
+    cd "$builddir"
+    make defconfig
+    cd "$opath"
 
     rm_firmware
 
