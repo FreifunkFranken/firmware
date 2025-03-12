@@ -16,6 +16,7 @@ define Package/fff-extra
 	         +mtr \
 	         +procps-ng \
 	         +procps-ng-vmstat \
+	         +snmp-utils \
 	         +sysstat
 endef
 

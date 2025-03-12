@@ -30,7 +30,6 @@ define Package/fff-layer3
 	         +iperf3 \
 	         +ip-full \
 	         +nftables \
-	         +snmp-utils \
 	         +tc \
 	         +tcpdump-mini \
 	         +vxlan
