@@ -10,7 +10,7 @@ define Package/fff-babel-bird2
 	CATEGORY:=Freifunk
 	TITLE:=Freifunk-Franken babel-bird2
 	URL:=https://www.freifunk-franken.de
-	DEPENDS:=+bird2 +bird2c +owipcalc
+	DEPENDS:=+bird2 +bird2cl +owipcalc
 	PROVIDES:=fff-babel-implementation
 endef
 
