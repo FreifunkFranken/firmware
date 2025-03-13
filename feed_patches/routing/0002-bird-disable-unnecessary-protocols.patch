@@ -11,7 +11,7 @@ index ec9c12c..6f17463 100644
  endef
  
 -CONFIGURE_ARGS += --disable-libssh
-+CONFIGURE_ARGS += --disable-libssh --with-protocols="babel pipe radv static"
++CONFIGURE_ARGS += --disable-libssh --with-protocols="babel pipe radv static" --disable-mpls-kernel
  
  define Package/bird2/conffiles
  /etc/bird.conf
