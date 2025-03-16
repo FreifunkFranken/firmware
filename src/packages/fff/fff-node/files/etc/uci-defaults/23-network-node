@@ -10,6 +10,14 @@ BOARD="$(uci get board.model.name)"
 
 [ -n "$ROUTERMAC" ] || ROUTERMAC=$(get_mac_label)
 
+prefix="fdff::/64"
+
+# Set $prefix::1 as IP
+addr1=$(owipcalc "$prefix" add ::1)
+# Set $prefix::MAC as IP
+addr2=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
+# Set $prefix::EUI64 as IP
+addr3=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
 
 # Add client network configuration
 uci batch <<-__EOF__
@@ -93,15 +101,6 @@ if [ -n "$ROUTERMAC" ]; then
 	uci set network.client.macaddr=$ROUTERMAC
 fi
 
-
-prefix="fdff::/64"
-
-# Set $prefix::1 as IP
-addr1=$(owipcalc "$prefix" add ::1)
-# Set $prefix::MAC as IP
-addr2=$(owipcalc "$prefix" add "::$(ipMacSuffix "$ROUTERMAC")")
-# Set $prefix::EUI64 as IP
-addr3=$(owipcalc "$prefix" add "::$(ipEUISuffix "$ROUTERMAC")")
 
 uci batch <<-__EOF__
 __EOF__
