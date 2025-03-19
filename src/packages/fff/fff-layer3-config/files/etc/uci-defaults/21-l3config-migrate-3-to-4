@@ -92,10 +92,12 @@ create_default_wan_section() {
 	elif [ "$TWO_PORT" = "YES" ]; then
 		uci add gateway wan
 		uci set gateway.@wan[0].iface='$WANDEV'
-	elif [ "$DSA" = "1" ]; then
+	elif [ "$WANDEV" != "$SWITCHDEV" ]; then
+		# wan interface is NOT part of the onboard switch
 		uci add gateway wan
-		uci set gateway.@wan[0].vlan='2'
+		uci set gateway.@wan[0].iface='$WANDEV'
 	else
+		# wan interface is part of the onboard switch (DSA/swconfig)
 		uci add gateway wan
 		uci set gateway.@wan[0].vlan='2'
 	fi
