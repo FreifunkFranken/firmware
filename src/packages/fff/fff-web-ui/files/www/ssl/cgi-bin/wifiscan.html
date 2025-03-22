@@ -10,11 +10,17 @@
 <%
 # Find one interface for each phy-radio
 for interface in $(iw dev | grep -A1 '^phy' | awk '/Interface/ {print $2}'); do
-echo "<tr><th>Scan via interface $interface</th></tr>"
-echo "<tr><th>Name</th><th>Frequenz</th><th>Channel</th><th>Signal</th><th>MAC</th></tr>"
+	echo "<tr><th>Scan via interface $interface</th></tr>"
+	echo "<tr><th>Name</th><th>Frequenz</th><th>Channel</th><th>Signal</th><th>MAC</th></tr>"
 
-iw dev $interface scan | sed 's/^BSS/\nBSS/g' |\
-	awk -v RS='' '{r = gensub(/.*BSS ([0-9a-f:]*)?.*freq: ([0-9]*).*signal: (-[0-9]*\.[0-9]*) dBm.*SSID: ([^\n]*).*primary channel: ([0-9]*).*/, "<!-- \\3 --><tr><td>\\4</td><td>\\2 MHz</td><td style='text-align:center'>\\5</td><td>\\3 dBm</td><td>\\1</td></tr>", "g"); print r;}' | sort -n | sed 's#&#\&amp;#'
+	iw dev $interface scan | sed 's/^BSS/;\nBSS/g' | while read -d\; station ;do
+		SSID="$(echo "$station" | grep SSID | sed 's/SSID: //')"
+		freq="$(echo "$station" | grep "freq:" | cut -f2 -d " ")"
+		cannel="$(echo "$station" | grep "primary channel:" | tr -s " " | cut -f5 -d " ")"
+		signal="$(echo "$station" | grep "signal:" | cut -f2 -d" ")"
+		mac="$(echo "$station" | grep "^BSS "| cut -f2 -d" " | cut -f1 -d "(")"
+		echo "<!-- $signal --><tr><td>$SSID</td><td>$freq MHz</td><td style='text-align:center'>$cannel</td><td>$signal dBm</td><td>$mac</td></tr>"
+	done | sort -n | sed 's#&#\&amp;#'
 done
 	# The HTML comment contains the signal quality to allow sorting
 %>
