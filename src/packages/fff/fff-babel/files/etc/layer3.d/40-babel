@@ -34,6 +34,7 @@ configure() {
 		local name="$1"
 		local prefixname="babelpeer_$name"
 		local vlan
+		local iface
 		local type
 
 		# get iface
@@ -47,18 +48,10 @@ configure() {
 		fi
 
 		# get type
-		if type=$(uci -q get gateway.$name.type); then
-			type="$type"
-		else
-			type=wired
-		fi
+		type=$(uci -q get gateway.$name.type) || type=wired
 
 		# get rxcost
-		if rxcost=$(uci -q get gateway.$name.rxcost); then
-			rxcost="$rxcost"
-		else
-			rxcost=96
-		fi
+		rxcost=$(uci -q get gateway.$name.rxcost) || rxcost=96
 
 		# add interface
 		uci set network.$prefixname=interface
