@@ -35,7 +35,11 @@ configure() {
 		local prefixname="babelpeer_$name"
 		local vlan
 		local iface
+
+		# protocol options
 		local type
+		local rxcost
+		local limit
 
 		# get iface
 		if vlan=$(uci -q get gateway.$name.vlan); then
@@ -53,6 +57,12 @@ configure() {
 		# get rxcost
 		rxcost=$(uci -q get gateway.$name.rxcost) || rxcost=96
 
+		# get limit
+		# > how many of last 16 hellos have to be correctly received
+		# > in order to neighbor is assumed to be up
+		# babel_add_interface sets the default
+		limit=$(uci -q get gateway.$name.limit)
+
 		# add interface
 		uci set network.$prefixname=interface
 		uci set network.$prefixname.proto=static
@@ -68,7 +78,7 @@ configure() {
 		babel_add_peer6addr "network.$prefixname.ip6addr"
 
 		# add babel interface
-		babel_add_interface "$prefixname" "$iface" "$type" "$rxcost" || { echo "Could not add babel interface for babelpeer $name"; exit 1; }
+		babel_add_interface "$prefixname" "$iface" "$type" "$rxcost" "$limit" || { echo "Could not add babel interface for babelpeer $name"; exit 1; }
 	}
 
 	config_load gateway

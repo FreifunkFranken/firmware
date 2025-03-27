@@ -5,12 +5,14 @@ babel_get_version() {
 }
 
 babel_add_interface() {
-	[ "$#" -ne "4" ] && return 1
+	[ "$#" -gt "5" ] && return 1
 
-	local name="$1"
-	local interface="$2"
-	local type="$3"
-	local rxcost="$4"
+	local name="${1:?Missing parameter: name}"
+	local interface="${2:?Missing parameter: interface}"
+	local type="${3:?Missing parameter: type}"
+	local rxcost="${4:?Missing parameter: rxcost}"
+
+	[ -n "$5" ] && echo "WARNING: babeld does not support the `limit` option"
 
 	uci set babeld.$name=interface
 	uci set babeld.$name.ifname="$interface"

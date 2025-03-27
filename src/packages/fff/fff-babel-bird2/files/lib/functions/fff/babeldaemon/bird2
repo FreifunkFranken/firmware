@@ -5,15 +5,18 @@ babel_get_version() {
 }
 
 babel_add_interface() {
-	[ "$#" -ne "4" ] && return 1
+	[ "$#" -gt "5" ] && return 1
 
-	local name="$1"
-	local interface="$2"
-	local type="$3"
-	local rxcost="$4"
+	local name="${1:?Missing parameter: name}"
+	local interface="${2:?Missing parameter: interface}"
+	local type="${3:?Missing parameter: type}"
+	local rxcost="${4:?Missing parameter: rxcost}"
+	local limit="${5:-12}"
+
+	[ "$limit" -lt 1 ] || [ "$limit" -gt "16" ] && { echo "babelpeer limit option must be in range 1-16"; return 1; }
 
 	mkdir -p /tmp/bird/fff/babelpeers
-	echo "interface \"$interface\" { type $type; rxcost $rxcost; };" > /tmp/bird/fff/babelpeers/$name.conf
+	echo "interface \"$interface\" { type $type; rxcost $rxcost; limit $limit; };" > /tmp/bird/fff/babelpeers/$name.conf
 
 	return 0
 }
