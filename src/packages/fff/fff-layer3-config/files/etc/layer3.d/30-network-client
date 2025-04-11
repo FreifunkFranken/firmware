@@ -78,6 +78,18 @@ configure() {
 			echo "WARNING: No DHCP range start and/or limit for client interface \"$name\" set!"
 		fi
 
+		# per client network dns
+		uci -q del dhcp.$name.dns
+		uci -q del dhcp.$name.dhcp_option
+		if dns=$(uci -q get gateway.$name.dns); then
+			for ip in $dns; do
+				case $ip in
+					*:*) uci add_list dhcp.$name.dns=$ip;;
+					*.*) uci add_list dhcp.$name.dhcp_option=6,$ip;;
+					*)    # do nothing;;
+				esac
+			done
+		fi
 
 		# ra
 		uci -q set dhcp.$name.ra='server'
