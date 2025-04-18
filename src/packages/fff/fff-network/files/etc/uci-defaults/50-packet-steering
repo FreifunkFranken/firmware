@@ -9,7 +9,7 @@ fi
 # Enable RPS
 uci batch <<-__EOF__
 	set network.globals=globals
-	set network.globals.packet_steering='1'
+	set network.globals.packet_steering='2'
 __EOF__
 
 uci -q commit network
