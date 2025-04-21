@@ -3,3 +3,4 @@ SWITCHDEV=switch0
 CLIENT_PORTS="eth0 eth1"
 WAN_PORTS="eth2"
 DSA=1
+ROUTERMAC=$(cat /sys/class/net/eth2/address)
