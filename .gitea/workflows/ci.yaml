@@ -29,7 +29,7 @@ jobs:
       - name: Prepare build environment
         run: |
           sudo apt-get update
-          sudo apt-get -y install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion libssl-dev rsync python3-distutils
+          sudo apt-get -y install zlib1g-dev lua5.2 build-essential unzip libncurses-dev gawk git subversion libssl-dev rsync
           git config --global user.email "act@ci.fff.community"
           git config --global user.name "FFF CI act_runner"
 
