@@ -68,6 +68,7 @@ checkout_git(){
     echo
 
     # Remove untracked files
+    $MYGIT am --abort || true
     $MYGIT clean -f -d
     # Select desired commit and remove local changes (-f)
     if ! $MYGIT checkout --progress --force "$COMMITID" ; then
