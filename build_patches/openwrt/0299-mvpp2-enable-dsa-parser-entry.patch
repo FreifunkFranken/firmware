@@ -6,13 +6,13 @@ Subject: [PATCH 8/9] mvpp2: enable dsa parser entry
 ---
  .../999-mvpp2-enable-dsa-parser-entry.patch   | 22 +++++++++++++++++++
  1 file changed, 22 insertions(+)
- create mode 100644 target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
+ create mode 100644 target/linux/mvebu/patches-6.12/999-mvpp2-enable-dsa-parser-entry.patch
 
-diff --git a/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch b/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
+diff --git a/target/linux/mvebu/patches-6.12/999-mvpp2-enable-dsa-parser-entry.patch b/target/linux/mvebu/patches-6.12/999-mvpp2-enable-dsa-parser-entry.patch
 new file mode 100644
 index 00000000000..fe5c2657d9a
 --- /dev/null
-+++ b/target/linux/mvebu/patches-6.6/999-mvpp2-enable-dsa-parser-entry.patch
++++ b/target/linux/mvebu/patches-6.12/999-mvpp2-enable-dsa-parser-entry.patch
 @@ -0,0 +1,22 @@
 +--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 ++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c

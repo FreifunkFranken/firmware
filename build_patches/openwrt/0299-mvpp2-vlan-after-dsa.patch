@@ -4,15 +4,15 @@ Date: Mon, 20 Nov 2023 21:28:16 +0100
 Subject: [PATCH 9/9] mvpp2: vlan after dsa
 
 ---
- .../linux/mvebu/patches-6.6/999-vlan-after-dsa.patch  | 11 +++++++++++
+ .../linux/mvebu/patches-6.12/999-vlan-after-dsa.patch  | 11 +++++++++++
  1 file changed, 11 insertions(+)
- create mode 100644 target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
+ create mode 100644 target/linux/mvebu/patches-6.12/999-vlan-after-dsa.patch
 
-diff --git a/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch b/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
+diff --git a/target/linux/mvebu/patches-6.12/999-vlan-after-dsa.patch b/target/linux/mvebu/patches-6.12/999-vlan-after-dsa.patch
 new file mode 100644
 index 00000000000..d6f241ca085
 --- /dev/null
-+++ b/target/linux/mvebu/patches-6.6/999-vlan-after-dsa.patch
++++ b/target/linux/mvebu/patches-6.12/999-vlan-after-dsa.patch
 @@ -0,0 +1,11 @@
 +--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
 ++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c

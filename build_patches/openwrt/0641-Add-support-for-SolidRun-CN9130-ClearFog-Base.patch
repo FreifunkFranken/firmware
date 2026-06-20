@@ -38,11 +38,11 @@ index bb81b0ff26..edd638578d 100755
  	solidrun,clearfog-pro)
  		legacy_sdcard_copy_config
  		;;
-diff --git a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
+diff --git a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
 new file mode 100644
 index 0000000000..2a8870795a
 --- /dev/null
-+++ b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
++++ b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
 @@ -0,0 +1,384 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*

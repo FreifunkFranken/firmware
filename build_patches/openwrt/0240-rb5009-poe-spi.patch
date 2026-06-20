@@ -1,4 +1,4 @@
-From 0ca1ea0017d1afa143734855117186c9db68a5a8 Mon Sep 17 00:00:00 2001
+From f18dea03ff79a5ca9e0979b501e586701e89a035 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Sat, 27 Jul 2024 14:08:09 +0200
 Subject: [PATCH] rb5009 poe spi
@@ -7,11 +7,11 @@ Subject: [PATCH] rb5009 poe spi
  .../boot/dts/marvell/armada-7040-rb5009.dts   | 37 +++++++++++++++++++
  1 file changed, 37 insertions(+)
 
-diff --git a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
-index 8cd744f64d..6c3ce847aa 100644
---- a/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
-+++ b/target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
-@@ -382,3 +382,40 @@
+diff --git a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+index 18b4703189..42d371f33f 100644
+--- a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
++++ b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/armada-7040-rb5009.dts
+@@ -402,3 +402,40 @@
  		};
  	};
  };
@@ -23,7 +23,7 @@ index 8cd744f64d..6c3ce847aa 100644
 +		//marvell,pins = "mpp47", "mpp48", "mpp49", "mpp50";
 +		marvell,function = "spi1";
 +	};
-+
++ 
 +	/*cp0_spi1_poe_cs_pins: cp0-spi1-poe-cs-pins {
 +		marvell,pins = "mpp8";
 +		marcell,function = "gpio";
@@ -32,10 +32,10 @@ index 8cd744f64d..6c3ce847aa 100644
 +
 +&cp0_spi1 {
 +	status = "okay";
-+
++ 
 +	pinctrl-0 = <&cp0_spi1_pins>;
 +	pinctrl-names = "default";
-+
++ 
 +	spidev@0 {
 +		compatible = "rohm,dh2228fv";
 +		//compatible = "linux,spidev";
@@ -53,5 +53,5 @@ index 8cd744f64d..6c3ce847aa 100644
 +	};
 +};
 -- 
-2.45.2
+2.54.0
 
