@@ -1,20 +1,20 @@
-From eaa3217b22b4cbfd07b637dd9d2ef48a0921d6fd Mon Sep 17 00:00:00 2001
+From 6e30f07522907176209634758ee3b8bfded9cd09 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Fabian=20Bl=C3=A4se?= <fabian@blaese.de>
 Date: Fri, 20 Oct 2023 22:56:53 +0200
 Subject: [PATCH] Add support for SolidRun CN9130 ClearFog Base
 
 ---
  .../base-files/lib/upgrade/platform.sh        |   3 +
- .../boot/dts/marvell/cn9130-clearfog-base.dts | 384 ++++++++++++++++++
+ .../boot/dts/marvell/cn9130-clearfog-base.dts | 388 ++++++++++++++++++
  target/linux/mvebu/image/cortexa72.mk         |  10 +
- 3 files changed, 397 insertions(+)
- create mode 100644 target/linux/mvebu/files-6.6/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
+ 3 files changed, 401 insertions(+)
+ create mode 100644 target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
 
 diff --git a/target/linux/mvebu/cortexa72/base-files/lib/upgrade/platform.sh b/target/linux/mvebu/cortexa72/base-files/lib/upgrade/platform.sh
-index bb81b0ff26..edd638578d 100755
+index b88b3c08ec..81f053c931 100755
 --- a/target/linux/mvebu/cortexa72/base-files/lib/upgrade/platform.sh
 +++ b/target/linux/mvebu/cortexa72/base-files/lib/upgrade/platform.sh
-@@ -15,6 +15,7 @@ platform_check_image() {
+@@ -45,6 +45,7 @@ platform_check_image() {
  	marvell,armada8040-mcbin-doubleshot|\
  	marvell,armada8040-mcbin-singleshot|\
  	marvell,armada8040-clearfog-gt-8k|\
@@ -22,7 +22,7 @@ index bb81b0ff26..edd638578d 100755
  	solidrun,clearfog-pro)
  		legacy_sdcard_check_image "$1"
  		;;
-@@ -34,6 +35,7 @@ platform_do_upgrade() {
+@@ -80,6 +81,7 @@ platform_do_upgrade() {
  	marvell,armada8040-mcbin-doubleshot|\
  	marvell,armada8040-mcbin-singleshot|\
  	marvell,armada8040-clearfog-gt-8k|\
@@ -30,7 +30,7 @@ index bb81b0ff26..edd638578d 100755
  	solidrun,clearfog-pro)
  		legacy_sdcard_do_upgrade "$1"
  		;;
-@@ -53,6 +55,7 @@ platform_copy_config() {
+@@ -118,6 +120,7 @@ platform_copy_config() {
  	marvell,armada8040-mcbin-doubleshot|\
  	marvell,armada8040-mcbin-singleshot|\
  	marvell,armada8040-clearfog-gt-8k|\
@@ -40,10 +40,10 @@ index bb81b0ff26..edd638578d 100755
  		;;
 diff --git a/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
 new file mode 100644
-index 0000000000..2a8870795a
+index 0000000000..da6eb5b882
 --- /dev/null
 +++ b/target/linux/mvebu/files/arch/arm64/boot/dts/marvell/cn9130-clearfog-base.dts
-@@ -0,0 +1,384 @@
+@@ -0,0 +1,388 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright SolidRun Ltd.
@@ -80,20 +80,22 @@ index 0000000000..2a8870795a
 +		device_type = "memory";
 +		reg = <0x0 0x0 0x0 0x80000000>;
 +	};
-+	v_3_3: regulator-3-3v {
++
++	v_3v3: regulator-3-3v {
 +		compatible = "regulator-fixed";
-+		regulator-name = "v_3_3";
++		regulator-name = "v_3v3";
 +		regulator-min-microvolt = <3300000>;
 +		regulator-max-microvolt = <3300000>;
 +		regulator-always-on;
 +		status = "okay";
 +	};
-+	ap0_reg_sd_vccq: ap0-sd_-ccq@0 {
-+		compatible = "regulator-gpio";
-+		regulator-name = "ap0_sd_vccq";
++
++	vqmmc: regulator-vqmmc {
++		compatible = "regulator-fixed";
++		regulator-name = "vqmmc";
++		regulator-always-on;
 +		regulator-min-microvolt = <1800000>;
 +		regulator-max-microvolt = <1800000>;
-+		states = <1800000 0x1 3300000 0x0>;
 +	};
 +
 +	cp0_reg_usb3_vbus0: cp0-usb3-vbus@0 {
@@ -120,15 +122,6 @@ index 0000000000..2a8870795a
 +	cp0_usb3_0_phy1: cp0-usb3-phy@1 {
 +		compatible = "usb-nop-xceiv";
 +		vcc-supply = <&cp0_reg_usb3_vbus1>;
-+	};
-+
-+	cp0_reg_sd_vccq: cp0-sd-vccq@0 {
-+		compatible = "regulator-gpio";
-+		regulator-name = "cp0_sd_vccq";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <3300000>;
-+		states = <1800000 0x1
-+			3300000 0x0>;
 +	};
 +
 +	cp0_reg_sd_vcc: cp0-sd-vcc@0 {
@@ -159,7 +152,7 @@ index 0000000000..2a8870795a
 +&ap_sdhci0 {
 +	pinctrl-names = "default";
 +	bus-width = <8>;
-+	vqmmc-supply = <&ap0_reg_sd_vccq>;
++	vqmmc-supply = <&vqmmc>;
 +	status = "okay";
 +};
 +
@@ -215,6 +208,13 @@ index 0000000000..2a8870795a
 +		gpio-controller;
 +		#gpio-cells = <2>;
 +		reg = <0x20>;
++		interrupt-controller;
++		#interrupt-cells = <2>;
++		interrupt-parent = <&cp0_gpio1>;
++		interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&cp0_expander0_pins>;
++		vcc-supply = <&v_3v3>;
 +
 +		pcie1-0-clkreq {
 +			gpio-hog;
@@ -369,8 +369,8 @@ index 0000000000..2a8870795a
 +	bus-width = <4>;
 +	cd-gpios = <&cp0_gpio2 11 GPIO_ACTIVE_LOW>;
 +	no-1-8-v;
-+	vqmmc-supply = <&v_3_3>;
-+	vmmc-supply = <&v_3_3>;
++	vqmmc-supply = <&v_3v3>;
++	vmmc-supply = <&v_3v3>;
 +};
 +
 +&cp0_spi1 {
@@ -426,13 +426,17 @@ index 0000000000..2a8870795a
 +			marvell,pins = "mpp12", "mpp13", "mpp14", "mpp15", "mpp16";
 +			marvell,function = "spi1";
 +		};
++		cp0_expander0_pins: cp0-expander0-pins {
++			marvell,pins = "mpp4";
++			marvell,function = "gpio";
++		};
 +	};
 +};
 diff --git a/target/linux/mvebu/image/cortexa72.mk b/target/linux/mvebu/image/cortexa72.mk
-index 48919b7f71..2fa78379c9 100644
+index 7d7fe49490..9a48769435 100644
 --- a/target/linux/mvebu/image/cortexa72.mk
 +++ b/target/linux/mvebu/image/cortexa72.mk
-@@ -107,6 +107,16 @@ define Device/iei_puzzle-m902
+@@ -142,6 +142,16 @@ define Device/iei_puzzle-m902
  endef
  TARGET_DEVICES += iei_puzzle-m902
  
@@ -450,5 +454,5 @@ index 48919b7f71..2fa78379c9 100644
    $(call Device/Default-arm64)
    SOC := cn9130
 -- 
-2.48.1
+2.55.0
 
